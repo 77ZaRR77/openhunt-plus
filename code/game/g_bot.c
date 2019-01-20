@@ -3605,7 +3605,7 @@ static qboolean FitBoxIn(
 	VectorSubtract(boxmaxs, boxmins, boxsize);
 
 	VectorCopy(origin, result);
-	
+
 	// fit X co-ordinate in
 
 	VectorCopy(result, end);
@@ -4642,7 +4642,7 @@ JUHOX: G_FreezeMonster
 #if SCREENSHOT_TOOLS && MONSTER_MODE
 void G_FreezeMonster(gentity_t* monster, int msec) {
 	gmonster_t* mi;
-	
+
 	mi = monster->monster;
 	if (!mi) return;
 
