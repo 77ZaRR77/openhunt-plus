@@ -1,0 +1,52 @@
+Requirements Quake III Arena version 1.32
+
+
+This Hunt Mod package contains all Downloads you can download from:
+http://modifia.planetquake.gamespy.com/hunt/index.htm
+
+
+- hunt_oct_28_2002 / version Oct 28 2002 / 3.31MB
+
+- efh02 / version Jul 30 2002 / 2.21MB 
+Optional map for Hunt's gametype "Escape from Hell." 	
+
+- hunt_music / version Jul 6 2001 / 13.6MB 
+Optional music package. Contains a title song (1:31) and a victory song (1:15), both created by me. They're exclusively dedicated to Hunt. The file's a bit large because Q3A does not support MP3.
+
+- hellmodels_nov_7_2002 / version Nov 7 2002 / 483KB 
+Optional skin pack by Daniel "Fusion" Schneider <http://www.planetquake.com/td>. Contains a "hellish" skin for Klesk, Sorlag, and Uriel, for use as Predator, Guard, and Titan. If you install the pk3 file in your Hunt installation directory (instead of baseq3), then you'll also get new "hellish" gibs and blood effects for monsters!
+
+
+Info about Hunt Mod
+
+- hordes of monsters 
+- heavy fire power 
+- all classic game types, plus two co-op modes 
+- amazing special effects 
+- realtime map generator 
+- enhanced bot AI 
+- Optional map for Hunt's gametype "Escape from Hell" 	
+- Optional music package
+- Optional skin pack by Daniel "Fusion" Schneider
+
+
+Comments & Reviews 
+"Absofragginglutely excellent mod! I love it! (...) Work for Id, please..." - Colin Hopkins 
+"Hunt (...) is amazing." - Lee'Mon in an interview at HomeLAN Fed <http://www.homelanfed.com/index.php?id=5902> 
+PlanetQuake's "Mod of the Week" Review <http://www.planetquake.com/quake3/features/motw/hunt.shtml> by Abomonog 
+PlanetQuake's Big Fuzzy Focus <http://www.planetquake.com/features/articles/focus_hunt_a.shtml> by Pappy-R 
+Review at fpsmods.com <http://www.fpsmods.com/review.php?id=26&action=review> by Y2 
+
+
+
+Description 
+
+Hunt introduces two new game types: "Save the Universe" (STU), and "Escape from Hell" (EFH). Both are single player / co-operative multiplayer missions against monsters.
+
+STU is played on standard Q3A maps. An artefact is spawned at a random place on the map. Your task is to find and collect it. When you manage to do this, a new artefact spawns. This repeats until the artefact limit is reached. When all artefacts have been collected, you win. This would be easy if there wouldn't be those monsters randomly spawning all around the map...
+
+EFH is played on specially designed maps. Your task simply is to move from a starting place to the goal without getting killed by the monsters. This gets more interesting by the fact that EFH maps merely consist of building blocks, put together by a realtime map generator.
+
+Hunt also supports all the original Q3A game types. You can have monsters even with these game types, but you have to create them yourself with the monster launcher. This is a new weapon, and monsters created this way only attack your opponents. It's surprising how many tactical variants the monster launcher adds to a CTF match, for example.
+
+The monsters generally outnumber the human players, so it's clear you need more fire power than in vanilla Q3. For example, you no longer need to collect weapons. Instead, you already have them as soon as you spawn. Also, ammunition automatically recharges, and it's even possible to enable unlimited ammunition. The weapons are balanced, so players are usually motivated to make use of the complete arsenal, instead of just sticking to the BFG.

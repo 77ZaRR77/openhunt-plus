@@ -1,0 +1,157 @@
+***            Hunt Mod           *** 
+***                               *** 
+***         by J. Hoffmann        *** 
+***  www.planetquake.com/modifia  *** 
+***     juhox@planetquake.com     *** 
+
+
+
+History: 
+
+Version Oct 28 2002
+   - new: PunkBuster support
+   - fixed: a few bugs causing crashes in rare cases
+   - new: optional weapon limit
+   - new: option for unlimited ammunition
+   - new: option to turn off cloaking device
+   - new: game templates no longer need to specify the map
+   - new: adaptive score option
+   - new: UI improved
+   - new: lens flares for rockets
+   - new: EFH01 extended
+   - new: bot weapon selection improved
+   - new: bot team AI improved
+   - fixed: player walk animation too fast
+   - fixed: bots not roaming in FFA
+   - fixed: lightning explosion drawn at random locations
+   - fixed: monsters sometimes spawning inside walls
+   - fixed: freezing while loading an incomplete EFH map
+   - fixed: EFH not finishing with short distancelimit (depending
+     on map)
+   - fixed: chain lightning going through walls
+   - fixed: occasional pre-mature end in EFH with distance limit
+
+Version Sep 13 2002
+   - new: lightning gun effects reworked
+   - fixed: jerky movement of corpses sinking into ground
+   - fixed: jerky fov change when switching to/from gauntlet
+   - new: guards shooting fireballs instead of rockets
+   - new: plasma trail reworked
+   - new: random spread removed from all weapons
+   - new: player model animation speed depends on movement speed
+   - new: cocoons shootable
+   - fixed: bots disabled for all gametypes after playing EFH
+   - new: map generator accepts more than one initial segment
+   - new: requirement of every style needing a final segment
+     relaxed
+   - fixed: liquid movers pushing objects
+
+Version Aug 19 2002
+   - fixed: liquid entity brushes couldn't be properly moved
+   - fixed: client failed to load default models when models
+     or skins were missing
+   - new: cg_forceModel 1 makes clients ignore server's monster
+     models (using the locally defined models instead)
+   - new: plasmagun more precisely when shot in short intervals
+   - fixed: with a single player the server often didn't
+     recognize highscores (introduced in version Jul 30 2002)
+
+Version Jul 30 2002
+   - new: flag "visblocking" in efh_hull entity
+   - new: EFH maps can now progress in any direction
+   - new: efh_monster entity accepts "target" key (boss spawning)
+   - new: target_earthquake entity
+   - fixed: framebuffer not cleared for better performance
+   - new: near box can be turned off by cg_nearbox
+   - fixed: EFH games loaded with lots of monsters often caused
+     "server command overflow" error
+   - fixed: remaining time display stopped shortly before
+     reaching zero in EFH
+   - new: meeting option (g_meeting, see manual.txt)
+   - new: monster "Titan"
+   - new: rockets, grenades, and BFG cause local earthquakes
+   - fixed: map_restart crashing server
+   - fixed: several bugs in STU & EFH code (crashing server)
+   - fixed: BFG explosion causes less CPU load (server & client)
+   - fixed: grappling rope causes less CPU load (server)
+
+Version Jul 11 2002
+   - fixed: new cloaking effect / glass cloaking reworked (less
+     sensitive to r_gamma)
+   - fixed: title picture adaptable to gfx card
+     (ui_hiDetailTitle)
+   - fixed: lightning gun targeting algorithm more reliable now
+   - fixed: TSS now compatible with pure servers
+   - new: dynamic lens flares for map lights
+   - new: machine gun barrel model replaced
+   - new: UI precaching
+   - new: players spawn at item positions if needed
+   - new: music playlist support
+   - new: monster launcher
+   - new: bot AI improved (weapon selection, flag carrier
+     escaping)
+   - fixed: navigation aid reworked
+   - fixed: moved to code base 1.29h
+   - fixed: music package compatible with pure servers (requires
+     new hunt_music.pk3)
+   - new: template file format reworked (old format still works)
+   - new: predators breed monsters in "Save the Universe"
+   - new: gametype "Escape from Hell"
+   - new: special view modes "light amplifier" & "monster
+     scanner"
+
+Version Feb 12 2002
+   - fixed: small cosmetic improvements
+   - new: in STU, monsters charged up with the lightning gun now
+     discharge on nearby monsters
+   - new: reversed the meaning of the DF_FIXED_FOV dmflag, so
+     fixed fov is now the default
+   - new: monsters now teleport around if the max. amount has
+     been reached
+   - fixed: wrong artefact counter display on clients
+   - fixed: clients that didn't have the monster model set by the
+     server couldn't connect in some cases
+   - new: added second monster type
+   - new: score system reworked
+   - fixed: there were more entries at the server info page than
+     it could handle; added scroll arrows
+   - new: added "gamestamp" system needed for a global hall of
+     fame; see "manual.txt" for more info
+   - fixed: crouching downwards stairs caused footsteps
+   - new: added game templates
+   - new: "skip end sequence" option at the advanced options page
+   - new: extended jumping abilities of the original monster type
+     (now called "predators")
+   - new: callvote accepts "addbot" command
+   - new: gauntlet no longer auto-aims to players also wearing
+     the gauntlet
+   - new: players using "glass cloaking" are marked by "GC" in
+     the scoreboard
+   - new: added "maneater" skin for Klesk
+   - new: on CTF maps, TDM teams respawn at their bases, too
+   - new: added grappling hook
+
+Version Nov 19 2001
+   - fixed: bots could "hear" players going upstairs even if the
+     WALK-button was pressed
+   - new: going downstairs with the WALK-button pressed no longer
+     causes footsteps
+   - new: player-is-involved-in-fighting-display in the
+     teamoverlay
+   - fixed: some teleporters caused missiles that jumped through
+     them fly at incorrect speed/direction
+   - new: bots now better handle the machinegun
+   - new: game type "Save the Universe" (see tutorial.txt,
+     chapter 24 for more information)
+
+Version Oct 7 2001
+   - fixed a bug that caused bots to completely ignore invisible
+     players in FFA sometimes
+   - TSS reworked: a flag carrier involved in fighting now is
+     always commanded to rush to base
+   - bot CTF AI improved
+   - removed plasma gun missile sound because it seems to cause
+     sporadic delays for unknown reason
+
+Version Sep 5 2001 
+   first public release

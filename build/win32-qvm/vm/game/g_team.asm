@@ -1,0 +1,8046 @@
+export Team_InitGame
+code
+proc Team_InitGame 4 12
+file "..\..\..\..\code\game\g_team.c"
+line 28
+;1:// Copyright (C) 1999-2000 Id Software, Inc.
+;2://
+;3:
+;4:#include "g_local.h"
+;5:
+;6:
+;7:typedef struct teamgame_s {
+;8:	float			last_flag_capture;
+;9:	int				last_capture_team;
+;10:	flagStatus_t	redStatus;	// CTF
+;11:	flagStatus_t	blueStatus;	// CTF
+;12:	flagStatus_t	flagStatus;	// One Flag CTF
+;13:	int				redTakenTime;
+;14:	int				blueTakenTime;
+;15:	int				redObeliskAttackedTime;
+;16:	int				blueObeliskAttackedTime;
+;17:} teamgame_t;
+;18:
+;19:teamgame_t teamgame;
+;20:
+;21:gentity_t	*neutralObelisk;
+;22:
+;23:static gentity_t* redFlagEntity;	// JUHOX: if dropped or taken
+;24:static gentity_t* blueFlagEntity;	// JUHOX: if dropped or taken
+;25:
+;26:void Team_SetFlagStatus( int team, flagStatus_t status );
+;27:
+;28:void Team_InitGame( void ) {
+line 29
+;29:	memset(&teamgame, 0, sizeof teamgame);
+ADDRGP4 teamgame
+ARGP4
+CNSTI4 0
+ARGI4
+CNSTI4 36
+ARGI4
+ADDRGP4 memset
+CALLP4
+pop
+line 31
+;30:
+;31:	switch( g_gametype.integer ) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 4
+EQI4 $91
+ADDRGP4 $89
+JUMPV
+LABELV $91
+line 33
+;32:	case GT_CTF:
+;33:		teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
+ADDRLP4 0
+CNSTI4 -1
+ASGNI4
+ADDRGP4 teamgame+12
+ADDRLP4 0
+INDIRI4
+ASGNI4
+ADDRGP4 teamgame+8
+ADDRLP4 0
+INDIRI4
+ASGNI4
+line 34
+;34:		Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
+CNSTI4 1
+ARGI4
+CNSTI4 0
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 35
+;35:		Team_SetFlagStatus( TEAM_BLUE, FLAG_ATBASE );
+CNSTI4 2
+ARGI4
+CNSTI4 0
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 36
+;36:		break;
+line 44
+;37:#ifdef MISSIONPACK
+;38:	case GT_1FCTF:
+;39:		teamgame.flagStatus = -1; // Invalid to force update
+;40:		Team_SetFlagStatus( TEAM_FREE, FLAG_ATBASE );
+;41:		break;
+;42:#endif
+;43:	default:
+;44:		break;
+LABELV $89
+line 46
+;45:	}
+;46:}
+LABELV $87
+endproc Team_InitGame 4 12
+export OtherTeam
+proc OtherTeam 0 0
+line 48
+;47:
+;48:int OtherTeam(int team) {
+line 49
+;49:	if (team==TEAM_RED)
+ADDRFP4 0
+INDIRI4
+CNSTI4 1
+NEI4 $95
+line 50
+;50:		return TEAM_BLUE;
+CNSTI4 2
+RETI4
+ADDRGP4 $94
+JUMPV
+LABELV $95
+line 51
+;51:	else if (team==TEAM_BLUE)
+ADDRFP4 0
+INDIRI4
+CNSTI4 2
+NEI4 $97
+line 52
+;52:		return TEAM_RED;
+CNSTI4 1
+RETI4
+ADDRGP4 $94
+JUMPV
+LABELV $97
+line 53
+;53:	return team;
+ADDRFP4 0
+INDIRI4
+RETI4
+LABELV $94
+endproc OtherTeam 0 0
+export Team_GetFlagStatus
+proc Team_GetFlagStatus 4 0
+line 61
+;54:}
+;55:
+;56:/*
+;57:==============
+;58:JUHOX: Team_GetFlagStatus
+;59:==============
+;60:*/
+;61:flagStatus_t Team_GetFlagStatus(int team) {
+line 62
+;62:	if (g_gametype.integer == GT_CTF) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 4
+NEI4 $100
+line 63
+;63:		switch (team) {
+ADDRLP4 0
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+EQI4 $105
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+EQI4 $107
+ADDRGP4 $103
+JUMPV
+LABELV $105
+line 65
+;64:		case TEAM_RED:
+;65:			return teamgame.redStatus;
+ADDRGP4 teamgame+8
+INDIRI4
+RETI4
+ADDRGP4 $99
+JUMPV
+LABELV $107
+line 67
+;66:		case TEAM_BLUE:
+;67:			return teamgame.blueStatus;
+ADDRGP4 teamgame+12
+INDIRI4
+RETI4
+ADDRGP4 $99
+JUMPV
+LABELV $103
+line 69
+;68:		default:
+;69:			return -1;
+CNSTI4 -1
+RETI4
+ADDRGP4 $99
+JUMPV
+LABELV $100
+line 72
+;70:		}
+;71:	}
+;72:	else {
+line 73
+;73:		return -1;
+CNSTI4 -1
+RETI4
+LABELV $99
+endproc Team_GetFlagStatus 4 0
+export TeamName
+proc TeamName 0 0
+line 77
+;74:	}
+;75:}
+;76:
+;77:const char *TeamName(int team)  {
+line 78
+;78:	if (team==TEAM_RED)
+ADDRFP4 0
+INDIRI4
+CNSTI4 1
+NEI4 $110
+line 79
+;79:		return "RED";
+ADDRGP4 $112
+RETP4
+ADDRGP4 $109
+JUMPV
+LABELV $110
+line 80
+;80:	else if (team==TEAM_BLUE)
+ADDRFP4 0
+INDIRI4
+CNSTI4 2
+NEI4 $113
+line 81
+;81:		return "BLUE";
+ADDRGP4 $115
+RETP4
+ADDRGP4 $109
+JUMPV
+LABELV $113
+line 82
+;82:	else if (team==TEAM_SPECTATOR)
+ADDRFP4 0
+INDIRI4
+CNSTI4 3
+NEI4 $116
+line 83
+;83:		return "SPECTATOR";
+ADDRGP4 $118
+RETP4
+ADDRGP4 $109
+JUMPV
+LABELV $116
+line 84
+;84:	return "FREE";
+ADDRGP4 $119
+RETP4
+LABELV $109
+endproc TeamName 0 0
+export OtherTeamName
+proc OtherTeamName 0 0
+line 87
+;85:}
+;86:
+;87:const char *OtherTeamName(int team) {
+line 88
+;88:	if (team==TEAM_RED)
+ADDRFP4 0
+INDIRI4
+CNSTI4 1
+NEI4 $121
+line 89
+;89:		return "BLUE";
+ADDRGP4 $115
+RETP4
+ADDRGP4 $120
+JUMPV
+LABELV $121
+line 90
+;90:	else if (team==TEAM_BLUE)
+ADDRFP4 0
+INDIRI4
+CNSTI4 2
+NEI4 $123
+line 91
+;91:		return "RED";
+ADDRGP4 $112
+RETP4
+ADDRGP4 $120
+JUMPV
+LABELV $123
+line 92
+;92:	else if (team==TEAM_SPECTATOR)
+ADDRFP4 0
+INDIRI4
+CNSTI4 3
+NEI4 $125
+line 93
+;93:		return "SPECTATOR";
+ADDRGP4 $118
+RETP4
+ADDRGP4 $120
+JUMPV
+LABELV $125
+line 94
+;94:	return "FREE";
+ADDRGP4 $119
+RETP4
+LABELV $120
+endproc OtherTeamName 0 0
+export TeamColorString
+proc TeamColorString 0 0
+line 97
+;95:}
+;96:
+;97:const char *TeamColorString(int team) {
+line 98
+;98:	if (team==TEAM_RED)
+ADDRFP4 0
+INDIRI4
+CNSTI4 1
+NEI4 $128
+line 99
+;99:		return S_COLOR_RED;
+ADDRGP4 $130
+RETP4
+ADDRGP4 $127
+JUMPV
+LABELV $128
+line 100
+;100:	else if (team==TEAM_BLUE)
+ADDRFP4 0
+INDIRI4
+CNSTI4 2
+NEI4 $131
+line 101
+;101:		return S_COLOR_BLUE;
+ADDRGP4 $133
+RETP4
+ADDRGP4 $127
+JUMPV
+LABELV $131
+line 102
+;102:	else if (team==TEAM_SPECTATOR)
+ADDRFP4 0
+INDIRI4
+CNSTI4 3
+NEI4 $134
+line 103
+;103:		return S_COLOR_YELLOW;
+ADDRGP4 $136
+RETP4
+ADDRGP4 $127
+JUMPV
+LABELV $134
+line 104
+;104:	return S_COLOR_WHITE;
+ADDRGP4 $137
+RETP4
+LABELV $127
+endproc TeamColorString 0 0
+export PrintMsg
+proc PrintMsg 1048 12
+line 108
+;105:}
+;106:
+;107:// NULL for everyone
+;108:void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
+line 113
+;109:	char		msg[1024];
+;110:	va_list		argptr;
+;111:	char		*p;
+;112:	
+;113:	va_start (argptr,fmt);
+ADDRLP4 1028
+ADDRFP4 4+4
+ASGNP4
+line 114
+;114:	if (vsprintf (msg, fmt, argptr) > sizeof(msg)) {
+ADDRLP4 4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 1028
+INDIRP4
+ARGP4
+ADDRLP4 1032
+ADDRGP4 vsprintf
+CALLI4
+ASGNI4
+ADDRLP4 1032
+INDIRI4
+CVIU4 4
+CNSTU4 1024
+LEU4 $140
+line 115
+;115:		G_Error ( "PrintMsg overrun" );
+ADDRGP4 $142
+ARGP4
+ADDRGP4 G_Error
+CALLV
+pop
+line 116
+;116:	}
+LABELV $140
+line 117
+;117:	va_end (argptr);
+ADDRLP4 1028
+CNSTP4 0
+ASGNP4
+ADDRGP4 $144
+JUMPV
+LABELV $143
+line 121
+;118:
+;119:	// double quotes are bad
+;120:	while ((p = strchr(msg, '"')) != NULL)
+;121:		*p = '\'';
+ADDRLP4 0
+INDIRP4
+CNSTI1 39
+ASGNI1
+LABELV $144
+line 120
+ADDRLP4 4
+ARGP4
+CNSTI4 34
+ARGI4
+ADDRLP4 1036
+ADDRGP4 strchr
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 1036
+INDIRP4
+ASGNP4
+ADDRLP4 1036
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $143
+line 123
+;122:
+;123:	trap_SendServerCommand ( ( (ent == NULL) ? -1 : ent-g_entities ), va("print \"%s\"", msg ));
+ADDRGP4 $147
+ARGP4
+ADDRLP4 4
+ARGP4
+ADDRLP4 1044
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $148
+ADDRLP4 1040
+CNSTI4 -1
+ASGNI4
+ADDRGP4 $149
+JUMPV
+LABELV $148
+ADDRLP4 1040
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+ADDRGP4 g_entities
+CVPU4 4
+SUBU4
+CVUI4 4
+CNSTI4 844
+DIVI4
+ASGNI4
+LABELV $149
+ADDRLP4 1040
+INDIRI4
+ARGI4
+ADDRLP4 1044
+INDIRP4
+ARGP4
+ADDRGP4 trap_SendServerCommand
+CALLV
+pop
+line 124
+;124:}
+LABELV $138
+endproc PrintMsg 1048 12
+export AddTeamScore
+proc AddTeamScore 16 8
+line 134
+;125:
+;126:/*
+;127:==============
+;128:AddTeamScore
+;129:
+;130: used for gametype > GT_TEAM
+;131: for gametype GT_TEAM the level.teamScores is updated in AddScore in g_combat.c
+;132:==============
+;133:*/
+;134:void AddTeamScore(vec3_t origin, int team, int score) {
+line 138
+;135:	gentity_t	*te;
+;136:
+;137:#if MEETING	// JUHOX: no scoring during meeting
+;138:	if (level.meeting) return;
+ADDRGP4 level+24092
+INDIRI4
+CNSTI4 0
+EQI4 $151
+ADDRGP4 $150
+JUMPV
+LABELV $151
+line 141
+;139:#endif
+;140:
+;141:	te = G_TempEntity(origin, EV_GLOBAL_TEAM_SOUND );
+ADDRFP4 0
+INDIRP4
+ARGP4
+CNSTI4 48
+ARGI4
+ADDRLP4 4
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+line 142
+;142:	te->r.svFlags |= SVF_BROADCAST;
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+CNSTI4 424
+ADDP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ADDRLP4 8
+INDIRP4
+INDIRI4
+CNSTI4 32
+BORI4
+ASGNI4
+line 144
+;143:
+;144:	if ( team == TEAM_RED ) {
+ADDRFP4 4
+INDIRI4
+CNSTI4 1
+NEI4 $154
+line 145
+;145:		if ( level.teamScores[ TEAM_RED ] + score == level.teamScores[ TEAM_BLUE ] ) {
+ADDRGP4 level+44+4
+INDIRI4
+ADDRFP4 8
+INDIRI4
+ADDI4
+ADDRGP4 level+44+8
+INDIRI4
+NEI4 $156
+line 147
+;146:			//teams are tied sound
+;147:			te->s.eventParm = GTS_TEAMS_ARE_TIED;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 12
+ASGNI4
+line 148
+;148:		}
+ADDRGP4 $155
+JUMPV
+LABELV $156
+line 149
+;149:		else if ( level.teamScores[ TEAM_RED ] <= level.teamScores[ TEAM_BLUE ] &&
+ADDRGP4 level+44+4
+INDIRI4
+ADDRGP4 level+44+8
+INDIRI4
+GTI4 $162
+ADDRGP4 level+44+4
+INDIRI4
+ADDRFP4 8
+INDIRI4
+ADDI4
+ADDRGP4 level+44+8
+INDIRI4
+LEI4 $162
+line 150
+;150:					level.teamScores[ TEAM_RED ] + score > level.teamScores[ TEAM_BLUE ]) {
+line 152
+;151:			// red took the lead sound
+;152:			te->s.eventParm = GTS_REDTEAM_TOOK_LEAD;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 10
+ASGNI4
+line 153
+;153:		}
+ADDRGP4 $155
+JUMPV
+LABELV $162
+line 154
+;154:		else {
+line 156
+;155:			// red scored sound
+;156:			te->s.eventParm = GTS_REDTEAM_SCORED;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 8
+ASGNI4
+line 157
+;157:		}
+line 158
+;158:	}
+ADDRGP4 $155
+JUMPV
+LABELV $154
+line 159
+;159:	else {
+line 160
+;160:		if ( level.teamScores[ TEAM_BLUE ] + score == level.teamScores[ TEAM_RED ] ) {
+ADDRGP4 level+44+8
+INDIRI4
+ADDRFP4 8
+INDIRI4
+ADDI4
+ADDRGP4 level+44+4
+INDIRI4
+NEI4 $172
+line 162
+;161:			//teams are tied sound
+;162:			te->s.eventParm = GTS_TEAMS_ARE_TIED;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 12
+ASGNI4
+line 163
+;163:		}
+ADDRGP4 $173
+JUMPV
+LABELV $172
+line 164
+;164:		else if ( level.teamScores[ TEAM_BLUE ] <= level.teamScores[ TEAM_RED ] &&
+ADDRGP4 level+44+8
+INDIRI4
+ADDRGP4 level+44+4
+INDIRI4
+GTI4 $178
+ADDRGP4 level+44+8
+INDIRI4
+ADDRFP4 8
+INDIRI4
+ADDI4
+ADDRGP4 level+44+4
+INDIRI4
+LEI4 $178
+line 165
+;165:					level.teamScores[ TEAM_BLUE ] + score > level.teamScores[ TEAM_RED ]) {
+line 167
+;166:			// blue took the lead sound
+;167:			te->s.eventParm = GTS_BLUETEAM_TOOK_LEAD;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 11
+ASGNI4
+line 168
+;168:		}
+ADDRGP4 $179
+JUMPV
+LABELV $178
+line 169
+;169:		else {
+line 171
+;170:			// blue scored sound
+;171:			te->s.eventParm = GTS_BLUETEAM_SCORED;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 9
+ASGNI4
+line 172
+;172:		}
+LABELV $179
+LABELV $173
+line 173
+;173:	}
+LABELV $155
+line 174
+;174:	level.teamScores[ team ] += score;
+ADDRLP4 12
+ADDRFP4 4
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 level+44
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRI4
+ADDRFP4 8
+INDIRI4
+ADDI4
+ASGNI4
+line 175
+;175:}
+LABELV $150
+endproc AddTeamScore 16 8
+export OnSameTeam
+proc OnSameTeam 4 8
+line 182
+;176:
+;177:/*
+;178:==============
+;179:OnSameTeam
+;180:==============
+;181:*/
+;182:qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
+line 184
+;183:#if MONSTER_MODE
+;184:	if (G_IsFriendlyMonster(ent1, ent2)) return qtrue;	// JUHOX
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 0
+ADDRGP4 G_IsFriendlyMonster
+CALLI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 0
+EQI4 $190
+CNSTI4 1
+RETI4
+ADDRGP4 $189
+JUMPV
+LABELV $190
+line 186
+;185:#endif
+;186:	if ( !ent1->client || !ent2->client ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $194
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $192
+LABELV $194
+line 187
+;187:		return qfalse;
+CNSTI4 0
+RETI4
+ADDRGP4 $189
+JUMPV
+LABELV $192
+line 190
+;188:	}
+;189:
+;190:	if ( g_gametype.integer < GT_TEAM ) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 3
+GEI4 $195
+line 191
+;191:		return qfalse;
+CNSTI4 0
+RETI4
+ADDRGP4 $189
+JUMPV
+LABELV $195
+line 194
+;192:	}
+;193:
+;194:	if ( ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+NEI4 $198
+line 195
+;195:		return qtrue;
+CNSTI4 1
+RETI4
+ADDRGP4 $189
+JUMPV
+LABELV $198
+line 198
+;196:	}
+;197:
+;198:	return qfalse;
+CNSTI4 0
+RETI4
+LABELV $189
+endproc OnSameTeam 4 8
+lit
+align 1
+LABELV ctfFlagStatusRemap
+byte 1 48
+byte 1 49
+byte 1 42
+byte 1 42
+byte 1 50
+align 1
+LABELV oneFlagStatusRemap
+byte 1 48
+byte 1 49
+byte 1 50
+byte 1 51
+byte 1 52
+export Team_SetFlagStatus
+code
+proc Team_SetFlagStatus 12 8
+line 205
+;199:}
+;200:
+;201:
+;202:static char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
+;203:static char oneFlagStatusRemap[] = { '0', '1', '2', '3', '4' };
+;204:
+;205:void Team_SetFlagStatus( int team, flagStatus_t status ) {
+line 206
+;206:	qboolean modified = qfalse;
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+line 208
+;207:
+;208:	switch( team ) {
+ADDRLP4 4
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 0
+EQI4 $213
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+EQI4 $203
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+EQI4 $208
+ADDRGP4 $201
+JUMPV
+LABELV $203
+line 210
+;209:	case TEAM_RED:	// CTF
+;210:		if( teamgame.redStatus != status ) {
+ADDRGP4 teamgame+8
+INDIRI4
+ADDRFP4 4
+INDIRI4
+EQI4 $202
+line 211
+;211:			teamgame.redStatus = status;
+ADDRGP4 teamgame+8
+ADDRFP4 4
+INDIRI4
+ASGNI4
+line 212
+;212:			modified = qtrue;
+ADDRLP4 0
+CNSTI4 1
+ASGNI4
+line 213
+;213:		}
+line 214
+;214:		break;
+ADDRGP4 $202
+JUMPV
+LABELV $208
+line 217
+;215:
+;216:	case TEAM_BLUE:	// CTF
+;217:		if( teamgame.blueStatus != status ) {
+ADDRGP4 teamgame+12
+INDIRI4
+ADDRFP4 4
+INDIRI4
+EQI4 $202
+line 218
+;218:			teamgame.blueStatus = status;
+ADDRGP4 teamgame+12
+ADDRFP4 4
+INDIRI4
+ASGNI4
+line 219
+;219:			modified = qtrue;
+ADDRLP4 0
+CNSTI4 1
+ASGNI4
+line 220
+;220:		}
+line 221
+;221:		break;
+ADDRGP4 $202
+JUMPV
+LABELV $213
+line 224
+;222:
+;223:	case TEAM_FREE:	// One Flag CTF
+;224:		if( teamgame.flagStatus != status ) {
+ADDRGP4 teamgame+16
+INDIRI4
+ADDRFP4 4
+INDIRI4
+EQI4 $202
+line 225
+;225:			teamgame.flagStatus = status;
+ADDRGP4 teamgame+16
+ADDRFP4 4
+INDIRI4
+ASGNI4
+line 226
+;226:			modified = qtrue;
+ADDRLP4 0
+CNSTI4 1
+ASGNI4
+line 227
+;227:		}
+line 228
+;228:		break;
+LABELV $201
+LABELV $202
+line 231
+;229:	}
+;230:
+;231:	if( modified ) {
+ADDRLP4 0
+INDIRI4
+CNSTI4 0
+EQI4 $218
+line 234
+;232:		char st[4];
+;233:
+;234:		if( g_gametype.integer == GT_CTF ) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 4
+NEI4 $220
+line 235
+;235:			st[0] = ctfFlagStatusRemap[teamgame.redStatus];
+ADDRLP4 8
+ADDRGP4 teamgame+8
+INDIRI4
+ADDRGP4 ctfFlagStatusRemap
+ADDP4
+INDIRI1
+ASGNI1
+line 236
+;236:			st[1] = ctfFlagStatusRemap[teamgame.blueStatus];
+ADDRLP4 8+1
+ADDRGP4 teamgame+12
+INDIRI4
+ADDRGP4 ctfFlagStatusRemap
+ADDP4
+INDIRI1
+ASGNI1
+line 237
+;237:			st[2] = 0;
+ADDRLP4 8+2
+CNSTI1 0
+ASGNI1
+line 238
+;238:		}
+ADDRGP4 $221
+JUMPV
+LABELV $220
+line 239
+;239:		else {		// GT_1FCTF
+line 240
+;240:			st[0] = oneFlagStatusRemap[teamgame.flagStatus];
+ADDRLP4 8
+ADDRGP4 teamgame+16
+INDIRI4
+ADDRGP4 oneFlagStatusRemap
+ADDP4
+INDIRI1
+ASGNI1
+line 241
+;241:			st[1] = 0;
+ADDRLP4 8+1
+CNSTI1 0
+ASGNI1
+line 242
+;242:		}
+LABELV $221
+line 244
+;243:
+;244:		trap_SetConfigstring( CS_FLAGSTATUS, st );
+CNSTI4 23
+ARGI4
+ADDRLP4 8
+ARGP4
+ADDRGP4 trap_SetConfigstring
+CALLV
+pop
+line 245
+;245:	}
+LABELV $218
+line 246
+;246:}
+LABELV $200
+endproc Team_SetFlagStatus 12 8
+export Team_CheckDroppedItem
+proc Team_CheckDroppedItem 0 8
+line 248
+;247:
+;248:void Team_CheckDroppedItem( gentity_t *dropped ) {
+line 249
+;249:	if( dropped->item->giTag == PW_REDFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 7
+NEI4 $230
+line 250
+;250:		Team_SetFlagStatus( TEAM_RED, FLAG_DROPPED );
+CNSTI4 1
+ARGI4
+CNSTI4 4
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 251
+;251:		redFlagEntity = dropped;	// JUHOX
+ADDRGP4 redFlagEntity
+ADDRFP4 0
+INDIRP4
+ASGNP4
+line 252
+;252:	}
+ADDRGP4 $231
+JUMPV
+LABELV $230
+line 253
+;253:	else if( dropped->item->giTag == PW_BLUEFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 8
+NEI4 $232
+line 254
+;254:		Team_SetFlagStatus( TEAM_BLUE, FLAG_DROPPED );
+CNSTI4 2
+ARGI4
+CNSTI4 4
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 255
+;255:		blueFlagEntity = dropped;	// JUHOX
+ADDRGP4 blueFlagEntity
+ADDRFP4 0
+INDIRP4
+ASGNP4
+line 256
+;256:	}
+ADDRGP4 $233
+JUMPV
+LABELV $232
+line 257
+;257:	else if( dropped->item->giTag == PW_NEUTRALFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 9
+NEI4 $234
+line 258
+;258:		Team_SetFlagStatus( TEAM_FREE, FLAG_DROPPED );
+CNSTI4 0
+ARGI4
+CNSTI4 4
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 259
+;259:	}
+LABELV $234
+LABELV $233
+LABELV $231
+line 260
+;260:}
+LABELV $229
+endproc Team_CheckDroppedItem 0 8
+export Team_GetDroppedOrTakenFlag
+proc Team_GetDroppedOrTakenFlag 16 4
+line 267
+;261:
+;262:/*
+;263:================
+;264:JUHOX: Team_GetDroppedOrTakenFlag
+;265:================
+;266:*/
+;267:gentity_t* Team_GetDroppedOrTakenFlag(int team) {
+line 268
+;268:	switch (Team_GetFlagStatus(team)) {
+ADDRFP4 0
+INDIRI4
+ARGI4
+ADDRLP4 4
+ADDRGP4 Team_GetFlagStatus
+CALLI4
+ASGNI4
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+ASGNI4
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+EQI4 $238
+ADDRLP4 0
+INDIRI4
+CNSTI4 4
+EQI4 $238
+ADDRGP4 $237
+JUMPV
+line 271
+;269:	case FLAG_DROPPED:
+;270:	case FLAG_TAKEN:
+;271:		break;
+LABELV $237
+line 273
+;272:	default:
+;273:		return NULL;
+CNSTP4 0
+RETP4
+ADDRGP4 $236
+JUMPV
+LABELV $238
+line 276
+;274:	}
+;275:
+;276:	switch (team) {
+ADDRLP4 12
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+EQI4 $243
+ADDRLP4 12
+INDIRI4
+CNSTI4 2
+EQI4 $244
+ADDRGP4 $241
+JUMPV
+LABELV $243
+line 278
+;277:	case TEAM_RED:
+;278:		return redFlagEntity;
+ADDRGP4 redFlagEntity
+INDIRP4
+RETP4
+ADDRGP4 $236
+JUMPV
+LABELV $244
+line 280
+;279:	case TEAM_BLUE:
+;280:		return blueFlagEntity;
+ADDRGP4 blueFlagEntity
+INDIRP4
+RETP4
+ADDRGP4 $236
+JUMPV
+LABELV $241
+line 282
+;281:	}
+;282:	return NULL;
+CNSTP4 0
+RETP4
+LABELV $236
+endproc Team_GetDroppedOrTakenFlag 16 4
+export Team_ForceGesture
+proc Team_ForceGesture 12 0
+line 290
+;283:}
+;284:
+;285:/*
+;286:================
+;287:Team_ForceGesture
+;288:================
+;289:*/
+;290:void Team_ForceGesture(int team) {
+line 294
+;291:	int i;
+;292:	gentity_t *ent;
+;293:
+;294:	for (i = 0; i < MAX_CLIENTS; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $246
+line 295
+;295:		ent = &g_entities[i];
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 296
+;296:		if (!ent->inuse)
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+NEI4 $250
+line 297
+;297:			continue;
+ADDRGP4 $247
+JUMPV
+LABELV $250
+line 298
+;298:		if (!ent->client)
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $252
+line 299
+;299:			continue;
+ADDRGP4 $247
+JUMPV
+LABELV $252
+line 300
+;300:		if (ent->client->sess.sessionTeam != team)
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRI4
+EQI4 $254
+line 301
+;301:			continue;
+ADDRGP4 $247
+JUMPV
+LABELV $254
+line 303
+;302:		//
+;303:		ent->flags |= FL_FORCE_GESTURE;
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+CNSTI4 540
+ADDP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ADDRLP4 8
+INDIRP4
+INDIRI4
+CNSTI4 32768
+BORI4
+ASGNI4
+line 304
+;304:	}
+LABELV $247
+line 294
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 64
+LTI4 $246
+line 305
+;305:}
+LABELV $245
+endproc Team_ForceGesture 12 0
+export Team_FragBonuses
+proc Team_FragBonuses 184 16
+line 317
+;306:
+;307:/*
+;308:================
+;309:Team_FragBonuses
+;310:
+;311:Calculate the bonuses for flag defense, flag carrier defense, etc.
+;312:Note that bonuses are not cumulative.  You get one, they are in importance
+;313:order.
+;314:================
+;315:*/
+;316:void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker)
+;317:{
+line 323
+;318:	int i;
+;319:	gentity_t *ent;
+;320:	int flag_pw, enemy_flag_pw;
+;321:	int otherteam;
+;322:	int tokens;
+;323:	gentity_t *flag, *carrier = NULL;
+ADDRLP4 4
+CNSTP4 0
+ASGNP4
+line 329
+;324:	char *c;
+;325:	vec3_t v1, v2;
+;326:	int team;
+;327:
+;328:	// no bonus for fragging yourself or team mates
+;329:	if (!targ->client || !attacker->client || targ == attacker || OnSameTeam(targ, attacker))
+ADDRLP4 64
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 64
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $261
+ADDRLP4 68
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 68
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $261
+ADDRLP4 64
+INDIRP4
+CVPU4 4
+ADDRLP4 68
+INDIRP4
+CVPU4 4
+EQU4 $261
+ADDRLP4 64
+INDIRP4
+ARGP4
+ADDRLP4 68
+INDIRP4
+ARGP4
+ADDRLP4 72
+ADDRGP4 OnSameTeam
+CALLI4
+ASGNI4
+ADDRLP4 72
+INDIRI4
+CNSTI4 0
+EQI4 $257
+LABELV $261
+line 330
+;330:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $257
+line 332
+;331:
+;332:	team = targ->client->sess.sessionTeam;
+ADDRLP4 52
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ASGNI4
+line 333
+;333:	otherteam = OtherTeam(targ->client->sess.sessionTeam);
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 76
+ADDRGP4 OtherTeam
+CALLI4
+ASGNI4
+ADDRLP4 20
+ADDRLP4 76
+INDIRI4
+ASGNI4
+line 334
+;334:	if (otherteam < 0)
+ADDRLP4 20
+INDIRI4
+CNSTI4 0
+GEI4 $262
+line 335
+;335:		return; // whoever died isn't on a team
+ADDRGP4 $256
+JUMPV
+LABELV $262
+line 338
+;336:
+;337:	// same team, if the flag at base, check to he has the enemy flag
+;338:	if (team == TEAM_RED) {
+ADDRLP4 52
+INDIRI4
+CNSTI4 1
+NEI4 $264
+line 339
+;339:		flag_pw = PW_REDFLAG;
+ADDRLP4 16
+CNSTI4 7
+ASGNI4
+line 340
+;340:		enemy_flag_pw = PW_BLUEFLAG;
+ADDRLP4 60
+CNSTI4 8
+ASGNI4
+line 341
+;341:	} else {
+ADDRGP4 $265
+JUMPV
+LABELV $264
+line 342
+;342:		flag_pw = PW_BLUEFLAG;
+ADDRLP4 16
+CNSTI4 8
+ASGNI4
+line 343
+;343:		enemy_flag_pw = PW_REDFLAG;
+ADDRLP4 60
+CNSTI4 7
+ASGNI4
+line 344
+;344:	}
+LABELV $265
+line 346
+;345:
+;346:	if (g_gametype.integer == GT_1FCTF) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 5
+NEI4 $266
+line 347
+;347:		enemy_flag_pw = PW_NEUTRALFLAG;
+ADDRLP4 60
+CNSTI4 9
+ASGNI4
+line 348
+;348:	} 
+LABELV $266
+line 351
+;349:
+;350:	// did the attacker frag the flag carrier?
+;351:	tokens = 0;
+ADDRLP4 56
+CNSTI4 0
+ASGNI4
+line 357
+;352:#ifdef MISSIONPACK
+;353:	if( g_gametype.integer == GT_HARVESTER ) {
+;354:		tokens = targ->client->ps.generic1;
+;355:	}
+;356:#endif
+;357:	if (targ->client->ps.powerups[enemy_flag_pw]) {
+ADDRLP4 60
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $269
+line 358
+;358:		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 600
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+line 359
+;359:		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 360
+;360:		attacker->client->pers.teamState.fragcarrier++;
+ADDRLP4 80
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 580
+ADDP4
+ASGNP4
+ADDRLP4 80
+INDIRP4
+ADDRLP4 80
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 361
+;361:		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n",
+ADDRLP4 52
+INDIRI4
+ARGI4
+ADDRLP4 84
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $272
+ARGP4
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 512
+ADDP4
+ARGP4
+ADDRLP4 84
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 366
+;362:			attacker->client->pers.netname, TeamName(team));
+;363:
+;364:		// the target had the flag, clear the hurt carrier
+;365:		// field on the other team
+;366:		for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $276
+JUMPV
+LABELV $273
+line 367
+;367:			ent = g_entities + i;
+ADDRLP4 12
+ADDRLP4 0
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 368
+;368:			if (ent->inuse && ent->client->sess.sessionTeam == otherteam)
+ADDRLP4 12
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $278
+ADDRLP4 12
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRLP4 20
+INDIRI4
+NEI4 $278
+line 369
+;369:				ent->client->pers.teamState.lasthurtcarrier = 0;
+ADDRLP4 12
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+CNSTF4 0
+ASGNF4
+LABELV $278
+line 370
+;370:		}
+LABELV $274
+line 366
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $276
+ADDRLP4 0
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $273
+line 371
+;371:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $269
+line 375
+;372:	}
+;373:
+;374:	// did the attacker frag a head carrier? other->client->ps.generic1
+;375:	if (tokens) {
+ADDRLP4 56
+INDIRI4
+CNSTI4 0
+EQI4 $280
+line 376
+;376:		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 600
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+line 377
+;377:		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS * tokens * tokens);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 56
+INDIRI4
+CNSTI4 1
+LSHI4
+ADDRLP4 56
+INDIRI4
+MULI4
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 378
+;378:		attacker->client->pers.teamState.fragcarrier++;
+ADDRLP4 84
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 580
+ADDP4
+ASGNP4
+ADDRLP4 84
+INDIRP4
+ADDRLP4 84
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 379
+;379:		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n",
+ADDRLP4 52
+INDIRI4
+ARGI4
+ADDRLP4 88
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $283
+ARGP4
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 512
+ADDP4
+ARGP4
+ADDRLP4 88
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 384
+;380:			attacker->client->pers.netname, TeamName(team));
+;381:
+;382:		// the target had the flag, clear the hurt carrier
+;383:		// field on the other team
+;384:		for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $287
+JUMPV
+LABELV $284
+line 385
+;385:			ent = g_entities + i;
+ADDRLP4 12
+ADDRLP4 0
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 386
+;386:			if (ent->inuse && ent->client->sess.sessionTeam == otherteam)
+ADDRLP4 12
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $289
+ADDRLP4 12
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRLP4 20
+INDIRI4
+NEI4 $289
+line 387
+;387:				ent->client->pers.teamState.lasthurtcarrier = 0;
+ADDRLP4 12
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+CNSTF4 0
+ASGNF4
+LABELV $289
+line 388
+;388:		}
+LABELV $285
+line 384
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $287
+ADDRLP4 0
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $284
+line 389
+;389:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $280
+line 392
+;390:	}
+;391:
+;392:	if (targ->client->pers.teamState.lasthurtcarrier &&
+ADDRLP4 80
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 80
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+INDIRF4
+CNSTF4 0
+EQF4 $291
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ADDRLP4 80
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+INDIRF4
+SUBF4
+CNSTF4 1174011904
+GEF4 $291
+ADDRLP4 16
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+INDIRI4
+CNSTI4 0
+NEI4 $291
+line 394
+;393:		level.time - targ->client->pers.teamState.lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT &&
+;394:		!attacker->client->ps.powerups[flag_pw]) {
+line 397
+;395:		// attacker is on the same team as the flag carrier and
+;396:		// fragged a guy who hurt our flag carrier
+;397:		AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_DANGER_PROTECT_BONUS);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 399
+;398:
+;399:		attacker->client->pers.teamState.carrierdefense++;
+ADDRLP4 84
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 572
+ADDP4
+ASGNP4
+ADDRLP4 84
+INDIRP4
+ADDRLP4 84
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 400
+;400:		targ->client->pers.teamState.lasthurtcarrier = 0;
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+CNSTF4 0
+ASGNF4
+line 402
+;401:
+;402:		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
+ADDRLP4 88
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 292
+ADDP4
+ASGNP4
+ADDRLP4 88
+INDIRP4
+ADDRLP4 88
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 403
+;403:		team = attacker->client->sess.sessionTeam;
+ADDRLP4 52
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ASGNI4
+line 405
+;404:		// add the sprite over the player's head
+;405:		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 92
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 92
+INDIRP4
+ADDRLP4 92
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 406
+;406:		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
+ADDRLP4 96
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 96
+INDIRP4
+ADDRLP4 96
+INDIRP4
+INDIRI4
+CNSTI4 65536
+BORI4
+ASGNI4
+line 407
+;407:		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 409
+;408:
+;409:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $291
+line 412
+;410:	}
+;411:
+;412:	if (targ->client->pers.teamState.lasthurtcarrier &&
+ADDRLP4 84
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 84
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+INDIRF4
+CNSTF4 0
+EQF4 $295
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ADDRLP4 84
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+INDIRF4
+SUBF4
+CNSTF4 1174011904
+GEF4 $295
+line 413
+;413:		level.time - targ->client->pers.teamState.lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT) {
+line 415
+;414:		// attacker is on the same team as the skull carrier and
+;415:		AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_DANGER_PROTECT_BONUS);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 417
+;416:
+;417:		attacker->client->pers.teamState.carrierdefense++;
+ADDRLP4 88
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 572
+ADDP4
+ASGNP4
+ADDRLP4 88
+INDIRP4
+ADDRLP4 88
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 418
+;418:		targ->client->pers.teamState.lasthurtcarrier = 0;
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+CNSTF4 0
+ASGNF4
+line 420
+;419:
+;420:		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
+ADDRLP4 92
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 292
+ADDP4
+ASGNP4
+ADDRLP4 92
+INDIRP4
+ADDRLP4 92
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 421
+;421:		team = attacker->client->sess.sessionTeam;
+ADDRLP4 52
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ASGNI4
+line 423
+;422:		// add the sprite over the player's head
+;423:		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 96
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 96
+INDIRP4
+ADDRLP4 96
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 424
+;424:		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
+ADDRLP4 100
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 100
+INDIRP4
+ADDRLP4 100
+INDIRP4
+INDIRI4
+CNSTI4 65536
+BORI4
+ASGNI4
+line 425
+;425:		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 427
+;426:
+;427:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $295
+line 454
+;428:	}
+;429:
+;430:	// flag and flag carrier area defense bonuses
+;431:
+;432:	// we have to find the flag and carrier entities
+;433:
+;434:#ifdef MISSIONPACK	
+;435:	if( g_gametype.integer == GT_OBELISK ) {
+;436:		// find the team obelisk
+;437:		switch (attacker->client->sess.sessionTeam) {
+;438:		case TEAM_RED:
+;439:			c = "team_redobelisk";
+;440:			break;
+;441:		case TEAM_BLUE:
+;442:			c = "team_blueobelisk";
+;443:			break;		
+;444:		default:
+;445:			return;
+;446:		}
+;447:		
+;448:	} else if (g_gametype.integer == GT_HARVESTER ) {
+;449:		// find the center obelisk
+;450:		c = "team_neutralobelisk";
+;451:	} else {
+;452:#endif
+;453:	// find the flag
+;454:	switch (attacker->client->sess.sessionTeam) {
+ADDRLP4 88
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ASGNI4
+ADDRLP4 88
+INDIRI4
+CNSTI4 1
+EQI4 $302
+ADDRLP4 88
+INDIRI4
+CNSTI4 2
+EQI4 $304
+ADDRGP4 $256
+JUMPV
+LABELV $302
+line 456
+;455:	case TEAM_RED:
+;456:		c = "team_CTF_redflag";
+ADDRLP4 24
+ADDRGP4 $303
+ASGNP4
+line 457
+;457:		break;
+ADDRGP4 $300
+JUMPV
+LABELV $304
+line 459
+;458:	case TEAM_BLUE:
+;459:		c = "team_CTF_blueflag";
+ADDRLP4 24
+ADDRGP4 $305
+ASGNP4
+line 460
+;460:		break;		
+line 462
+;461:	default:
+;462:		return;
+LABELV $300
+line 465
+;463:	}
+;464:	// find attacker's team's flag carrier
+;465:	for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+ADDRGP4 $309
+JUMPV
+LABELV $306
+line 466
+;466:		carrier = g_entities + i;
+ADDRLP4 4
+ADDRLP4 0
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 467
+;467:		if (carrier->inuse && carrier->client->ps.powerups[flag_pw])
+ADDRLP4 4
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $311
+ADDRLP4 16
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $311
+line 468
+;468:			break;
+ADDRGP4 $308
+JUMPV
+LABELV $311
+line 469
+;469:		carrier = NULL;
+ADDRLP4 4
+CNSTP4 0
+ASGNP4
+line 470
+;470:	}
+LABELV $307
+line 465
+ADDRLP4 0
+ADDRLP4 0
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $309
+ADDRLP4 0
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $306
+LABELV $308
+line 474
+;471:#ifdef MISSIONPACK
+;472:	}
+;473:#endif
+;474:	flag = NULL;
+ADDRLP4 8
+CNSTP4 0
+ASGNP4
+ADDRGP4 $314
+JUMPV
+LABELV $313
+line 475
+;475:	while ((flag = G_Find (flag, FOFS(classname), c)) != NULL) {
+line 476
+;476:		if (!(flag->flags & FL_DROPPED_ITEM))
+ADDRLP4 8
+INDIRP4
+CNSTI4 540
+ADDP4
+INDIRI4
+CNSTI4 4096
+BANDI4
+CNSTI4 0
+NEI4 $316
+line 477
+;477:			break;
+ADDRGP4 $315
+JUMPV
+LABELV $316
+line 478
+;478:	}
+LABELV $314
+line 475
+ADDRLP4 8
+INDIRP4
+ARGP4
+CNSTI4 528
+ARGI4
+ADDRLP4 24
+INDIRP4
+ARGP4
+ADDRLP4 96
+ADDRGP4 G_Find
+CALLP4
+ASGNP4
+ADDRLP4 8
+ADDRLP4 96
+INDIRP4
+ASGNP4
+ADDRLP4 96
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $313
+LABELV $315
+line 480
+;479:
+;480:	if (!flag)
+ADDRLP4 8
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $318
+line 481
+;481:		return; // can't find attacker's flag
+ADDRGP4 $256
+JUMPV
+LABELV $318
+line 486
+;482:
+;483:	// ok we have the attackers flag and a pointer to the carrier
+;484:
+;485:	// check to see if we are defending the base's flag
+;486:	VectorSubtract(targ->r.currentOrigin, flag->r.currentOrigin, v1);
+ADDRLP4 100
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 28
+ADDRLP4 100
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+4
+ADDRLP4 100
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+line 487
+;487:	VectorSubtract(attacker->r.currentOrigin, flag->r.currentOrigin, v2);
+ADDRLP4 108
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 40
+ADDRLP4 108
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 40+4
+ADDRLP4 108
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 40+8
+ADDRFP4 8
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+ADDRLP4 8
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+line 489
+;488:
+;489:	if ( ( ( VectorLength(v1) < CTF_TARGET_PROTECT_RADIUS &&
+ADDRLP4 28
+ARGP4
+ADDRLP4 116
+ADDRGP4 VectorLength
+CALLF4
+ASGNF4
+ADDRLP4 116
+INDIRF4
+CNSTF4 1148846080
+GEF4 $327
+ADDRLP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 120
+ADDRGP4 trap_InPVS
+CALLI4
+ASGNI4
+ADDRLP4 120
+INDIRI4
+CNSTI4 0
+NEI4 $326
+LABELV $327
+ADDRLP4 40
+ARGP4
+ADDRLP4 124
+ADDRGP4 VectorLength
+CALLF4
+ASGNF4
+ADDRLP4 124
+INDIRF4
+CNSTF4 1148846080
+GEF4 $324
+ADDRLP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRFP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 128
+ADDRGP4 trap_InPVS
+CALLI4
+ASGNI4
+ADDRLP4 128
+INDIRI4
+CNSTI4 0
+EQI4 $324
+LABELV $326
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+EQI4 $324
+line 493
+;490:		trap_InPVS(flag->r.currentOrigin, targ->r.currentOrigin ) ) ||
+;491:		( VectorLength(v2) < CTF_TARGET_PROTECT_RADIUS &&
+;492:		trap_InPVS(flag->r.currentOrigin, attacker->r.currentOrigin ) ) ) &&
+;493:		attacker->client->sess.sessionTeam != targ->client->sess.sessionTeam) {
+line 496
+;494:
+;495:		// we defended the base flag
+;496:		AddScore(attacker, targ->r.currentOrigin, CTF_FLAG_DEFENSE_BONUS);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 497
+;497:		attacker->client->pers.teamState.basedefense++;
+ADDRLP4 132
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 568
+ADDP4
+ASGNP4
+ADDRLP4 132
+INDIRP4
+ADDRLP4 132
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 499
+;498:
+;499:		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
+ADDRLP4 136
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 292
+ADDP4
+ASGNP4
+ADDRLP4 136
+INDIRP4
+ADDRLP4 136
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 501
+;500:		// add the sprite over the player's head
+;501:		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 140
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 140
+INDIRP4
+ADDRLP4 140
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 502
+;502:		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
+ADDRLP4 144
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 144
+INDIRP4
+ADDRLP4 144
+INDIRP4
+INDIRI4
+CNSTI4 65536
+BORI4
+ASGNI4
+line 503
+;503:		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 505
+;504:
+;505:		return;
+ADDRGP4 $256
+JUMPV
+LABELV $324
+line 508
+;506:	}
+;507:
+;508:	if (carrier && carrier != attacker) {
+ADDRLP4 132
+ADDRLP4 4
+INDIRP4
+CVPU4 4
+ASGNU4
+ADDRLP4 132
+INDIRU4
+CNSTU4 0
+EQU4 $329
+ADDRLP4 132
+INDIRU4
+ADDRFP4 8
+INDIRP4
+CVPU4 4
+EQU4 $329
+line 509
+;509:		VectorSubtract(targ->r.currentOrigin, carrier->r.currentOrigin, v1);
+ADDRLP4 136
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 28
+ADDRLP4 136
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+4
+ADDRLP4 136
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+8
+ADDRFP4 0
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+line 510
+;510:		VectorSubtract(attacker->r.currentOrigin, carrier->r.currentOrigin, v1);
+ADDRLP4 144
+ADDRFP4 8
+INDIRP4
+ASGNP4
+ADDRLP4 28
+ADDRLP4 144
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+4
+ADDRLP4 144
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+ADDRLP4 28+8
+ADDRFP4 8
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+ADDRLP4 4
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+ASGNF4
+line 512
+;511:
+;512:		if ( ( ( VectorLength(v1) < CTF_ATTACKER_PROTECT_RADIUS &&
+ADDRLP4 28
+ARGP4
+ADDRLP4 152
+ADDRGP4 VectorLength
+CALLF4
+ASGNF4
+ADDRLP4 152
+INDIRF4
+CNSTF4 1148846080
+GEF4 $338
+ADDRLP4 4
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 156
+ADDRGP4 trap_InPVS
+CALLI4
+ASGNI4
+ADDRLP4 156
+INDIRI4
+CNSTI4 0
+NEI4 $337
+LABELV $338
+ADDRLP4 40
+ARGP4
+ADDRLP4 160
+ADDRGP4 VectorLength
+CALLF4
+ASGNF4
+ADDRLP4 160
+INDIRF4
+CNSTF4 1148846080
+GEF4 $335
+ADDRLP4 4
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRFP4 8
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 164
+ADDRGP4 trap_InPVS
+CALLI4
+ASGNI4
+ADDRLP4 164
+INDIRI4
+CNSTI4 0
+EQI4 $335
+LABELV $337
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+EQI4 $335
+line 516
+;513:			trap_InPVS(carrier->r.currentOrigin, targ->r.currentOrigin ) ) ||
+;514:			( VectorLength(v2) < CTF_ATTACKER_PROTECT_RADIUS &&
+;515:				trap_InPVS(carrier->r.currentOrigin, attacker->r.currentOrigin ) ) ) &&
+;516:			attacker->client->sess.sessionTeam != targ->client->sess.sessionTeam) {
+line 517
+;517:			AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_PROTECT_BONUS);
+ADDRFP4 8
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 518
+;518:			attacker->client->pers.teamState.carrierdefense++;
+ADDRLP4 168
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 572
+ADDP4
+ASGNP4
+ADDRLP4 168
+INDIRP4
+ADDRLP4 168
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 520
+;519:
+;520:			attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
+ADDRLP4 172
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 292
+ADDP4
+ASGNP4
+ADDRLP4 172
+INDIRP4
+ADDRLP4 172
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 522
+;521:			// add the sprite over the player's head
+;522:			attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 176
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 176
+INDIRP4
+ADDRLP4 176
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 523
+;523:			attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
+ADDRLP4 180
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 180
+INDIRP4
+ADDRLP4 180
+INDIRP4
+INDIRI4
+CNSTI4 65536
+BORI4
+ASGNI4
+line 524
+;524:			attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRFP4 8
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 526
+;525:
+;526:			return;
+LABELV $335
+line 528
+;527:		}
+;528:	}
+LABELV $329
+line 529
+;529:}
+LABELV $256
+endproc Team_FragBonuses 184 16
+export Team_CheckHurtCarrier
+proc Team_CheckHurtCarrier 8 0
+line 540
+;530:
+;531:/*
+;532:================
+;533:Team_CheckHurtCarrier
+;534:
+;535:Check to see if attacker hurt the flag carrier.  Needed when handing out bonuses for assistance to flag
+;536:carrier defense.
+;537:================
+;538:*/
+;539:void Team_CheckHurtCarrier(gentity_t *targ, gentity_t *attacker)
+;540:{
+line 543
+;541:	int flag_pw;
+;542:
+;543:	if (!targ->client || !attacker->client)
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $343
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $341
+LABELV $343
+line 544
+;544:		return;
+ADDRGP4 $340
+JUMPV
+LABELV $341
+line 546
+;545:
+;546:	if (targ->client->sess.sessionTeam == TEAM_RED)
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 1
+NEI4 $344
+line 547
+;547:		flag_pw = PW_BLUEFLAG;
+ADDRLP4 0
+CNSTI4 8
+ASGNI4
+ADDRGP4 $345
+JUMPV
+LABELV $344
+line 549
+;548:	else
+;549:		flag_pw = PW_REDFLAG;
+ADDRLP4 0
+CNSTI4 7
+ASGNI4
+LABELV $345
+line 552
+;550:
+;551:	// flags
+;552:	if (targ->client->ps.powerups[flag_pw] &&
+ADDRLP4 4
+ADDRFP4 0
+INDIRP4
+ASGNP4
+ADDRLP4 0
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $346
+ADDRLP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+EQI4 $346
+line 554
+;553:		targ->client->sess.sessionTeam != attacker->client->sess.sessionTeam)
+;554:		attacker->client->pers.teamState.lasthurtcarrier = level.time;
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+LABELV $346
+line 562
+;555:
+;556:	// skulls
+;557:#ifdef MISSIONPACK
+;558:	if (targ->client->ps.generic1 &&
+;559:		targ->client->sess.sessionTeam != attacker->client->sess.sessionTeam)
+;560:		attacker->client->pers.teamState.lasthurtcarrier = level.time;
+;561:#endif
+;562:}
+LABELV $340
+endproc Team_CheckHurtCarrier 8 0
+export Team_ResetFlag
+proc Team_ResetFlag 20 12
+line 565
+;563:
+;564:
+;565:gentity_t *Team_ResetFlag( int team ) {
+line 567
+;566:	char *c;
+;567:	gentity_t *ent, *rent = NULL;
+ADDRLP4 8
+CNSTP4 0
+ASGNP4
+line 569
+;568:
+;569:	switch (team) {
+ADDRLP4 12
+ADDRFP4 0
+INDIRI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+EQI4 $354
+ADDRLP4 12
+INDIRI4
+CNSTI4 1
+EQI4 $352
+ADDRLP4 12
+INDIRI4
+CNSTI4 2
+EQI4 $353
+ADDRGP4 $350
+JUMPV
+LABELV $352
+line 571
+;570:	case TEAM_RED:
+;571:		c = "team_CTF_redflag";
+ADDRLP4 4
+ADDRGP4 $303
+ASGNP4
+line 572
+;572:		break;
+ADDRGP4 $351
+JUMPV
+LABELV $353
+line 574
+;573:	case TEAM_BLUE:
+;574:		c = "team_CTF_blueflag";
+ADDRLP4 4
+ADDRGP4 $305
+ASGNP4
+line 575
+;575:		break;
+ADDRGP4 $351
+JUMPV
+LABELV $354
+line 577
+;576:	case TEAM_FREE:
+;577:		c = "team_CTF_neutralflag";
+ADDRLP4 4
+ADDRGP4 $355
+ASGNP4
+line 578
+;578:		break;
+ADDRGP4 $351
+JUMPV
+LABELV $350
+line 580
+;579:	default:
+;580:		return NULL;
+CNSTP4 0
+RETP4
+ADDRGP4 $349
+JUMPV
+LABELV $351
+line 583
+;581:	}
+;582:
+;583:	ent = NULL;
+ADDRLP4 0
+CNSTP4 0
+ASGNP4
+ADDRGP4 $357
+JUMPV
+LABELV $356
+line 584
+;584:	while ((ent = G_Find (ent, FOFS(classname), c)) != NULL) {
+line 585
+;585:		if (ent->flags & FL_DROPPED_ITEM)
+ADDRLP4 0
+INDIRP4
+CNSTI4 540
+ADDP4
+INDIRI4
+CNSTI4 4096
+BANDI4
+CNSTI4 0
+EQI4 $359
+line 586
+;586:			G_FreeEntity(ent);
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 G_FreeEntity
+CALLV
+pop
+ADDRGP4 $360
+JUMPV
+LABELV $359
+line 587
+;587:		else {
+line 588
+;588:			rent = ent;
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+ASGNP4
+line 589
+;589:			RespawnItem(ent);
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 RespawnItem
+CALLV
+pop
+line 590
+;590:		}
+LABELV $360
+line 591
+;591:	}
+LABELV $357
+line 584
+ADDRLP4 0
+INDIRP4
+ARGP4
+CNSTI4 528
+ARGI4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRLP4 16
+ADDRGP4 G_Find
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 16
+INDIRP4
+ASGNP4
+ADDRLP4 16
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $356
+line 593
+;592:
+;593:	Team_SetFlagStatus( team, FLAG_ATBASE );
+ADDRFP4 0
+INDIRI4
+ARGI4
+CNSTI4 0
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 595
+;594:
+;595:	return rent;
+ADDRLP4 8
+INDIRP4
+RETP4
+LABELV $349
+endproc Team_ResetFlag 20 12
+export Team_ResetFlags
+proc Team_ResetFlags 0 4
+line 598
+;596:}
+;597:
+;598:void Team_ResetFlags( void ) {
+line 599
+;599:	if( g_gametype.integer == GT_CTF ) {
+ADDRGP4 g_gametype+12
+INDIRI4
+CNSTI4 4
+NEI4 $362
+line 600
+;600:		Team_ResetFlag( TEAM_RED );
+CNSTI4 1
+ARGI4
+ADDRGP4 Team_ResetFlag
+CALLP4
+pop
+line 601
+;601:		Team_ResetFlag( TEAM_BLUE );
+CNSTI4 2
+ARGI4
+ADDRGP4 Team_ResetFlag
+CALLP4
+pop
+line 602
+;602:	}
+LABELV $362
+line 608
+;603:#ifdef MISSIONPACK
+;604:	else if( g_gametype.integer == GT_1FCTF ) {
+;605:		Team_ResetFlag( TEAM_FREE );
+;606:	}
+;607:#endif
+;608:}
+LABELV $361
+endproc Team_ResetFlags 0 4
+export Team_ReturnFlagSound
+proc Team_ReturnFlagSound 12 8
+line 610
+;609:
+;610:void Team_ReturnFlagSound( gentity_t *ent, int team ) {
+line 613
+;611:	gentity_t	*te;
+;612:
+;613:	if (ent == NULL) {
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $366
+line 614
+;614:		G_Printf ("Warning:  NULL passed to Team_ReturnFlagSound\n");
+ADDRGP4 $368
+ARGP4
+ADDRGP4 G_Printf
+CALLV
+pop
+line 615
+;615:		return;
+ADDRGP4 $365
+JUMPV
+LABELV $366
+line 618
+;616:	}
+;617:
+;618:	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND );
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+ARGP4
+CNSTI4 48
+ARGI4
+ADDRLP4 4
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+line 619
+;619:	if( team == TEAM_BLUE ) {
+ADDRFP4 4
+INDIRI4
+CNSTI4 2
+NEI4 $369
+line 620
+;620:		te->s.eventParm = GTS_RED_RETURN;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 2
+ASGNI4
+line 621
+;621:	}
+ADDRGP4 $370
+JUMPV
+LABELV $369
+line 622
+;622:	else {
+line 623
+;623:		te->s.eventParm = GTS_BLUE_RETURN;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 3
+ASGNI4
+line 624
+;624:	}
+LABELV $370
+line 625
+;625:	te->r.svFlags |= SVF_BROADCAST;
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+CNSTI4 424
+ADDP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ADDRLP4 8
+INDIRP4
+INDIRI4
+CNSTI4 32
+BORI4
+ASGNI4
+line 626
+;626:}
+LABELV $365
+endproc Team_ReturnFlagSound 12 8
+export Team_TakeFlagSound
+proc Team_TakeFlagSound 16 8
+line 628
+;627:
+;628:void Team_TakeFlagSound( gentity_t *ent, int team ) {
+line 631
+;629:	gentity_t	*te;
+;630:
+;631:	if (ent == NULL) {
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $372
+line 632
+;632:		G_Printf ("Warning:  NULL passed to Team_TakeFlagSound\n");
+ADDRGP4 $374
+ARGP4
+ADDRGP4 G_Printf
+CALLV
+pop
+line 633
+;633:		return;
+ADDRGP4 $371
+JUMPV
+LABELV $372
+line 638
+;634:	}
+;635:
+;636:	// only play sound when the flag was at the base
+;637:	// or not picked up the last 10 seconds
+;638:	switch(team) {
+ADDRLP4 4
+ADDRFP4 4
+INDIRI4
+ASGNI4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+EQI4 $377
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+EQI4 $387
+ADDRGP4 $375
+JUMPV
+LABELV $377
+line 640
+;639:		case TEAM_RED:
+;640:			if( teamgame.blueStatus != FLAG_ATBASE ) {
+ADDRGP4 teamgame+12
+INDIRI4
+CNSTI4 0
+EQI4 $378
+line 641
+;641:				if (teamgame.blueTakenTime > level.time - 10000)
+ADDRGP4 teamgame+24
+INDIRI4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 10000
+SUBI4
+LEI4 $381
+line 642
+;642:					return;
+ADDRGP4 $371
+JUMPV
+LABELV $381
+line 643
+;643:			}
+LABELV $378
+line 644
+;644:			teamgame.blueTakenTime = level.time;
+ADDRGP4 teamgame+24
+ADDRGP4 level+32
+INDIRI4
+ASGNI4
+line 645
+;645:			break;
+ADDRGP4 $376
+JUMPV
+LABELV $387
+line 648
+;646:
+;647:		case TEAM_BLUE:	// CTF
+;648:			if( teamgame.redStatus != FLAG_ATBASE ) {
+ADDRGP4 teamgame+8
+INDIRI4
+CNSTI4 0
+EQI4 $388
+line 649
+;649:				if (teamgame.redTakenTime > level.time - 10000)
+ADDRGP4 teamgame+20
+INDIRI4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 10000
+SUBI4
+LEI4 $391
+line 650
+;650:					return;
+ADDRGP4 $371
+JUMPV
+LABELV $391
+line 651
+;651:			}
+LABELV $388
+line 652
+;652:			teamgame.redTakenTime = level.time;
+ADDRGP4 teamgame+20
+ADDRGP4 level+32
+INDIRI4
+ASGNI4
+line 653
+;653:			break;
+LABELV $375
+LABELV $376
+line 656
+;654:	}
+;655:
+;656:	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND );
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+ARGP4
+CNSTI4 48
+ARGI4
+ADDRLP4 8
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 8
+INDIRP4
+ASGNP4
+line 657
+;657:	if( team == TEAM_BLUE ) {
+ADDRFP4 4
+INDIRI4
+CNSTI4 2
+NEI4 $397
+line 658
+;658:		te->s.eventParm = GTS_RED_TAKEN;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 4
+ASGNI4
+line 659
+;659:	}
+ADDRGP4 $398
+JUMPV
+LABELV $397
+line 660
+;660:	else {
+line 661
+;661:		te->s.eventParm = GTS_BLUE_TAKEN;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 5
+ASGNI4
+line 662
+;662:	}
+LABELV $398
+line 663
+;663:	te->r.svFlags |= SVF_BROADCAST;
+ADDRLP4 12
+ADDRLP4 0
+INDIRP4
+CNSTI4 424
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRI4
+CNSTI4 32
+BORI4
+ASGNI4
+line 664
+;664:}
+LABELV $371
+endproc Team_TakeFlagSound 16 8
+export Team_CaptureFlagSound
+proc Team_CaptureFlagSound 12 8
+line 666
+;665:
+;666:void Team_CaptureFlagSound( gentity_t *ent, int team ) {
+line 669
+;667:	gentity_t	*te;
+;668:
+;669:	if (ent == NULL) {
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $400
+line 670
+;670:		G_Printf ("Warning:  NULL passed to Team_CaptureFlagSound\n");
+ADDRGP4 $402
+ARGP4
+ADDRGP4 G_Printf
+CALLV
+pop
+line 671
+;671:		return;
+ADDRGP4 $399
+JUMPV
+LABELV $400
+line 674
+;672:	}
+;673:
+;674:	te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_TEAM_SOUND );
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+ARGP4
+CNSTI4 48
+ARGI4
+ADDRLP4 4
+ADDRGP4 G_TempEntity
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+line 675
+;675:	if( team == TEAM_BLUE ) {
+ADDRFP4 4
+INDIRI4
+CNSTI4 2
+NEI4 $403
+line 676
+;676:		te->s.eventParm = GTS_BLUE_CAPTURE;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 1
+ASGNI4
+line 677
+;677:	}
+ADDRGP4 $404
+JUMPV
+LABELV $403
+line 678
+;678:	else {
+line 679
+;679:		te->s.eventParm = GTS_RED_CAPTURE;
+ADDRLP4 0
+INDIRP4
+CNSTI4 184
+ADDP4
+CNSTI4 0
+ASGNI4
+line 680
+;680:	}
+LABELV $404
+line 681
+;681:	te->r.svFlags |= SVF_BROADCAST;
+ADDRLP4 8
+ADDRLP4 0
+INDIRP4
+CNSTI4 424
+ADDP4
+ASGNP4
+ADDRLP4 8
+INDIRP4
+ADDRLP4 8
+INDIRP4
+INDIRI4
+CNSTI4 32
+BORI4
+ASGNI4
+line 682
+;682:}
+LABELV $399
+endproc Team_CaptureFlagSound 12 8
+export Team_ReturnFlag
+proc Team_ReturnFlag 8 12
+line 684
+;683:
+;684:void Team_ReturnFlag( int team ) {
+line 685
+;685:	Team_ReturnFlagSound(Team_ResetFlag(team), team);
+ADDRFP4 0
+INDIRI4
+ARGI4
+ADDRLP4 0
+ADDRGP4 Team_ResetFlag
+CALLP4
+ASGNP4
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRI4
+ARGI4
+ADDRGP4 Team_ReturnFlagSound
+CALLV
+pop
+line 686
+;686:	if( team == TEAM_FREE ) {
+ADDRFP4 0
+INDIRI4
+CNSTI4 0
+NEI4 $406
+line 687
+;687:		PrintMsg(NULL, "The flag has returned!\n" );
+CNSTP4 0
+ARGP4
+ADDRGP4 $408
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 688
+;688:	}
+ADDRGP4 $407
+JUMPV
+LABELV $406
+line 689
+;689:	else {
+line 690
+;690:		PrintMsg(NULL, "The %s flag has returned!\n", TeamName(team));
+ADDRFP4 0
+INDIRI4
+ARGI4
+ADDRLP4 4
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $409
+ARGP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 691
+;691:	}
+LABELV $407
+line 692
+;692:}
+LABELV $405
+endproc Team_ReturnFlag 8 12
+export Team_FreeEntity
+proc Team_FreeEntity 0 4
+line 694
+;693:
+;694:void Team_FreeEntity( gentity_t *ent ) {
+line 695
+;695:	if( ent->item->giTag == PW_REDFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 7
+NEI4 $411
+line 696
+;696:		Team_ReturnFlag( TEAM_RED );
+CNSTI4 1
+ARGI4
+ADDRGP4 Team_ReturnFlag
+CALLV
+pop
+line 697
+;697:	}
+ADDRGP4 $412
+JUMPV
+LABELV $411
+line 698
+;698:	else if( ent->item->giTag == PW_BLUEFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 8
+NEI4 $413
+line 699
+;699:		Team_ReturnFlag( TEAM_BLUE );
+CNSTI4 2
+ARGI4
+ADDRGP4 Team_ReturnFlag
+CALLV
+pop
+line 700
+;700:	}
+ADDRGP4 $414
+JUMPV
+LABELV $413
+line 701
+;701:	else if( ent->item->giTag == PW_NEUTRALFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 9
+NEI4 $415
+line 702
+;702:		Team_ReturnFlag( TEAM_FREE );
+CNSTI4 0
+ARGI4
+ADDRGP4 Team_ReturnFlag
+CALLV
+pop
+line 703
+;703:	}
+LABELV $415
+LABELV $414
+LABELV $412
+line 704
+;704:}
+LABELV $410
+endproc Team_FreeEntity 0 4
+export Team_DroppedFlagThink
+proc Team_DroppedFlagThink 8 8
+line 715
+;705:
+;706:/*
+;707:==============
+;708:Team_DroppedFlagThink
+;709:
+;710:Automatically set in Launch_Item if the item is one of the flags
+;711:
+;712:Flags are unique in that if they are dropped, the base flag must be respawned when they time out
+;713:==============
+;714:*/
+;715:void Team_DroppedFlagThink(gentity_t *ent) {
+line 716
+;716:	int		team = TEAM_FREE;
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+line 718
+;717:
+;718:	if( ent->item->giTag == PW_REDFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 7
+NEI4 $418
+line 719
+;719:		team = TEAM_RED;
+ADDRLP4 0
+CNSTI4 1
+ASGNI4
+line 720
+;720:	}
+ADDRGP4 $419
+JUMPV
+LABELV $418
+line 721
+;721:	else if( ent->item->giTag == PW_BLUEFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 8
+NEI4 $420
+line 722
+;722:		team = TEAM_BLUE;
+ADDRLP4 0
+CNSTI4 2
+ASGNI4
+line 723
+;723:	}
+ADDRGP4 $421
+JUMPV
+LABELV $420
+line 724
+;724:	else if( ent->item->giTag == PW_NEUTRALFLAG ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 808
+ADDP4
+INDIRP4
+CNSTI4 40
+ADDP4
+INDIRI4
+CNSTI4 9
+NEI4 $422
+line 725
+;725:		team = TEAM_FREE;
+ADDRLP4 0
+CNSTI4 0
+ASGNI4
+line 726
+;726:	}
+LABELV $422
+LABELV $421
+LABELV $419
+line 728
+;727:
+;728:	Team_ReturnFlagSound( Team_ResetFlag( team ), team );
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRLP4 4
+ADDRGP4 Team_ResetFlag
+CALLP4
+ASGNP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRGP4 Team_ReturnFlagSound
+CALLV
+pop
+line 730
+;729:	// Reset Flag will delete this entity
+;730:}
+LABELV $417
+endproc Team_DroppedFlagThink 8 8
+export Team_TouchOurFlag
+proc Team_TouchOurFlag 56 16
+line 738
+;731:
+;732:
+;733:/*
+;734:==============
+;735:Team_DroppedFlagThink
+;736:==============
+;737:*/
+;738:int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
+line 741
+;739:	int			i;
+;740:	gentity_t	*player;
+;741:	gclient_t	*cl = other->client;
+ADDRLP4 8
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ASGNP4
+line 750
+;742:	int			enemy_flag;
+;743:
+;744:#ifdef MISSIONPACK
+;745:	if( g_gametype.integer == GT_1FCTF ) {
+;746:		enemy_flag = PW_NEUTRALFLAG;
+;747:	}
+;748:	else {
+;749:#endif
+;750:	if (cl->sess.sessionTeam == TEAM_RED) {
+ADDRLP4 8
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 1
+NEI4 $425
+line 751
+;751:		enemy_flag = PW_BLUEFLAG;
+ADDRLP4 12
+CNSTI4 8
+ASGNI4
+line 752
+;752:	} else {
+ADDRGP4 $426
+JUMPV
+LABELV $425
+line 753
+;753:		enemy_flag = PW_REDFLAG;
+ADDRLP4 12
+CNSTI4 7
+ASGNI4
+line 754
+;754:	}
+LABELV $426
+line 756
+;755:
+;756:	if ( ent->flags & FL_DROPPED_ITEM ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 540
+ADDP4
+INDIRI4
+CNSTI4 4096
+BANDI4
+CNSTI4 0
+EQI4 $427
+line 758
+;757:		// hey, its not home.  return it by teleporting it back
+;758:		PrintMsg( NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n", 
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRLP4 16
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $429
+ARGP4
+ADDRLP4 8
+INDIRP4
+CNSTI4 512
+ADDP4
+ARGP4
+ADDRLP4 16
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 760
+;759:			cl->pers.netname, TeamName(team));
+;760:		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 761
+;761:		other->client->pers.teamState.flagrecovery++;
+ADDRLP4 20
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 576
+ADDP4
+ASGNP4
+ADDRLP4 20
+INDIRP4
+ADDRLP4 20
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 762
+;762:		other->client->pers.teamState.lastreturnedflag = level.time;
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 592
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+line 764
+;763:		//ResetFlag will remove this entity!  We must return zero
+;764:		Team_ReturnFlagSound(Team_ResetFlag(team), team);
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRLP4 24
+ADDRGP4 Team_ResetFlag
+CALLP4
+ASGNP4
+ADDRLP4 24
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRGP4 Team_ReturnFlagSound
+CALLV
+pop
+line 765
+;765:		return 0;
+CNSTI4 0
+RETI4
+ADDRGP4 $424
+JUMPV
+LABELV $427
+line 773
+;766:	}
+;767:#ifdef MISSIONPACK
+;768:	}
+;769:#endif
+;770:
+;771:	// the flag is at home base.  if the player has the enemy
+;772:	// flag, he's just won!
+;773:	if (!cl->ps.powerups[enemy_flag])
+ADDRLP4 12
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRLP4 8
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+INDIRI4
+CNSTI4 0
+NEI4 $431
+line 774
+;774:		return 0; // We don't have the flag
+CNSTI4 0
+RETI4
+ADDRGP4 $424
+JUMPV
+LABELV $431
+line 781
+;775:#ifdef MISSIONPACK
+;776:	if( g_gametype.integer == GT_1FCTF ) {
+;777:		PrintMsg( NULL, "%s" S_COLOR_WHITE " captured the flag!\n", cl->pers.netname );
+;778:	}
+;779:	else {
+;780:#endif
+;781:	PrintMsg( NULL, "%s" S_COLOR_WHITE " captured the %s flag!\n", cl->pers.netname, TeamName(OtherTeam(team)));
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRLP4 16
+ADDRGP4 OtherTeam
+CALLI4
+ASGNI4
+ADDRLP4 16
+INDIRI4
+ARGI4
+ADDRLP4 20
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $433
+ARGP4
+ADDRLP4 8
+INDIRP4
+CNSTI4 512
+ADDP4
+ARGP4
+ADDRLP4 20
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 786
+;782:#ifdef MISSIONPACK
+;783:	}
+;784:#endif
+;785:
+;786:	cl->ps.powerups[enemy_flag] = 0;
+ADDRLP4 12
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRLP4 8
+INDIRP4
+CNSTI4 312
+ADDP4
+ADDP4
+CNSTI4 0
+ASGNI4
+line 788
+;787:
+;788:	teamgame.last_flag_capture = level.time;
+ADDRGP4 teamgame
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+line 789
+;789:	teamgame.last_capture_team = team;
+ADDRGP4 teamgame+4
+ADDRFP4 8
+INDIRI4
+ASGNI4
+line 792
+;790:
+;791:	// Increase the team's score
+;792:	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
+ADDRFP4 0
+INDIRP4
+CNSTI4 24
+ADDP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ARGI4
+CNSTI4 1
+ARGI4
+ADDRGP4 AddTeamScore
+CALLV
+pop
+line 793
+;793:	Team_ForceGesture(other->client->sess.sessionTeam);
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ARGI4
+ADDRGP4 Team_ForceGesture
+CALLV
+pop
+line 795
+;794:
+;795:	other->client->pers.teamState.captures++;
+ADDRLP4 24
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 564
+ADDP4
+ASGNP4
+ADDRLP4 24
+INDIRP4
+ADDRLP4 24
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 797
+;796:	// add the sprite over the player's head
+;797:	other->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 28
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 28
+INDIRP4
+ADDRLP4 28
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 798
+;798:	other->client->ps.eFlags |= EF_AWARD_CAP;
+ADDRLP4 32
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 32
+INDIRP4
+ADDRLP4 32
+INDIRP4
+INDIRI4
+CNSTI4 2048
+BORI4
+ASGNI4
+line 799
+;799:	other->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 800
+;800:	other->client->ps.persistant[PERS_CAPTURES]++;
+ADDRLP4 36
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 304
+ADDP4
+ASGNP4
+ADDRLP4 36
+INDIRP4
+ADDRLP4 36
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 803
+;801:
+;802:	// other gets another 10 frag bonus
+;803:	AddScore(other, ent->r.currentOrigin, CTF_CAPTURE_BONUS);
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 5
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 805
+;804:
+;805:	Team_CaptureFlagSound( ent, team );
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRGP4 Team_CaptureFlagSound
+CALLV
+pop
+line 808
+;806:
+;807:	// Ok, let's do the player loop, hand out the bonuses
+;808:	for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $440
+JUMPV
+LABELV $437
+line 809
+;809:		player = &g_entities[i];
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 810
+;810:		if (!player->inuse)
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+NEI4 $442
+line 811
+;811:			continue;
+ADDRGP4 $438
+JUMPV
+LABELV $442
+line 813
+;812:
+;813:		if (player->client->sess.sessionTeam !=
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRLP4 8
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+EQI4 $444
+line 814
+;814:			cl->sess.sessionTeam) {
+line 815
+;815:			player->client->pers.teamState.lasthurtcarrier = -5;
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 588
+ADDP4
+CNSTF4 3231711232
+ASGNF4
+line 816
+;816:		} else if (player->client->sess.sessionTeam ==
+ADDRGP4 $445
+JUMPV
+LABELV $444
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRLP4 8
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+NEI4 $446
+line 817
+;817:			cl->sess.sessionTeam) {
+line 818
+;818:			if (player != other)
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+ADDRFP4 4
+INDIRP4
+CVPU4 4
+EQU4 $448
+line 819
+;819:				AddScore(player, ent->r.currentOrigin, CTF_TEAM_BONUS);
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+LABELV $448
+line 821
+;820:			// award extra points for capture assists
+;821:			if (player->client->pers.teamState.lastreturnedflag + 
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 592
+ADDP4
+INDIRF4
+CNSTF4 1176256512
+ADDF4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+LEF4 $450
+line 822
+;822:				CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.time) {
+line 823
+;823:				AddScore (player, ent->r.currentOrigin, CTF_RETURN_FLAG_ASSIST_BONUS);
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 824
+;824:				other->client->pers.teamState.assists++;
+ADDRLP4 40
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 584
+ADDP4
+ASGNP4
+ADDRLP4 40
+INDIRP4
+ADDRLP4 40
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 826
+;825:
+;826:				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
+ADDRLP4 44
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 296
+ADDP4
+ASGNP4
+ADDRLP4 44
+INDIRP4
+ADDRLP4 44
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 828
+;827:				// add the sprite over the player's head
+;828:				player->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 48
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 48
+INDIRP4
+ADDRLP4 48
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 829
+;829:				player->client->ps.eFlags |= EF_AWARD_ASSIST;
+ADDRLP4 52
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 52
+INDIRP4
+ADDRLP4 52
+INDIRP4
+INDIRI4
+CNSTI4 131072
+BORI4
+ASGNI4
+line 830
+;830:				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 832
+;831:
+;832:			} else if (player->client->pers.teamState.lastfraggedcarrier + 
+ADDRGP4 $451
+JUMPV
+LABELV $450
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 600
+ADDP4
+INDIRF4
+CNSTF4 1176256512
+ADDF4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+LEF4 $454
+line 833
+;833:				CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.time) {
+line 834
+;834:				AddScore(player, ent->r.currentOrigin, CTF_FRAG_CARRIER_ASSIST_BONUS);
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 835
+;835:				other->client->pers.teamState.assists++;
+ADDRLP4 40
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 584
+ADDP4
+ASGNP4
+ADDRLP4 40
+INDIRP4
+ADDRLP4 40
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 836
+;836:				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
+ADDRLP4 44
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 296
+ADDP4
+ASGNP4
+ADDRLP4 44
+INDIRP4
+ADDRLP4 44
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 838
+;837:				// add the sprite over the player's head
+;838:				player->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+ADDRLP4 48
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 48
+INDIRP4
+ADDRLP4 48
+INDIRP4
+INDIRI4
+CNSTI4 -231497
+BANDI4
+ASGNI4
+line 839
+;839:				player->client->ps.eFlags |= EF_AWARD_ASSIST;
+ADDRLP4 52
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 104
+ADDP4
+ASGNP4
+ADDRLP4 52
+INDIRP4
+ADDRLP4 52
+INDIRP4
+INDIRI4
+CNSTI4 131072
+BORI4
+ASGNI4
+line 840
+;840:				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 848
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CNSTI4 2000
+ADDI4
+ASGNI4
+line 841
+;841:			}
+LABELV $454
+LABELV $451
+line 842
+;842:		}
+LABELV $446
+LABELV $445
+line 843
+;843:		ForceRespawn(player);	// JUHOX
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 ForceRespawn
+CALLV
+pop
+line 844
+;844:	}
+LABELV $438
+line 808
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $440
+ADDRLP4 4
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $437
+line 845
+;845:	Team_ResetFlags();
+ADDRGP4 Team_ResetFlags
+CALLV
+pop
+line 847
+;846:
+;847:	CalculateRanks();
+ADDRGP4 CalculateRanks
+CALLV
+pop
+line 849
+;848:
+;849:	return 0; // Do not respawn this automatically
+CNSTI4 0
+RETI4
+LABELV $424
+endproc Team_TouchOurFlag 56 16
+export Team_TouchEnemyFlag
+proc Team_TouchEnemyFlag 20 16
+line 852
+;850:}
+;851:
+;852:int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
+line 853
+;853:	gclient_t *cl = other->client;
+ADDRLP4 0
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ASGNP4
+line 870
+;854:
+;855:#ifdef MISSIONPACK
+;856:	if( g_gametype.integer == GT_1FCTF ) {
+;857:		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname );
+;858:
+;859:		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
+;860:
+;861:		if( team == TEAM_RED ) {
+;862:			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_RED );
+;863:		}
+;864:		else {
+;865:			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_BLUE );
+;866:		}
+;867:	}
+;868:	else{
+;869:#endif
+;870:		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRLP4 4
+ADDRGP4 TeamName
+CALLP4
+ASGNP4
+CNSTP4 0
+ARGP4
+ADDRGP4 $459
+ARGP4
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 512
+ADDP4
+ARGP4
+ADDRLP4 4
+INDIRP4
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 880
+;871:			other->client->pers.netname, TeamName(team));
+;872:
+;873:		// JUHOX: also set xxxFlagEntity
+;874:#if 0
+;875:		if (team == TEAM_RED)
+;876:			cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire
+;877:		else
+;878:			cl->ps.powerups[PW_BLUEFLAG] = INT_MAX; // flags never expire
+;879:#else
+;880:		switch (team) {
+ADDRLP4 8
+ADDRFP4 8
+INDIRI4
+ASGNI4
+ADDRLP4 8
+INDIRI4
+CNSTI4 1
+EQI4 $462
+ADDRLP4 8
+INDIRI4
+CNSTI4 2
+EQI4 $464
+ADDRGP4 $460
+JUMPV
+LABELV $462
+line 882
+;881:		case TEAM_RED:
+;882:			cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire
+ADDRLP4 0
+INDIRP4
+CNSTI4 340
+ADDP4
+CNSTI4 2147483647
+ASGNI4
+line 883
+;883:			redFlagEntity = other;
+ADDRGP4 redFlagEntity
+ADDRFP4 4
+INDIRP4
+ASGNP4
+line 884
+;884:			level.ctfRedTakenCount++;
+ADDRLP4 12
+ADDRGP4 level+64
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 885
+;885:			break;
+ADDRGP4 $461
+JUMPV
+LABELV $464
+line 887
+;886:		case TEAM_BLUE:
+;887:			cl->ps.powerups[PW_BLUEFLAG] = INT_MAX; // flags never expire
+ADDRLP4 0
+INDIRP4
+CNSTI4 344
+ADDP4
+CNSTI4 2147483647
+ASGNI4
+line 888
+;888:			blueFlagEntity = other;
+ADDRGP4 blueFlagEntity
+ADDRFP4 4
+INDIRP4
+ASGNP4
+line 889
+;889:			level.ctfBlueTakenCount++;
+ADDRLP4 16
+ADDRGP4 level+68
+ASGNP4
+ADDRLP4 16
+INDIRP4
+ADDRLP4 16
+INDIRP4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 890
+;890:			break;
+LABELV $460
+LABELV $461
+line 894
+;891:		}
+;892:#endif
+;893:
+;894:		Team_SetFlagStatus( team, FLAG_TAKEN );
+ADDRFP4 8
+INDIRI4
+ARGI4
+CNSTI4 1
+ARGI4
+ADDRGP4 Team_SetFlagStatus
+CALLV
+pop
+line 899
+;895:#ifdef MISSIONPACK
+;896:	}
+;897:#endif
+;898:
+;899:	AddScore(other, ent->r.currentOrigin, CTF_FLAG_BONUS);
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRGP4 AddScore
+CALLV
+pop
+line 900
+;900:	cl->pers.teamState.flagsince = level.time;
+ADDRLP4 0
+INDIRP4
+CNSTI4 596
+ADDP4
+ADDRGP4 level+32
+INDIRI4
+CVIF4 4
+ASGNF4
+line 901
+;901:	Team_TakeFlagSound( ent, team );
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRGP4 Team_TakeFlagSound
+CALLV
+pop
+line 903
+;902:
+;903:	return -1; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
+CNSTI4 -1
+RETI4
+LABELV $458
+endproc Team_TouchEnemyFlag 20 16
+export Pickup_Team
+proc Pickup_Team 20 12
+line 906
+;904:}
+;905:
+;906:int Pickup_Team( gentity_t *ent, gentity_t *other ) {
+line 908
+;907:	int team;
+;908:	gclient_t *cl = other->client;
+ADDRLP4 4
+ADDRFP4 4
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ASGNP4
+line 927
+;909:
+;910:#ifdef MISSIONPACK
+;911:	if( g_gametype.integer == GT_OBELISK ) {
+;912:		// there are no team items that can be picked up in obelisk
+;913:		G_FreeEntity( ent );
+;914:		return 0;
+;915:	}
+;916:
+;917:	if( g_gametype.integer == GT_HARVESTER ) {
+;918:		// the only team items that can be picked up in harvester are the cubes
+;919:		if( ent->spawnflags != cl->sess.sessionTeam ) {
+;920:			cl->ps.generic1 += 1;
+;921:		}
+;922:		G_FreeEntity( ent );
+;923:		return 0;
+;924:	}
+;925:#endif
+;926:	// figure out what team this flag is
+;927:	if( strcmp(ent->classname, "team_CTF_redflag") == 0 ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 528
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $303
+ARGP4
+ADDRLP4 8
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 8
+INDIRI4
+CNSTI4 0
+NEI4 $468
+line 928
+;928:		team = TEAM_RED;
+ADDRLP4 0
+CNSTI4 1
+ASGNI4
+line 929
+;929:	}
+ADDRGP4 $469
+JUMPV
+LABELV $468
+line 930
+;930:	else if( strcmp(ent->classname, "team_CTF_blueflag") == 0 ) {
+ADDRFP4 0
+INDIRP4
+CNSTI4 528
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 $305
+ARGP4
+ADDRLP4 12
+ADDRGP4 strcmp
+CALLI4
+ASGNI4
+ADDRLP4 12
+INDIRI4
+CNSTI4 0
+NEI4 $470
+line 931
+;931:		team = TEAM_BLUE;
+ADDRLP4 0
+CNSTI4 2
+ASGNI4
+line 932
+;932:	}
+ADDRGP4 $471
+JUMPV
+LABELV $470
+line 938
+;933:#ifdef MISSIONPACK
+;934:	else if( strcmp(ent->classname, "team_CTF_neutralflag") == 0  ) {
+;935:		team = TEAM_FREE;
+;936:	}
+;937:#endif
+;938:	else {
+line 939
+;939:		PrintMsg ( other, "Don't know what team the flag is on.\n");
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRGP4 $472
+ARGP4
+ADDRGP4 PrintMsg
+CALLV
+pop
+line 940
+;940:		return 0;
+CNSTI4 0
+RETI4
+ADDRGP4 $467
+JUMPV
+LABELV $471
+LABELV $469
+line 954
+;941:	}
+;942:#ifdef MISSIONPACK
+;943:	if( g_gametype.integer == GT_1FCTF ) {
+;944:		if( team == TEAM_FREE ) {
+;945:			return Team_TouchEnemyFlag( ent, other, cl->sess.sessionTeam );
+;946:		}
+;947:		if( team != cl->sess.sessionTeam) {
+;948:			return Team_TouchOurFlag( ent, other, cl->sess.sessionTeam );
+;949:		}
+;950:		return 0;
+;951:	}
+;952:#endif
+;953:	// GT_CTF
+;954:	if( team == cl->sess.sessionTeam) {
+ADDRLP4 0
+INDIRI4
+ADDRLP4 4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+NEI4 $473
+line 955
+;955:		return Team_TouchOurFlag( ent, other, team );
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRLP4 16
+ADDRGP4 Team_TouchOurFlag
+CALLI4
+ASGNI4
+ADDRLP4 16
+INDIRI4
+RETI4
+ADDRGP4 $467
+JUMPV
+LABELV $473
+line 957
+;956:	}
+;957:	return Team_TouchEnemyFlag( ent, other, team );
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRLP4 0
+INDIRI4
+ARGI4
+ADDRLP4 16
+ADDRGP4 Team_TouchEnemyFlag
+CALLI4
+ASGNI4
+ADDRLP4 16
+INDIRI4
+RETI4
+LABELV $467
+endproc Pickup_Team 20 12
+export Team_GetLocation
+proc Team_GetLocation 40 8
+line 968
+;958:}
+;959:
+;960:/*
+;961:===========
+;962:Team_GetLocation
+;963:
+;964:Report a location for the player. Uses placed nearby target_location entities
+;965:============
+;966:*/
+;967:gentity_t *Team_GetLocation(gentity_t *ent)
+;968:{
+line 973
+;969:	gentity_t		*eloc, *best;
+;970:	float			bestlen, len;
+;971:	vec3_t			origin;
+;972:
+;973:	best = NULL;
+ADDRLP4 24
+CNSTP4 0
+ASGNP4
+line 974
+;974:	bestlen = 3*8192.0*8192.0;
+ADDRLP4 20
+CNSTF4 1296039936
+ASGNF4
+line 976
+;975:
+;976:	VectorCopy( ent->r.currentOrigin, origin );
+ADDRLP4 4
+ADDRFP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRB
+ASGNB 12
+line 978
+;977:
+;978:	for (eloc = level.locationHead; eloc; eloc = eloc->nextTrain) {
+ADDRLP4 0
+ADDRGP4 level+9188
+INDIRP4
+ASGNP4
+ADDRGP4 $479
+JUMPV
+LABELV $476
+line 979
+;979:		len = ( origin[0] - eloc->r.currentOrigin[0] ) * ( origin[0] - eloc->r.currentOrigin[0] )
+ADDRLP4 28
+ADDRLP4 4
+INDIRF4
+ASGNF4
+ADDRLP4 16
+ADDRLP4 28
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+ADDRLP4 28
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+INDIRF4
+SUBF4
+MULF4
+ADDRLP4 4+4
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+ADDRLP4 4+4
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 492
+ADDP4
+INDIRF4
+SUBF4
+MULF4
+ADDF4
+ADDRLP4 4+8
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+ADDRLP4 4+8
+INDIRF4
+ADDRLP4 0
+INDIRP4
+CNSTI4 496
+ADDP4
+INDIRF4
+SUBF4
+MULF4
+ADDF4
+ASGNF4
+line 983
+;980:			+ ( origin[1] - eloc->r.currentOrigin[1] ) * ( origin[1] - eloc->r.currentOrigin[1] )
+;981:			+ ( origin[2] - eloc->r.currentOrigin[2] ) * ( origin[2] - eloc->r.currentOrigin[2] );
+;982:
+;983:		if ( len > bestlen ) {
+ADDRLP4 16
+INDIRF4
+ADDRLP4 20
+INDIRF4
+LEF4 $485
+line 984
+;984:			continue;
+ADDRGP4 $477
+JUMPV
+LABELV $485
+line 987
+;985:		}
+;986:
+;987:		if ( !trap_InPVS( origin, eloc->r.currentOrigin ) ) {
+ADDRLP4 4
+ARGP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 488
+ADDP4
+ARGP4
+ADDRLP4 36
+ADDRGP4 trap_InPVS
+CALLI4
+ASGNI4
+ADDRLP4 36
+INDIRI4
+CNSTI4 0
+NEI4 $487
+line 988
+;988:			continue;
+ADDRGP4 $477
+JUMPV
+LABELV $487
+line 991
+;989:		}
+;990:
+;991:		bestlen = len;
+ADDRLP4 20
+ADDRLP4 16
+INDIRF4
+ASGNF4
+line 992
+;992:		best = eloc;
+ADDRLP4 24
+ADDRLP4 0
+INDIRP4
+ASGNP4
+line 993
+;993:	}
+LABELV $477
+line 978
+ADDRLP4 0
+ADDRLP4 0
+INDIRP4
+CNSTI4 608
+ADDP4
+INDIRP4
+ASGNP4
+LABELV $479
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $476
+line 995
+;994:
+;995:	return best;
+ADDRLP4 24
+INDIRP4
+RETP4
+LABELV $475
+endproc Team_GetLocation 40 8
+export Team_GetLocationMsg
+proc Team_GetLocationMsg 12 24
+line 1007
+;996:}
+;997:
+;998:
+;999:/*
+;1000:===========
+;1001:Team_GetLocation
+;1002:
+;1003:Report a location for the player. Uses placed nearby target_location entities
+;1004:============
+;1005:*/
+;1006:qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
+;1007:{
+line 1010
+;1008:	gentity_t *best;
+;1009:
+;1010:	best = Team_GetLocation( ent );
+ADDRFP4 0
+INDIRP4
+ARGP4
+ADDRLP4 4
+ADDRGP4 Team_GetLocation
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 4
+INDIRP4
+ASGNP4
+line 1012
+;1011:	
+;1012:	if (!best)
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $490
+line 1013
+;1013:		return qfalse;
+CNSTI4 0
+RETI4
+ADDRGP4 $489
+JUMPV
+LABELV $490
+line 1015
+;1014:
+;1015:	if (best->count) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $492
+line 1016
+;1016:		if (best->count < 0)
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+INDIRI4
+CNSTI4 0
+GEI4 $494
+line 1017
+;1017:			best->count = 0;
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+CNSTI4 0
+ASGNI4
+LABELV $494
+line 1018
+;1018:		if (best->count > 7)
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+INDIRI4
+CNSTI4 7
+LEI4 $496
+line 1019
+;1019:			best->count = 7;
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+CNSTI4 7
+ASGNI4
+LABELV $496
+line 1020
+;1020:		Com_sprintf(loc, loclen, "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, best->count + '0', best->message );
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRGP4 $498
+ARGP4
+CNSTI4 94
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 764
+ADDP4
+INDIRI4
+CNSTI4 48
+ADDI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 640
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 Com_sprintf
+CALLV
+pop
+line 1021
+;1021:	} else
+ADDRGP4 $493
+JUMPV
+LABELV $492
+line 1022
+;1022:		Com_sprintf(loc, loclen, "%s", best->message);
+ADDRFP4 4
+INDIRP4
+ARGP4
+ADDRFP4 8
+INDIRI4
+ARGI4
+ADDRGP4 $499
+ARGP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 640
+ADDP4
+INDIRP4
+ARGP4
+ADDRGP4 Com_sprintf
+CALLV
+pop
+LABELV $493
+line 1024
+;1023:
+;1024:	return qtrue;
+CNSTI4 1
+RETI4
+LABELV $489
+endproc Team_GetLocationMsg 12 24
+export SelectCTFSpawnPoint
+proc SelectCTFSpawnPoint 16 12
+line 1096
+;1025:}
+;1026:
+;1027:
+;1028:/*---------------------------------------------------------------------------*/
+;1029:
+;1030:/*
+;1031:================
+;1032:SelectRandomDeathmatchSpawnPoint
+;1033:
+;1034:go to a random point that doesn't telefrag
+;1035:================
+;1036:*/
+;1037:// JUHOX: SelectRandomTeamSpawnPoint() no longer needed
+;1038:#if 0
+;1039:#define	MAX_TEAM_SPAWN_POINTS	32
+;1040:gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team ) {
+;1041:	gentity_t	*spot;
+;1042:	int			count;
+;1043:	int			selection;
+;1044:	gentity_t	*spots[MAX_TEAM_SPAWN_POINTS];
+;1045:	char		*classname;
+;1046:
+;1047:	if (teamstate == TEAM_BEGIN) {
+;1048:		if (team == TEAM_RED)
+;1049:			classname = "team_CTF_redplayer";
+;1050:		else if (team == TEAM_BLUE)
+;1051:			classname = "team_CTF_blueplayer";
+;1052:		else
+;1053:			return NULL;
+;1054:	} else {
+;1055:		if (team == TEAM_RED)
+;1056:			classname = "team_CTF_redspawn";
+;1057:		else if (team == TEAM_BLUE)
+;1058:			classname = "team_CTF_bluespawn";
+;1059:		else
+;1060:			return NULL;
+;1061:	}
+;1062:	count = 0;
+;1063:
+;1064:	spot = NULL;
+;1065:
+;1066:	while ((spot = G_Find (spot, FOFS(classname), classname)) != NULL) {
+;1067:		if ( SpotWouldTelefrag( spot ) ) {
+;1068:			continue;
+;1069:		}
+;1070:		spots[ count ] = spot;
+;1071:		if (++count == MAX_TEAM_SPAWN_POINTS)
+;1072:			break;
+;1073:	}
+;1074:
+;1075:	if ( !count ) {	// no spots that won't telefrag
+;1076:		return G_Find( NULL, FOFS(classname), classname);
+;1077:	}
+;1078:
+;1079:	// JUHOX: use seeded random
+;1080:#if 0
+;1081:	selection = rand() % count;
+;1082:#else
+;1083:	selection = SeededRandom(GST_playerSpawning) % count;
+;1084:#endif
+;1085:	return spots[ selection ];
+;1086:}
+;1087:#endif
+;1088:
+;1089:
+;1090:/*
+;1091:===========
+;1092:SelectCTFSpawnPoint
+;1093:
+;1094:============
+;1095:*/
+;1096:gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
+line 1107
+;1097:	gentity_t	*spot;
+;1098:
+;1099:	// JUHOX: apply new spawn logic
+;1100:#if 0
+;1101:	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
+;1102:
+;1103:	if (!spot) {
+;1104:		return SelectSpawnPoint( vec3_origin, origin, angles );
+;1105:	}
+;1106:#else
+;1107:	spot = SelectAppropriateSpawnPoint(team, NULL, teamstate == TEAM_BEGIN);
+ADDRFP4 0
+INDIRI4
+ARGI4
+CNSTP4 0
+ARGP4
+ADDRFP4 4
+INDIRI4
+CNSTI4 0
+NEI4 $502
+ADDRLP4 4
+CNSTI4 1
+ASGNI4
+ADDRGP4 $503
+JUMPV
+LABELV $502
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+LABELV $503
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRLP4 8
+ADDRGP4 SelectAppropriateSpawnPoint
+CALLP4
+ASGNP4
+ADDRLP4 0
+ADDRLP4 8
+INDIRP4
+ASGNP4
+line 1108
+;1108:	if (!spot) return NULL;
+ADDRLP4 0
+INDIRP4
+CVPU4 4
+CNSTU4 0
+NEU4 $504
+CNSTP4 0
+RETP4
+ADDRGP4 $500
+JUMPV
+LABELV $504
+line 1111
+;1109:#endif
+;1110:
+;1111:	VectorCopy (spot->s.origin, origin);
+ADDRFP4 8
+INDIRP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 92
+ADDP4
+INDIRB
+ASGNB 12
+line 1112
+;1112:	origin[2] += 9;
+ADDRLP4 12
+ADDRFP4 8
+INDIRP4
+CNSTI4 8
+ADDP4
+ASGNP4
+ADDRLP4 12
+INDIRP4
+ADDRLP4 12
+INDIRP4
+INDIRF4
+CNSTF4 1091567616
+ADDF4
+ASGNF4
+line 1113
+;1113:	VectorCopy (spot->s.angles, angles);
+ADDRFP4 12
+INDIRP4
+ADDRLP4 0
+INDIRP4
+CNSTI4 116
+ADDP4
+INDIRB
+ASGNB 12
+line 1115
+;1114:
+;1115:	return spot;
+ADDRLP4 0
+INDIRP4
+RETP4
+LABELV $500
+endproc SelectCTFSpawnPoint 16 12
+proc SortClients 0 0
+line 1120
+;1116:}
+;1117:
+;1118:/*---------------------------------------------------------------------------*/
+;1119:
+;1120:static int QDECL SortClients( const void *a, const void *b ) {
+line 1121
+;1121:	return *(int *)a - *(int *)b;
+ADDRFP4 0
+INDIRP4
+INDIRI4
+ADDRFP4 4
+INDIRP4
+INDIRI4
+SUBI4
+RETI4
+LABELV $506
+endproc SortClients 0 0
+export TeamplayInfoMessage
+proc TeamplayInfoMessage 9400 52
+line 1134
+;1122:}
+;1123:
+;1124:
+;1125:/*
+;1126:==================
+;1127:TeamplayLocationsMessage
+;1128:
+;1129:Format:
+;1130:	clientNum location health armor weapon powerups
+;1131:
+;1132:==================
+;1133:*/
+;1134:void TeamplayInfoMessage( gentity_t *ent ) {
+line 1144
+;1135:	char		entry[1024];
+;1136:	char		string[8192];
+;1137:	int			stringlength;
+;1138:	int			i, j;
+;1139:	gentity_t	*player;
+;1140:	int			cnt;
+;1141:	int			h, a;
+;1142:	int			clients[TEAM_MAXOVERLAY];
+;1143:
+;1144:	if ( ! ent->client->pers.teamInfo )
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 612
+ADDP4
+INDIRI4
+CNSTI4 0
+NEI4 $508
+line 1145
+;1145:		return;
+ADDRGP4 $507
+JUMPV
+LABELV $508
+line 1150
+;1146:
+;1147:	// figure out what client should be on the display
+;1148:	// we are limited to 8, but we want to use the top eight players
+;1149:	// but in client order (so they don't keep changing position on the overlay)
+;1150:	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRLP4 8
+CNSTI4 0
+ASGNI4
+ADDRGP4 $513
+JUMPV
+LABELV $510
+line 1151
+;1151:		player = g_entities + level.sortedClients[i];
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 level+100
+ADDP4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 1152
+;1152:		if (player->inuse && player->client->sess.sessionTeam == 
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $516
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+NEI4 $516
+line 1153
+;1153:			ent->client->sess.sessionTeam ) {
+line 1154
+;1154:			clients[cnt++] = level.sortedClients[i];
+ADDRLP4 9376
+ADDRLP4 8
+INDIRI4
+ASGNI4
+ADDRLP4 8
+ADDRLP4 9376
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+ADDRLP4 9376
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRLP4 9244
+ADDP4
+ADDRLP4 4
+INDIRI4
+CNSTI4 2
+LSHI4
+ADDRGP4 level+100
+ADDP4
+INDIRI4
+ASGNI4
+line 1155
+;1155:		}
+LABELV $516
+line 1156
+;1156:	}
+LABELV $511
+line 1150
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $513
+ADDRLP4 4
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+GEI4 $519
+ADDRLP4 8
+INDIRI4
+CNSTI4 32
+LTI4 $510
+LABELV $519
+line 1159
+;1157:
+;1158:	// We have the top eight players, sort them by clientNum
+;1159:	qsort( clients, cnt, sizeof( clients[0] ), SortClients );
+ADDRLP4 9244
+ARGP4
+ADDRLP4 8
+INDIRI4
+ARGI4
+CNSTI4 4
+ARGI4
+ADDRGP4 SortClients
+ARGP4
+ADDRGP4 qsort
+CALLV
+pop
+line 1162
+;1160:
+;1161:	// send the latest information on all clients
+;1162:	string[0] = 0;
+ADDRLP4 1052
+CNSTI1 0
+ASGNI1
+line 1163
+;1163:	stringlength = 0;
+ADDRLP4 1044
+CNSTI4 0
+ASGNI4
+line 1165
+;1164:
+;1165:	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRLP4 8
+CNSTI4 0
+ASGNI4
+ADDRGP4 $523
+JUMPV
+LABELV $520
+line 1166
+;1166:		player = g_entities + i;
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 1167
+;1167:		if (player->inuse && player->client->sess.sessionTeam == 
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $525
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+ADDRFP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+NEI4 $525
+line 1168
+;1168:			ent->client->sess.sessionTeam ) {
+line 1170
+;1169:
+;1170:			h = player->client->ps.stats[STAT_HEALTH];
+ADDRLP4 1036
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 184
+ADDP4
+INDIRI4
+ASGNI4
+line 1171
+;1171:			a = player->client->ps.stats[STAT_ARMOR];
+ADDRLP4 1040
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 196
+ADDP4
+INDIRI4
+ASGNI4
+line 1172
+;1172:			if (h < 0) h = 0;
+ADDRLP4 1036
+INDIRI4
+CNSTI4 0
+GEI4 $527
+ADDRLP4 1036
+CNSTI4 0
+ASGNI4
+LABELV $527
+line 1173
+;1173:			if (a < 0) a = 0;
+ADDRLP4 1040
+INDIRI4
+CNSTI4 0
+GEI4 $529
+ADDRLP4 1040
+CNSTI4 0
+ASGNI4
+LABELV $529
+line 1185
+;1174:
+;1175:			// JUHOX: also send the group and gms for the team overlay
+;1176:			// JUHOX: also send the pfmi (otherwise it wouldn't get updated for distant players)
+;1177:			// JUHOX: also send the way length
+;1178:#if 0
+;1179:			Com_sprintf (entry, sizeof(entry),
+;1180:				" %i %i %i %i %i %i", 
+;1181://				level.sortedClients[i], player->client->pers.teamState.location, h, a, 
+;1182:				i, player->client->pers.teamState.location, h, a, 
+;1183:				player->client->ps.weapon, player->s.powerups);
+;1184:#else
+;1185:			{
+line 1189
+;1186:				int group;
+;1187:				tss_groupMemberStatus_t gms;
+;1188:
+;1189:				if (BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_isValid)) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 0
+ARGI4
+ADDRLP4 9384
+ADDRGP4 BG_TSS_GetPlayerInfo
+CALLI4
+ASGNI4
+ADDRLP4 9384
+INDIRI4
+CNSTI4 0
+EQI4 $531
+line 1190
+;1190:					group = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_group);
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 1
+ARGI4
+ADDRLP4 9388
+ADDRGP4 BG_TSS_GetPlayerInfo
+CALLI4
+ASGNI4
+ADDRLP4 9376
+ADDRLP4 9388
+INDIRI4
+ASGNI4
+line 1191
+;1191:					gms = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_groupMemberStatus);
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+ARGP4
+CNSTI4 2
+ARGI4
+ADDRLP4 9392
+ADDRGP4 BG_TSS_GetPlayerInfo
+CALLI4
+ASGNI4
+ADDRLP4 9380
+ADDRLP4 9392
+INDIRI4
+ASGNI4
+line 1192
+;1192:				}
+ADDRGP4 $532
+JUMPV
+LABELV $531
+line 1193
+;1193:				else {
+line 1194
+;1194:					group = -1;
+ADDRLP4 9376
+CNSTI4 -1
+ASGNI4
+line 1195
+;1195:					gms = -1;
+ADDRLP4 9380
+CNSTI4 -1
+ASGNI4
+line 1196
+;1196:				}
+LABELV $532
+line 1198
+;1197:
+;1198:				Com_sprintf(
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRLP4 9392
+ADDRGP4 G_GetTotalWayLength
+CALLI4
+ASGNI4
+ADDRLP4 12
+ARGP4
+CNSTI4 1024
+ARGI4
+ADDRGP4 $533
+ARGP4
+ADDRLP4 4
+INDIRI4
+ARGI4
+ADDRLP4 9376
+INDIRI4
+ARGI4
+ADDRLP4 9380
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 768
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $535
+ADDRLP4 9388
+CNSTI4 -1
+ASGNI4
+ADDRGP4 $536
+JUMPV
+LABELV $535
+ADDRLP4 9388
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 560
+ADDP4
+INDIRI4
+ASGNI4
+LABELV $536
+ADDRLP4 9388
+INDIRI4
+ARGI4
+ADDRLP4 1036
+INDIRI4
+ARGI4
+ADDRLP4 1040
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 144
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 188
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 0
+INDIRP4
+CNSTI4 160
+ADDP4
+INDIRI4
+ARGI4
+ADDRLP4 9392
+INDIRI4
+CNSTI4 32
+DIVI4
+ARGI4
+ADDRGP4 Com_sprintf
+CALLV
+pop
+line 1212
+;1199:					entry, sizeof(entry),
+;1200:					" %i %i %i %i %i %i %i %i %i %i", 
+;1201:					i, group, gms,
+;1202:					player->client->tssSafetyMode? -1 : player->client->pers.teamState.location,
+;1203:					h, a, 
+;1204:					player->client->ps.weapon, player->s.powerups,
+;1205:					player->s.modelindex,
+;1206:#if !ESCAPE_MODE
+;1207:					0
+;1208:#else
+;1209:					G_GetTotalWayLength(player) / 32
+;1210:#endif
+;1211:				);
+;1212:			}
+line 1214
+;1213:#endif
+;1214:			j = strlen(entry);
+ADDRLP4 12
+ARGP4
+ADDRLP4 9376
+ADDRGP4 strlen
+CALLI4
+ASGNI4
+ADDRLP4 1048
+ADDRLP4 9376
+INDIRI4
+ASGNI4
+line 1215
+;1215:			if (stringlength + j > sizeof(string))
+ADDRLP4 1044
+INDIRI4
+ADDRLP4 1048
+INDIRI4
+ADDI4
+CVIU4 4
+CNSTU4 8192
+LEU4 $537
+line 1216
+;1216:				break;
+ADDRGP4 $522
+JUMPV
+LABELV $537
+line 1217
+;1217:			strcpy (string + stringlength, entry);
+ADDRLP4 1044
+INDIRI4
+ADDRLP4 1052
+ADDP4
+ARGP4
+ADDRLP4 12
+ARGP4
+ADDRGP4 strcpy
+CALLP4
+pop
+line 1218
+;1218:			stringlength += j;
+ADDRLP4 1044
+ADDRLP4 1044
+INDIRI4
+ADDRLP4 1048
+INDIRI4
+ADDI4
+ASGNI4
+line 1219
+;1219:			cnt++;
+ADDRLP4 8
+ADDRLP4 8
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+line 1220
+;1220:		}
+LABELV $525
+line 1221
+;1221:	}
+LABELV $521
+line 1165
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $523
+ADDRLP4 4
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+GEI4 $539
+ADDRLP4 8
+INDIRI4
+CNSTI4 32
+LTI4 $520
+LABELV $539
+LABELV $522
+line 1223
+;1222:
+;1223:	trap_SendServerCommand( ent-g_entities, va("tinfo %i %s", cnt, string) );
+ADDRGP4 $540
+ARGP4
+ADDRLP4 8
+INDIRI4
+ARGI4
+ADDRLP4 1052
+ARGP4
+ADDRLP4 9372
+ADDRGP4 va
+CALLP4
+ASGNP4
+ADDRFP4 0
+INDIRP4
+CVPU4 4
+ADDRGP4 g_entities
+CVPU4 4
+SUBU4
+CVUI4 4
+CNSTI4 844
+DIVI4
+ARGI4
+ADDRLP4 9372
+INDIRP4
+ARGP4
+ADDRGP4 trap_SendServerCommand
+CALLV
+pop
+line 1224
+;1224:}
+LABELV $507
+endproc TeamplayInfoMessage 9400 52
+export CheckTeamStatus
+proc CheckTeamStatus 20 4
+line 1226
+;1225:
+;1226:void CheckTeamStatus(void) {
+line 1230
+;1227:	int i;
+;1228:	gentity_t *loc, *ent;
+;1229:
+;1230:	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
+ADDRGP4 level+32
+INDIRI4
+ADDRGP4 level+60
+INDIRI4
+SUBI4
+CNSTI4 1000
+LEI4 $542
+line 1232
+;1231:
+;1232:		level.lastTeamLocationTime = level.time;
+ADDRGP4 level+60
+ADDRGP4 level+32
+INDIRI4
+ASGNI4
+line 1234
+;1233:
+;1234:		for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $551
+JUMPV
+LABELV $548
+line 1235
+;1235:			ent = g_entities + i;
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 1237
+;1236:
+;1237:			if ( ent->client->pers.connected != CON_CONNECTED ) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 468
+ADDP4
+INDIRI4
+CNSTI4 2
+EQI4 $553
+line 1238
+;1238:				continue;
+ADDRGP4 $549
+JUMPV
+LABELV $553
+line 1241
+;1239:			}
+;1240:
+;1241:			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $555
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 1
+EQI4 $557
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 2
+NEI4 $555
+LABELV $557
+line 1242
+;1242:				loc = Team_GetLocation( ent );
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRLP4 16
+ADDRGP4 Team_GetLocation
+CALLP4
+ASGNP4
+ADDRLP4 8
+ADDRLP4 16
+INDIRP4
+ASGNP4
+line 1243
+;1243:				if (loc)
+ADDRLP4 8
+INDIRP4
+CVPU4 4
+CNSTU4 0
+EQU4 $558
+line 1244
+;1244:					ent->client->pers.teamState.location = loc->health;
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 560
+ADDP4
+ADDRLP4 8
+INDIRP4
+CNSTI4 736
+ADDP4
+INDIRI4
+ASGNI4
+ADDRGP4 $559
+JUMPV
+LABELV $558
+line 1246
+;1245:				else
+;1246:					ent->client->pers.teamState.location = 0;
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 560
+ADDP4
+CNSTI4 0
+ASGNI4
+LABELV $559
+line 1247
+;1247:			}
+LABELV $555
+line 1248
+;1248:		}
+LABELV $549
+line 1234
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $551
+ADDRLP4 4
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $548
+line 1250
+;1249:
+;1250:		for (i = 0; i < g_maxclients.integer; i++) {
+ADDRLP4 4
+CNSTI4 0
+ASGNI4
+ADDRGP4 $563
+JUMPV
+LABELV $560
+line 1251
+;1251:			ent = g_entities + i;
+ADDRLP4 0
+ADDRLP4 4
+INDIRI4
+CNSTI4 844
+MULI4
+ADDRGP4 g_entities
+ADDP4
+ASGNP4
+line 1253
+;1252:
+;1253:			if ( ent->client->pers.connected != CON_CONNECTED ) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 468
+ADDP4
+INDIRI4
+CNSTI4 2
+EQI4 $565
+line 1254
+;1254:				continue;
+ADDRGP4 $561
+JUMPV
+LABELV $565
+line 1257
+;1255:			}
+;1256:
+;1257:			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+ADDRLP4 0
+INDIRP4
+CNSTI4 524
+ADDP4
+INDIRI4
+CNSTI4 0
+EQI4 $567
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 1
+EQI4 $569
+ADDRLP4 0
+INDIRP4
+CNSTI4 516
+ADDP4
+INDIRP4
+CNSTI4 696
+ADDP4
+INDIRI4
+CNSTI4 2
+NEI4 $567
+LABELV $569
+line 1258
+;1258:				TeamplayInfoMessage( ent );
+ADDRLP4 0
+INDIRP4
+ARGP4
+ADDRGP4 TeamplayInfoMessage
+CALLV
+pop
+line 1259
+;1259:			}
+LABELV $567
+line 1260
+;1260:		}
+LABELV $561
+line 1250
+ADDRLP4 4
+ADDRLP4 4
+INDIRI4
+CNSTI4 1
+ADDI4
+ASGNI4
+LABELV $563
+ADDRLP4 4
+INDIRI4
+ADDRGP4 g_maxclients+12
+INDIRI4
+LTI4 $560
+line 1261
+;1261:	}
+LABELV $542
+line 1262
+;1262:}
+LABELV $541
+endproc CheckTeamStatus 20 4
+export SP_team_CTF_redplayer
+proc SP_team_CTF_redplayer 0 0
+line 1269
+;1263:
+;1264:/*-----------------------------------------------------------------*/
+;1265:
+;1266:/*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32)
+;1267:Only in CTF games.  Red players spawn here at game start.
+;1268:*/
+;1269:void SP_team_CTF_redplayer( gentity_t *ent ) {
+line 1271
+;1270:#if ESCAPE_MODE	// JUHOX: set entity class
+;1271:	ent->entClass = GEC_team_CTF_redplayer;
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+CNSTI4 40
+ASGNI4
+line 1273
+;1272:#endif
+;1273:}
+LABELV $570
+endproc SP_team_CTF_redplayer 0 0
+export SP_team_CTF_blueplayer
+proc SP_team_CTF_blueplayer 0 0
+line 1279
+;1274:
+;1275:
+;1276:/*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32)
+;1277:Only in CTF games.  Blue players spawn here at game start.
+;1278:*/
+;1279:void SP_team_CTF_blueplayer( gentity_t *ent ) {
+line 1281
+;1280:#if ESCAPE_MODE	// JUHOX: set entity class
+;1281:	ent->entClass = GEC_team_CTF_blueplayer;
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+CNSTI4 41
+ASGNI4
+line 1283
+;1282:#endif
+;1283:}
+LABELV $571
+endproc SP_team_CTF_blueplayer 0 0
+export SP_team_CTF_redspawn
+proc SP_team_CTF_redspawn 0 0
+line 1290
+;1284:
+;1285:
+;1286:/*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32)
+;1287:potential spawning position for red team in CTF games.
+;1288:Targets will be fired when someone spawns in on them.
+;1289:*/
+;1290:void SP_team_CTF_redspawn(gentity_t *ent) {
+line 1292
+;1291:#if ESCAPE_MODE	// JUHOX: set entity class
+;1292:	ent->entClass = GEC_team_CTF_redspawn;
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+CNSTI4 42
+ASGNI4
+line 1294
+;1293:#endif
+;1294:}
+LABELV $572
+endproc SP_team_CTF_redspawn 0 0
+export SP_team_CTF_bluespawn
+proc SP_team_CTF_bluespawn 0 0
+line 1300
+;1295:
+;1296:/*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32)
+;1297:potential spawning position for blue team in CTF games.
+;1298:Targets will be fired when someone spawns in on them.
+;1299:*/
+;1300:void SP_team_CTF_bluespawn(gentity_t *ent) {
+line 1302
+;1301:#if ESCAPE_MODE	// JUHOX: set entity class
+;1302:	ent->entClass = GEC_team_CTF_bluespawn;
+ADDRFP4 0
+INDIRP4
+CNSTI4 824
+ADDP4
+CNSTI4 43
+ASGNI4
+line 1304
+;1303:#endif
+;1304:}
+LABELV $573
+endproc SP_team_CTF_bluespawn 0 0
+bss
+align 4
+LABELV blueFlagEntity
+skip 4
+align 4
+LABELV redFlagEntity
+skip 4
+export neutralObelisk
+align 4
+LABELV neutralObelisk
+skip 4
+export teamgame
+align 4
+LABELV teamgame
+skip 36
+import trap_SnapVector
+import trap_GeneticParentsAndChildSelection
+import trap_BotResetWeaponState
+import trap_BotFreeWeaponState
+import trap_BotAllocWeaponState
+import trap_BotLoadWeaponWeights
+import trap_BotGetWeaponInfo
+import trap_BotChooseBestFightWeapon
+import trap_BotAddAvoidSpot
+import trap_BotInitMoveState
+import trap_BotFreeMoveState
+import trap_BotAllocMoveState
+import trap_BotPredictVisiblePosition
+import trap_BotMovementViewTarget
+import trap_BotReachabilityArea
+import trap_BotResetLastAvoidReach
+import trap_BotResetAvoidReach
+import trap_BotMoveInDirection
+import trap_BotMoveToGoal
+import trap_BotResetMoveState
+import trap_BotFreeGoalState
+import trap_BotAllocGoalState
+import trap_BotMutateGoalFuzzyLogic
+import trap_BotSaveGoalFuzzyLogic
+import trap_BotInterbreedGoalFuzzyLogic
+import trap_BotFreeItemWeights
+import trap_BotLoadItemWeights
+import trap_BotUpdateEntityItems
+import trap_BotInitLevelItems
+import trap_BotSetAvoidGoalTime
+import trap_BotAvoidGoalTime
+import trap_BotGetLevelItemGoal
+import trap_BotGetMapLocationGoal
+import trap_BotGetNextCampSpotGoal
+import trap_BotItemGoalInVisButNotVisible
+import trap_BotTouchingGoal
+import trap_BotChooseNBGItem
+import trap_BotChooseLTGItem
+import trap_BotGetSecondGoal
+import trap_BotGetTopGoal
+import trap_BotGoalName
+import trap_BotDumpGoalStack
+import trap_BotDumpAvoidGoals
+import trap_BotEmptyGoalStack
+import trap_BotPopGoal
+import trap_BotPushGoal
+import trap_BotResetAvoidGoals
+import trap_BotRemoveFromAvoidGoals
+import trap_BotResetGoalState
+import trap_BotSetChatName
+import trap_BotSetChatGender
+import trap_BotLoadChatFile
+import trap_BotReplaceSynonyms
+import trap_UnifyWhiteSpaces
+import trap_BotMatchVariable
+import trap_BotFindMatch
+import trap_StringContains
+import trap_BotGetChatMessage
+import trap_BotEnterChat
+import trap_BotChatLength
+import trap_BotReplyChat
+import trap_BotNumInitialChats
+import trap_BotInitialChat
+import trap_BotNumConsoleMessages
+import trap_BotNextConsoleMessage
+import trap_BotRemoveConsoleMessage
+import trap_BotQueueConsoleMessage
+import trap_BotFreeChatState
+import trap_BotAllocChatState
+import trap_Characteristic_String
+import trap_Characteristic_BInteger
+import trap_Characteristic_Integer
+import trap_Characteristic_BFloat
+import trap_Characteristic_Float
+import trap_BotFreeCharacter
+import trap_BotLoadCharacter
+import trap_EA_ResetInput
+import trap_EA_GetInput
+import trap_EA_EndRegular
+import trap_EA_View
+import trap_EA_Move
+import trap_EA_DelayedJump
+import trap_EA_Jump
+import trap_EA_SelectWeapon
+import trap_EA_MoveRight
+import trap_EA_MoveLeft
+import trap_EA_MoveBack
+import trap_EA_MoveForward
+import trap_EA_MoveDown
+import trap_EA_MoveUp
+import trap_EA_Crouch
+import trap_EA_Respawn
+import trap_EA_Use
+import trap_EA_Attack
+import trap_EA_Talk
+import trap_EA_Gesture
+import trap_EA_Action
+import trap_EA_Command
+import trap_EA_SayTeam
+import trap_EA_Say
+import trap_AAS_PredictClientMovement
+import trap_AAS_Swimming
+import trap_AAS_AlternativeRouteGoals
+import trap_AAS_PredictRoute
+import trap_AAS_EnableRoutingArea
+import trap_AAS_AreaTravelTimeToGoalArea
+import trap_AAS_AreaReachability
+import trap_AAS_IntForBSPEpairKey
+import trap_AAS_FloatForBSPEpairKey
+import trap_AAS_VectorForBSPEpairKey
+import trap_AAS_ValueForBSPEpairKey
+import trap_AAS_NextBSPEntity
+import trap_AAS_PointContents
+import trap_AAS_TraceAreas
+import trap_AAS_PointReachabilityAreaIndex
+import trap_AAS_PointAreaNum
+import trap_AAS_Time
+import trap_AAS_PresenceTypeBoundingBox
+import trap_AAS_Initialized
+import trap_AAS_EntityInfo
+import trap_AAS_AreaInfo
+import trap_AAS_BBoxAreas
+import trap_BotUserCommand
+import trap_BotGetServerCommand
+import trap_BotGetSnapshotEntity
+import trap_BotLibTest
+import trap_BotLibUpdateEntity
+import trap_BotLibLoadMap
+import trap_BotLibStartFrame
+import trap_BotLibDefine
+import trap_BotLibVarGet
+import trap_BotLibVarSet
+import trap_BotLibShutdown
+import trap_BotLibSetup
+import trap_DebugPolygonDelete
+import trap_DebugPolygonCreate
+import trap_GetEntityToken
+import trap_GetUsercmd
+import trap_BotFreeClient
+import trap_BotAllocateClient
+import trap_EntityContact
+import trap_EntitiesInBox
+import trap_UnlinkEntity
+import trap_LinkEntity
+import trap_AreasConnected
+import trap_AdjustAreaPortalState
+import trap_InPVSIgnorePortals
+import trap_InPVS
+import trap_PointContents
+import trap_Trace
+import trap_SetBrushModel
+import trap_GetServerinfo
+import trap_SetUserinfo
+import trap_GetUserinfo
+import trap_GetConfigstring
+import trap_SetConfigstring
+import trap_SendServerCommand
+import trap_DropClient
+import trap_LocateGameData
+import trap_Cvar_VariableStringBuffer
+import trap_Cvar_VariableValue
+import trap_Cvar_VariableIntegerValue
+import trap_Cvar_Set
+import trap_Cvar_Update
+import trap_Cvar_Register
+import trap_SendConsoleCommand
+import trap_FS_Seek
+import trap_FS_GetFileList
+import trap_FS_FCloseFile
+import trap_FS_Write
+import trap_FS_Read
+import trap_FS_FOpenFile
+import trap_Args
+import trap_Argv
+import trap_Argc
+import trap_Milliseconds
+import trap_Error
+import trap_Printf
+import g_mapName
+import g_proxMineTimeout
+import g_singlePlayer
+import g_enableBreath
+import g_enableDust
+import g_rankings
+import pmove_msec
+import pmove_fixed
+import g_smoothClients
+import g_blueteam
+import g_redteam
+import g_cubeTimeout
+import g_obeliskRespawnDelay
+import g_obeliskRegenAmount
+import g_obeliskRegenPeriod
+import g_obeliskHealth
+import g_filterBan
+import g_banIPs
+import g_teamForceBalance
+import g_teamAutoJoin
+import g_allowVote
+import g_blood
+import g_doWarmup
+import g_warmup
+import g_motd
+import g_synchronousClients
+import g_weaponTeamRespawn
+import g_weaponRespawn
+import g_debugDamage
+import g_debugAlloc
+import g_debugMove
+import g_inactivity
+import g_forcerespawn
+import g_quadfactor
+import g_knockback
+import g_speed
+import g_gravity
+import g_needpass
+import g_password
+import g_friendlyFire
+import g_meeting
+import g_weaponLimit
+import g_cloakingDevice
+import g_unlimitedAmmo
+import g_noHealthRegen
+import g_noItems
+import g_grapple
+import g_lightningDamageLimit
+import g_baseHealth
+import g_stamina
+import g_armorFragments
+import g_tssSafetyMode
+import g_tss
+import g_respawnAtPOD
+import g_respawnDelay
+import g_gameSeed
+import g_template
+import g_debugEFH
+import g_challengingEnv
+import g_distanceLimit
+import g_monsterLoad
+import g_scoreMode
+import g_monsterProgression
+import g_monsterBreeding
+import g_maxMonstersPP
+import g_monsterLauncher
+import g_skipEndSequence
+import g_monstersPerTrap
+import g_monsterTitans
+import g_monsterGuards
+import g_monsterHealthScale
+import g_monsterSpawnDelay
+import g_maxMonsters
+import g_minMonsters
+import g_artefacts
+import g_capturelimit
+import g_timelimit
+import g_fraglimit
+import g_dmflags
+import g_restarted
+import g_maxGameClients
+import g_maxclients
+import g_cheats
+import g_dedicated
+import g_gametype
+import g_editmode
+import g_entities
+import level
+import BotTestAAS
+import BotAIStartFrame
+import BotAIShutdownClient
+import BotAISetupClient
+import BotAILoadMap
+import BotAIShutdown
+import BotAISetup
+import IsPlayerFighting
+import G_Constitution
+import G_GetEntityPlayerState
+import EntityAudible
+import G_MonsterAction
+import G_CheckMonsterDamage
+import G_GetMonsterGeneric1
+import G_IsMovable
+import G_CanBeDamaged
+import G_UpdateMonsterCounters
+import G_AddMonsterSeed
+import G_ReleaseTrap
+import G_IsFriendlyMonster
+import G_MonsterOwner
+import G_IsAttackingGuard
+import G_ChargeMonsters
+import G_IsMonsterSuccessfulAttacking
+import G_IsMonsterNearEntity
+import IsFightingMonster
+import G_MonsterSpawning
+import G_SpawnMonster
+import G_MonsterType
+import G_MonsterBaseHealth
+import G_MonsterHealthScale
+import G_GetMonsterSpawnPoint
+import G_GetMonsterBounds
+import G_KillMonster
+import G_MonsterScanForNoises
+import CheckTouchedMonsters
+import G_NumMonsters
+import G_UpdateMonsterCS
+import G_InitMonsters
+import BotInterbreedEndMatch
+import Svcmd_BotList_f
+import Svcmd_AddBot_f
+import G_BotConnect
+import G_RemoveQueuedBotBegin
+import G_CheckBotSpawn
+import G_GetBotInfoByName
+import G_GetBotInfoByNumber
+import G_InitBots
+import Svcmd_AbortPodium_f
+import SpawnModelsOnVictoryPads
+import UpdateTournamentInfo
+import G_WriteSessionData
+import G_InitWorldSession
+import G_InitSessionData
+import G_ReadSessionData
+import Svcmd_GameMem_f
+import G_InitMemory
+import G_Alloc
+import CheckObeliskAttack
+import G_RunClient
+import ClientEndFrame
+import ClientThink
+import ClientImpacts
+import SetTargetPos
+import CheckPlayerDischarge
+import TotalChargeDamage
+import TSS_Run
+import TSS_DangerIndex
+import IsPlayerInvolvedInFighting
+import NearHomeBase
+import ClientCommand
+import ClientBegin
+import ClientDisconnect
+import ClientUserinfoChanged
+import ClientSetPlayerClass
+import ClientConnect
+import SelectAppropriateSpawnPoint
+import LogExit
+import G_Error
+import G_Printf
+import SendScoreboardMessageToAllClients
+import G_LogPrintf
+import G_RunThink
+import G_SetPlayerRefOrigin
+import CheckTeamLeader
+import SetLeader
+import FindIntermissionPoint
+import DeathmatchScoreboardMessage
+import G_SetStats
+import MoveClientToIntermission
+import FireWeapon
+import G_FilterPacket
+import G_ProcessIPBans
+import ConsoleCommand
+import PositionWouldTelefrag
+import SpotWouldTelefrag
+import CalculateRanks
+import AddScore
+import player_die
+import ClientSpawn
+import InitBodyQue
+import InitClientResp
+import InitClientPersistant
+import BeginIntermission
+import respawn
+import CopyToBodyQue
+import SelectSpawnPoint
+import SetClientViewAngle
+import PickTeam
+import TeamLeader
+import TeamCount
+import GetRespawnLocationType
+import ForceRespawn
+import Weapon_HookThink
+import Weapon_HookFree
+import CheckTitanAttack
+import CheckGauntletAttack
+import SnapVectorTowards
+import CalcMuzzlePoint
+import LogAccuracyHit
+import Weapon_GrapplingHook_Throw
+import TeleportPlayer
+import trigger_teleporter_touch
+import InitMover
+import Touch_DoorTrigger
+import G_RunMover
+import fire_monster_seed
+import fire_grapple
+import fire_bfg
+import fire_rocket
+import fire_grenade
+import fire_plasma
+import fire_blaster
+import G_RunMissile
+import GibEntity
+import ScorePlum
+import DropArmor
+import DropHealth
+import TossClientCubes
+import TossClientItems
+import body_die
+import G_InvulnerabilityEffect
+import G_RadiusDamage
+import G_Damage
+import CanDamage
+import DoOverkill
+import BuildShaderStateConfig
+import AddRemap
+import G_SetOrigin
+import G_AddEvent
+import G_AddPredictableEvent
+import vectoyaw
+import vtos
+import tv
+import G_acos
+import G_TouchSolids
+import G_TouchTriggers
+import G_EntitiesFree
+import G_FreeEntity
+import G_Sound
+import G_TempEntity
+import G_NumEntitiesFree
+import G_Spawn
+import G_InitGentity
+import G_SetMovedir
+import G_UseTargets
+import G_PickTarget
+import G_Find
+import G_KillBox
+import G_TeamCommand
+import G_SoundIndex
+import G_ModelIndex
+import SaveRegisteredItems
+import RegisterItem
+import ClearRegisteredItems
+import G_SpawnArtefact
+import G_BounceItemRotation
+import Touch_Item
+import Add_Ammo
+import ArmorIndex
+import Think_Weapon
+import FinishSpawningItem
+import G_SpawnItem
+import SetRespawn
+import LaunchItem
+import Drop_Item
+import PrecacheItem
+import UseHoldableItem
+import RespawnItem
+import G_RunItem
+import G_CheckTeamItems
+import G_Say
+import Cmd_FollowCycle_f
+import SetTeam
+import BroadcastTeamChange
+import StopFollowing
+import Cmd_Score_f
+import G_EFH_NextDebugSegment
+import G_EFH_SpaceExtent
+import G_UpdateLightingOrigins
+import G_GetTotalWayLength
+import G_MakeWorldAwareOfMonsterDeath
+import G_FindSegment
+import G_UpdateWorld
+import G_SpawnWorld
+import G_InitWorldSystem
+import G_NewString
+import G_SpawnEntitiesFromString
+import G_SpawnVector
+import G_SpawnInt
+import G_SpawnFloat
+import G_SpawnString
+import G_PlayTemplate
+import G_PrintTemplateList
+import G_SendGameTemplate
+import G_TemplateList_Error
+import G_TemplateList_Stop
+import G_TemplateList_Request
+import G_RestartGameTemplates
+import G_DefineTemplate
+import G_SetTemplateName
+import G_LoadGameTemplates
+import G_InitGameTemplates
+import sv_mapChecksum
+import templateList
+import numTemplateFiles
+import templateFileList
+import InitLocalSeed
+import SeededRandom
+import SetGameSeed
+import BG_PlayerTargetOffset
+import BG_PlayerTouchesItem
+import BG_PlayerStateToEntityStateExtraPolate
+import BG_PlayerStateToEntityState
+import BG_TouchJumpPad
+import BG_AddPredictableEventToPlayerstate
+import BG_EvaluateTrajectoryDelta
+import BG_EvaluateTrajectory
+import BG_CanItemBeGrabbed
+import BG_FindItemForHoldable
+import BG_FindItemForPowerup
+import BG_FindItemForWeapon
+import BG_FindItem
+import bg_numItems
+import bg_itemlist
+import weaponAmmoCharacteristics
+import Pmove
+import PM_UpdateViewAngles
+import BG_TSS_GetPlayerEntityInfo
+import BG_TSS_GetPlayerInfo
+import BG_TSS_SetPlayerInfo
+import BG_TSS_DecodeLeadership
+import BG_TSS_CodeLeadership
+import BG_TSS_DecodeInstructions
+import BG_TSS_CodeInstructions
+import TSS_DecodeInt
+import TSS_CodeInt
+import TSS_DecodeNibble
+import TSS_CodeNibble
+import BG_TSS_AssignPlayers
+import BG_TSS_TakeProportionAway
+import BG_TSS_Proportion
+import BG_VectorChecksum
+import BG_ChecksumChar
+import BG_TemplateChecksum
+import BG_GetGameTemplateList
+import BG_ParseGameTemplate
+import local_crandom
+import local_random
+import DeriveLocalSeed
+import LocallySeededRandom
+import Com_Printf
+import Com_Error
+import Info_NextPair
+import Info_Validate
+import Info_SetValueForKey_Big
+import Info_SetValueForKey
+import Info_RemoveKey_big
+import Info_RemoveKey
+import Info_ValueForKey
+import va
+import Q_CleanStr
+import Q_PrintStrlen
+import Q_strcat
+import Q_strncpyz
+import Q_strrchr
+import Q_strupr
+import Q_strlwr
+import Q_stricmpn
+import Q_strncmp
+import Q_stricmp
+import Q_isalpha
+import Q_isupper
+import Q_islower
+import Q_isprint
+import Com_sprintf
+import Parse3DMatrix
+import Parse2DMatrix
+import Parse1DMatrix
+import SkipRestOfLine
+import SkipBracedSection
+import COM_MatchToken
+import COM_ParseWarning
+import COM_ParseError
+import COM_Compress
+import COM_ParseExt
+import COM_Parse
+import COM_GetCurrentParseLine
+import COM_BeginParseSession
+import COM_DefaultExtension
+import COM_StripExtension
+import COM_SkipPath
+import Com_Clamp
+import PerpendicularVector
+import AngleVectors
+import MatrixMultiply
+import MakeNormalVectors
+import RotateAroundDirection
+import RotatePointAroundVector
+import ProjectPointOnPlane
+import PlaneFromPoints
+import AngleDelta
+import AngleNormalize180
+import AngleNormalize360
+import AnglesSubtract
+import AngleSubtract
+import LerpAngle
+import AngleMod
+import BoxOnPlaneSide
+import SetPlaneSignbits
+import AxisCopy
+import AxisClear
+import AnglesToAxis
+import vectoangles
+import lrand
+import Q_crandom
+import Q_random
+import Q_rand
+import Q_acos
+import Q_log2
+import VectorRotate
+import Vector4Scale
+import VectorNormalize2
+import VectorNormalize
+import CrossProduct
+import VectorInverse
+import VectorNormalizeFast
+import DistanceSquared
+import Distance
+import VectorLengthSquared
+import VectorLength
+import VectorCompare
+import AddPointToBounds
+import ClearBounds
+import RadiusFromBounds
+import NormalizeColor
+import ColorBytes4
+import ColorBytes3
+import _VectorMA
+import _VectorScale
+import _VectorCopy
+import _VectorAdd
+import _VectorSubtract
+import _DotProduct
+import ByteToDir
+import DirToByte
+import ClampShort
+import ClampChar
+import Q_rsqrt
+import Q_fabs
+import axisDefault
+import vec3_origin
+import g_color_table
+import colorDkGrey
+import colorMdGrey
+import colorLtGrey
+import colorWhite
+import colorCyan
+import colorMagenta
+import colorYellow
+import colorBlue
+import colorGreen
+import colorRed
+import colorBlack
+import bytedirs
+import Com_Memcpy
+import Com_Memset
+import Hunk_Alloc
+import FloatSwap
+import LongSwap
+import ShortSwap
+import acos
+import fabs
+import abs
+import tan
+import atan2
+import cos
+import sin
+import sqrt
+import floor
+import ceil
+import memcpy
+import memset
+import memmove
+import sscanf
+import vsprintf
+import _atoi
+import atoi
+import _atof
+import atof
+import toupper
+import tolower
+import strncpy
+import strstr
+import strchr
+import strcmp
+import strcpy
+import strcat
+import strlen
+import rand
+import srand
+import qsort
+lit
+align 1
+LABELV $540
+byte 1 116
+byte 1 105
+byte 1 110
+byte 1 102
+byte 1 111
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 0
+align 1
+LABELV $533
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 32
+byte 1 37
+byte 1 105
+byte 1 0
+align 1
+LABELV $499
+byte 1 37
+byte 1 115
+byte 1 0
+align 1
+LABELV $498
+byte 1 37
+byte 1 99
+byte 1 37
+byte 1 99
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 0
+align 1
+LABELV $472
+byte 1 68
+byte 1 111
+byte 1 110
+byte 1 39
+byte 1 116
+byte 1 32
+byte 1 107
+byte 1 110
+byte 1 111
+byte 1 119
+byte 1 32
+byte 1 119
+byte 1 104
+byte 1 97
+byte 1 116
+byte 1 32
+byte 1 116
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 32
+byte 1 116
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 32
+byte 1 105
+byte 1 115
+byte 1 32
+byte 1 111
+byte 1 110
+byte 1 46
+byte 1 10
+byte 1 0
+align 1
+LABELV $459
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 32
+byte 1 103
+byte 1 111
+byte 1 116
+byte 1 32
+byte 1 116
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $433
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 32
+byte 1 99
+byte 1 97
+byte 1 112
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $429
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 32
+byte 1 114
+byte 1 101
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 110
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $409
+byte 1 84
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 32
+byte 1 104
+byte 1 97
+byte 1 115
+byte 1 32
+byte 1 114
+byte 1 101
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 110
+byte 1 101
+byte 1 100
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $408
+byte 1 84
+byte 1 104
+byte 1 101
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 32
+byte 1 104
+byte 1 97
+byte 1 115
+byte 1 32
+byte 1 114
+byte 1 101
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 110
+byte 1 101
+byte 1 100
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $402
+byte 1 87
+byte 1 97
+byte 1 114
+byte 1 110
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 58
+byte 1 32
+byte 1 32
+byte 1 78
+byte 1 85
+byte 1 76
+byte 1 76
+byte 1 32
+byte 1 112
+byte 1 97
+byte 1 115
+byte 1 115
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 84
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 67
+byte 1 97
+byte 1 112
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 101
+byte 1 70
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 83
+byte 1 111
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 10
+byte 1 0
+align 1
+LABELV $374
+byte 1 87
+byte 1 97
+byte 1 114
+byte 1 110
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 58
+byte 1 32
+byte 1 32
+byte 1 78
+byte 1 85
+byte 1 76
+byte 1 76
+byte 1 32
+byte 1 112
+byte 1 97
+byte 1 115
+byte 1 115
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 84
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 84
+byte 1 97
+byte 1 107
+byte 1 101
+byte 1 70
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 83
+byte 1 111
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 10
+byte 1 0
+align 1
+LABELV $368
+byte 1 87
+byte 1 97
+byte 1 114
+byte 1 110
+byte 1 105
+byte 1 110
+byte 1 103
+byte 1 58
+byte 1 32
+byte 1 32
+byte 1 78
+byte 1 85
+byte 1 76
+byte 1 76
+byte 1 32
+byte 1 112
+byte 1 97
+byte 1 115
+byte 1 115
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 116
+byte 1 111
+byte 1 32
+byte 1 84
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 82
+byte 1 101
+byte 1 116
+byte 1 117
+byte 1 114
+byte 1 110
+byte 1 70
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 83
+byte 1 111
+byte 1 117
+byte 1 110
+byte 1 100
+byte 1 10
+byte 1 0
+align 1
+LABELV $355
+byte 1 116
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 67
+byte 1 84
+byte 1 70
+byte 1 95
+byte 1 110
+byte 1 101
+byte 1 117
+byte 1 116
+byte 1 114
+byte 1 97
+byte 1 108
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 0
+align 1
+LABELV $305
+byte 1 116
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 67
+byte 1 84
+byte 1 70
+byte 1 95
+byte 1 98
+byte 1 108
+byte 1 117
+byte 1 101
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 0
+align 1
+LABELV $303
+byte 1 116
+byte 1 101
+byte 1 97
+byte 1 109
+byte 1 95
+byte 1 67
+byte 1 84
+byte 1 70
+byte 1 95
+byte 1 114
+byte 1 101
+byte 1 100
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 0
+align 1
+LABELV $283
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 32
+byte 1 102
+byte 1 114
+byte 1 97
+byte 1 103
+byte 1 103
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 39
+byte 1 115
+byte 1 32
+byte 1 115
+byte 1 107
+byte 1 117
+byte 1 108
+byte 1 108
+byte 1 32
+byte 1 99
+byte 1 97
+byte 1 114
+byte 1 114
+byte 1 105
+byte 1 101
+byte 1 114
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $272
+byte 1 37
+byte 1 115
+byte 1 94
+byte 1 55
+byte 1 32
+byte 1 102
+byte 1 114
+byte 1 97
+byte 1 103
+byte 1 103
+byte 1 101
+byte 1 100
+byte 1 32
+byte 1 37
+byte 1 115
+byte 1 39
+byte 1 115
+byte 1 32
+byte 1 102
+byte 1 108
+byte 1 97
+byte 1 103
+byte 1 32
+byte 1 99
+byte 1 97
+byte 1 114
+byte 1 114
+byte 1 105
+byte 1 101
+byte 1 114
+byte 1 33
+byte 1 10
+byte 1 0
+align 1
+LABELV $147
+byte 1 112
+byte 1 114
+byte 1 105
+byte 1 110
+byte 1 116
+byte 1 32
+byte 1 34
+byte 1 37
+byte 1 115
+byte 1 34
+byte 1 0
+align 1
+LABELV $142
+byte 1 80
+byte 1 114
+byte 1 105
+byte 1 110
+byte 1 116
+byte 1 77
+byte 1 115
+byte 1 103
+byte 1 32
+byte 1 111
+byte 1 118
+byte 1 101
+byte 1 114
+byte 1 114
+byte 1 117
+byte 1 110
+byte 1 0
+align 1
+LABELV $137
+byte 1 94
+byte 1 55
+byte 1 0
+align 1
+LABELV $136
+byte 1 94
+byte 1 51
+byte 1 0
+align 1
+LABELV $133
+byte 1 94
+byte 1 52
+byte 1 0
+align 1
+LABELV $130
+byte 1 94
+byte 1 49
+byte 1 0
+align 1
+LABELV $119
+byte 1 70
+byte 1 82
+byte 1 69
+byte 1 69
+byte 1 0
+align 1
+LABELV $118
+byte 1 83
+byte 1 80
+byte 1 69
+byte 1 67
+byte 1 84
+byte 1 65
+byte 1 84
+byte 1 79
+byte 1 82
+byte 1 0
+align 1
+LABELV $115
+byte 1 66
+byte 1 76
+byte 1 85
+byte 1 69
+byte 1 0
+align 1
+LABELV $112
+byte 1 82
+byte 1 69
+byte 1 68
+byte 1 0

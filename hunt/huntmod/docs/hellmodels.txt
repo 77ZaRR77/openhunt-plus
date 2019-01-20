@@ -1,0 +1,7 @@
+Hellmodels
+By Daniel "Fusion" Schneider
+fusion@planetquake.com
+For use with Q3A and Hunt ONLY.
+id's graphics were used as base, so mostly all credits goes to them.
+have fun now.
+-Fusion
