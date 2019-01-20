@@ -1,3 +1,6 @@
+MOST IMPORTANT FIRST TO MOVE INTO NEWEST GAMECODE
+ BASEQ3E FOR EXAMPLE OR ioq3 then bugfix and others.
+
 #### BUGS n FIX
 
 
@@ -12,6 +15,7 @@ also possible to change grapplinghook type by cvar.
 
 #### FEATURES
 
+* include g_unlagged.c
 * More agressive/fast reaction monsters, especially guard type
 * look if possible to make monster-bots and bots separate so real bots can be added
 * investigate more about mapping for gamemode "Escape from Hell" (EFH).
@@ -19,8 +23,7 @@ also possible to change grapplinghook type by cvar.
 
 #### Addons were made 
 
-Only autoexec.cfg added currently, since addons should be in newest repo, imho
-
+* autoexec.cfg fix fov
 * small fov fix thanks to ZTM for 1.29h in autoexec.cfg file, in-game player need to press "z" for one time.
 * zzz-hunt_patch.pk3  for fixing gfx in ffa gamemode
 * replacement for - hunt.pk3 and hunt_hellmodels.pk3, now it's red blood (still needs improvement a bit) 
@@ -35,3 +38,5 @@ then second would be very useful, though searching didn't give any results nor w
 ![screenshot](/docs/JUHOX_files.JPG)
 
 I've made a test EFH map without the mentioned file though, needs more investigation to make it work fine and write mini-instuction.
+
+
