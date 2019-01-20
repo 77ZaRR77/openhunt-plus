@@ -8,3 +8,18 @@ hunt\huntmod\q3config.cfg
 
 build\win32-qvm\openhunt.pk3
 build\win32-qvm\vm\*.*
+hunt/pk3cache.dat
+hunt/baseq3/pak0.pk3
+hunt/baseq3/pak1.pk3
+hunt/baseq3/pak2.pk3
+hunt/baseq3/pak3.pk3
+hunt/baseq3/pak4.pk3
+hunt/baseq3/pak5.pk3
+hunt/baseq3/pak6.pk3
+hunt/baseq3/pak7.pk3
+hunt/baseq3/pak8.pk3
+hunt/huntmod/games.log
+hunt/huntmod/openhunt.pk3
+hunt/huntmod/openhunt.pk3
+hunt/huntmod/q3config.cfg
+hunt/huntmod/q3history
