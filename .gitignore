@@ -1,8 +1,5 @@
-hunt/baseq3/*.*
-hunt/pk3cache.dat
-hunt/huntmod/q3config.cfg
-hunt/huntmod/q3history
-hunt/huntmod/games.log
+hunt
+build/win32-qvm/vm
 
 *.cbp
 *.layout
