@@ -1,6 +1,6 @@
 code
 
-equ	trap_Print				-1
+equ	trap_Print  			-1
 equ	trap_Error				-2
 equ	trap_Milliseconds		-3
 equ	trap_Cvar_Register		-4
@@ -222,4 +222,4 @@ equ trap_BotLibLoadSource				-579
 equ trap_BotLibFreeSource				-580
 equ trap_BotLibReadToken				-581
 equ trap_BotLibSourceFileAndLine		-582
- 
+

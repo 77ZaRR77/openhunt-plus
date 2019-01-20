@@ -207,13 +207,13 @@ struct gentity_s {
 	char		*model;
 	char		*model2;
 	int			freetime;			// level.time when the object was freed
-	
+
 	int			eventTime;			// events will be cleared EVENT_VALID_MSEC after set
 	qboolean	freeAfterEvent;
 	qboolean	unlinkAfterEvent;
 
 	qboolean	physicsObject;		// if true, it can be pushed by movers and fall off edges
-									// all game items are physicsObjects, 
+									// all game items are physicsObjects,
 	float		physicsBounce;		// 1.0 = continuous bounce, 0.0 = no bounce
 	int			clipmask;			// brushes with this content value will be collided against
 									// when moving.  items and corpses do not collide against
@@ -365,7 +365,7 @@ typedef struct {
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
-	clientConnected_t	connected;	
+	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
 	qboolean	localClient;		// true if "ip" info key is "localhost"
 	qboolean	initialSpawn;		// the first spawn should be at a cool location
@@ -1063,7 +1063,7 @@ gentity_t* G_SpawnMonster(
 	int removeTime,
 	team_t spawnteam, int owner,
 	const localseed_t* seed,
-	gentity_t* monster,	// if non-NULL, telemorph this 
+	gentity_t* monster,	// if non-NULL, telemorph this
 	int maxHealth,
 	monsterAction_t action,
 	int generic1
@@ -1218,7 +1218,7 @@ extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	g_mapName;	// JUHOX
 
-void	trap_Printf( const char *fmt );
+void	trap_Print( const char *fmt );
 void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );
 int		trap_Argc( void );

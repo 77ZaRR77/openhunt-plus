@@ -18,7 +18,7 @@ int PASSFLOAT( float x ) {
 	return *(int *)&floatTemp;
 }
 
-void	trap_Printf( const char *fmt ) {
+void	trap_Print( const char *fmt ) {
 	syscall( G_PRINT, fmt );
 }
 
@@ -27,7 +27,7 @@ void	trap_Error( const char *fmt ) {
 }
 
 int		trap_Milliseconds( void ) {
-	return syscall( G_MILLISECONDS ); 
+	return syscall( G_MILLISECONDS );
 }
 int		trap_Argc( void ) {
 	return syscall( G_ARGC );
