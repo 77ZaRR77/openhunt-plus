@@ -1218,7 +1218,7 @@ extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	g_mapName;	// JUHOX
 
-void	trap_Printf( const char *fmt );
+void	trap_Print( const char *fmt );
 void	trap_Error( const char *fmt );
 int		trap_Milliseconds( void );
 int		trap_Argc( void );
