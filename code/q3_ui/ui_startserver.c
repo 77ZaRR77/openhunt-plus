@@ -132,7 +132,7 @@ static const char* gametype_names[] = {
 #endif
 
 // use ui_servers2.c definition
-extern const char* punkbuster_items[];
+//extern const char* punkbuster_items[];
 
 static void UI_ServerOptionsMenu( qboolean multiplayer );
 
@@ -291,7 +291,7 @@ static void StartServer_Update( void ) {
 		// set the highlight
 		s_startserver.next.generic.flags &= ~QMF_INACTIVE;
 		i = s_startserver.currentmap - top;
-		if ( i >=0 && i < MAX_MAPSPERPAGE ) 
+		if ( i >=0 && i < MAX_MAPSPERPAGE )
 		{
 			s_startserver.mappics[i].generic.flags    |= QMF_HIGHLIGHT;
 			s_startserver.mapbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
@@ -300,7 +300,7 @@ static void StartServer_Update( void ) {
 		// set the map name
 		strcpy( s_startserver.mapname.string, s_startserver.maplist[s_startserver.currentmap] );
 	}
-	
+
 	Q_strupr( s_startserver.mapname.string );
 }
 
@@ -463,7 +463,7 @@ static void StartServer_LevelshotDraw( void *self ) {
 	y = b->generic.y;
 	w = b->width;
 	h =	b->height + 28;
-	if( b->generic.flags & QMF_HIGHLIGHT ) {	
+	if( b->generic.flags & QMF_HIGHLIGHT ) {
 		UI_DrawHandlePic( x, y, w, h, b->focusshader );
 	}
 }
@@ -513,7 +513,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.framel.generic.type  = MTYPE_BITMAP;
 	s_startserver.framel.generic.name  = GAMESERVER_FRAMEL;
 	s_startserver.framel.generic.flags = QMF_INACTIVE;
-	s_startserver.framel.generic.x	   = 0;  
+	s_startserver.framel.generic.x	   = 0;
 	s_startserver.framel.generic.y	   = 78;
 	s_startserver.framel.width  	   = 256;
 	s_startserver.framel.height  	   = 329;
@@ -678,15 +678,15 @@ void StartServer_Cache( void )
 	qboolean		precache;
 	char			picname[64];
 
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT0 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );	
+	trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );
+	trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );
+	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT0 );
+	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );
 #if 0	// JUHOX: no frame for map selector
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMEL );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMER );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECTED );	
+	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMEL );
+	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMER );
+	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );
+	trap_R_RegisterShaderNoMip( GAMESERVER_SELECTED );
 	trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
 	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWS );
 	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSL );
@@ -833,8 +833,8 @@ typedef struct {
 	qboolean			newBot;
 	int					newBotIndex;
 	char				newBotName[16];
-	
-	menulist_s		punkbuster;
+
+	//menulist_s		punkbuster;
 } serveroptions_t;
 
 static serveroptions_t s_serveroptions;
@@ -1213,7 +1213,7 @@ static void ServerOptions_Start( void ) {
 #endif
 	trap_Cvar_Set("sv_hostname", s_serveroptions.hostname.field.buffer );
 
-	trap_Cvar_SetValue( "sv_punkbuster", s_serveroptions.punkbuster.curvalue );
+	trap_Cvar_SetValue( "sv_punkbuster", 0 );
 
 	// the wait commands will allow the dedicated to take effect
 	trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n", /*s_startserver.maplist[s_startserver.currentmap]*/s_startserver.choosenmap ) );	// JUHOX
@@ -1268,7 +1268,7 @@ static void ServerOptions_InitPlayerItems( void ) {
 		v = 0;	// open
 	}
 #endif
-	
+
 	for( n = 0; n < PLAYER_SLOTS; n++ ) {
 		s_serveroptions.playerType[n].curvalue = v;
 	}
@@ -1385,7 +1385,7 @@ ServerOptions_Event
 */
 static void ServerOptions_Event( void* ptr, int event ) {
 	switch( ((menucommon_s*)ptr)->id ) {
-	
+
 	//if( event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
 	//	return;
 	//}
@@ -1640,7 +1640,7 @@ static void ServerOptions_InitBotNames( void ) {
 			"Anarki", "Xaero", "Harpy", "Sorlag",
 			"TankJr", "Uriel", "Bones", "Orbb"
 		};
-		
+
 		strcpy(s_serveroptions.playerNameBuffers[n], names[n]);
 	}
 #endif
@@ -1674,7 +1674,7 @@ static void ServerOptions_InitBotNames( void ) {
 		for (; count < n; count++) {
 			s_serveroptions.playerType[count].curvalue = 0;
 		}
-		
+
 		if (gtmpl.tksMaxplayers > TKS_missing) {
 			for (n = openSlots; n < PLAYER_SLOTS; n++) {
 				s_serveroptions.playerType[n].curvalue = 2;
@@ -1792,7 +1792,7 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_meeting"));	// JUHOX
 #endif
 		break;
-	
+
 #if MONSTER_MODE	// JUHOX: read STU ui cvars
 	case GT_STU:
 		Com_sprintf(s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_stu_fraglimit")));
@@ -1870,7 +1870,7 @@ static void ServerOptions_SetMenuItems( void ) {
 	s_serveroptions.grapple = (int)Com_Clamp(0, HM_num_modes-1, trap_Cvar_VariableValue("g_grapple"));	// JUHOX
 #endif
 	Com_sprintf(s_serveroptions.additionalSlots.field.buffer, 3, "%i", (int)Com_Clamp(0, MAX_CLIENTS, trap_Cvar_VariableValue("ui_additionalSlots")));	// JUHOX
-	
+
 	Q_strncpyz( s_serveroptions.hostname.field.buffer, UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
 	s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_pure" ) );
 #if !TSSINCVAR	// JUHOX: if tss is activated, let sv_pure default to 0
@@ -1932,7 +1932,7 @@ static void PlayerName_Draw( void *item ) {
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
+		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color );
 		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
@@ -1974,7 +1974,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 #else
 	s_serveroptions.gametype = (int)Com_Clamp( 0, GT_MAX_GAME_TYPE-1, trap_Cvar_VariableValue( "g_gameType" ) );
 #endif
-	s_serveroptions.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_punkbuster" ) );
+	//s_serveroptions.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_punkbuster" ) );
 
 	ServerOptions_Cache();
 
@@ -2103,7 +2103,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.hostname.field.widthInChars = 18;
 		s_serveroptions.hostname.field.maxchars     = 64;
 	}
-
+/*
 	y += BIGCHAR_HEIGHT+2;
 	s_serveroptions.punkbuster.generic.type			= MTYPE_SPINCONTROL;
 	s_serveroptions.punkbuster.generic.name			= "Punkbuster:";
@@ -2112,7 +2112,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.punkbuster.generic.x				= OPTIONS_X;
 	s_serveroptions.punkbuster.generic.y				= y;
 	s_serveroptions.punkbuster.itemnames				= punkbuster_items;
-	
+*/
 	y = 80;
 #if ESCAPE_MODE	// JUHOX: no bots in EFH
 	if (s_serveroptions.gametype != GT_EFH) {
@@ -2335,8 +2335,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.next );
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.go );
 
-	Menu_AddItem( &s_serveroptions.menu, (void*) &s_serveroptions.punkbuster );
-	
+	//Menu_AddItem( &s_serveroptions.menu, (void*) &s_serveroptions.punkbuster );
+
 	ServerOptions_SetMenuItems();
 }
 
@@ -2505,7 +2505,7 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 
 	j = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 	for( i = 0; i < (PLAYERGRID_ROWS * PLAYERGRID_COLS); i++, j++) {
-		if( j < botSelectInfo.numBots ) { 
+		if( j < botSelectInfo.numBots ) {
 			info = UI_GetBotInfoByNumber( botSelectInfo.sortedBotNums[j] );
 			ServerPlayerIcon( Info_ValueForKey( info, "model" ), botSelectInfo.boticons[i], MAX_QPATH );
 			Q_strncpyz( botSelectInfo.botnames[i], Info_ValueForKey( info, "name" ), 16 );
@@ -3569,7 +3569,7 @@ static void UI_AdvOptMonMenu_MonsterModel_Draw(void* item) {
 	if (focus)
 	{
 		// draw cursor
-		UI_FillRect(s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color); 
+		UI_FillRect(s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color);
 		UI_DrawChar(x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
@@ -4254,7 +4254,7 @@ JUHOX: UI_TemplateMenu_Exit
 =================
 */
 static void UI_TemplateMenu_Exit(void) {
-	trap_Cvar_Set("tmplcmd", "");	
+	trap_Cvar_Set("tmplcmd", "");
 	templateInfo.isActive = qfalse;
 }
 
@@ -4714,7 +4714,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 	}
 
 	templateVar = templateInfo.currentList->entries[templateInfo.selectedTemplate].cvar;
-	
+
 	trap_Cvar_VariableStringBuffer(templateVar, info, sizeof(info));
 
 	if (!BG_ParseGameTemplate(info, &gtmpl)) {
@@ -4749,7 +4749,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 #if MONSTER_MODE
 	if (gtmpl.tksScoremode) trap_Cvar_SetValue("g_scoreMode", gtmpl.scoremode);
 #endif
-	
+
 	switch(gtmpl.gametype) {
 	case GT_FFA:
 	default:
@@ -4864,7 +4864,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 	}
 	else {
 		initialGameType = gtmpl.gametype;
-		UI_StartServerMenu(templateInfo.multiplayer);	
+		UI_StartServerMenu(templateInfo.multiplayer);
 	}
 	UI_TemplateMenu_Exit();
 }
@@ -5008,19 +5008,19 @@ static void UI_TemplateMenu_Draw(void) {
 
 	if (NOT(templateInfo.inGame && templateInfo.remoteServer && !templateInfo.remote.curvalue)) {
 		UI_DrawString(320, 360, templateInfo.highscoreLine1, UI_SMALLFONT | UI_CENTER, colorWhite);
-		
+
 		w = UI_DrawStrlen(templateInfo.highscoreLine2) * SMALLCHAR_WIDTH;
 		if (w <= 640) {
 			UI_DrawString(320, 377, templateInfo.highscoreLine2, UI_SMALLFONT | UI_CENTER, colorWhite);
 		}
 		else {
-			float x;	
-	
+			float x;
+
 			w += 120;
 			x = SCROLL_SPEED * (3.0 + (templateInfo.highscoreLineSetTime - uis.realtime) / 1000.0);
 			if (x + w < 640) {
 				int n;
-	
+
 				n = (int) (x / w);
 				x -= w * n;
 				UI_DrawString(x + w, 377, templateInfo.highscoreLine2, UI_SMALLFONT, colorWhite);
@@ -5239,7 +5239,7 @@ void UI_TemplateList_SvTemplate(
 	Com_sprintf(varName, sizeof(varName), "svtmpl%03d", n);
 	trap_Cvar_Register(NULL, varName, "", CVAR_ROM | CVAR_NORESTART);
 	trap_Cvar_Set(varName, va("name\\%s\\ht\\%d\\h\\%s\\d\\%s", name, highscoreType, highscore, descriptor));
-	
+
 	// update menu
 	if (templateInfo.isActive) {
 		BG_GetGameTemplateList(&templateInfo.svList, 0, NULL, qtrue);
@@ -5435,7 +5435,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.templateMenu.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	gtsInfo.templateMenu.generic.x			= 590;
 	gtsInfo.templateMenu.generic.y			= y;
-	gtsInfo.templateMenu.generic.callback	= UI_GTS_TemplateEvent; 
+	gtsInfo.templateMenu.generic.callback	= UI_GTS_TemplateEvent;
 	gtsInfo.templateMenu.string				= "Game Templates";
 	gtsInfo.templateMenu.color				= color_red;
 	gtsInfo.templateMenu.style				= UI_RIGHT|UI_DROPSHADOW;
@@ -5464,7 +5464,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.ffa.string				= "Free For All";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.ffa);
 	y += 34;
-	
+
 	gtsInfo.tourney.generic.type		= MTYPE_PTEXT;
 	gtsInfo.tourney.generic.flags		= QMF_PULSEIFFOCUS|QMF_RIGHT_JUSTIFY;
 	gtsInfo.tourney.generic.x			= 590;
@@ -5499,7 +5499,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.tdm.string				= "Team Deathmatch";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.tdm);
 	y += 34;
-	
+
 	gtsInfo.ctf.generic.type		= MTYPE_PTEXT;
 	gtsInfo.ctf.generic.flags		= QMF_PULSEIFFOCUS|QMF_RIGHT_JUSTIFY;
 	gtsInfo.ctf.generic.x			= 590;
@@ -5512,7 +5512,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.ctf);
 	y += 34;
 
-#if MONSTER_MODE	
+#if MONSTER_MODE
 	y += 24;
 
 	gtsInfo.coopDescr.generic.type	= MTYPE_TEXT;
