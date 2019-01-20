@@ -1,5 +1,5 @@
 hunt
-build/win32-qvm/vm
+build\win32-qvm\vm\
 
 *.lnk
 *.cbp
