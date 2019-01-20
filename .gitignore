@@ -1,6 +1,7 @@
 hunt
 build/win32-qvm/vm
 
+*.lnk
 *.cbp
 *.layout
 
