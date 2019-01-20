@@ -15,7 +15,7 @@ enhanced into a single model testing facility.
 
 Model viewing can begin with either "testmodel <modelname>" or "testgun <modelname>".
 
-The names must be the full pathname after the basedir, like 
+The names must be the full pathname after the basedir, like
 "models/weapons/v_launch/tris.md3" or "players/male/tris.md3"
 
 Testmodel will create a fake entity 100 units in front of the current view
@@ -286,11 +286,11 @@ static void CG_OffsetThirdPersonView( void ) {
 // this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset( void ) {
 	int		timeDelta;
-	
+
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
 	if ( timeDelta < STEP_TIME ) {
-		cg.refdef.vieworg[2] -= cg.stepChange 
+		cg.refdef.vieworg[2] -= cg.stepChange
 			* (STEP_TIME - timeDelta) / STEP_TIME;
 	}
 }
@@ -311,7 +311,7 @@ static void CG_OffsetFirstPersonView( void ) {
 	float			f;
 	vec3_t			predictedVelocity;
 	int				timeDelta;
-	
+
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
 		return;
 	}
@@ -370,7 +370,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[0]);
 	angles[PITCH] += delta * cg_runpitch.value;
-	
+
 	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
 	angles[ROLL] -= delta * cg_runroll.value;
 
@@ -400,14 +400,14 @@ static void CG_OffsetFirstPersonView( void ) {
 #if 0
 	timeDelta = cg.time - cg.duckTime;
 	if ( timeDelta < DUCK_TIME) {
-		cg.refdef.vieworg[2] -= cg.duckChange 
+		cg.refdef.vieworg[2] -= cg.duckChange
 			* (DUCK_TIME - timeDelta) / DUCK_TIME;
 	}
 #else
 	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		timeDelta = cg.time - cg.duckTime;
 		if ( timeDelta < DUCK_TIME) {
-			cg.refdef.vieworg[2] -= cg.duckChange 
+			cg.refdef.vieworg[2] -= cg.duckChange
 				* (DUCK_TIME - timeDelta) / DUCK_TIME;
 		}
 	}
@@ -445,7 +445,7 @@ static void CG_OffsetFirstPersonView( void ) {
 	{
 #define	NECK_LENGTH		8
 	vec3_t			forward, up;
- 
+
 	cg.refdef.vieworg[2] -= NECK_LENGTH;
 	AngleVectors( cg.refdefViewAngles, forward, NULL, up );
 	VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
@@ -456,7 +456,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 //======================================================================
 
-void CG_ZoomDown_f( void ) { 
+void CG_ZoomDown_f( void ) {
 	if ( cg.zoomed ) {
 		return;
 	}
@@ -464,7 +464,7 @@ void CG_ZoomDown_f( void ) {
 	cg.zoomTime = cg.time;
 }
 
-void CG_ZoomUp_f( void ) { 
+void CG_ZoomUp_f( void ) {
 	if ( !cg.zoomed ) {
 		return;
 	}
@@ -498,18 +498,9 @@ static int CG_CalcFov( void ) {
 		fov_x = 90;
 	} else {
 		// user selectable
-		// JUHOX: reverse the meaning of DF_FIXED_FOV
-#if 0
-		if ( cgs.dmflags & DF_FIXED_FOV ) {
-#else
-		if (!(cgs.dmflags & DF_FIXED_FOV)) {
-#endif
-			// dmflag to prevent wide fov for all clients
-			fov_x = 90;
-		} else {
 			fov_x = cg_fov.value;
-			if ( fov_x < 1 ) {
-				fov_x = 1;
+			if ( fov_x < 30 ) {
+				fov_x = 30;
 			} else if ( fov_x > 160 ) {
 				fov_x = 160;
 			}
@@ -564,7 +555,6 @@ static int CG_CalcFov( void ) {
 			}
 		}
 #endif
-	}
 
 	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
 	fov_y = atan2( cg.refdef.height, x );
@@ -667,7 +657,7 @@ void CG_AddEarthquake(
 
 		if (radius > 0) {
 			float distance;
-			
+
 			distance = Distance(cg.refdef.vieworg, origin);
 			if (distance >= radius) return;
 
@@ -737,7 +727,7 @@ static void AddEarthquakeTremble(earthquake_t* quake) {
 
 		if (quake->radius > 0) {
 			float distance;
-			
+
 			distance = Distance(cg.refdef.vieworg, quake->origin);
 			if (distance >= quake->radius) return;
 
@@ -1117,7 +1107,7 @@ static void CG_AddLensFlareMarker(int lfe) {
 	vec3_t origin;
 
 	lfent = &cgs.lensFlareEntities[lfe];
-	
+
 	memset(&ent, 0, sizeof(ent));
 	ent.reType = RT_MODEL;
 	ent.hModel = trap_R_RegisterModel("models/powerups/health/small_sphere.md3");
@@ -1276,7 +1266,7 @@ static float CG_ComputeVisibleLightSample(
 		CrossProduct(vz, vx, vy);
 		// NOTE: the handedness of (vx, vy, vz) is not important
 	}
-	
+
 	visCount = 0;
 	VectorClear(visOrigin);
 	//offset = 45 * random();
@@ -1575,7 +1565,7 @@ static void CG_AddMapLensFlares(void) {
 
 		VectorMA(cg.refdef.vieworg, SPRITE_DISTANCE, cg.refdef.viewaxis[0], center);
 		VectorSubtract(virtualOrigin, center, dir);
-		
+
 		{
 			vec3_t v;
 
@@ -1593,7 +1583,7 @@ static void CG_AddMapLensFlares(void) {
 			lf = &lfeff->lensFlares[j];
 			if (lfent->angle >= 0) {
 				float innerAngle;
-				
+
 				innerAngle = lfent->angle * lf->entityAngleFactor;
 				if (angleToLightSource > innerAngle) {
 					float fadeAngle;
@@ -1869,7 +1859,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		cloakedPlayers = cg.snap->ps.powerups[PW_INVIS]? qtrue : qfalse;
 		if (!cloakedPlayers) {
 			int i;
-	
+
 			for (i = 0; i < cg.snap->numEntities; i++) {
 				centity_t* cent;
 
