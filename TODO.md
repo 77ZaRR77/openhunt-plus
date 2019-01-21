@@ -1,5 +1,7 @@
 #### BUGS n FIX
 
+* change name of mod to OpenHunt Plus
+* rename hunts pk3s to openhunt and sort them into one (LepusC)
 * fix the bug in UI both skirmish and from multiplayer changing
 ADVANCED OPTIONS simply not applying to game
 probably same goes to game templates
@@ -7,11 +9,11 @@ probably same goes to game templates
 Probably because shooting entry is too low from player,
 also possible to change grapplinghook type by cvar.
 * additional names at the end of credits
-* in mods section should be named as it is: openhunt instead of huntmod
+
 
 
 DONE fix angle of railgun shot so it will simply push player back straight
-
+DONE remove TEAM ARENA and CINEMATICS options on main menu
 
 #### FEATURES
 

@@ -391,13 +391,7 @@ void UI_MainMenu( void ) {
 	y += 3.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
 	s_main.cinematics.generic.type			= MTYPE_PTEXT;
 	s_main.cinematics.generic.flags			= /*QMF_CENTER_JUSTIFY*/QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;	// JUHOX
-	s_main.cinematics.generic.x				= /*320*/620;	// JUHOX
-	s_main.cinematics.generic.y				= y;
-	s_main.cinematics.generic.id			= ID_CINEMATICS;
-	s_main.cinematics.generic.callback		= Main_MenuEvent; 
-	s_main.cinematics.string				= "CINEMATICS";
-	s_main.cinematics.color					= color_red;
-	s_main.cinematics.style					= style;
+
 
 	// JUHOX: init credits button
 #if 1
@@ -414,19 +408,6 @@ void UI_MainMenu( void ) {
 
 	y -= 4.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
 
-	if (UI_TeamArenaExists()) {
-		teamArena = qtrue;
-		y += MAIN_MENU_VERTICAL_SPACING;
-		s_main.teamArena.generic.type			= MTYPE_PTEXT;
-		s_main.teamArena.generic.flags			= /*QMF_CENTER_JUSTIFY*/QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;	// JUHOX
-		s_main.teamArena.generic.x				= /*320*/620;	// JUHOX
-		s_main.teamArena.generic.y				= y;
-		s_main.teamArena.generic.id				= ID_TEAMARENA;
-		s_main.teamArena.generic.callback		= Main_MenuEvent; 
-		s_main.teamArena.string					= "TEAM ARENA";
-		s_main.teamArena.color					= color_red;
-		s_main.teamArena.style					= style;
-	}
 
 	y += MAIN_MENU_VERTICAL_SPACING;
 	s_main.mods.generic.type			= MTYPE_PTEXT;
