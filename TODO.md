@@ -1,8 +1,6 @@
-MOST IMPORTANT FIRST TO MOVE INTO NEWEST GAMECODE
- BASEQ3E FOR EXAMPLE OR ioq3 then bugfix and others.
-
 #### BUGS n FIX
 
+* in mods section should be named as it is: openhunt instead of huntmod
 * fix the bug in UI both skirmish and from multiplayer changing ADVANCED OPTIONS simply not applying to game
 probably same goes to game templates
 * fix the bug with grapplinghook, while crounching it will brake.
