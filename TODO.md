@@ -2,28 +2,29 @@
 
 * in mods section should be named as it is: openhunt instead of huntmod
 * fix angle of railgun shot so it will simply push player back straight
-* fix the bug in UI both skirmish and from multiplayer changing ADVANCED OPTIONS simply not applying to game
+* fix the bug in UI both skirmish and from multiplayer changing
+ADVANCED OPTIONS simply not applying to game
 probably same goes to game templates
 * fix the bug with grapplinghook, while crounching it will brake.
 Probably because shooting entry is too low from player,
 also possible to change grapplinghook type by cvar.
+* additional names at the end of credits
 
 
 #### FEATURES
 
-* include g_unlagged.c
 * More agressive/fast reaction monsters, especially guard type
 * look if possible to make monster-bots and bots separate so real bots can be added
 * investigate more about mapping for gamemode "Escape from Hell" (EFH).
+* include g_unlagged.c (probably not needed)
+
 
 
 #### Addons were made
 
-* autoexec.cfg fix fov
-* small fov fix thanks to ZTM for 1.29h in autoexec.cfg file, in-game player need to press "z" for one time.
-* zzz-hunt_patch.pk3  for fixing gfx in ffa gamemode
-* replacement for - hunt.pk3 and hunt_hellmodels.pk3, now it's red blood (still needs improvement a bit)
-both .pk3s gfx blood textures and models/gibs texture
+* autoexec.cfg - more accurate gameplay
+* zzz-hunt_sfx.pk3 - fix lens gfx in ffa gamemode
+* zzz-hunt_redblood.pk3 - red blood instead of brown
 
 
 #### Additional info
