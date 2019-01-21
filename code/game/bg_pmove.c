@@ -1869,7 +1869,7 @@ static void PM_WeaponShake(playerState_t* ps) {
 		{50, 100, 100, 0, 0, 0},		// WP_GRENADE_LAUNCHER
 		{100, 200, 200, 0, 0, 0},		// WP_ROCKET_LAUNCHER
 		{0, 0, 0, 0, 0, 0},				// WP_LIGHTNING
-		{200, 600, 200, 100, 100, 200},	// WP_RAILGUN
+		{0, 600, 200, 0, 100, 200},	// WP_RAILGUN
 		{25, 0, 0, 15, 0, 0},			// WP_PLASMAGUN
 		{180, 300, 200, 75, 50, 200},	// WP_BFG
 		{0, 0, 0, 0, 0, 0},				// WP_GRAPPLING_HOOK
