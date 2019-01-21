@@ -1,6 +1,7 @@
 #### BUGS n FIX
 
 * in mods section should be named as it is: openhunt instead of huntmod
+* fix angle of railgun shot so it will simply push player back straight
 * fix the bug in UI both skirmish and from multiplayer changing ADVANCED OPTIONS simply not applying to game
 probably same goes to game templates
 * fix the bug with grapplinghook, while crounching it will brake.
