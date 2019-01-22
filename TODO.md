@@ -19,13 +19,8 @@ DONE remove TEAM ARENA and CINEMATICS options on main menu
 
 * More agressive/fast reaction monsters, especially guard type
 * look if possible to make monster-bots and bots separate so real bots can be added
-* investigate more about mapping for gamemode "Escape from Hell" (EFH). Look at entities.
+* investigate more about mapping for gamemode "Escape from Hell" (EFH).
 * include g_unlagged.c (probably not needed)
-* dig https://github.com/zturtleman/quakeconstruct , it has 
-an abillity to control and spawn map entities.
-more info here https://quakeconstruct.wordpress.com/
-
-
 
 
 
