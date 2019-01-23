@@ -12,7 +12,7 @@ build\win32-qvm\cgame\*.asm
 build\win32-qvm\game\*.asm
 build\win32-qvm\ui\*.asm
 
-
+huntpak1.pk3
 hunt\baseq3\*.*
 hunt\pk3cache.dat
 hunt\huntmod\q3config.cfg
