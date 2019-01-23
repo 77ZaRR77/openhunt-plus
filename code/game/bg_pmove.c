@@ -2175,7 +2175,7 @@ static void PM_Weapon( void ) {
 #endif
 		break;
 	case WP_PLASMAGUN:
-		addTime = 100;
+		addTime = 80;
 		break;
 	case WP_RAILGUN:
 		addTime = 1500;

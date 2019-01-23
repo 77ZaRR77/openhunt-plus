@@ -794,9 +794,9 @@ gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.weapon = WP_PLASMAGUN;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = /*20*/15;	// JUHOX
-	bolt->splashDamage = /*15*/10;	// JUHOX
-	bolt->splashRadius = /*20*/SPLASH_RADIUS_PLASMA;	// JUHOX
+	bolt->damage = 15;	
+	bolt->splashDamage = 15;	// JUHOX
+	bolt->splashRadius = 20;	// JUHOX
 	bolt->methodOfDeath = MOD_PLASMA;
 	bolt->splashMethodOfDeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
@@ -967,9 +967,9 @@ gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.weapon = WP_BFG;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashDamage = 100;
-	bolt->splashRadius = 120;
+	bolt->damage = 150;
+	bolt->splashDamage = 120;
+	bolt->splashRadius = 150;
 	bolt->methodOfDeath = MOD_BFG;
 	bolt->splashMethodOfDeath = MOD_BFG_SPLASH;
 	bolt->clipmask = MASK_SHOT;
