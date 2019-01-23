@@ -12,7 +12,7 @@ build\win32-qvm\cgame\*.asm
 build\win32-qvm\game\*.asm
 build\win32-qvm\ui\*.asm
 
-
+huntpak1.pk3
 hunt\baseq3\*.*
 hunt\pk3cache.dat
 hunt\huntmod\q3config.cfg
@@ -147,26 +147,4 @@ build/win32-qvm/vm/cgame/bg_slidemove.asm
 build/win32-qvm/vm/cgame/bg_pmove.asm
 build/win32-qvm/vm/cgame/bg_misc.asm
 build/win32-qvm/vm/cgame/bg_lib.asm
-openhunt/autoexec.cfg
-openhunt/description.txt
-openhunt/docs/hellmodels.txt
-openhunt/docs/history.txt
-openhunt/docs/manual.txt
-openhunt/docs/readme.txt
-openhunt/docs/readme_efh02.txt
-openhunt/docs/readme_music.txt
-openhunt/docs/readme_ZaRR.txt
-openhunt/docs/tutorial.txt
-openhunt/docs/what is hunt mod.txt
-openhunt/hellmodels.cfg
-openhunt/huntpak0.pk3
-openhunt/huntpak1.pk3
-openhunt/playlist.cfg
-openhunt/templates/default.tmpl
-openhunt/tss/ctf_juhox_maxforce.tss
-openhunt/tss/ctf_juhox_pliers.tss
-openhunt/tss/ctf_juhox_powerpliers.tss
-openhunt/tss/ctf_juhox_simple.tss
-openhunt/tss/tdm_juhox_crowd.tss
-openhunt/tss/tdm_juhox_maxforce.tss
-openhunt/tss/tdm_juhox_pliers.tss
+huntpak1.pk3
