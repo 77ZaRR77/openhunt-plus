@@ -1160,7 +1160,6 @@ void UI_Cache_f( void ) {
 	PlayerSettings_Cache();
 	Controls_Cache();
 	Demos_Cache();
-	UI_CinematicsMenu_Cache();
 	Preferences_Cache();
 	ServerInfo_Cache();
 	SpecifyServer_Cache();
@@ -1179,8 +1178,6 @@ void UI_Cache_f( void ) {
 	UI_AddBots_Cache();
 	UI_RemoveBots_Cache();
 	UI_SetupMenu_Cache();
-//	UI_LoadConfig_Cache();
-//	UI_SaveConfigMenu_Cache();
 	UI_BotSelectMenu_Cache();
 	UI_CDKeyMenu_Cache();
 	UI_ModsMenu_Cache();
@@ -1416,11 +1413,6 @@ qboolean UI_ConsoleCommand( int realTime ) {
 		return qtrue;
 	}
 
-	if ( Q_stricmp (cmd, "ui_cinematics") == 0 ) {
-		UI_CinematicsMenu_f();
-		return qtrue;
-	}
-
 	if ( Q_stricmp (cmd, "ui_teamOrders") == 0 ) {
 		UI_TeamOrdersMenu_f();
 		return qtrue;
@@ -1640,17 +1632,11 @@ Adjusted for resolution and screen aspect ratio
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	// expect valid pointers
 	// JUHOX: apply the new scaling
-#if 0
-	*x = *x * uis.scale + uis.bias;
-	*y *= uis.scale;
-	*w *= uis.scale;
-	*h *= uis.scale;
-#else
+
 	*x *= uis.scaleX;
 	*y *= uis.scaleY;
 	*w *= uis.scaleX;
 	*h *= uis.scaleY;
-#endif
 }
 
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {
@@ -1822,8 +1808,6 @@ void UI_Refresh( int realtime )
 		return;
 	}
 
-	// JUHOX: draw precaching pacifier
-#if 1
 	if (uis.precaching) {
 		UI_FillRect(0, 0, 640, 480, colorBlack);
 		UI_DrawString(320, 180, "PRECACHING...", UI_CENTER, colorWhite);
@@ -1838,17 +1822,15 @@ void UI_Refresh( int realtime )
 		}
 		return;
 	}
-#endif
+
 
 	// JUHOX: no UI drawing with TSS Interface open
-#if 1
 	if (uis.tssInterfaceOpen) {
 		if (uis.activemenu) {
 			UI_CloseTSSInterface();
 		}
 		return;
 	}
-#endif
 
 	UI_UpdateCvars();
 
@@ -1858,14 +1840,7 @@ void UI_Refresh( int realtime )
 		{
 			// draw the background
 			// JUHOX: new background
-#if 0
-			if( uis.activemenu->showlogo ) {
-				UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader );
-			}
-			else {
-				UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackNoLogoShader );
-			}
-#else
+
 			UI_DrawBackPic(!uis.activemenu->blackBack);
 
 			if (uis.activemenu->showlogo) {
@@ -1876,7 +1851,6 @@ void UI_Refresh( int realtime )
 
 				UI_FillRect(0, 0, 640, 480, darken);
 			}
-#endif
 		}
 
 		if (uis.activemenu->draw)
@@ -1892,10 +1866,7 @@ void UI_Refresh( int realtime )
 
 	// draw cursor
 	// JUHOX: draw lens flare cursor
-#if 0
-	UI_SetColor( NULL );
-	UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
-#else
+
 	if (uis.activemenu && uis.activemenu->noCursor) {
 		// no cursor
 	}
@@ -1907,7 +1878,7 @@ void UI_Refresh( int realtime )
 		UI_SetColor( NULL );
 		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 	}
-#endif
+
 
 #ifndef NDEBUG
 	if (uis.debug)

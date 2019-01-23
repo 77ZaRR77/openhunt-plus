@@ -11,12 +11,11 @@ MAIN MENU
 
 #define ID_SINGLEPLAYER			10
 #define ID_MULTIPLAYER			11
+
 #define ID_SETUP				12
 #define ID_DEMOS				13
-#define ID_CINEMATICS			14
-#define ID_TEAMARENA		    15
-#define ID_MODS					16
-#define ID_EXIT					17
+#define ID_MODS					14
+#define ID_EXIT					15
 #define MAIN_MENU_VERTICAL_SPACING		34
 
 
@@ -25,14 +24,12 @@ typedef struct {
 
 	menutext_s		singleplayer;
 	menutext_s		multiplayer;
+
 	menutext_s		setup;
 	menutext_s		demos;
-	menutext_s		cinematics;
-	menutext_s		teamArena;
 	menutext_s		mods;
 	menutext_s		exit;
 
-	qhandle_t		bannerModel;
 } mainmenu_t;
 
 
@@ -87,17 +84,8 @@ void Main_MenuEvent (void* ptr, int event) {
 		UI_DemosMenu();
 		break;
 
-	case ID_CINEMATICS:
-		UI_CinematicsMenu();
-		break;
-
 	case ID_MODS:
 		UI_ModsMenu();
-		break;
-
-	case ID_TEAMARENA:
-		trap_Cvar_Set( "fs_game", "missionpack");
-		trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
 		break;
 
 	case ID_EXIT:
@@ -116,7 +104,6 @@ MainMenu_Cache
 void MainMenu_Cache( void ) {
 }
 
-
 sfxHandle_t ErrorMessage_Key(int key)
 {
 	trap_Cvar_Set( "com_errorMessage", "" );
@@ -133,56 +120,24 @@ TTimo: this function is common to the main menu and errorMessage menu
 static void Main_MenuDraw( void ) {
 	vec4_t			color = {0.5, 0, 0, 1};
 
-	if (strlen(s_errorMessage.errorMessage))
-	{
-		UI_DrawProportionalString_AutoWrapped( 320, 192, 600, 20, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+	if (strlen(s_errorMessage.errorMessage)) {
+            UI_DrawProportionalString_AutoWrapped( 320, 192, 600, 20, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+        } else  {
+            // standard menu drawing
+            Menu_Draw( &s_main.menu );
 	}
-	else
-	{
-		// standard menu drawing
 
-		Menu_Draw( &s_main.menu );
-	}
-		UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
-		color[0] = 0.4;
-		color[1] = 0.4;
-		color[2] = 0.4;
-		UI_DrawString(320, 430, "OpenHunt Mod - " __DATE__ "                                        ",  UI_CENTER|UI_SMALLFONT, color);
+    UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
+    //color[0] = 0.4;
+    //color[1] = 0.4;
+    //color[2] = 0.4;
+    UI_DrawString(320, 430, "OpenHunt Mod - " __DATE__ "                                        ",  UI_CENTER|UI_SMALLFONT, color);
 
 	if (uis.startTitleMusic) {
 		trap_S_StartBackgroundTrack("music/hunt.wav", "");
 		uis.startTitleMusic = qfalse;
 	}
-
 }
-
-
-/*
-===============
-UI_TeamArenaExists
-===============
-*/
-static qboolean UI_TeamArenaExists( void ) {
-	int		numdirs;
-	char	dirlist[2048];
-	char	*dirptr;
-  char  *descptr;
-	int		i;
-	int		dirlen;
-
-	numdirs = trap_FS_GetFileList( "$modlist", "", dirlist, sizeof(dirlist) );
-	dirptr  = dirlist;
-	for( i = 0; i < numdirs; i++ ) {
-		dirlen = strlen( dirptr ) + 1;
-    descptr = dirptr + dirlen;
-		if (Q_stricmp(dirptr, "missionpack") == 0) {
-			return qtrue;
-		}
-    dirptr += dirlen + strlen(descptr) + 1;
-	}
-	return qfalse;
-}
-
 
 /*
 ===============
@@ -195,8 +150,7 @@ and that local cinematics are killed
 */
 void UI_MainMenu( void ) {
 	int		y;
-	qboolean teamArena = qfalse;
-	int		style = /*UI_CENTER*/UI_RIGHT | UI_DROPSHADOW;	// JUHOX
+	int		style = UI_RIGHT | UI_DROPSHADOW;
 
 	trap_Cvar_Set( "sv_killserver", "1" );
 
@@ -210,7 +164,7 @@ void UI_MainMenu( void ) {
 		}
 	}
 
-#if 1	// JUHOX: load complete menu system
+	// JUHOX: load complete menu system
 	if (
 		!trap_Cvar_VariableValue("ui_init") &&
 		trap_Cvar_VariableValue("ui_precache")
@@ -218,7 +172,6 @@ void UI_MainMenu( void ) {
 		uis.precaching = 1;
 		trap_Cvar_Set("ui_init", "1");
 	}
-#endif
 
 #if MAPLENSFLARES	// JUHOX: reset g_editmode
 	trap_Cvar_Set("g_editmode", "0");
@@ -298,12 +251,6 @@ void UI_MainMenu( void ) {
 	s_main.demos.style						= style;
 
 	y += MAIN_MENU_VERTICAL_SPACING;
-	y += 3.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
-	s_main.cinematics.generic.type			= MTYPE_PTEXT;
-	s_main.cinematics.generic.flags			= /*QMF_CENTER_JUSTIFY*/QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;	// JUHOX
-
-	y -= 4.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
-
 
 	y += MAIN_MENU_VERTICAL_SPACING;
 	s_main.mods.generic.type			= MTYPE_PTEXT;
@@ -331,13 +278,8 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
 	Menu_AddItem( &s_main.menu,	&s_main.demos );
-
-	if (teamArena) {
-		Menu_AddItem(&s_main.menu, &s_main.teamArena);
-	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
-	Menu_AddItem( &s_main.menu,	&s_main.cinematics );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

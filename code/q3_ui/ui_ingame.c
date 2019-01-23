@@ -2,18 +2,14 @@
 //
 /*
 =======================================================================
-
 INGAME MENU
-
 =======================================================================
 */
 
 
 #include "ui_local.h"
 
-
 #define INGAME_FRAME					"menu/art/addbotframe"
-//#define INGAME_FRAME					"menu/art/cut_frame"
 #define INGAME_MENU_VERTICAL_SPACING	28
 
 #define ID_TEAM					10
@@ -25,11 +21,7 @@ INGAME MENU
 #define ID_RESTART				16
 #define ID_QUIT					17
 #define ID_RESUME				18
-	// JUHOX: no team orders menu
-#if 0
-#define ID_TEAMORDERS			19
-#endif
-#define ID_GAMETEMPLATES		20	// JUHOX
+#define ID_GAMETEMPLATES		20
 
 
 typedef struct {
@@ -37,17 +29,13 @@ typedef struct {
 
 	menubitmap_s	frame;
 	menutext_s		team;
-	menutext_s		gametemplates;	// JUHOX
+	menutext_s		gametemplates;
 	menutext_s		setup;
 	menutext_s		server;
 	menutext_s		leave;
 	menutext_s		restart;
 	menutext_s		addbots;
 	menutext_s		removebots;
-	// JUHOX: no team orders menu
-#if 0
-	menutext_s		teamorders;
-#endif
 	menutext_s		quit;
 	menutext_s		resume;
 } ingamemenu_t;
@@ -66,17 +54,13 @@ static void InGame_RestartAction( qboolean result ) {
 	}
 
 	UI_PopMenu();
-	// JUHOX: callvote for a map_restart if server is non-local
-#if 0
-	trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
-#else
+
 	if (trap_Cvar_VariableValue( "sv_running")) {
 		trap_Cmd_ExecuteText(EXEC_APPEND, "map_restart 0\n");
 	}
 	else {
 		trap_Cmd_ExecuteText(EXEC_APPEND, "callvote map_restart 0\n");
 	}
-#endif
 }
 
 
@@ -141,21 +125,14 @@ void InGame_Event( void *ptr, int notification ) {
 		UI_RemoveBotsMenu();
 		break;
 
-#if 0	// JUHOX: no team orders menu
-	case ID_TEAMORDERS:
-		UI_TeamOrdersMenu();
-		break;
-#endif
-
 	case ID_RESUME:
 		UI_PopMenu();
 		break;
 
-#if 1	// JUHOX: game templates menu event
 	case ID_GAMETEMPLATES:
 		UI_TemplateMenu(qtrue, qfalse);
 		break;
-#endif
+
 	}
 }
 
@@ -167,11 +144,6 @@ InGame_MenuInit
 */
 void InGame_MenuInit( void ) {
 	int		y;
-#if 0	// JUHOX: no team orders menu
-	uiClientState_t	cs;
-	char	info[MAX_INFO_STRING];
-	int		team;
-#endif
 
 	memset( &s_ingame, 0 ,sizeof(ingamemenu_t) );
 
@@ -188,7 +160,6 @@ void InGame_MenuInit( void ) {
 	s_ingame.frame.width				= 466;//359;
 	s_ingame.frame.height				= 332;//256;
 
-	//y = 96;
 	y = 88;
 	y += 0.5*INGAME_MENU_VERTICAL_SPACING;	// JUHOX: compensate the missing menus
 	s_ingame.team.generic.type			= MTYPE_PTEXT;
@@ -201,7 +172,6 @@ void InGame_MenuInit( void ) {
 	s_ingame.team.color					= color_red;
 	s_ingame.team.style					= UI_CENTER|UI_SMALLFONT;
 
-#if 1	// JUHOX: init in-game game templates menu item
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.gametemplates.generic.type		= MTYPE_PTEXT;
 	s_ingame.gametemplates.generic.flags	= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -212,7 +182,6 @@ void InGame_MenuInit( void ) {
 	s_ingame.gametemplates.string			= "GAME TEMPLATES";
 	s_ingame.gametemplates.color			= color_red;
 	s_ingame.gametemplates.style			= UI_CENTER|UI_SMALLFONT;
-#endif
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.addbots.generic.type		= MTYPE_PTEXT;
@@ -241,30 +210,6 @@ void InGame_MenuInit( void ) {
 	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
 		s_ingame.removebots.generic.flags |= QMF_GRAYED;
 	}
-
-#if 0	// JUHOX: no team orders menu
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.teamorders.generic.type		= MTYPE_PTEXT;
-	s_ingame.teamorders.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.teamorders.generic.x			= 320;
-	s_ingame.teamorders.generic.y			= y;
-	s_ingame.teamorders.generic.id			= ID_TEAMORDERS;
-	s_ingame.teamorders.generic.callback	= InGame_Event;
-	s_ingame.teamorders.string				= "TEAM ORDERS";
-	s_ingame.teamorders.color				= color_red;
-	s_ingame.teamorders.style				= UI_CENTER|UI_SMALLFONT;
-	if( !(trap_Cvar_VariableValue( "g_gametype" ) >= GT_TEAM) ) {
-		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
-	}
-	else {
-		trap_GetClientState( &cs );
-		trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-		team = atoi( Info_ValueForKey( info, "t" ) );
-		if( team == TEAM_SPECTATOR ) {
-			s_ingame.teamorders.generic.flags |= QMF_GRAYED;
-		}
-	}
-#endif
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.setup.generic.type			= MTYPE_PTEXT;
@@ -298,11 +243,6 @@ void InGame_MenuInit( void ) {
 	s_ingame.restart.string				= "RESTART ARENA";
 	s_ingame.restart.color				= color_red;
 	s_ingame.restart.style				= UI_CENTER|UI_SMALLFONT;
-#if	0	// JUHOX: "restart arena" always available
-	if( !trap_Cvar_VariableValue( "sv_running" ) ) {
-		s_ingame.restart.generic.flags |= QMF_GRAYED;
-	}
-#endif
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.resume.generic.type			= MTYPE_PTEXT;
@@ -355,12 +295,9 @@ void InGame_MenuInit( void ) {
 
 	Menu_AddItem( &s_ingame.menu, &s_ingame.frame );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.team );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.gametemplates);	// JUHOX
+	Menu_AddItem( &s_ingame.menu, &s_ingame.gametemplates);
 	Menu_AddItem( &s_ingame.menu, &s_ingame.addbots );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.removebots );
-#if 0	// JUHOX: no team orders menu
-	Menu_AddItem( &s_ingame.menu, &s_ingame.teamorders );
-#endif
 	Menu_AddItem( &s_ingame.menu, &s_ingame.setup );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.server );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.restart );

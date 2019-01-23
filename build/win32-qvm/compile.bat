@@ -202,8 +202,6 @@ cd vm\ui
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_cdkey.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_cinematics.c
-@if errorlevel 1 goto quit
 %cc3% %uidir%\ui_confirm.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_connect.c
@@ -217,8 +215,6 @@ cd vm\ui
 %cc3% %uidir%\ui_gameinfo.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_ingame.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_loadconfig.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_main.c
 @if errorlevel 1 goto quit
@@ -243,8 +239,6 @@ cd vm\ui
 %cc3% %uidir%\ui_qmenu.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_removebots.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_saveconfig.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_serverinfo.c
 @if errorlevel 1 goto quit

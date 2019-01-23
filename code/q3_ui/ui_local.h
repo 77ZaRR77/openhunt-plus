@@ -349,13 +349,6 @@ extern void UI_DemosMenu( void );
 extern void Demos_Cache( void );
 
 //
-// ui_cinematics.c
-//
-extern void UI_CinematicsMenu( void );
-extern void UI_CinematicsMenu_f( void );
-extern void UI_CinematicsMenu_Cache( void );
-
-//
 // ui_mods.c
 //
 extern void UI_ModsMenu( void );
@@ -746,18 +739,6 @@ void UI_RemoveBotsMenu( void );
 extern void UI_TeamOrdersMenu( void );
 extern void UI_TeamOrdersMenu_f( void );
 extern void UI_TeamOrdersMenu_Cache( void );
-
-//
-// ui_loadconfig.c
-//
-void UI_LoadConfig_Cache( void );
-void UI_LoadConfigMenu( void );
-
-//
-// ui_saveconfig.c
-//
-void UI_SaveConfigMenu_Cache( void );
-void UI_SaveConfigMenu( void );
 
 //
 // ui_display.c
