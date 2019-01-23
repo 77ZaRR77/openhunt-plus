@@ -210,8 +210,6 @@ cd vm\ui
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_controls2.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_credits.c
-@if errorlevel 1 goto quit
 %cc3% %uidir%\ui_demo2.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_display.c

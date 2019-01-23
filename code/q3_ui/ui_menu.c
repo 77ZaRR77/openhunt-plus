@@ -2,27 +2,21 @@
 //
 /*
 =======================================================================
-
 MAIN MENU
-
 =======================================================================
 */
 
 
 #include "ui_local.h"
 
-
 #define ID_SINGLEPLAYER			10
 #define ID_MULTIPLAYER			11
 #define ID_SETUP				12
 #define ID_DEMOS				13
 #define ID_CINEMATICS			14
-#define ID_TEAMARENA		15
+#define ID_TEAMARENA		    15
 #define ID_MODS					16
 #define ID_EXIT					17
-#define ID_CREDITS				18	// JUHOX
-
-#define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
 
 
@@ -37,7 +31,6 @@ typedef struct {
 	menutext_s		teamArena;
 	menutext_s		mods;
 	menutext_s		exit;
-	menutext_s		credits;	// JUHOX
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -46,7 +39,7 @@ typedef struct {
 static mainmenu_t s_main;
 
 typedef struct {
-	menuframework_s menu;	
+	menuframework_s menu;
 	char errorMessage[4096];
 } errorMessage_t;
 
@@ -62,8 +55,7 @@ static void MainMenu_ExitAction( qboolean result ) {
 	if( !result ) {
 		return;
 	}
-	UI_PopMenu();
-	UI_CreditMenu();
+	trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
 }
 
 
@@ -80,12 +72,7 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_SINGLEPLAYER:
-#if 0	// JUHOX: skip single player menu
-		UI_SPLevelMenu();
-#else
-		//UI_StartServerMenu(qfalse);
 		UI_GTS_Menu(qfalse);
-#endif
 		break;
 
 	case ID_MULTIPLAYER:
@@ -116,12 +103,7 @@ void Main_MenuEvent (void* ptr, int event) {
 	case ID_EXIT:
 		UI_ConfirmMenu( "EXIT GAME?", NULL, MainMenu_ExitAction );
 		break;
-	
-#if 1	// JUHOX: handle credits button
-	case ID_CREDITS:
-		UI_Hunt_Credits();
-		break;
-#endif
+
 	}
 }
 
@@ -132,12 +114,6 @@ MainMenu_Cache
 ===============
 */
 void MainMenu_Cache( void ) {
-#if 0	// JUHOX: we don't use the banner model
-	s_main.bannerModel = trap_R_RegisterModel( MAIN_BANNER_MODEL );
-#endif
-#if 0	// -JUHOX: cache the title music
-	trap_S_RegisterSound("music music/hunt.wav", qfalse);
-#endif
 }
 
 
@@ -155,64 +131,7 @@ TTimo: this function is common to the main menu and errorMessage menu
 ===============
 */
 static void Main_MenuDraw( void ) {
-#if 0	// JUHOX: don't draw the standard menu background
-	refdef_t		refdef;
-	refEntity_t		ent;
-	vec3_t			origin;
-	vec3_t			angles;
-	float			adjust;
-	float			x, y, w, h;
 	vec4_t			color = {0.5, 0, 0, 1};
-
-	// setup the refdef
-
-	memset( &refdef, 0, sizeof( refdef ) );
-
-	refdef.rdflags = RDF_NOWORLDMODEL;
-
-	AxisClear( refdef.viewaxis );
-
-	x = 0;
-	y = 0;
-	w = 640;
-	h = 120;
-	UI_AdjustFrom640( &x, &y, &w, &h );
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
-
-	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (float)uis.realtime / 1000 );
-	refdef.fov_x = 60 + adjust;
-	refdef.fov_y = 19.6875 + adjust;
-
-	refdef.time = uis.realtime;
-
-	origin[0] = 300;
-	origin[1] = 0;
-	origin[2] = -32;
-
-	trap_R_ClearScene();
-
-	// add the model
-
-	memset( &ent, 0, sizeof(ent) );
-
-	adjust = 5.0 * sin( (float)uis.realtime / 5000 );
-	VectorSet( angles, 0, 180 + adjust, 0 );
-	AnglesToAxis( angles, ent.axis );
-	ent.hModel = s_main.bannerModel;
-	VectorCopy( origin, ent.origin );
-	VectorCopy( origin, ent.lightingOrigin );
-	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
-	VectorCopy( ent.origin, ent.oldorigin );
-
-	trap_R_AddRefEntityToScene( &ent );
-
-	trap_R_RenderScene( &refdef );
-#else
-	vec4_t			color = {0.5, 0, 0, 1};
-#endif
 
 	if (strlen(s_errorMessage.errorMessage))
 	{
@@ -224,26 +143,17 @@ static void Main_MenuDraw( void ) {
 
 		Menu_Draw( &s_main.menu );
 	}
-
-	if (uis.demoversion) {
-		UI_DrawProportionalString( 320, 372, "DEMO      FOR MATURE AUDIENCES      DEMO", UI_CENTER|UI_SMALLFONT, color );
-		UI_DrawString( 320, 400, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
-	} else {
 		UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
-#if 1	// JUHOX: draw the Hunt banner
 		color[0] = 0.4;
 		color[1] = 0.4;
 		color[2] = 0.4;
-		UI_DrawString(320, 430, "OpenHunt Mod - " __DATE__ "             www.planetquake.com/modifia",  UI_CENTER|UI_SMALLFONT, color);
-#endif
-	}
+		UI_DrawString(320, 430, "OpenHunt Mod - " __DATE__ "                                        ",  UI_CENTER|UI_SMALLFONT, color);
 
-#if 1	// JUHOX: start title music
 	if (uis.startTitleMusic) {
 		trap_S_StartBackgroundTrack("music/hunt.wav", "");
 		uis.startTitleMusic = qfalse;
 	}
-#endif
+
 }
 
 
@@ -322,17 +232,17 @@ void UI_MainMenu( void ) {
 
 	trap_Cvar_VariableStringBuffer( "com_errorMessage", s_errorMessage.errorMessage, sizeof(s_errorMessage.errorMessage) );
 	if (strlen(s_errorMessage.errorMessage))
-	{	
+	{
 		s_errorMessage.menu.draw = Main_MenuDraw;
 		s_errorMessage.menu.key = ErrorMessage_Key;
 		s_errorMessage.menu.fullscreen = qtrue;
 		s_errorMessage.menu.wrapAround = qtrue;
-		s_errorMessage.menu.showlogo = qtrue;		
+		s_errorMessage.menu.showlogo = qtrue;
 
 		trap_Key_SetCatcher( KEYCATCH_UI );
 		uis.menusp = 0;
 		UI_PushMenu ( &s_errorMessage.menu );
-		
+
 		return;
 	}
 
@@ -348,7 +258,7 @@ void UI_MainMenu( void ) {
 	s_main.singleplayer.generic.x			= /*320*/620;	// JUHOX
 	s_main.singleplayer.generic.y			= y;
 	s_main.singleplayer.generic.id			= ID_SINGLEPLAYER;
-	s_main.singleplayer.generic.callback	= Main_MenuEvent; 
+	s_main.singleplayer.generic.callback	= Main_MenuEvent;
 	s_main.singleplayer.string				= "SINGLE PLAYER";
 	s_main.singleplayer.color				= color_red;
 	s_main.singleplayer.style				= style;
@@ -359,7 +269,7 @@ void UI_MainMenu( void ) {
 	s_main.multiplayer.generic.x			= /*320*/620;	// JUHOX
 	s_main.multiplayer.generic.y			= y;
 	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
-	s_main.multiplayer.generic.callback		= Main_MenuEvent; 
+	s_main.multiplayer.generic.callback		= Main_MenuEvent;
 	s_main.multiplayer.string				= "MULTIPLAYER";
 	s_main.multiplayer.color				= color_red;
 	s_main.multiplayer.style				= style;
@@ -371,7 +281,7 @@ void UI_MainMenu( void ) {
 	s_main.setup.generic.x					= /*320*/620;	// JUHOX
 	s_main.setup.generic.y					= y;
 	s_main.setup.generic.id					= ID_SETUP;
-	s_main.setup.generic.callback			= Main_MenuEvent; 
+	s_main.setup.generic.callback			= Main_MenuEvent;
 	s_main.setup.string						= "SETUP";
 	s_main.setup.color						= color_red;
 	s_main.setup.style						= style;
@@ -382,7 +292,7 @@ void UI_MainMenu( void ) {
 	s_main.demos.generic.x					= /*320*/620;	// JUHOX
 	s_main.demos.generic.y					= y;
 	s_main.demos.generic.id					= ID_DEMOS;
-	s_main.demos.generic.callback			= Main_MenuEvent; 
+	s_main.demos.generic.callback			= Main_MenuEvent;
 	s_main.demos.string						= "DEMOS";
 	s_main.demos.color						= color_red;
 	s_main.demos.style						= style;
@@ -391,20 +301,6 @@ void UI_MainMenu( void ) {
 	y += 3.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
 	s_main.cinematics.generic.type			= MTYPE_PTEXT;
 	s_main.cinematics.generic.flags			= /*QMF_CENTER_JUSTIFY*/QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;	// JUHOX
-
-
-	// JUHOX: init credits button
-#if 1
-	s_main.credits.generic.type			= MTYPE_PTEXT;
-	s_main.credits.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.credits.generic.x			= 20;
-	s_main.credits.generic.y			= y;
-	s_main.credits.generic.id			= ID_CREDITS;
-	s_main.credits.generic.callback		= Main_MenuEvent; 
-	s_main.credits.string				= "CREDITS";
-	s_main.credits.color				= color_red;
-	s_main.credits.style				= UI_LEFT | UI_DROPSHADOW;
-#endif
 
 	y -= 4.5 * MAIN_MENU_VERTICAL_SPACING;	// JUHOX
 
@@ -415,7 +311,7 @@ void UI_MainMenu( void ) {
 	s_main.mods.generic.x				= /*320*/620;	// JUHOX
 	s_main.mods.generic.y				= y;
 	s_main.mods.generic.id				= ID_MODS;
-	s_main.mods.generic.callback		= Main_MenuEvent; 
+	s_main.mods.generic.callback		= Main_MenuEvent;
 	s_main.mods.string					= "MODS";
 	s_main.mods.color					= color_red;
 	s_main.mods.style					= style;
@@ -426,7 +322,7 @@ void UI_MainMenu( void ) {
 	s_main.exit.generic.x					= /*320*/620;	// JUHOX
 	s_main.exit.generic.y					= y;
 	s_main.exit.generic.id					= ID_EXIT;
-	s_main.exit.generic.callback			= Main_MenuEvent; 
+	s_main.exit.generic.callback			= Main_MenuEvent;
 	s_main.exit.string						= "EXIT";
 	s_main.exit.color						= color_red;
 	s_main.exit.style						= style;
@@ -435,32 +331,16 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
 	Menu_AddItem( &s_main.menu,	&s_main.demos );
-#if 0	// JUHOX: attend to new menu item order for proper keyboard selection
-	Menu_AddItem( &s_main.menu,	&s_main.cinematics );
-	if (teamArena) {
-		Menu_AddItem( &s_main.menu,	&s_main.teamArena );
-	}
-	Menu_AddItem( &s_main.menu,	&s_main.mods );
-	Menu_AddItem( &s_main.menu,	&s_main.exit );             
-#else
+
 	if (teamArena) {
 		Menu_AddItem(&s_main.menu, &s_main.teamArena);
 	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
-	Menu_AddItem( &s_main.menu,	&s_main.exit );             
+	Menu_AddItem( &s_main.menu,	&s_main.exit );
 	Menu_AddItem( &s_main.menu,	&s_main.cinematics );
-#endif
-
-#if 1	// JUHOX: add credits button
-	Menu_AddItem(&s_main.menu, &s_main.credits);
-#endif
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
 	UI_PushMenu ( &s_main.menu );
-#if 1	// JUHOX: play the title music
-	//trap_S_StartBackgroundTrack("music/hunt.wav", "");
 	uis.startTitleMusic = qtrue;
-#endif
-
 }

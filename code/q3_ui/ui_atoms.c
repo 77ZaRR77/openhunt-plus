@@ -337,7 +337,7 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 
 	// draw the colored text
 	trap_R_SetColor( color );
-	
+
 	// JUHOX: apply the new scaling
 #if 0
 	ax = x * uis.scale + uis.bias;
@@ -471,7 +471,7 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	trap_R_SetColor( color );
 
 	// JUHOX: apply the new scaling
-#if 0	
+#if 0
 	ax = x * uis.scale + uis.bias;
 	ay = y * uis.scale;
 #else
@@ -608,9 +608,9 @@ void UI_DrawProportionalString_AutoWrapped( int x, int y, int xmax, int ystep, c
 
 	if (!str || str[0]=='\0')
 		return;
-	
+
 	sizeScale = UI_ProportionalSizeScale( style );
-	
+
 	Q_strncpyz(buf, str, sizeof(buf));
 	s1 = s2 = s3 = buf;
 
@@ -640,7 +640,7 @@ void UI_DrawProportionalString_AutoWrapped( int x, int y, int xmax, int ystep, c
         s2++;
         if (*s2 != '\0') // if we are printing an overflowing line we have s2 == s3
           UI_DrawProportionalString(x, y, s2, style, color);
-				break; 
+				break;
       }
 			s2++;
 			s1 = s2;
@@ -684,7 +684,7 @@ static void UI_DrawString2( int x, int y, const char* str, vec4_t color, int cha
 	trap_R_SetColor( color );
 
 	// JUHOX: apply the new scaling
-#if 0	
+#if 0
 	ax = x * uis.scale + uis.bias;
 	ay = y * uis.scale;
 	aw = charw * uis.scale;
@@ -810,13 +810,13 @@ void UI_DrawString( int x, int y, const char* str, int style, vec4_t color )
 
 	if (style & UI_PULSE)
 	{
-		lowlight[0] = 0.8*color[0]; 
+		lowlight[0] = 0.8*color[0];
 		lowlight[1] = 0.8*color[1];
 		lowlight[2] = 0.8*color[2];
 		lowlight[3] = 0.8*color[3];
 		UI_LerpColor(color,lowlight,newcolor,0.5+0.5*sin(uis.realtime/PULSE_DIVISOR));
 		drawcolor = newcolor;
-	}	
+	}
 	else
 		drawcolor = color;
 
@@ -975,7 +975,7 @@ static void UITSSI_AddEventToBuffer(ui_tssiEventBuffer_t* buffer, int data1, int
 	if (!buffer->cvar) return;
 
 	event = &buffer->events[buffer->sequenceCounter % TSSI_EVENTBUFFER_SIZE];
-	
+
 	event->sequence = buffer->sequenceCounter;
 	event->data1 = data1;
 	event->data2 = data2;
@@ -1121,7 +1121,7 @@ void UI_MouseEvent( int dx, int dy )
 
 		((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor]))->flags |= QMF_HASMOUSEFOCUS;
 		return;
-	}  
+	}
 
 	if (uis.activemenu->nitems > 0) {
 		// out of any region
@@ -1273,7 +1273,7 @@ static void UI_DefTemplate_f(void) {
 	Com_sprintf(cvarName, sizeof(cvarName), "%s%03d", uis.templateName, uis.templateCounter);
 	trap_Cvar_Register(NULL, cvarName, "", CVAR_ROM | CVAR_NORESTART);
 	trap_Cvar_Set(cvarName, tmpl);
-	
+
 	uis.templateCounter++;
 }
 
@@ -1686,7 +1686,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
 		t0 = 0;
 		t1 = 1;
 	}
-	
+
 	UI_AdjustFrom640( &x, &y, &w, &h );
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }
@@ -1787,28 +1787,23 @@ JUHOX: UI_CursorLensFlares
 =================
 */
 static void UI_CursorLensFlares(void) {
-	const float alpha = 0.09;
+	const float alpha = 0.2;
 
-	UI_LensFlare(3, uis.lfRing, 1.7, 1, 1, 1, alpha);
-	UI_LensFlare(1.5, uis.lfDisc, 0.9, 1, 0.667, 0.667, alpha);
-	UI_LensFlare(1, uis.lfGlare, 0.5, 1, 1, 1, 2.5 * alpha);
-	/*
-	UI_LensFlare(1, uis.cursorCore1, 0.5, 1, 1, 1, 0.15 * alpha);
-	UI_LensFlare(1, uis.cursorCore2, 0.5, 1, 1, 1, 0.15 * alpha);
-	UI_LensFlare(1, uis.cursorCore3, 0.5, 1, 1, 1, 0.15 * alpha);
-	*/
-	UI_LensFlare(1, uis.lfGlare, 0.8, 0.5, 0.7, 1, 5 * alpha);
-	UI_LensFlare(1, uis.lfGlare, 2, 1, 1, 1, 5 * alpha);
-	UI_LensFlare(1, uis.lfStar, 1.5, 1, 1, 1, 5 * alpha);
-	UI_LensFlare(0.5, uis.lfDisc, 1.5, 0.667, 1, 1, alpha);
-	UI_LensFlare(0.3, uis.lfRing, 1, 0.75, 1, 0.75, alpha);
-	UI_LensFlare(0.07, uis.lfDisc, 0.7, 0.82, 1, 0.92, alpha);
-	UI_LensFlare(-0.25, uis.lfRing, 1.4, 0.9, 1, 1, alpha);
-	UI_LensFlare(-0.45, uis.lfDisc, 0.2, 0.75, 1, 1, alpha);
-	UI_LensFlare(-0.6, uis.lfDisc, 0.4, 1, 0.78, 1, alpha);
-	UI_LensFlare(-0.72, uis.lfDisc, 1.1, 1, 0.78, 0.667, alpha);
-	UI_LensFlare(-1.0, uis.lfRing, 2, 1, 1, 0.5, alpha);
-	UI_LensFlare(-3.4, uis.lfDisc, 1.3, 0.92, 0.96, 1, alpha);
+	UI_LensFlare(3, uis.lfRing, 1.7, 0, 1, 0, alpha);
+	UI_LensFlare(1.5, uis.lfDisc, 0.9, 0, 0.667, 0, alpha);
+	UI_LensFlare(1, uis.lfGlare, 0.5, 1, 0, 1, 2 * alpha);
+	UI_LensFlare(1, uis.lfGlare, 0.8, 0.5, 0, 1, 2 * alpha);
+	UI_LensFlare(1, uis.lfGlare, 2, 1, 0, 1, 2 * alpha);
+	UI_LensFlare(1, uis.lfStar, 1.5, 1, 0, 1, 2 * alpha);
+	UI_LensFlare(0.5, uis.lfDisc, 1.5, 0, 1, 0, alpha);
+	UI_LensFlare(0.3, uis.lfRing, 1, 0, 1, 0, alpha);
+	UI_LensFlare(0.07, uis.lfDisc, 0.7, 0, 1, 0, alpha);
+	UI_LensFlare(-0.25, uis.lfRing, 1.4, 0, 1, 0, alpha);
+	UI_LensFlare(-0.45, uis.lfDisc, 0.2, 0, 1, 0, alpha);
+	UI_LensFlare(-0.6, uis.lfDisc, 0.4, 0, 0.78, 0, alpha);
+	UI_LensFlare(-0.72, uis.lfDisc, 1.1, 0, 0.78, 0, alpha);
+	UI_LensFlare(-1.0, uis.lfRing, 2, 0, 1, 0, alpha);
+	UI_LensFlare(-3.4, uis.lfDisc, 1.3, 0, 0.96, 0, alpha);
 
 	trap_R_SetColor(NULL);
 }
