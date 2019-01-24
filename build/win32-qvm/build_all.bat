@@ -1,6 +1,10 @@
-@echo 
+@echo
 
-rem make sure we have a safe environement
+@rem test environments path and compression rate [1-10]
+set testdir=C:\Users\rbrei\Desktop\q3openhunt
+set cmprate=8
+
+@rem make sure we have a safe environement
 set LIBRARY=
 set INCLUDE=
 
@@ -8,18 +12,95 @@ set cgamedir=..\..\..\..\code\cgame
 set gamedir=..\..\..\..\code\game
 set uidir=..\..\..\..\code\q3_ui
 
+set vmdir=%~dp0vm\
 set tooldir=%~dp0tools\
-set pk3=%~dp0openhunt.pk3
+set rootdir=%~dp0\
+
 
 set cc1=%tooldir%q3lcc -DQ3_VM -DCGAME  -S -Wf-g -I%cgamedir% -I%gamedir% %1
 set cc2=%tooldir%q3lcc -DQ3_VM -DQAGAME -S -Wf-g -I%gamedir% %1
 set cc3=%tooldir%q3lcc -DQ3_VM -DQ3UI   -S -Wf-g -I%uidir% -I%gamedir% %1
 
-rem its important to set -vq3 flag for new q3asm 
-rem or qvm's will not run on original 1.32c binaries
+@rem its important to set -vq3 flag for new q3asm 
+@rem or qvm's will not run on original 1.32c binaries
 set as1=%tooldir%q3asm -vq3 -r -m -v -o cgame -f %~dp0\cgame
 set as2=%tooldir%q3asm -vq3 -r -m -v -o qagame -f %~dp0\game
 set as3=%tooldir%q3asm -vq3 -r -m -v -o ui -f %~dp0\q3_ui
+
+@rem ---------
+@rem * CGAME *
+@rem ---------
+
+if exist vm\cgame goto cd1
+mkdir vm\cgame
+:cd1
+cd vm\cgame
+@if errorlevel 1 goto quit
+
+%cc1% %cgamedir%\cg_main.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_consolecmds.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_draw.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_drawtools.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_effects.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_ents.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_event.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_info.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_localents.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_marks.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_players.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_playerstate.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_predict.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_scoreboard.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_servercmds.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_snapshot.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_view.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_weapons.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_playlist.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_tss.c
+@if errorlevel 1 goto quit
+%cc1% %cgamedir%\cg_tssfile.c
+@if errorlevel 1 goto quit
+
+
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\bg_lib.c
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\bg_misc.c
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\bg_pmove.c
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\bg_slidemove.c
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\q_math.c
+@if errorlevel 1 goto quit
+%cc1% %gamedir%\q_shared.c
+@if errorlevel 1 goto quit
+
+@rem run assembler
+%as1%
+@if errorlevel 1 goto quit
+
+move cgame.qvm ..
+cd ..\..
 
 
 @rem --------
@@ -127,15 +208,11 @@ cd vm\ui
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_cdkey.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_cinematics.c
-@if errorlevel 1 goto quit
 %cc3% %uidir%\ui_confirm.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_connect.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_controls2.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_credits.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_demo2.c
 @if errorlevel 1 goto quit
@@ -144,8 +221,6 @@ cd vm\ui
 %cc3% %uidir%\ui_gameinfo.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_ingame.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_loadconfig.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_main.c
 @if errorlevel 1 goto quit
@@ -170,8 +245,6 @@ cd vm\ui
 %cc3% %uidir%\ui_qmenu.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_removebots.c
-@if errorlevel 1 goto quit
-%cc3% %uidir%\ui_saveconfig.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_serverinfo.c
 @if errorlevel 1 goto quit
@@ -219,13 +292,32 @@ cd ..\..
 copy vm\ui\ui.jts vm
 copy vm\game\qagame.jts vm
 copy vm\cgame\cgame.jts vm
+xcopy /Y vm\*.* ..\..\assets\vm\
 
-%tooldir%7za.exe a -tzip -mx=9 -mpass=8 -mfb=255 -- %pk3% vm\*.*
-rem rmdir /S /Q vm
 
+
+@rem packing pk3internal stuff
 cd ..\..\assets
 @if errorlevel 1 goto quit
-%tooldir%7za.exe a -tzip -mx=9 -mpass=8 -mfb=255 -r -- %pk3% *.*
+%tooldir%7za.exe a -tzip -mx=%cmprate% -mpass=8 -mfb=255 -r -- openhunt.pk3 *.*
+copy openhunt.pk3 ..\assets2\openhunt\openhunt.pk3
+del openhunt.pk3
+rd /s /q vm
+
+@rem packing external stuff
+cd ..\assets2
+@if errorlevel 1 goto quit
+%tooldir%7za.exe a -tzip -mx=%cmprate% -mpass=8 -mfb=255 -r -- openhunt.zip *.*
+del openhunt\openhunt.pk3
+
+@rem move file to release dir
+if exist ..\release goto cd4
+mkdir ..\release
+:cd4
+copy openhunt.zip ..\release\openhunt.zip
+del openhunt.zip
+if exist %testdir% xcopy /I /Y /E *.* %testdir%\
+rd /s/q %vmdir%
 
 :quit
 pause

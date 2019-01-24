@@ -1,0 +1,1 @@
+start quake3e.x64.exe +set fs_game openhunt +connect hunt.myonlineportal.net:27960
