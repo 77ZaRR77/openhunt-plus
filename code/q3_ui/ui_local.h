@@ -55,7 +55,6 @@ extern vmCvar_t	ui_drawCrosshair;
 extern vmCvar_t	ui_drawCrosshairNames;
 extern vmCvar_t	ui_marks;
 
-extern vmCvar_t ui_lensFlare;	// JUHOX
 extern vmCvar_t	ui_hiDetailTitle;	// JUHOX
 
 extern vmCvar_t	ui_server1;

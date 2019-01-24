@@ -58,8 +58,8 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	case UI_DRAW_CONNECT_SCREEN:
 		UI_DrawConnectScreen( arg0 );
 		return 0;
-	case UI_HASUNIQUECDKEY:				// mod authors need to observe this
-		return /*qtrue*/qfalse;  // bk010117 - change this to qfalse for mods!
+	case UI_HASUNIQUECDKEY:		 // mod authors need to observe this
+		return qfalse;          // bk010117 - change this to qfalse for mods!
 	}
 
 	return -1;
@@ -127,7 +127,6 @@ vmCvar_t	ui_drawCrosshair;
 vmCvar_t	ui_drawCrosshairNames;
 vmCvar_t	ui_marks;
 
-vmCvar_t	ui_lensFlare;	// JUHOX
 vmCvar_t	ui_hiDetailTitle;	// JUHOX
 
 vmCvar_t	ui_server1;
@@ -339,7 +338,6 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "tssi_mouse", "", CVAR_ROM },	// JUHOX
 	{ NULL, "tmplcmd", "", CVAR_ROM },		// JUHOX
 	{ NULL, "tmplfiles", "", CVAR_ROM | CVAR_NORESTART },	// JUHOX
-	{ &ui_lensFlare, "ui_lensFlare", "1", CVAR_ARCHIVE },	// JUHOX
 	{ &ui_hiDetailTitle, "ui_hiDetailTitle", "1", CVAR_ARCHIVE },	// JUHOX
 
 	{ &ui_server1, "server1", "", CVAR_ARCHIVE },

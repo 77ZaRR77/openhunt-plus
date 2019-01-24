@@ -1769,33 +1769,6 @@ static void UI_LensFlare(float pos, qhandle_t shader, float radius, float r, flo
 
 /*
 =================
-JUHOX: UI_CursorLensFlares
-=================
-*/
-static void UI_CursorLensFlares(void) {
-	const float alpha = 0.2;
-
-	UI_LensFlare(3, uis.lfRing, 1.7, 0, 1, 0, alpha);
-	UI_LensFlare(1.5, uis.lfDisc, 0.9, 0, 0.667, 0, alpha);
-	UI_LensFlare(1, uis.lfGlare, 0.5, 1, 0, 1, 2 * alpha);
-	UI_LensFlare(1, uis.lfGlare, 0.8, 0.5, 0, 1, 2 * alpha);
-	UI_LensFlare(1, uis.lfGlare, 2, 1, 0, 1, 2 * alpha);
-	UI_LensFlare(1, uis.lfStar, 1.5, 1, 0, 1, 2 * alpha);
-	UI_LensFlare(0.5, uis.lfDisc, 1.5, 0, 1, 0, alpha);
-	UI_LensFlare(0.3, uis.lfRing, 1, 0, 1, 0, alpha);
-	UI_LensFlare(0.07, uis.lfDisc, 0.7, 0, 1, 0, alpha);
-	UI_LensFlare(-0.25, uis.lfRing, 1.4, 0, 1, 0, alpha);
-	UI_LensFlare(-0.45, uis.lfDisc, 0.2, 0, 1, 0, alpha);
-	UI_LensFlare(-0.6, uis.lfDisc, 0.4, 0, 0.78, 0, alpha);
-	UI_LensFlare(-0.72, uis.lfDisc, 1.1, 0, 0.78, 0, alpha);
-	UI_LensFlare(-1.0, uis.lfRing, 2, 0, 1, 0, alpha);
-	UI_LensFlare(-3.4, uis.lfDisc, 1.3, 0, 0.96, 0, alpha);
-
-	trap_R_SetColor(NULL);
-}
-
-/*
-=================
 UI_Refresh
 =================
 */
@@ -1865,18 +1838,11 @@ void UI_Refresh( int realtime )
 	}
 
 	// draw cursor
-	// JUHOX: draw lens flare cursor
-
 	if (uis.activemenu && uis.activemenu->noCursor) {
-		// no cursor
-	}
-	else if (ui_lensFlare.integer) {
-		UI_CursorLensFlares();
-	}
-	else
-	{
-		UI_SetColor( NULL );
-		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
+        // no cursor
+    } else {
+        UI_SetColor( NULL );
+        UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 	}
 
 
