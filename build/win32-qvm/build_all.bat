@@ -299,6 +299,7 @@ cd ..\..\assets
 @if errorlevel 1 goto quit
 %tooldir%7za.exe a -tzip -mx=%cmprate% -mpass=8 -mfb=255 -r -- openhunt.pk3 *.*
 copy openhunt.pk3 ..\assets2\openhunt\openhunt.pk3
+if exist %testdir% xcopy /I /Y openhunt.pk3 %testdir%\openhunt\
 del openhunt.pk3
 rd /s /q vm
 
