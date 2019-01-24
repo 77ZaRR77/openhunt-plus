@@ -5,7 +5,7 @@
 * fix the bug in UI both skirmish and from multiplayer changing
 ADVANCED OPTIONS simply not applying to game
 probably same goes to game templates
-* fix the bug with grapplinghook, while crounching it will brake.
+* fix the bug with grapplinghook, while crouching it will brake.
 Probably because shooting entry is too low from player,
 also possible to change grapplinghook type by cvar.
 * additional names at the end of credits
