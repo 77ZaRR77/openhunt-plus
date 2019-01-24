@@ -910,14 +910,9 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 		UI_ConfirmMenu( "Insert the CD", (voidfunc_f)NULL, NeedCDAction );
 		return;
 	case UIMENU_BAD_CD_KEY:
-		UI_ConfirmMenu( "Bad CD Key", (voidfunc_f)NULL, NeedCDKeyAction );
+		//UI_ConfirmMenu( "Bad CD Key", (voidfunc_f)NULL, NeedCDKeyAction );
 		return;
 	case UIMENU_INGAME:
-		/*
-		//GRank
-		UI_RankingsMenu();
-		return;
-		*/
 		trap_Cvar_Set( "cl_paused", "1" );
 		UI_InGameMenu();
 		return;
@@ -1179,9 +1174,7 @@ void UI_Cache_f( void ) {
 	UI_RemoveBots_Cache();
 	UI_SetupMenu_Cache();
 	UI_BotSelectMenu_Cache();
-	UI_CDKeyMenu_Cache();
 	UI_ModsMenu_Cache();
-
 }
 
 
@@ -1429,7 +1422,7 @@ qboolean UI_ConsoleCommand( int realTime ) {
 	}
 
 	if ( Q_stricmp (cmd, "ui_cdkey") == 0 ) {
-		UI_CDKeyMenu_f();
+		//UI_CDKeyMenu_f();
 		return qtrue;
 	}
 

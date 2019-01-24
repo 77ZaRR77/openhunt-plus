@@ -74,10 +74,6 @@ extern vmCvar_t	ui_server14;
 extern vmCvar_t	ui_server15;
 extern vmCvar_t	ui_server16;
 
-extern vmCvar_t	ui_cdkey;
-extern vmCvar_t	ui_cdkeychecked;
-
-
 //
 // ui_qmenu.c
 //
@@ -352,13 +348,6 @@ extern void Demos_Cache( void );
 //
 extern void UI_ModsMenu( void );
 extern void UI_ModsMenu_Cache( void );
-
-//
-// ui_cdkey.c
-//
-extern void UI_CDKeyMenu( void );
-extern void UI_CDKeyMenu_Cache( void );
-extern void UI_CDKeyMenu_f( void );
 
 //
 // ui_playermodel.c
@@ -713,10 +702,10 @@ void			trap_LAN_ClearPing( int n );
 void			trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
 void			trap_LAN_GetPingInfo( int n, char *buf, int buflen );
 int				trap_MemoryRemaining( void );
-void			trap_GetCDKey( char *buf, int buflen );
-void			trap_SetCDKey( char *buf );
+//void			trap_GetCDKey( char *buf, int buflen );
+//void			trap_SetCDKey( char *buf );
 
-qboolean               trap_VerifyCDKey( const char *key, const char *chksum); // bk001208 - RC4
+//qboolean        trap_VerifyCDKey( const char *key, const char *chksum); // bk001208 - RC4
 
 void			trap_SetPbClStatus( int status );
 

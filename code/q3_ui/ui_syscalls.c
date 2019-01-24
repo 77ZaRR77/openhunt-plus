@@ -26,7 +26,7 @@ void trap_Error( const char *string ) {
 }
 
 int trap_Milliseconds( void ) {
-	return syscall( UI_MILLISECONDS ); 
+	return syscall( UI_MILLISECONDS );
 }
 
 void trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags ) {
@@ -56,7 +56,7 @@ void trap_Cvar_SetValue( const char *var_name, float value ) {
 }
 
 void trap_Cvar_Reset( const char *name ) {
-	syscall( UI_CVAR_RESET, name ); 
+	syscall( UI_CVAR_RESET, name );
 }
 
 void trap_Cvar_Create( const char *var_name, const char *var_value, int flags ) {
@@ -276,11 +276,11 @@ int trap_MemoryRemaining( void ) {
 }
 
 void trap_GetCDKey( char *buf, int buflen ) {
-	syscall( UI_GET_CDKEY, buf, buflen );
+	//syscall( UI_GET_CDKEY, buf, buflen );
 }
 
 void trap_SetCDKey( char *buf ) {
-	syscall( UI_SET_CDKEY, buf );
+	//syscall( UI_SET_CDKEY, buf );
 }
 
 int trap_PC_AddGlobalDefine( char *define ) {
@@ -319,7 +319,7 @@ int trap_RealTime(qtime_t *qtime) {
 int trap_CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits) {
   return syscall(UI_CIN_PLAYCINEMATIC, arg0, xpos, ypos, width, height, bits);
 }
- 
+
 // stops playing the cinematic and ends it.  should always return FMV_EOF
 // cinematics must be stopped in reverse order of when they are started
 e_status trap_CIN_StopCinematic(int handle) {
@@ -331,13 +331,13 @@ e_status trap_CIN_StopCinematic(int handle) {
 e_status trap_CIN_RunCinematic (int handle) {
   return syscall(UI_CIN_RUNCINEMATIC, handle);
 }
- 
+
 
 // draws the current frame
 void trap_CIN_DrawCinematic (int handle) {
   syscall(UI_CIN_DRAWCINEMATIC, handle);
 }
- 
+
 
 // allows you to resize the animation dynamically
 void trap_CIN_SetExtents (int handle, int x, int y, int w, int h) {
@@ -346,7 +346,6 @@ void trap_CIN_SetExtents (int handle, int x, int y, int w, int h) {
 
 
 qboolean trap_VerifyCDKey( const char *key, const char *chksum) {
-	return syscall( UI_VERIFY_CDKEY, key, chksum);
+	//return syscall( UI_VERIFY_CDKEY, key, chksum);
 }
 
- 

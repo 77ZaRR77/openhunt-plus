@@ -58,7 +58,7 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	case UI_DRAW_CONNECT_SCREEN:
 		UI_DrawConnectScreen( arg0 );
 		return 0;
-	case UI_HASUNIQUECDKEY:		 // mod authors need to observe this
+	case UI_HASUNIQUECDKEY:		// mod authors need to observe this
 		return qfalse;          // bk010117 - change this to qfalse for mods!
 	}
 
@@ -146,7 +146,7 @@ vmCvar_t	ui_server14;
 vmCvar_t	ui_server15;
 vmCvar_t	ui_server16;
 
-vmCvar_t	ui_cdkeychecked;
+
 
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t		cvarTable[] = {
@@ -364,9 +364,9 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "cg_music", "0", CVAR_ARCHIVE },	// JUHOX
 #endif
 
-	{ NULL, "developer", "0", CVAR_INIT},	// JUHOX
+	{ NULL, "developer", "0", CVAR_INIT}	// JUHOX
+	// SLK @ZARR - this seems your developer issue - might cause problem if called while running. should work from command line tho
 
-	{ &ui_cdkeychecked, "ui_cdkeychecked", "0", CVAR_ROM }
 };
 
 // bk001129 - made static to avoid aliasing

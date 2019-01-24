@@ -9,12 +9,12 @@ Plus 3 cosmetic patches included, fov fix, lens flare in ffa bugfix and redblood
 Compile: run build\win32-qvm\build_all.bat
 note: edit batchfile to your needs!
 
-# test environments path example
+#### test environments path example
 set testdir=C:\Users\rbrei\Desktop\q3openhunt
 
 testdir is the path where you have your baseq3 installed, for testing the mod with fresh baked files
 
-# compression rate (1-10?)
+#### compression rate (1-10?)
 you can set compression rate of the pk3 and zip archive as well
 set cmprate=1
 

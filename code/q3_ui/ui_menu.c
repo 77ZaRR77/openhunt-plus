@@ -154,16 +154,6 @@ void UI_MainMenu( void ) {
 
 	trap_Cvar_Set( "sv_killserver", "1" );
 
-	if( !uis.demoversion && !ui_cdkeychecked.integer ) {
-		char	key[17];
-
-		trap_GetCDKey( key, sizeof(key) );
-		if( trap_VerifyCDKey( key, NULL ) == qfalse ) {
-			UI_CDKeyMenu();
-			return;
-		}
-	}
-
 	// JUHOX: load complete menu system
 	if (
 		!trap_Cvar_VariableValue("ui_init") &&

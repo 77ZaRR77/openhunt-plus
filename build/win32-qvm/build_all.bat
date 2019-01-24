@@ -21,7 +21,7 @@ set cc1=%tooldir%q3lcc -DQ3_VM -DCGAME  -S -Wf-g -I%cgamedir% -I%gamedir% %1
 set cc2=%tooldir%q3lcc -DQ3_VM -DQAGAME -S -Wf-g -I%gamedir% %1
 set cc3=%tooldir%q3lcc -DQ3_VM -DQ3UI   -S -Wf-g -I%uidir% -I%gamedir% %1
 
-@rem its important to set -vq3 flag for new q3asm 
+@rem its important to set -vq3 flag for new q3asm
 @rem or qvm's will not run on original 1.32c binaries
 set as1=%tooldir%q3asm -vq3 -r -m -v -o cgame -f %~dp0\cgame
 set as2=%tooldir%q3asm -vq3 -r -m -v -o qagame -f %~dp0\game
@@ -113,13 +113,13 @@ mkdir vm\game
 cd vm\game
 @if errorlevel 1 goto quit
 
-%cc2% %gamedir%\g_main.c 
+%cc2% %gamedir%\g_main.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\g_syscalls.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\ai_chat.c 
+%cc2% %gamedir%\ai_chat.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\ai_cmd.c 
+%cc2% %gamedir%\ai_cmd.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\ai_dmnet.c
 @if errorlevel 1 goto quit
@@ -133,11 +133,11 @@ cd vm\game
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\bg_lib.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\bg_misc.c 
+%cc2% %gamedir%\bg_misc.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\bg_pmove.c
 @if errorlevel 1 goto quit
-%cc2% %gamedir%\bg_slidemove.c 
+%cc2% %gamedir%\bg_slidemove.c
 @if errorlevel 1 goto quit
 %cc2% %gamedir%\g_active.c
 @if errorlevel 1 goto quit
@@ -206,8 +206,6 @@ cd vm\ui
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_atoms.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_cdkey.c
-@if errorlevel 1 goto quit
 %cc3% %uidir%\ui_confirm.c
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_connect.c
@@ -270,10 +268,10 @@ cd vm\ui
 @if errorlevel 1 goto quit
 %cc3% %uidir%\ui_teamorders.c
 @if errorlevel 1 goto quit
-%cc3% %uidir%\ui_video.c  
+%cc3% %uidir%\ui_video.c
 @if errorlevel 1 goto quit
 
-%cc3% %gamedir%\bg_lib.c 
+%cc3% %gamedir%\bg_lib.c
 @if errorlevel 1 goto quit
 %cc3% %gamedir%\bg_misc.c
 @if errorlevel 1 goto quit

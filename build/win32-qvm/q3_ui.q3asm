@@ -2,7 +2,6 @@ ui_main
 ..\..\..\..\code\q3_ui\ui_syscalls
 ui_addbots
 ui_atoms
-ui_cdkey
 ui_confirm
 ui_connect
 ui_controls2
