@@ -1,0 +1,7 @@
+{
+	name		Harpy
+	funname		^1Har^7p^1y
+	model		hunter/harpy
+	aifile		bots/hunter_c.c
+	arenaLord	1
+}

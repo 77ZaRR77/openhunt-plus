@@ -1,0 +1,779 @@
+***            Hunt Mod           *** 
+***                               *** 
+***         by J. Hoffmann        *** 
+***  www.planetquake.com/modifia  *** 
+***     juhox@planetquake.com     *** 
+
+
+
+
+Welcome to the Hunt technical manual.
+
+This document assumes familiarity with Quake III Arena.
+
+
+
+
+=================================================================
+=== Contents
+===
+
+Chapter
+-----------------------------------------------------------------
+1    Gamestamps
+2    Templates
+2.1  Using Templates
+2.2  Creating Templates
+3    Game Seed
+4    New Callvotes
+5    Console Variables
+5.1  Server Side Console Variables
+5.2  Client Side Console Variables
+
+
+
+
+=================================================================
+=== Chapter 1
+=== Gamestamps
+===
+
+Whenever a match is completed Hunt will generate two files:
+
+   gamestamp.txt
+   gamestamp.gs
+
+"gamestamp.txt" contains some statistics about the match in a
+readable format. "gamestamp.gs" contains the same information in
+a compressed, checksummed, and encrypted format. If you mail me
+the "gamestamp.gs" file, I can check and verify the conditions
+and results of your match. This enables me to maintain a global
+hall of fame. Check out http://www.planetquake.com/modifia/hunt/
+for more information.
+
+The "gamestamps" directory contains a history of the last 25
+gamestamps, including the current one. This number is actually
+determined by the cvar "g_maxGamestamps." So, e. g. to increase
+the size of the history to 100 entries, start Q3A, open the
+console and enter
+
+	/g_maxgamestamps 100
+
+The "highscores" directory contains gamestamps for local records.
+This requires the usage of game templates, though.
+
+PLEASE NOTE:
+If you don't want Hunt to generate gamestamps, just set
+"g_createGamestamps" to "0." On the other hand, if you want Hunt
+to generate gamestamps, but it doesn't, make sure the cvar is
+set to "1."
+
+
+
+
+=================================================================
+=== Chapter 2
+=== Templates
+===
+
+Templates provide an easy, comfortable way to configure a match.
+They can be useful in many cases.
+
+   - You're new to Hunt and don't understand all these new
+     options?
+
+   - You've multiple favourite settings so you have to change the
+     options frequently?
+
+   - You want to enter the global hall of fame, and thus want to
+     make sure you fulfill the requirements?
+
+All of these problems can be solved by using templates, and they
+can do even more! But let's proceed step by step.
+
+
+
+=================================================================
+=== Chapter 2.1
+=== Using Templates
+===
+
+Templates can be used both before and during a match. When you
+create a new match, either single player or multiplayer, you'll
+notice a new entry at the top of the first "Game Server" page
+(where you select the game type and map), reading "Game
+Templates." Click on it to open the templates menu. You'll see a
+list of templates. Choose one by clicking on it, then hit "Next."
+You're presented the settings done by the template. Some entries
+may be grayed out, so you can't change them, others may not. This
+is especially important with the global hall of fame. If you
+choosed such a template, all options grayed out can't be changed
+without violating the requirements. You can edit any other option
+to your liking. Finally, hit "Fight" to start the match.
+
+The in-game menu contains an entry to show the game templates
+page, too. Now it works a bit different, though. First of all,
+the templates you see are actually installed at the server. You
+can click one and hit "Vote" to call a vote for this template. If
+the vote passes, the server will execute it.
+
+You can save the settings of the current match in a local
+template by entering a name at "Save Current Settings As" and
+hitting the "Save" button. Since the name needs to be unique, you
+may want to switch to "Show local templates."
+
+
+
+=================================================================
+=== Chapter 2.2
+=== Creating Templates
+===
+
+The easiest way to create a template is to save the current
+settings via the in-game menu. These are stored as cvars in the
+"q3config.cfg" file in your Hunt installation directory. These
+cvars always have the name "savedNNN," where "NNN" is a number
+between 000 and 999.
+
+You can also create template files, each of which can store up to
+1000 templates. A template file must be stored in the "templates"
+directory of your Hunt installation directory. There should
+already be a template file "default.tmpl," which contains the
+standard templates provided by Hunt. A template file is just a
+normal config file that contains a series of "deftemplate"
+statements. Each of these statements defines a template string.
+
+The template string is a standard config string, that is, it
+looks like this:
+
+   "key1\val1\key2\val2\ ... \keyN\valN"
+
+Note that the order of the keys is not important.
+
+The following list shows all valid keys and their values. Some
+keys are required while others are optional. When a key is
+flagged as "D/F," this means the value must be preceeded with
+either a "d" or "f." In this case, "d" means the value is used
+only as a *d*efault, which may be overwritten by the user, while
+"f" marks values that should be *f*orced to come into use. Values
+marked by "f" are grayed out at the game server menu, and if the
+value is overwritten during the match, Hunt won't register a
+highscore. Note that values not flagged as "D/F" are always
+treated as "f" values, if a value is provided.
+
+   - name       [required]
+     Defines the name of the template as it's displayed to the
+     user.
+
+   - gt         [required]
+     Defines the gametype (cvar g_gametype, see chapter 5.1).
+
+   - map        [required]
+     Defines the map name. Use Quake's internal map names, like
+     "Q3DM1." At the game server menu, this name is shown below
+     the picture of the map.
+
+   - mp         [optional]
+     Defines the maximum number of players allowed for the game.
+
+   - mip        [optional]
+     Defines the minimum number of players for the game.
+
+   - bh         [optional, D/F]
+     Defines the base health (cvar g_basehealth, see chapter
+     5.1).
+
+   - fl         [optional, D/F]
+     Defines the fraglimit. In CTF games it defines the capture
+     limit.
+
+   - tl         [optional, D/F]
+     Defines the timelimit.
+
+   - dl         [optional, D/F]
+     Defines the distancelimit. This cvar is ignored if the game
+     type is not 9 (EFH).
+
+   - rd         [optional, D/F]
+     Defines the respawn delay (cvar respawndelay, see chapter
+     5.1).
+
+   - gs         [optional, D/F]
+     Defines the gameseed (cvar g_gameseed, see chapter 5.1).
+
+   - ff         [optional, D/F]
+     Defines whether friendly fire is on (value=1) or off
+     (value=0).
+
+   - ni         [optional, D/F]
+     Defines whether items are avaiable (value=0) or not
+     (value=1) (cvar g_noitems, see chapter 5.1).
+
+   - nhr        [optional, D/F]
+     Defines whether health and armor will recharge (value=0) or
+     not (value=1) (cvar g_nohealthregen, see chapter 5.1).
+
+   - st         [optional, D/F]
+     Defines whether limited stamina is on (value=1) or off
+     (value=0) (cvar g_stamina, see chapter 5.1).
+
+   - af         [optional, D/F]
+     Defines whether armor fragments are generated (value=1) or
+     not (value=0) (cvar g_armorfragments, see chapter 5.1).
+
+   - ldl        [optional, D/F]
+     Defines the lightning damage limit (cvar
+     g_lightningdamagelimit, see chapter 5.1).
+
+   - dmf        [optional, D/F]
+     Defines the dmflags (cvar dmflags).
+
+   - gh         [optional, D/F]
+     Defines the grappling hook mode (cvar g_grapple, see chapter
+     5.1).
+
+   - spd        [optional, D/F]
+     Defines the run speed (cvar g_speed).
+
+   - kb         [optional, D/F]
+     Defines the strength of the knockback when players get hit
+     (cvar g_knockback).
+
+   - grv        [optional, D/F]
+     Defines the gravity (cvar g_gravity).
+
+   - art        [optional, D/F]
+     Defines the number of artefacts to be collected
+     (cvar g_artefacts, see chapter 5.1). This key is ignored if
+     the gametype is not 8 (STU).
+
+   - ml         [optional, D/F]
+     Defines whether players are equipped with the monster
+     launcher (cvar g_monsterlauncher, see chapter 5.1). This key
+     is only applied with the classic game types (0, 1, 3, 4).
+
+   - mim        [optional, D/F]
+     Defines the minimum number of monsters (cvar g_minmonsters,
+     see chapter 5.1). This key is ignored if the gametype is not
+     8 (STU).
+
+   - mam        [optional, D/F]
+     Defines the maximum number of monsters (cvar g_maxmonsters,
+     see chapter 5.1). This key is ignored if the gametype is not
+     8 (STU).
+
+   - mlo        [optional, D/F]
+     Defines the average load of monsters (cvar g_monsterload,
+     see chapter 5.1). This key is ignored if the gametype is not
+     9 (EFH).
+
+   - msd        [optional, D/F]
+     Defines the monster spawn delay (cvar g_monsterspawndelay,
+     see chapter 5.1). This key is ignored if the gametype is not
+     8 (STU).
+
+   - mpt        [optional, D/F]
+     Defines the number of monsters spawning when an artefact is
+     collected (cvar g_monsterspertrap, see chapter 5.1). This
+     key is only applied with game type 8 (STU).
+
+   - mhs        [optional, D/F]
+     Defines the monster constitution (cvar g_monsterhealthscale,
+     see chapter 5.1). This key is ignored unless the gametype is
+     8 (STU) or 9 (EFH).
+
+   - mph        [optional, D/F]
+     Defines the progression of the monster constitution (cvar
+     g_monsterprogression, see chapter 5.1). This key is only
+     applied with game types 8 (STU) and 9 (EFH).
+
+   - mbr        [optional, D/F]
+     Defines whether predators are allowed to breed. (cvar
+     g_monsterbreeding, see chapter 5.1). This key is only
+     applied with game type 8 (STU).
+
+   - mg         [optional, D/F]
+     Defines the average part of monsters spawning as guards
+     (cvar g_monsterguards, see chapter 5.1). This key is ignored
+     unless the gametype is 8 (STU) or 9 (EFH).
+
+   - mt         [optional, D/F]
+     Defines the average part of monsters spawning as titans
+     (cvar g_monstertitans, see chapter 5.1). This key is ignored
+     unless the gametype is 8 (STU) or 9 (EFH).
+
+   - che        [optional, D/F]
+     Defines whether the map contains challenging parts (value=1)
+     or not (value=0) (cvar g_challengingenv, see chapter 5.1).
+     This cvar is ignored if the gametype is not 9 (EFH).
+
+   - ht         [optional]
+     Defines the type of highscore to be maintained for this
+     template. Valid values are
+        - 0 = no highscore
+        - 1 = score challenge (the highest score is recorded)
+        - 2 = time challenge (the shortest time is recorded)
+        - 3 = distance challenge (the farthest distance covered
+              is recorded)
+        - 4 = speed challenge (the highest speed is recorded)
+     If this key is not provided or the value is out of range, it
+     defaults to 0.
+
+   - hn         [optional]
+     Defines the name of the cvars used to store the highscore.
+     For example, if the highscore name is "myhighscore," the
+     highscore is stored in "myhighscore0" and "myhighscore1." If
+     this key is not provided, it defaults to the template name.
+
+
+
+
+=================================================================
+=== Chapter 3
+=== Game Seed
+===
+
+The game seed is used to initialize Hunt's internal random number
+generator (RNG). The RNG is used to determine
+
+   - the spawn point of players
+
+   - the spawn point of monsters
+
+   - the spawn point of artefacts
+
+   - the behavior of monsters
+
+Note that bots are (currently) not affected by the RNG.
+
+If the game seed is set to zero, the RNG is initialized randomly,
+that is, you can't predict anything.
+
+On the other hand, if the game seed is set to a number between 1
+and 65535, this number is used to initialize the RNG. This means,
+if you keep the game seed to a constant non-zero value, you can
+predict (to a certain extent) all aspects that are affected by
+the RNG. Note that, since the behaviour of monsters is also
+affected by you, you can't predict this aspect too precisely.
+
+Of course, you can't derive anything just from the number. You
+have to play a match to figure out how it's arranged. But when
+you restart it, you can be sure that everything works (much) as
+before.
+
+The advantage is, you can train the game as in the good old days
+of 2D shooters. This matches the fact that Hunt can maintain a
+highscore as in the good old days of 2D shooters.
+
+
+
+
+=================================================================
+=== Chapter 4
+=== New Callvotes
+===
+
+The callvote command now accepts two new aspects to vote for.
+
+1. callvote addbot <name> <skill> [team]
+
+   Use this command to call a vote for adding a bot. <name> is
+   the name of the model. <skill> is a number between 1 and 5,
+   where
+
+      - 1 means "I can win"
+      - 2 means "Bring it on"
+      - 3 means "Hurt me plenty"
+      - 4 means "Hardcore"
+      - 5 means "Nightmare"
+
+   In team games you can specify the team the bot should be added
+   to. Use "red" or just "r" for the red team, and "blue" or just
+   "b" for the blue team.
+
+   Example:
+   /callvote sarge 5 blue
+   adds Sarge with nightmare skill to the blue team.
+
+   To remove a bot use the "callvote kick <name>" command.
+
+
+2. callvote template <internal template number>
+
+   Since there's no command to find out the internal template
+   number, I strongly recommend to use the in-game menu's "game
+   templates" page to call a vote for a template.
+
+
+
+
+=================================================================
+=== Chapter 5
+=== Console Variables
+===
+
+Hunt should support all of the original console variables
+(cvars).
+But please note:
+   - As there's no quad damage powerup in Hunt, the g_quadfactor
+     variable is ignored.
+
+   - There're no weapons to collect in Hunt, so g_weaponrespawn
+     and g_weaponteamrespawn are ignored, too.
+
+
+
+=================================================================
+=== Chapter 5.1
+=== Server Side Console Variables
+===
+
+Most of the following cvars are actually covered by the user
+interface. You can safely ignore this chapter unless you want to
+set up a dedicated Internet server.
+
+
+
+=== General Game Options
+
+g_gametype              [0,1,3,4,8,9, default is 0] INTEGER
+   0   Free For All
+   1   Tournament
+   3   Team Deathmatch
+   4   Capture The Flag
+   8   Save The Universe
+   9   Escape From Hell
+
+g_gameseed              [0 ... 65535, default is 0] INTEGER
+   Defines the game seed.
+   See chapter 3 of this manual for more information.
+
+g_basehealth            [1 ... 1000, default is 300] INTEGER
+   Defines the standard health and armor value of all players.
+   Players can have health and armor values of up to
+   2*g_basehealth. If health or armor are above g_basehealth, the
+   value will drop slowly to g_basehealth. You'll get the
+   standard Q3A behaviour by setting g_basehealth to 100.
+
+g_armorfragments        [0 or 1, default is 0] INTEGER
+   If set to 1, players will scatter around collectable "armor
+   fragments" when hit.
+   See chapter 9 of the tutorial for more information.
+
+g_stamina               [0 or 1, default is 0] INTEGER
+   If set to 1, players will exhaust and slow down when running
+   or jumping too much.
+   See chapter 14 of the tutorial for more information.
+
+respawndelay            [0 ... 999, default is 10] INTEGER
+   Fragged players have to wait this much seconds before they can
+   respawn.
+   This variable is ignored in Tournament matches.
+   See chapter 13 of the tutorial for more information.
+
+g_grapple               [0 ... 4, default is 0] INTEGER
+   Defines the grappling hook mode. You can use these numbers:
+      0 "disabled" - no grappling hook available
+      1 "classic"  - the hook works as in plain Q3A
+      2 "tool"     - a hook that is meant to be a tool for
+                     reaching places you otherwise can't reach
+      3 "anchor"   - a hook suited for camping
+      4 "combat"   - a hook suited for combat & camping
+   See chapter 10 of the tutorial for more information.
+
+g_lightningdamagelimit  [default is 0] FLOAT
+   Generally, the lightning gun's charge causes the more damage
+   the more charge is accumulated at a player. By assigning a
+   value greater than zero to this cvar you can set an upper
+   limit to the charge damage. For example, if
+   g_lightningdamagelimit is set to 10, charges above 10
+   (seconds) would constantly cause damage of 10 hit points per
+   second.
+   Setting this cvar to a small value (like 1 or 0.1) would make
+   it nearly impossible to kill with the lightning gun. It could
+   still be used to reveal cloaked players, though.
+
+g_noitems               [0 or 1, default is 0] INTEGER
+   If set to 1, no items will spawn except from flags.
+
+g_nohealthregen         [0 or 1, default is 0] INTEGER
+   If set to 1, players will neither recharge health nor armor.
+
+g_meeting               [0 or 1, default is 0] INTEGER
+   If set to 1, the game will not start before every player has
+   signalled to be ready. Anyone trying to connect while the game
+   is in progress will be rejected.
+   This variable has been introduced mainly to overcome a bug in
+   the Quake3 engine causing clients to crash while connecting to
+   an EFH game in progress. Therefor, it's highly recommended to
+   set this cvar to 1 for EFH games. With LAN games this cvar may
+   also be useful for other game types.
+
+g_monsterlauncher       [0 or 1, default is 0] INTEGER
+   If set to 1, all players will be equipped with an additional
+   weapon (the "monster launcher"). This cvar is ignored in
+   game types 8 (STU) and 9 (EFH).
+
+g_maxmonsterspp         [default is 10] INTEGER
+   The name of this cvar is short for "maximum number of monsters
+   per player." It limits the amount of ammunition available for
+   the monster launcher.
+
+g_unlimitedammo         [0 or 1, default is 0] INTEGER
+   If set to 1, players will have unlimited ammunition for all
+   weapons except the monster launcher.
+
+g_cloakingdevice        [0 or 1, default is 1] INTEGER
+   If set to 0, players no longer have the cloaking device.
+
+g_weaponlimit           [default is 0] INTEGER
+   Determines the maximum number of weapons per player. At the
+   beginning of a match, players will still find all weapons in
+   their arsenal. They select a weapon by firing it. Once they
+   reach the weapon limit, they're restricted to the choosen
+   weapons. This restriction then holds until the end of the
+   match.
+   A limit of 0 means, there's no limit.
+
+
+
+=== FFA Specific
+
+no cvars so far
+
+
+
+=== Tournament Specific
+
+no cvars so far
+
+
+
+=== Team Game (TDM+CTF) Specific
+
+tss                     [0 or 1, default is 1] INTEGER
+   If set to 0, players are not able to activate the TSS
+   (Tactical Support System).
+   See chapter 15 to 24 of the tutorial for more information.
+
+tssSafetyModeAllowed    [0 or 1, deault is 1] INTEGER
+   If set to 1, team leaders are allowed to enter a special
+   "safety mode." This variable is ignored, if the "tss" is 0.
+   See chapter 19 of the tutorial for more information.
+
+
+
+=== TDM Specific
+
+no cvars so far
+
+
+
+=== CTF Specific
+
+respawnatpod            [0 or 1, default is 0] INTEGER
+   If set to 1, players are allowed to respawn at their place of
+   death. Note that this variable is ignored if "respawndelay" is
+   lower than 10 seconds.
+   See chapter 13 of the tutorial for more information.
+
+
+
+=== "Save the Universe" (STU)
+
+See chapter 25 of the tutorial for more information about the
+following cvars.
+
+g_artefacts             [0 ... 999, default is 8] INTEGER
+   Number of artefacts to be collected by the players.
+   999 means "unlimited."
+
+g_minmonsters           [0 ... 200, default is 15] INTEGER
+   If at any time less monsters are alive than specified by this
+   variable, new monsters will respawn at a high rate until this
+   limit is reached again.
+
+g_maxmonsters           [1 ... 200, default is 30] INTEGER
+   Upper limit for the number of monsters alive. Should be
+   adapted to the size of the map and the number of players.
+
+g_monsterspawndelay     [200...999999, default is 10000] INTEGER
+   If the number of monsters is between g_minmonsters and
+   g_maxmonsters, they spawn at this rate (specified in
+   milliseconds).
+
+g_monsterspertrap       [default is 0] INTEGER
+   Determines the number of monsters spawning when an artefact is
+   collected.
+
+g_monsterguards         [0 ... 100, default is 12] INTEGER
+   Determines the average part of monsters spawning as guards.
+
+g_monstertitans         [0 ... 100, default is 6] INTEGER
+   Determines the average part of monsters spawning as titans.
+
+g_monsterhealthscale    [1 ... 1000, default is 100] INTEGER
+   Determines the monster constitution. The smaller the value the
+   easier it is to kill a monster. g_monsterhealhscale set to
+   100% results in these health values:
+
+      - predators:   300 health      0 armor
+      - guards:     1000 health   1000 armor
+      - titans:     5000 health      0 armor
+
+   Note that g_monsterhealthscale also scales armor.
+
+g_monsterprogression    [default is 0] INTEGER
+   Determines the progression in monster constitution as a
+   percentage of g_monsterhealthscale per each minute played.
+
+   This is only applied when a monster spawns, that is, its
+   constitution (= maximum health value) doesn't change during
+   its lifetime. (But note that monsters slowly recharge their
+   health.)
+
+g_monsterbreeding       [0 or 1, default is 1] INTEGER
+   If set to 0, predators will stop creating cocoons.
+
+g_skipendsequence       [0 or 1, default is 0] INTEGER
+   If set to 1, the end sequence showing all monsters charging
+   and exploding is skipped. That is, all players are moved to
+   the intermission as soon as the last artefact is collected.
+
+monstermodel1           [default is "klesk/maneater"] STRING
+   Determines the model to be used by all clients for the
+   "predator" monster.
+
+monstermodel2           [default is "tankjr/default"] STRING
+   Determines the model to be used by all clients for the "guard"
+   monster.
+
+monstermodel3           [default is "uriel/default"] STRING
+   Determines the model to be used by all clients for the "titan"
+   monster.
+
+g_scoreMode             [0 ... 1, default is 0] INTEGER
+   If set to 0, you earn a fixed score for each monster killed.
+   If set to 1, the score depends on the monster constitution.
+   With g_monsterprogression > 0 this means your score raises
+   during the game.
+
+
+
+=== "Escape From Hell" (EFH)
+
+distancelimit           [default is 3000] INTEGER
+   Determines the minimum length of the map in metres. Due to
+   technical restrictions the actual length generally is slightly
+   higher. A distancelimit of zero means the map is endless.
+
+g_challengingenv        [0 or 1, default is 1] INTEGER
+   If set to 0, the map generator omits those parts of the map
+   that are specified by the map's author to be more challenging
+   than usual.
+
+g_monsterload           [0 ... 1000, default is 30] INTEGER
+   Determines how many percent of the monsters specified in the
+   are actually allowed to spawn (on average).
+
+The following STU variables also apply to EFH:
+   - g_monsterguards
+   - g_monstertitans
+   - g_monsterhealthscale
+   - monstermodel1
+   - monstermodel2
+   - monstermodel3
+
+
+
+=== Gamestamps
+
+g_creategamestamps      [0 or 1, default is 1] INTEGER
+   If set to 0, no gamestamps are created.
+   See chapter 1 of this manual for more information.
+
+g_maxgamestamps         [default is 25] INTEGER
+   This is the size of the gamestamp history in the "gamestamps"
+   directory.
+   See chapter 1 of this manual for more information.
+
+
+
+
+=================================================================
+=== Chapter 5.2
+=== Client Side Console Variables
+===
+
+Most client side cvars are covered by the user interface. Only
+the few that aren't, are listed here.
+
+cg_drawnummonsters      [0 or 1, default is 0] INTEGER
+   If set to 1, the number of monsters currently alive is
+   displayed in the HUD (top right corner).
+
+cg_drawsegment          [0 or 1, default is 0] INTEGER
+   If set to 1, the current segment is shown in the HUD for EFH
+   maps.
+
+cg_mapflare		[0 ... 2, default is 2] INTEGER
+   Determines the quality of lens flares caused by map lights.
+
+      0 = no lens flares
+      1 = normal quality
+      2 = high quality
+
+   "High quality" results in a more realistic fading of some
+   flares, for example the flares of the lights above and around
+   the generator in q3tourney1, and the flares of the jets below
+   the movers in q3dm19. Note that this feature increases CPU
+   load depending on how many high quality flares are visible.
+   Also note that there's an optimization that results in no FPS
+   drop being noticable as long as neither you nor the (high
+   quality flares causing) lights are visible. I recommend to use
+   q3dm19 to check your frame rate.
+
+cg_sunflare		[0 ... 2, default is 2] INTEGER
+   Determines the quality of lens flares caused by the sun.
+
+      0 = no lens flares
+      1 = normal quality
+      2 = high quality
+
+   See cg_mapflare for more information.
+   
+   At the time of writing, the only map with a sun flare was
+   efh01.
+
+cg_missileflare		[0 or 1, default is 1] INTEGER
+   If set to 0, turns off lens flares caused by missiles.
+
+   At the time of writing, the only missile causing lens flares
+   is the BFG shot.
+
+cg_fireballtrail        [0 ... 2, default is 1] INTEGER
+   Determines the quality of the fireballs shot by the guards.
+
+      0 = no particle effects
+      1 = fire particle effects
+      2 = fire particle effects + hot air effects
+
+cg_notrace              [0 or 1, default is 0] INTEGER
+   If set to 1, some client effects don't use traces. Currently
+   this affects only the lightning effects. Setting this cvar to
+   1 can significantly increase the frame rate on computers with
+   slow CPU.
+
+ui_lensflare            [0 or 1, default is 1] INTEGER
+   If set to 0, turns off the new "bright" cursor, switching back
+   to the old standard cursor. This doesn't affect the in-game
+   lens flares.
+
+ui_hidetailtitle	[0 or 1, default is 1] INTEGER
+   If set to 0, reduces the resolution of the title picture.
+   Useful for for some graphics cards (namely Matrox Millennium
+   G450). If Hunt's user interface is extremely laggy, then set
+   this cvar to 0.
+
+ui_prechache            [0 or 1, default is 1] INTEGER
+   If set to 0, the UI will no longer precache its media.

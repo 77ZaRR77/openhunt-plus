@@ -1,0 +1,2145 @@
+***            Hunt Mod           *** 
+***                               *** 
+***         by J. Hoffmann        *** 
+***  www.planetquake.com/modifia  *** 
+***     juhox@planetquake.com     *** 
+
+
+
+
+Welcome to the Hunt tutorial.
+
+This document assumes familiarity with Quake III Arena.
+
+# Marked this way are hints dealing with issues of the user
+# interface.
+
+
+
+
+=================================================================
+=== Contents
+===
+
+Chapter                                   Topic
+-----------------------------------------------------------------
+ 1  First Contact                         Introduction
+ 2  At Second Sight                       Cloaking
+ 3  Some Never Change ... More or Less    Standard Weapons
+ 4  Be a Missile                          Gauntlet
+ 5  Bullets over Broadway                 Machine Gun
+ 6  Great Balls of Fire                   Grenade Launcher
+ 7  Charge Your Enemies                   Lightning Gun
+ 8  Let There Be Light                    BFG
+ 9  Hunter and Collector                  Armour Fragments
+10  Tarzan's Heir                         Grappling Hook
+11  Class Struggle, Part 1                Weapon Categories
+12  Class Struggle, Part 2                Weapon Categories
+13  In the Realm of Death                 Respawn Delay
+14  Breathless                            Limited Stamina
+15  Composing Forces                      TSS Introduction
+16  Mission Impossible                    TSS Missions
+17  The Three Commandments                How to lead a group
+18  Use Me                                TSS Interface
+19  Personal Affairs                      TSS Personal Services
+20  Personnel Affairs                     Designated Leaders
+21  The Tools of Success                  Using Strategies
+22  When Ideas Come True, Part 1          Creating Strategies
+23  When Ideas Come True, Part 2          Creating Strategies
+24  In the Realm of the Numbers           Automating Strategies
+25  The Greatest Challenge                "Save the Universe"
+26  All's Well that Ends Well             Epilogue
+
+
+
+
+=================================================================
+=== Chapter 1
+=== First Contact
+===
+
+"Where am I? This doesn't look like Subic 3."
+
+                                           [Keel]
+
+I've tried my best to make acclimation as easy as possible. When
+starting Hunt for the first time, all options influencing
+gameplay are set to values that result in a game experience most
+similiar to Q3A. So don't fiddle with options you don't
+understand. Just start up a simple deathmatch (single or multi
+player) as usual and try to survive!
+
+What are you waiting for?!
+
+
+
+
+=================================================================
+=== Chapter 2
+=== At Second Sight
+===
+
+I hope you enjoyed your first Hunt match. You surely learned
+already a lot about playing Hunt. Now it's time to have a closer
+look.
+
+If you've played more than a few seconds you must have taken
+notice at least of the following:
+
+   - There's an automatic cloaking feature.
+   - You've all weapons from the very beginning.
+   - Some weapons work different than before.
+   - Health, armour, and ammunition regenerate automatically.
+
+In a Hunt match all players are equipped with the latest Vadrigar
+technology, including the Portable Cloaking Device (PCD). This
+item consumes a lot of power from the Micro Fusion Reactor (MFR)
+that also supplies your weapons. So, the PCD switches off as soon
+as you begin to shoot. When you stop shooting the PCD is turned
+on again three seconds after the weapon has completed its reload
+cycle.
+
+# By default, invisible players appear as in Q3A. You can enable
+# a new effect called "glass cloaking" in the setup / gameoptions
+# menu. But please note that this effect can reduce your frame
+# rate by up to 50%.
+#
+# In multiplayer matches maybe you want to know which cloaking
+# option other players use. Just open the scoreboard in this
+# case. Players using glass cloaking are marked by "GC" to the
+# left of their head icon.
+
+There's a problem connected to the PCD you should be warned of.
+Whenever a projectile, strong force, or electrical charge hits
+the photon field created by the PCD a yellowish flash of light is
+emitted.
+
+Which leads us immediatly to the new weapons.
+
+
+
+
+=================================================================
+=== Chapter 3
+=== Some Never Change ... More or Less
+===
+
+All weapons have been altered, but some weapons changed only
+marginally. These are shotgun, rocket launcher, railgun, and
+plasma gun.
+
+The enhanced shotgun inflicts more damage dispersing over a
+greater area. More than ever the shotgun is a close combat
+weapon. Note that the impetus of the shot will knock you back a
+bit. You can prevent this by ducking.
+
+The improved rocket launcher fires a bit faster, but the missiles
+are not precise unless fired in a ducked position.
+
+The new railgun has doubled damage and a knock-back so strong
+that you can use it to do a "railgun jump." For precise shots you
+have to duck, which also reduces knock-back.
+
+The plasma gun is the only weapon that performs less than the
+original. It compensates by a huge amount of ammunition and an
+explosion splash radius which nearly reaches that of a rocket. In
+combination with the plasma balls dispersing (which can be
+reduced by ducking) this makes it the weapon of choice for
+defensive fire.
+
+Exercise 1: Outside in the lava courtyard of Q3DM15 there're a
+mega health and a red armour. Get them without the help of your
+rocket launcher or grappling hook.
+Exercise 2: Once you reached the red armour stay up there and frag
+someone from that position.
+
+
+
+
+=================================================================
+=== Chapter 4
+=== Be a Missile
+===
+
+The gauntlet always was the weapon of last choice. This may be no
+longer true for the all new hunter gauntlet. It contains a lot of
+fine Vadrigar high technology that is directly connected to your
+bionic implants.
+
+First of all, when you select the weapon you're provided a wider
+field of view. That need not be too useful, but it looks cool and
+"aggressive!"
+
+Now, if you point to an uncloaked enemy your target is marked by
+a green glowing hull. When you fire the gauntlet on such a marked
+target, its computer brain will automatically take over control
+of your movements. The attack logic build into the gauntlet lets
+you run directly to the enemy. If the enemy moves, you instantly
+turn to the new direction. The high signal processing capacity of
+the hunter gauntlet even lets you run 10% faster!
+
+But beware:
+
+   - The targeting sensors are not able to detect obstacles like
+     an abyss or a lava pond that may be between you and the
+     target. To immediatly regain full control of your movements,
+     just stop firing.
+
+   - The gauntlet contains a small targeting distortion device.
+     This means that the gauntlet is not able to detect players
+     who also wear the gauntlet.
+
+If you do not have a marked target it's still possible to fire
+the gauntlet. It then behaves much like the old gauntlet. This
+especially means that there's no automatic aiming support and
+you're limited to normal run speed.
+
+When you have to ward off a gauntlet attack there're usually
+three options:
+
+   - Fight back. If you use a concussive weapon (like rocket
+     launcher or railgun) the enemy might loose its target. Light
+     weapons like the plasma or lightning gun are less
+     recommendable. As a close combat weapon the shotgun is
+     another useful weapon to answer a gauntlet attack.
+
+   - Retreat without shooting. As soon as you become cloaked the
+     enemy will loose its target. Of course, he might choose to
+     hunt you manually, but this won't be easy as he'll be
+     limited to the same speed as you.
+
+   - Maneuver in such a way that there's an obstacle between you
+     and the attacker. Jump pads and teleporters are very useful
+     for that purpose. Remember that the gauntlet's attack
+     processor always follows the bee-line. If you stand on top
+     of a staircase a small lateral move may be enough to thwart
+     the attack.
+
+Exercise: Frag someone solely with your gauntlet.
+
+
+
+
+=================================================================
+=== Chapter 5
+=== Bullets over Broadway
+===
+
+The machine gun received a very strong boost. It's really a heavy
+and deadly weapon now. The drawback is that it's no longer easy
+to handle. Usage of the machine gun should always be
+well-considered.
+
+The problem is that the machine gun in distinction from any other
+weapon does not instantly shoot. Before the first shot is
+released the weapon has to complete a short start-up phase.
+There's also a stopping phase that has to be completed to
+finally reach the idle state.
+
+Even worse, these phases can't be interrupted. If you stop
+shooting just for a moment the weapon merciless grinds to a halt
+before it'll restart.
+
+Note that the gun's got an increased spread that can be reduced
+to the former extent by ducking.
+
+Being attacked by machine gun is always a dangerous situation.
+With bullets driving in it may be difficult to move, especially
+if you have to keep from falling off a ledge. So it's generally a
+good idea to immediatly look for cover -- even if you're healthy
+enough to stand the attack for a while. As soon as you take
+cover, you gain an advantage. The enemy is either going to waste
+ammunition or has to turn off its gun. In the latter case it's a
+clever tactic to immediatly start a counter-attack.
+
+Exercise 1: Frag someone solely with your machine gun.
+Exercise 2: Use your plasma gun to drive away an enemy attacking
+with the machine gun. Note that this is not recommended practice,
+but it's an instructive experience.
+
+
+
+
+=================================================================
+=== Chapter 6
+=== Great Balls of Fire
+===
+
+Like the gauntlet the grenade launcher used to have only a few
+friends. This may change with the new version.
+
+The most obvious feature of the enhanced grenade launcher is its
+high rate of fire. You're now able to throw more than three
+grenades per second, and the time fuse has been extended to five
+seconds. Together these features make it possible to cover a
+large area with grenades. Imagine what happens if someone enters
+such an area, considering that grenades now explode if they get
+damaged.
+
+Another nice feature is that grenades may use jump pads and
+teleporters. Throw some grenades behind an opponent trying to
+escape by way of these and he's likely to get problems on
+arrival. Note that actually all slow missiles (i.e. grenades,
+rockets, plasma balls, and BFG bolts) are able to use
+teleporters, but only grenades ride jump pads.
+
+As the rocket launcher the grenade launcher pushes you back a bit
+unless fired in a ducked position. The spread is also reduced by
+ducking.
+
+Grenades being shootable makes them less useful for direct
+attacks. The opponent might choose to cover you with a cloud of
+plasma balls which make your grenades explode right in your face.
+
+Exercise: Frag someone solely with your grenade launcher.
+
+
+
+
+=================================================================
+=== Chapter 7
+=== Charge Your Enemies
+===
+
+The improved lightning gun is an incredible valuable weapon in
+some situations, especially defence. Compare it to the sting of a
+bee or wasp: rarely deadly, but it easily expels your enemies.
+
+The gadget works by creating a directed high-voltage electric
+field. Even though it's more limited in range than the old
+weapon, there's one big advantage resulting from this field:
+within certain limits it's self-aiming. Just point roughly to
+your target and the electric field will short circuit with it,
+provided it's near enough. If there're multiple possible targets,
+the beam randomly alternates between them.
+
+Once the beam connects to a target, it (the target, of course)
+will receive an electric charge. The longer the connection lasts,
+the more charge is accumulated.
+
+This charge is very unhealthy. It harms your target in several
+ways:
+
+   - It causes continuous damage. At first, armour is eaten up,
+     then health. This process runs the faster the more charge
+     has been accumulated.
+
+   - There's neither automatic health nor armour regeneration as
+     long as there's some charge left over. The regeneration
+     powerup still works, though.
+
+   - Discharge flashes shoot out of the victim that not only
+     reveal its position even if it's cloaked but also easily
+     create some degree of disorder.
+
+When someone's charging you, a charge counter is displayed in
+your HUD, that shows how much charge has been accumulated, i.e.
+how many seconds it'll last until the charge has been completely
+discharged by itself. If you collect a health item it'll not
+increase your health but neutralize some amount of charge (one
+second per 10 health points).
+
+In team games the weapon charges twice as fast as in non-team
+games, but charged players are able to discharge partly on
+uncharged (or at least less charged) team members by walking near
+them. It's not possible to discharge on members of the opposing
+team.
+
+Exercise: Frag someone solely with your lightning gun.
+
+
+
+
+=================================================================
+=== Chapter 8
+=== Let There Be Light
+===
+
+The BFG-10K was the most powerful weapon a gladiator of the arena
+eternal could possess. Now, the BFG-11K is available. I've heard
+TankJr uses it to enlarge doorways.
+
+CAUTION: Always handle this weapon with great care! You wouldn't
+be the first one who underestimated its splash radius.
+
+I hope there's no need to explain why or under what circumstances
+a big explosion could be useful. However, the consistent design
+of this weapon for a sole purpose created some drawbacks any user
+should be aware of. To cite p. 8137 of the BFG-11K User's Manual:
+"The acquisition of this device tacitly annulled your life
+insurance."
+
+One of the most dangerous aspects (for the user, of course) is
+the extremely long reload period. The internal energy systems of
+the weapon need 4 seconds to prepare the next shot. Hopefully
+you've a plan B on hand if an enemy survives the impact.
+
+The BFG-10K used to create extremely fast plasma bolts.
+Unfortunately this is not possible with the BFG-11K. The high
+pressure plasma bolts generated by the new weapon are just too
+unstable to survive even the speed of a rocket. The actual speed
+is something about 75% of that of a rocket.
+
+It should be clear by now that precision is the key to successful
+usage of this weapon. It's absolutely recommended to duck for the
+shot. But you can even do more. Keep in mind: the explosion can
+become very big, but it can only fill the available space. By
+carefully choosing the target you may be able to force the
+explosion into a specific direction or concentrate the entire
+power into a small volume.
+
+# The new BFG bolt creates a lens flare effect. You can disable
+# this in the setup / gameoptions menu.
+# If you disabled the blood option for performance reasons you
+# may want to disable "High Quality BFG Explosion," too.
+
+Exercise: Catch Ranger with your BFG at Q3DM1 when he tries to
+get the red armour.
+
+
+
+
+Congratulations! You mastered all weapons. Now it's time to
+introduce new features.
+
+
+
+
+=================================================================
+=== Chapter 9
+=== Hunter and Collector
+===
+
+The Vadrigar have developed a new alloy for use as armour that is
+much firmer than the old one. It won't give more protection, but
+instead of dissolving on the impact of bolts or projectiles it'll
+break into pieces. These fragments can then be recollected and
+become recycled automatically.
+
+# To let the game create armour fragments you have to set up a
+# new match. At the second "GAME SERVER" page (where you select
+# things like open player slots or frag limit) click on "ADVANCED
+# OPTIONS" at the bottom of the screen. A new page opens where
+# you can enable an option called "Generate Armour Fragments."
+# Click on "BACK" and continue as usual.
+#
+# Please note: I suspect this option to create a lot of network
+# traffic (not tested, though). It might have inacceptable
+# consequences on slow WAN connections. There shouldn't be any
+# problems with LAN or single player games.
+
+Armour breaks into chunks of different size. Collecting small
+fragments increase your armour by 5, the bigger pieces give 25
+points. Pick up a piece of armour by just walking over it.
+
+It's not guaranteed that your armour plates break "correctly."
+Under circumstances that are outside of your or your enemies
+control even the enhanced armour dissolves. On average 50% of the
+armour penetrated by an attack dissolves. So, when you pick up
+the fragments after an intense fight you generally end up with
+less armour than you'd before. Note that the lightning gun always
+dissolves armour.
+
+The new alloy is unstable while not connected to a power supply.
+Broken pieces lying on the floor will dissolve if not picked up
+within 30 seconds.
+
+
+
+
+=================================================================
+=== Chapter 10
+=== Tarzan's Heir
+===
+
+Beside many weapons you may also carry a powerful device that can
+be used to reach otherwise inaccessible places: the grappling
+hook.
+
+This apparatus consists of four parts:
+
+   1. discharging appliance
+   2. hook
+   3. rope
+   4. winch
+
+You can throw the hook manually or by use of the discharging
+appliance. In either case, once the hook attaches to a wall or
+player, the winch starts to rewind the rope automatically.
+
+The grappling hook is available in several styles of contruction:
+
+   - "classic"
+   - "tool"
+   - "anchor"
+   - "combat"
+
+The classic hook's projectile flies fast, displaying a straight
+trajectory. The rope rewinds fast and pulls you straight to the
+destination. When using the discharging appliance, the rope is
+cut as soon as you release the trigger.
+
+The other hooks use an old fashioned rope that bends around
+corners. The advantage is that some obstacles are easier to
+overcome. The disadvantage is that some other obstacles are more
+difficult to overcome.
+
+The tool hook's discharging appliance has very limited power. The
+hook will fall back to the floor after some metres, so you need
+to aim somewhere above the intended destination. Note that the
+hook's range is even shorter when thrown off hand. The winch is
+slow, so this device normally isn't useful to escape your
+opponents. Once you reach the destination, the rope is cut
+automatically.
+
+The anchor hook is much like the tool hook, but the discharging
+appliance is much stronger, so you can aim directly to the
+intended destination. Also, the rope is not cut automatically, so
+you can use this device to hang at the ceiling, for example.
+
+The combat hook works like the anchor hook, but the winch is much
+faster, and the discharging appliance can be used without
+switching to it.
+
+# Note that the grappling hook is disabled by default. To enable
+# it, create a new game, open the advanced options page, and set
+# "Grappling Hook Mode" to the desired type.
+#
+# Additionally, you may want to bind a key to "toggle grappling
+# hook" or "throw grappling hook" at the "shoot" section of the
+# "setup / controls" menu. These keys can both be used to throw
+# the hook and cutting the rope. The difference is, the "throw
+# grappling hook" key needs to be held down, while the other
+# alternatingly launches the hook and cuts the rope.
+#
+# By default, you can cut the rope by crouching. This can be
+# disabled at the same page.
+
+
+
+
+=================================================================
+=== Chapter 11
+=== Class Struggle, Part 1
+===
+
+Carrying nine different weapons, holding different amounts of
+ammuntion, which is regenerated at different rates ... sometimes
+it's hard to find the weapon that best suits a particular
+purpose.
+
+Fortunatly a remedy is available. The Weapon Control System (WCS)
+automatically selects the weapon that best fits the purpose you
+specify. But beware: some familiarization is required before
+you're able to fully exploit its potential.
+
+To tell the WCS about your needs you choose one of six weapon
+categories. The WCS then selects the best weapon of the choosen
+category that loads enough ammunition ("enough" means 50% by
+default).
+
+# Before you can use the WCS you have to set up a few key
+# bindings. In the setup / controls menu choose the new "SWITCH"
+# section. There're a lot of entries, but most of them can be
+# left alone by now. Just define keys for "best weapon," "skip
+# weapon," "next category," and "previous category." In the
+# following these keys are called the "WCS keys."
+#
+# Example: I use W-A-S-D as the movement keys. My WCS keys are
+#
+#     best weapon          F
+#     skip weapon          R
+#     next category        E
+#     previous category    Q
+# (Assuming a German or US keyboard layout. This could be very
+# odd with other keyboards.)
+#
+# At the beginning of a match the WCS is inactive. To activate it
+# press the "next category" or "previous category" key. Once the
+# WCS is active, the name of the current category is displayed at
+# the bottom left corner of your HUD, just above the ammunition
+# display. If you want to disable it, press and hold the "skip
+# weapon" key for a few seconds.
+#
+# In the "SHOOT" section of the setup / controls menu there's an
+# option called "autoswitch weapons." This option is now used to
+# determine whether the WCS should automatically switch to a
+# better weapon once it got enough ammunition ("autoswitch
+# weapons" set to "on") or if it should only switch weapons when
+# said to ("autoswitch weapons" set to "off"). Note that
+# autoswitching is temporarily disabled when you select a weapon
+# manually (i.e. by use of the old weapon selection keys). The
+# category display is then drawn in a gray shade to show this.
+# Autoswitching is re-enabled as soon as you press any of the WCS
+# keys. Also note that autoswitching never swichtes to a worse
+# weapon, even if the current is below the ammunition limit.
+# Finally, autoswitching is also suppressed while you're firing.
+
+In general, using the WCS follows specific patterns. The easiest
+is to use manual selection if you want a specific weapon for its
+special features. If autoswitching is enabled, you may even want
+to manually select your current weapon, to prevent autoswitching
+to another weapon during combat. Manual selection is usually
+ended by use of the "best weapon" function.
+
+Even if autoswitching is enabled, the "best weapon" function is
+frequently used immediatly after a fight, to ensure the current
+weapon still contains enough ammunition. In this sense, the "best
+weapon" function is used like the "reload" function in other
+games (e.g. Counterstrike).
+
+If the WCS selects a weapon you don't like, you should consider
+changing the weapon category. If the category is ok, just skip to
+another weapon. A usual reason for this is that some weapons
+generate noise even while idle (note that Hunt bots hear these
+noises). You may want to skip to a non-noisy weapon while there's
+no enemy in sight, and switch back to the best weapon as soon as
+combat begins.
+
+Exercise: Win a match without ever manually selecting a weapon.
+Note that this is not recommended practice, but it's an
+instructive experience.
+
+
+
+
+=================================================================
+=== Chapter 12
+=== Class Struggle, Part 2
+===
+
+If you very often have to skip weapons, this may mean either that
+you use the wrong weapon categories or that the predefined
+categories don't match your favorite style of weapon usage. In
+the latter case feel free to adjust them.
+
+# In the "SWITCH" section of the setup / controls menu, there's a
+# line that reads "category 1/6." Click on this to select the
+# category you want to adjust. You can now adjust the name, the
+# key, and the weapon's order of precedence for the selected
+# category.
+#
+# The category key can be used as a shortcut to that category.
+#
+# To change the order of precedence click on a weapon of which
+# you want to adjust the rank. Then click on the new position the
+# weapon should be. To cancel the movement just click on its old
+# position. Repeat until the order of precedence is to your
+# liking.
+
+
+
+
+=================================================================
+=== Chapter 13
+=== In the Realm of Death
+===
+
+"You are now wanted 'dead or alive' -- and you know my
+preference."
+                                                   [Bones]
+
+
+In my opinion, one of the most important features of Q3A is that
+there's no "You've been killed. Game over." You can nearly
+instantly respawn after being killed. No need to restart a level,
+no need to save the game, no need to load save games, no need to
+await the end of a match. Just playing, playing, playing.
+
+On the other hand, in a CTF game it can be a bit frustrating to
+face the same enemy you fragged a second before. Even other game
+types can be more interesting with a small retardation for those
+who get fragged. A long delay even involves a complete change in
+gameplay.
+
+# To delay respawning, you have to set up a new match. Adjust the
+# respawn delay at the second "GAME SERVER" page, just below the
+# time limit. The value is the number of seconds the delay should
+# last (0 to 999).
+#
+# Note that there's no respawn delay option for tournament games.
+# It just doesn't make sense in a one-on-one match.
+
+To make awaiting the end of the respawn delay be a bit less
+boring it's possible to fly around like a spectator (you can't
+switch to follow-mode, though). Once the respawn delay times out,
+you can respawn as usual or fly further around. In some cases you
+have the option to respawn at your current location or at your
+place of death (POD).
+
+Respawning at your current location is only possible in team
+games and only if the respawn delay is 10 seconds or longer. In
+CTF games respawning at your current location is not possible
+while at the opponent's part of the map. Note that it is never
+possible to respawn over lava, slime, void, or fog of death, or
+inside or on top of another player.
+
+A CTF match may be set up to allow respawning at your place of
+death (in addition, respawn delay must be set to at least 10
+seconds). In this case, if you die at the opponent's part of the
+map, you leave a rotating skull marking your POD. Above the skull
+there's a timer which counts down the seconds until respawning.
+When the respawn delay times out, you have to respawn within one
+second and you have to do it somewhere at the opponent's part of
+the map. Otherwise the skull vanishes, forcing you to respawn as
+usual. As I noted before it's not possible to respawn inside
+another player. So, if someone decides to stand right over the
+skull during the critical second, you're not allowed to respawn
+at the POD.
+
+Some special rules are connected with respawn delay. In non-team
+games, if a player manages to be the last survivor, he'll receive
+a "last-man-standing" bonus of 5 points. All other players get a
+message about being exterminated and respawn immediately.
+
+In team deathmatches it may happen that one team completely roots
+out the other team. The attacker and his team receive an
+"overkill" bonus of 5 points then. If the last frag was a
+suicide, the suicide and his team receive a "self-extermination"
+penalty of -5 points instead. In both cases all dead players
+respawn immediately.
+
+In CTF games there's no bonus connected with exterminating the
+opponents. It's just a "bit" easier to capture the flag. Whenever
+a flag is captured all dead players respawn immediately.
+
+To avoid unfair situations when respawning all dead players, the
+living one's health is set to the value they would have if they
+would have respawned, too (given they have less than that).
+
+Exercise: Win a match set up with a respawn delay of at least ten
+seconds.
+
+
+
+
+=================================================================
+=== Chapter 14
+=== Breathless
+===
+
+You've learned nearly everything you need to know to survive on
+your own. But before you are allowed to enter the realm of team
+combat, you have to master a last challenge. You must defeat your
+human weakness.
+
+# Set up a new match. At the "ADVANCED OPTIONS" page enable the
+# option labeled "limited stamina."
+
+Once the Vadrigar have burden you with the plague of
+short-windedness, you should carefully consider every move. Only
+run if necessary. Avoid jumps whenever possible. If you feel
+exhausted, you may even choose to rest for a while.
+
+It's unwise to reach the limit. You become slower and begin to
+pant. The latter can be very nasty if you try to hide. If
+absolutely necessary, you can hold your breath.
+
+# To be able to do this you have to assign a key to "hold breath"
+# in the "MISC" section of the setup / controls menu.
+
+Exercise: Win a match set up with limited stamina.
+
+
+
+
+Congratulations! You are now an experienced and valuable Hunter.
+The Vadrigar offer you the opportunity to join the Hunter's Team
+League.
+
+
+
+
+=================================================================
+=== Chapter 15
+=== Composing Forces
+===
+
+To form a team means more than a couple of players wearing the
+same uniform. Co-ordination is the key to success. Unfortunatly,
+with the old system of team orders it wasn't easy to make the
+members of a team work together and support each other.
+Fortunatly, a remedy is now available: the Tactical Support
+System (TSS). It can be used with both team deathmatches and CTF
+matches.
+
+The basic idea is this. The team leader, now called the "mission
+leader," programs the TSS on an abstract, strategic level. The
+TSS then continuously analyses combat and computes appropriate
+commands for each player.
+
+From the point of view of a player the TSS consists of three
+parts:
+
+   - the Tactical Command Computer (TCC), one for each team
+   - the TSS Interface, connected to the HUD
+   - the Tactical Display (TD), also connected to the HUD
+
+The TCC is the central component that does all tactical
+computations. It knows everything about its own team, nothing
+about the opposing team, and -- in CTF matches -- at any time the
+exact position of both(!) flags.
+
+The TSS Interface is used by the mission leader to instruct the
+TCC. It also provides a few services (like voting for a new
+mission leader) to all players. These services are optional, so
+only the mission leader is required to have access to the TSS
+Interface.
+
+The Tactical Display is shown in the lower left corner of the
+HUD. It displays commands and information received from the TCC.
+Also available, and enabled by default, is the navigation aid, a
+green line floating on the floor, indicating the shortest way to
+the goal (given the TCC provided one).
+
+The TD consists of at least the following elements:
+
+   - a group icon
+   - a mission description
+   - a task (or command) description
+
+According to the instructions of the mission leader the TCC
+divides the team into up to 10 groups, labeled from "A" to "J."
+The group icon indicates which group you're assigned to. Group
+icons are also displayed above the heads of your team mates, so
+you can easily tell whether another player is supposed to
+co-operate with you.
+
+# If the console variable "cg_drawFriend" is set to 0 (zero), no
+# group icons are displayed above the heads of your team mates.
+# This variable is not introduced by the Hunt mod, so its value
+# is inherited from your "baseq3/q3config.cfg" file when Hunt is
+# started for the first time. A local copy is then stored in
+# "hunt/q3config.cfg."
+
+The mission leader assigns a mission to each group, e.g. "Capture
+Enemy Flag" or "Defend Our Flag." This is displayed in your HUD
+to let you know about the overall goal of your group. Your
+individual task, as determined by the TCC, is displayed below the
+mission description. Examples for tasks are "Support Grunt",
+"Protect Anarki," or "Fulfil mission." Note that the navigation
+aid always refers to the task, not the mission.
+
+The group icon also shows your status:
+
+   - ready for action (white icon)
+   - ready for action and leading the group (yellow icon)
+   - not ready for action (black icon)
+
+Usually, the group leader receives the task "Fulfil mission,"
+while the other group members are commanded to "Support <leader>"
+or "Stick to <leader>." Non-leaders sometimes receive the command
+"Go! Go! Go!," which indicates that they should try to fulfil the
+mission independently and by any means.
+
+# To make use of the TSS at least the mission leader must have
+# assigned a key to "TSS Interface" in the "MISC" section of the
+# setup / controls menu.
+#
+# Additionally, the TSS must be enabled at the "ADVANCED OPTIONS"
+# page. Note that due to technical limitations it's currently not
+# possible for human mission leaders to make use of the TSS on a
+# pure server, so you should disable the pure server option as
+# well. It's planned to overcome this limitation in future
+# versions of Hunt. Bots can use the TSS on a pure server
+# already.
+#
+# To have a first try at the TSS is easy. Prepare a CTF match.
+# Once you entered the game, open the TSS Interface. There should
+# be a line that reads "Mission control is off-line." If you
+# can't find this line, another player is the mission leader.
+# Only the mission leader can turn on mission control.
+#
+# The word "off-line" should appear in bright white, indicating
+# that it can be manipulated. If it's not, TSS has been disabled.
+# You have to set up a new game and make sure the TSS is enabled
+# and the pure server option is disabled then.
+#
+# Otherwise, click on "off-line." It should change to "on-line."
+# That's it. After a few seconds all members of your team
+# (including yourself) should receive commands from the TCC. You
+# can close the TSS Interface by pressing "ESC," "F12," or by
+# clicking on "resume game" at the upper right corner of the TSS
+# Interface.
+#
+# If nothing happens after switching mission control on-line, the
+# TSS wasn't able to find a valid strategy file. There must be at
+# least one *.hst file at "hunt/tss/ctf" or "hunt/tss/tdm,"
+# depending on the game type. If you don't have strategy files
+# you may create some yourself, this is covered by later
+# chapters. Until then you may teamvote for a bot as the mission
+# leader (bots do not depend on the existence of *.hst files).
+# You can use the TSS Interface to call a teamvote.
+
+Exercise: Make use of the TSS in a CTF match. There may be things
+you don't understand. Just ignore them by now.
+
+
+
+
+=================================================================
+=== Chapter 16
+=== Mission Impossible
+===
+
+The mission descriptions appearing in the Tactical Display depend
+on the game type and the instructions of the mission leader (as
+you didn't give any instructions to the TCC, it applies default
+instructions). The following list shows the complete range of
+missions.
+
+   - Seek Enemy (TDM & CTF)
+     Seek and destroy any opponent. All group members are allowed
+     to open fire within their own discretion.
+
+   - Seek Items (TDM & CTF)
+     Seek and collect any item. Group members should fight only
+     when being attacked.
+
+   - Capture Red/Blue Flag (CTF only)
+     Take possession of the opponent's flag and bring it to your
+     home base. In general, group members should fight only when
+     being attacked. When assaulting the opponent's base or
+     possessing the flag, all group members are allowed to open
+     fire to their own judgement.
+
+     Once the group possesses the flag, the group leader's task
+     is to lead the flag carrier to the home base, while the
+     other group members should try to protect the flag carrier.
+
+     If the group leader gets the flag, another group member
+     automatically becomes the leader.
+
+     When there's no group leader, the group leader is too far
+     away from the flag carrier, or the flag carrier is under
+     attack, he'll be commanded to rush to the home base on his
+     own.
+
+   - Defend Red/Blue Flag (CTF only)
+     Try to prevent the opposing team from taking away your
+     team's flag. All group members should attack intruders as
+     soon as they're discovered.
+
+     If an opponent is successful in capturing the flag, the
+     mission changes to "Return Red/Blue Flag," indicating that
+     the group should chase the flag carrier. Other opponents
+     should be ignored if possible.
+
+   - Defend Red/Blue Base (CTF only)
+     Keep all opponents from entering your team's base. All group
+     members should attack intruders as soon as they're
+     discovered. Opponents -- even the flag carrier -- should not
+     be chased.
+
+   - Occupy Red/Blue Base (CTF only)
+     Expel the opponents from their own base, but don't chase
+     them. If the opponent's flag is returned, the group should
+     try to catch it.
+
+     If your team's flag carrier is near the opponent's base and
+     not being supported by a group leader, this group will be
+     commanded to protect the flag carrier.
+
+
+
+
+=================================================================
+=== Chapter 17
+=== The Three Commandments
+===
+
+Apart from the heavy responsibility that rests on you, being a
+group leader is easy. You lead the way, the ranks follow.
+
+Sometimes, this isn't desirable. For example, when you chase the
+enemy's flag carrier, your comrades better chase the enemy,
+instead of you. If you manage to return the flag, some of your
+subordinates may already be near the base (perhaps they have been
+fragged or left the group to pick up an item). It would be stupid
+if they left the flag just to meet you.
+
+As the group leader you control your subordinates by means of
+three commands. These group commands are
+
+   - "Stick to me!"
+     All group members ready for action should stay near you,
+     whatever happens.
+
+   - "Support me!"
+     In general, all group members ready for action should stay
+     near you, but may leave you to chase an enemy or pick up an
+     item. Group members near the mission goal should proceed to
+     there.
+
+   - "Go! Go! Go!"
+     All group members ready for action should try to fulfil the
+     mission on their own.
+
+Note that players not ready for action (this is decided by the
+TCC according to instructions given by the mission leader) are
+always out of your control.
+
+Group commands are communicated to your team mates through the
+TCC by assigning appropriate tasks. Of course, it's up to them
+whether they respect your commands. At least bots will always try
+to meet your wishes.
+
+Group leaders find additional information on their Tactical
+Display that may be useful when deciding how to fulfil the
+mission:
+
+   - the current group command
+
+   - something like "[x/y/z]", where
+      - "x" is the number of group members ready for action
+      - "y" is the number of group members alive
+      - "z" is the total number of group members, including dead
+        players
+
+      Note that "x," "y," and "z" include the group leader.
+
+Especially newbies are afraid of deciding about group commands.
+Some players just don't want to rack their brains for something
+like that. So, by default, group commands are actually decided by
+the TCC.
+
+# This means that two steps are needed to manually place group
+# commands.
+#
+# 1. Assign keys to the group commands in the "MISC" section of
+#    the setup / controls menu.
+#
+# 2. Switch off the "Auto Group Leader Command" option in the
+#    setup / gameoptions menu.
+
+
+
+
+=================================================================
+=== Chapter 18
+=== Use Me
+===
+
+# To make use of the TSS Interface you have to know a few general
+# rules.
+#
+# Everything that is printed in gray is descriptive text; you've
+# no direct control over it. On the other hand, things printed in
+# white can be manipulated. Move the cursor over such an item by
+# use of the mouse or cursor keys. It'll change its color to
+# yellow, indicating that it's ready to be manipulated or used.
+#
+# There're basically three different types of manipulatable
+# items:
+#
+#    - variables
+#      These come in two flavors: number and text variables.
+#
+#    - buttons
+#      You recognize a button by its brighter background.
+#
+#    - text input fields
+#      These can be recognized by their darker background.
+#
+# A number variable can be manipulated in the following ways:
+#
+#    - increase
+#       - by one
+#          mouse wheel up
+#          shift + cursor up
+#          shift + cursor right
+#          PgUp
+#          "+"
+#
+#       - by five
+#          ctrl + mouse wheel up
+#          ctrl + cursor up
+#          ctrl + cursor right
+#          ctrl + PgUp
+#
+#    - decrease
+#       - by one
+#          mouse wheel down
+#          shift + cursor down
+#          shift + cursor left
+#          PgDn
+#          "-"
+#
+#       - by five
+#          ctrl + mouse wheel down
+#          ctrl + cursor down
+#          ctrl + cursor left
+#          ctrl + PgDn
+#
+#    - miscellaneous
+#       - reset to zero
+#          backspace
+#          delete
+#
+#       - set to minimum
+#          shift + Home
+#          ctrl + Home
+#
+#       - set to maximum
+#          shift + End
+#          ctrl + End
+#
+#       - switch (only with binary variables)
+#          left mouse button
+#          right mouse button
+#          return
+#          enter
+#          space
+#
+# If you aren't comfortable in learning this by heart, just use
+# your mouse wheel to change a variable. You may also click on
+# variables that switch between two different values.
+#
+# For example, near the top of the TSS Interface there's a line
+# that reads "Page #1/5: Personal Services". The "1" is the
+# current value of a number variable that controls the page to be
+# displayed by the TSS Interface. Try to view the other pages of
+# the TSS Interface, then turn back to page #1.
+#
+# Text variables are controlled in the same way as number
+# variables; the "increase"/"decrease" keys flip through the
+# available states.
+#
+# For example, the page title (e.g. "Personal Services") is
+# actually the textual representation of the variable that
+# controls the page. As the page number it can be used to flip
+# through the available pages.
+#
+# Buttons can be activated by the following keys:
+#    left mouse button
+#    right mouse button
+#    return
+#    enter
+#    space
+#
+# For example, there's a button at the upper right corner of the
+# TSS Interface, entitled "resume game". It closes the TSS
+# Interface when activated.
+#
+# Use a text input field by moving the cursor at the position
+# where you want to insert some text, then type it. Home, End,
+# Backspace, and Delete do what they are supposed to. The Insert
+# key does not work: input is always inserted, there's no
+# overstrike mode.
+#
+# If you want to try out a text input field without damaging
+# something (oh, by the way: opening the TSS Interface tacitly
+# annulled your life insurance), go to page #3 ("Strategy").
+# At section #1 ("Stock") find the entry "sort by access date
+# (#2/5)" and change it to "sort by pattern similarity (#5/5)."
+# Now, at the bottom right corner you'll find a text input field
+# (entitled "Pattern") in which you can enter whatever you like.
+
+
+
+
+=================================================================
+=== Chapter 19
+=== Personal Affairs
+===
+
+While pages 2 to 5 are accessible by the mission leader only, the
+first page provides services to all players (with a few
+additional services for the mission leader).
+
+Services and information provided to all players are:
+
+   - the name of the mission leader
+
+   - voting for another mission leader
+
+   - voting for surrendering the current round
+
+   - enabling / disabling the navigation aid (available only
+     while mission control is on-line)
+
+   - the current group command (available only while mission
+     control is on-line)
+
+   - selecting a group command (available only for group leaders)
+
+   - the number of players for each team
+
+Services and information provided to the mission leader only are:
+
+   - enabling / disabling mission control
+
+   - the number of players alive for each team
+
+   - entering safety mode (available only in certain cases, see
+     below)
+
+Surrendering may be useful when playing with a long respawn
+delay, especially if the only remaining players are bots. If the
+vote succeeds all players respawn immediately. The victorious
+team scores two points in CTF matches and five points in team
+deathmatches respectively.
+
+A serious mission leader might complain that it's difficult to
+program the TSS and defend one's life at the same time. You might
+want to enter the safety mode in this case. You can fly around
+like a spectator, can't be seen nor shot (nor shoot, of course),
+but still use the TSS Interface to command your troops. You can
+leave the safety mode at any time (by use of the same button you
+used to enter it). If you do, you'll respawn at a random respawn
+point.
+
+To be able to enter the safety mode, all of the following
+conditions must be met:
+
+   1. Mission control must be on-line.
+   2. You mustn't be the only player of your team.
+   3. Your health mustn't be below the base health (300 by
+      default).
+   4. Your weapon must be idle.
+
+Conditions #3 and 4 aim to prevent abuse of this service. For
+team deathmatches with respawn delay it's important to know that
+a mission leader who entered the safety mode is considered to be
+dead.
+
+
+
+
+=================================================================
+=== Chapter 20
+=== Personnel Affairs
+===
+
+Since group leaders have a larger influence on combat than other
+players, it's desirable to leave this responsibility to more able
+or more experienced players. Though it is not possible to force
+certain players to be group leaders, the mission leader can
+express strong recommendations.
+
+This is done at page 2 ("Groups") of the TSS Interface. At
+section 1 ("Designated Leaders") each group can be assigned a
+first, second, and third leader. Think of the second and third
+leaders as vice-leaders.
+
+The TCC prefers designated leaders when assigning players to
+groups and determining group leaders. It refuses them when
+they're dead, not ready for action, or much too far away from the
+mission goal. When a designated leader becomes a group leader,
+his group icon is surrounded by a ring.
+
+
+
+
+=================================================================
+=== Chapter 21
+=== The Tools of Success
+===
+
+The most important task of the mission leader is to decide on how
+the team should act and react in combat. In general, to describe
+this in every detail is a task much too complex to do during the
+battle. Instead, you just choose between a few plans you or
+others prepared ealier. In TSS terminology these plans are called
+"strategies."
+
+Though Hunt ships with only a few, it's able to manage a stock of
+up to 1000 strategies. Choosing from a list of dozens or even
+hundreds of strategies can still be somewhat difficult with a
+couple of rockets approaching and comrades shrieking for help.
+So, the TSS Interface provides means to create a choice, the
+"palette" as it is called, from which you select the one strategy
+that the TCC should apply.
+
+The palette provides space for up to 26 strategies, labeled from
+"a" to "z." There're an "applied" strategy, which is the one used
+by the TCC, and a "selected" one, which may be removed (from the
+palette), applied, or edited.
+
+The TSS Interface differentiates between the file name and the
+TSS name of a strategy. Due to technical limitations it's not
+possible to delete or rename a strategy file within Hunt. Use
+your operating system's file services for this purpose. On the
+other hand, the TSS name *can* be edited using the TSS Interface,
+so this name is used to identify and search for strategies. Since
+TSS names don't need to be unique, there's also a unique number
+(called "ID#," ranging from "000" to "999") assigned to each
+strategy.
+
+# The palette and the stock are found at page 3 ("Strategy") of
+# the TSS Interface. To add a strategy to the palette use the
+# "+" button to the left of the strategies in the stock. When
+# the stock is large, put the cursor on one of the TSS names and
+# use the keys for modifying a number variable to scroll through
+# the list. For example, you can use the mouse wheel to scroll,
+# Shift+Home and Shift+End to skip to the start and end of the
+# list, respectively.
+#
+# There're several ways to find a specific strategy in a large
+# stock. If you now the ID#, you can enter it in the text input
+# field at the bottom left corner of the TSS Interface. If you
+# know that it's somewhere near the selected strategy, use the
+# "search #nnn" button ("nnn" is always the ID# of the selected
+# strategy). It may be helpful to change the sort order. The
+# following sort orders are available:
+#
+#    - sort by creation date
+#      The strategy at last created is sorted at the top of the
+#      stock.
+#
+#    - sort by access date
+#      The strategy at last added to the palette is sorted at the
+#      top of the stock.
+#
+#    - sort by name / creation date
+#      The stock is sorted alphabetically. Strategies with
+#      identical TSS names are sorted by creation date.
+#
+#    - sort by name / access date
+#      The stock is sorted alphabetically. Strategies with
+#      identical TSS names are sorted by access date.
+#
+#    - sort by pattern similarity
+#      At the bottom right corner of the TSS Interface appears a
+#      text field labeled "Pattern." The strategy with a TSS name
+#      most similar to the pattern is sorted at the top of the
+#      stock.
+#
+# The contents of the palette is saved when you leave a match.
+
+Note that there're actually two stocks: one for team deathmatches
+(files are located at "hunt/tss/tdm") and one for CTF games
+(files are located at "hunt/tss/ctf"). If you receive files from
+other sources, make sure they're put into the right folders. A
+wrongly placed strategy file will show up in the stock list, but
+you won't be able to add it to the palette.
+
+These are the strategies that ship with the Hunt mod:
+
+   Team Deathmatch Strategies
+
+   - "juhox crowd" (hunt/tss/tdm/tdm_juhox_crowd.hst)
+     Your team is divided into as many groups as possible. If
+     your team consists of ten or less players, all players will
+     be put into a different group.
+
+     Players are supposed to walk independently through the map,
+     searching for enemies. Once a player becomes involved in a
+     fight, the other players are directed to this player.
+
+   - "juhox maxforce" (hunt/tss/tdm/tdm_juhox_maxforce.hst)
+     All players of your team are put into a single group. When a
+     player becomes endangered (health and armour are low), a
+     team mate will be commanded to act as a bodyguard for this
+     player.
+
+   - "juhox pliers" (hunt/tss/tdm/tdm_juhox_pliers.hst)
+     Your team is divided into two groups that move independently
+     from each other. If one group becomes involved in a fight,
+     the other group's leader is directed to this group.
+
+
+   Capture-The-Flag Strategies
+
+   - "juhox simple" (hunt/tss/ctf/ctf_juhox_simple.hst)
+     Your team is divided into two groups of equal size. Group
+     "A" defends the own flag, group "B" captures the opponent's
+     flag.
+
+   - "juhox maxforce" (hunt/tss/ctf/ctf_juhox_maxforce.hst)
+     This is a more complex strategy that can be used to break
+     strong defence. At the beginning, the entire team is put
+     into group "B," commanded to capture the opponent's flag.
+     When your team is successful, it's commanded to accompany
+     your flag carrier on his way back to the home base. Once the
+     flag carrier reaches home ground, the team splits up. A
+     minority still remains in group "B" to protect the flag
+     carrier, while the majority moves to group "A," commanded to
+     return the own flag. Of course, if the own flag is still at
+     the base, the team stays together. This is unlikely, though,
+     since there wasn't any defence in the beginning.
+
+   - "juhox pliers" (hunt/tss/ctf/ctf_juhox_pliers.hst)
+     If you think that the other team is inferior to your, you
+     may use this strategy to score captures in the shortest
+     possible time. There're three groups of equal size. Group
+     "A" is commanded to defend the own flag, group "B" tries to
+     capture the opponent's flag, and group "C" should try to
+     occupy the opponent's base. Members of group "C" waiting at
+     the opponent's base automatically move to group "B" as soon
+     as the opponent's flag returns. Beautiful -- and very
+     depressing to the opponents! But note that this strategy
+     may be difficult to accomplish if the opponents use a
+     strategy of maximum force.
+
+   - "juhox powerpliers" (hunt/tss/ctf/ctf_juhox_powerpliers.hst)
+     This is a slightly modified version of "juhox pliers." It's
+     a bit slower, but may work even if the opponents use a
+     strategy of maximum force. The only difference is that, when
+     both flags are at your part of the map, the members of group
+     "C" are integrated into groups "A" and "B."
+
+Note that there's no "best" strategy. At the beginning of a match
+try to select a strategy that fits best to your team's abilities
+and worst to the opposing team's ones, taking into account things
+like the map, respawn delay, limited stamina, time limit, etc. If
+your first choice turns out to be unlucky, choose another one. If
+you recognize the strategy of your opponents, you may want to
+choose a better one, even if the current strategy is successful.
+Your mind may be your strongest weapon.
+
+
+
+
+=================================================================
+=== Chapter 22
+=== When Ideas Come True, Part 1
+===
+
+There's nothing wrong in using other people's strategies, but a
+true Master of Hunt surely wants to create his own.
+
+An important aspect of TSS strategies is that they should (and
+can, of course) be adaptive. The idea is that the mission leader
+should have to consider static and infrequent changing
+information only, while adapting to the dynamics of the battle
+(i.e. taking tactical decisions) is left to the strategy (or,
+more precisely, to the TCC applying the strategy).
+
+To this end a TSS strategy consists of up to 27 conditions, each
+defining an occasion and a set of directives. Usually, the TCC
+selects a condition automatically ("auto tactics"), but you can
+override this and choose the condition manually ("manual
+tactics"). Provisional, we'll use manual tactics, as it saves us
+defining occasions.
+
+The conditions are labeled "?" and "A" to "Z." Each condition can
+be assigned a name, with the exception of the condition "?" which
+always is named "default."
+
+The directives of a condition determine how the team should be
+divided into groups, what missions these groups should fulfil,
+and, to a certain extent, how the missions should be carried out.
+
+To determine the division of your team into groups, you have to
+answer the following questions for each group:
+
+   - How many players should be dedicated to this group at least?
+
+   - Of the previous number, how many should be alive at least?
+     This is especially important when a respawn delay has been
+     set up. Additionally, this is the magnitude the next one
+     refers to.
+
+   - Of the previous number, how many should be ready for action
+     at least?
+
+Of course, the TCC is not able to revive players, so keeping the
+limits can't be guaranteed. When the TCC needs to break limits,
+it applies an order of precedence. By default, this means that
+the limits of group "A" are broken at last and those of group "J"
+first. The order of precedence can be changed, which is
+preferable to exchanging the missions, because many players like
+it when groups are always in association with specific missions.
+
+To determine goal and behavior of each group, the following
+questions have to be answered:
+
+   - What mission is this group going to perform?
+
+   - What is the maximum danger index at which members of this
+     group are considered as ready for action?
+
+     The TCC assigns a number called "danger index" (DI) to each
+     player, that measures the degree of danger, taking into
+     account health, armour, stamina, and lightning charge. The
+     following table might give a clue:
+
+        DI=-100 ... very healthy, e.g. health=armour=300
+	DI=0 ...... not in danger, e.g. health=300, armour=0
+	DI=50 ..... in danger, e.g. health=150, armour=0
+	DI=100 .... dead or as good as dead
+
+     The numbers hold for a base health of 300, no handicap, and
+     no lightning charge. Low stamina increases the DI by up to
+     20.
+
+     If you're not sure about the correct value, just try it out.
+     If players complain that they feel perfectly well, but are
+     forced to retreat, you should increase the DI limit. On the
+     other hand, when your team mates are always fragged in the
+     same second the TCC tolds them to retreat, you should
+     decrease the DI limit.
+
+   - Of the group members being alive, how many need to be ready
+     for action at least?
+
+     If there aren't enough players ready for action, the mission
+     is aborted and all members ready for action will be
+     commanded to protect the members not ready for action.
+
+   - Of the group members being alive, how many need to be near
+     the group leader at least?
+
+     When the group command is "Stick to me!" and there aren't
+     enough players near the group leader, the mission is
+     aborted.
+
+   - How many bodyguards should be assigned to players not ready
+     for action at most?
+
+     This number is only used as long as the mission is not
+     aborted.
+
+# As an example, we'll now create a more defensive version of the
+# "juhox pliers" (CTF) strategy. Start up a CTF match, preferably
+# a single player game without bots, so you'll be undisturbed.
+#
+# At page 3 of the TSS Interface, section 2, click on the button
+# labeled "create new strategy." Note that this button won't
+# work, if the palette is full. Now return to the stock at
+# section 1 and give the new strategy a name, e.g. "defensive
+# pliers."
+#
+# The new strategy has already been added to the palette and has
+# been selected. So, turn to page 4. At the lower half of the TSS
+# Interface you can select the condition to be edited. Choose the
+# "default" condition. At section 1 ("Division") enter the
+# following values:
+#
+#    [A] total>=25%     alive>=50%     ready>=100%
+#    [B] total>=25%     alive>=50%     ready>=100%
+#    [C] total>=25%     alive>=25%     ready>=100%
+#    [D] total>=25%     alive>=25%     ready>=100%
+#    [E] total>= 0%     alive>= 0%     ready>=100%
+#    [F] total>= 0%     alive>= 0%     ready>=100%
+#    [G] total>= 0%     alive>= 0%     ready>=100%
+#    [H] total>= 0%     alive>= 0%     ready>=100%
+#    [I] total>= 0%     alive>= 0%     ready>=100%
+#    [J] total>= 0%     alive>= 0%     ready>=100%
+#
+# As soon as you begin to change values, two new buttons appear
+# at the top of the TSS Interface. You can use these button to
+# use or cancel your changes. Note that when you select another
+# strategy or leave the TSS Interface, your changes are applied
+# automatically.
+#
+# There's also a "Quantity" mode available, but that's only
+# useful when the complete team already joined the game. And
+# please be aware that the TCC always uses percentages.
+#
+# At section 2 ("Orders") enter this:
+#
+#    [A] defend our flag       DI<=40   RP>= 0%   GS>= 0%   BG<=0
+#    [B] capture enemy flag    DI<=25   RP>=50%   GS>=50%   BG<=0
+#    [C] occupy enemy base     DI<=25   RP>=50%   GS>=50%   BG<=0
+#    [D] defend our base       DI<=40   RP>= 0%   GS>= 0%   BG<=0
+#    [E] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [F] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [G] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [H] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [I] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [J] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#
+# That's it. You can try your new strategy in a match if you
+# want. If you do, don't forget to tell the TCC to apply it.
+
+Now, what do these numbers mean? Obviously we've now a fourth
+group, which is commanded to defend the home base. According to
+the limits labeled "total" (in the following called "t-limits"),
+all groups are equal in size (if possible).
+
+The more important groups "A" and "B" are set up such that the
+TCC keeps at least 50% of their members alive, if possible. A
+general rule for this limit (in the following called "a-limit")
+is to prefer lower values to higher ones. Using high values may
+force the TCC to frequently move players from one group to
+another. Most players hate this.
+
+When the a-limits have been set to reasonable values, high values
+for the limits labeled "ready" (in the following called
+"r-limits") are less critical. So, we just use the default value
+of 100%.
+
+Let's say your team consists of 12 players (alright, that's quite
+a large team). That makes 3 players per group. In group "A" at
+least 2 players need to be alive (1 player would be less than 50%
+of 3) and both (100% of them) need to be ready for action.
+
+Defenders can't choose the point of time of their fights, so we
+gave them more elbow room by increasing the DI limit to 40. On
+the other hand, attacks should be powerful (especially as
+attackers have been split up into two independent groups), so the
+limits for the number of players ready for action (RP) and the
+number of players near the group leader (GS) have been raised to
+50% of the players being alive. Remember that these limits
+determine whether the mission should be aborted. They must not be
+confused with the a-limit, which is used to proper divide the
+team into groups.
+
+As frags don't decide victory, bodyguards (BG) are usually not
+useful in CTF matches. This can change when using very long
+respawn delays, though.
+
+The current configuration makes group "D" be the least
+significant one. When there're not enough players alive or ready
+for action in group "D," the TCC won't move players from other
+groups to it. Perhaps you think that this is not acceptable for a
+strategy emphasizing defence. To remedy you could rearrange the
+assignment of missions to groups, but perhaps your team mates
+don't like this solution. In this case you can rearrange the
+order of precedence instead.
+
+# This is done with the "sliders" to the left of the group
+# labels. For example, put the cursor at the "=" to the left of
+# "[D]." Now use an "increase" key (e.g. "mouse wheel up") two
+# times. Group "D" will move to the place previously occupied by
+# group "B," while groups "B" and "C" will move one line down. It
+# does not matter whether you do this at section 1 or 2, the new
+# arrangement automatically holds for both.
+
+
+
+
+=================================================================
+=== Chapter 23
+=== When Ideas Come True, Part 2
+===
+
+The strategy introduced in the previous chapter is still far from
+being perfect. It's just not "enough" adaptive. For example, when
+the opposing team managed to catch your flag and have their flag
+safe at their base, it's wasted power to leave group "D" at your
+base. For cases of emergency there should be a seperate
+condition.
+
+# Create a CTF match, open the TSS Interface and make sure the
+# new strategy is selected. Then go to page 4 and select "A" as
+# the condition to be edited. Give it a name, e.g. "Emergency."
+#
+# At section 1 enter the following values:
+#
+#    [A] total>=34%     alive>= 0%     ready>=100%
+#    [B] total>=33%     alive>= 0%     ready>=100%
+#    [C] total>=33%     alive>= 0%     ready>=100%
+#    [D] total>= 0%     alive>= 0%     ready>=100%
+#    [E] total>= 0%     alive>= 0%     ready>=100%
+#    [F] total>= 0%     alive>= 0%     ready>=100%
+#    [G] total>= 0%     alive>= 0%     ready>=100%
+#    [H] total>= 0%     alive>= 0%     ready>=100%
+#    [I] total>= 0%     alive>= 0%     ready>=100%
+#    [J] total>= 0%     alive>= 0%     ready>=100%
+#
+# At section 2 enter the following values:
+#
+#    [A] defend our flag       DI<=70   RP>= 0%   GS>= 0%   BG<=0
+#    [B] capture enemy flag    DI<=70   RP>= 0%   GS>= 0%   BG<=0
+#    [C] occupy enemy base     DI<=70   RP>= 0%   GS>= 0%   BG<=0
+#    [D] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [E] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [F] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [G] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [H] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [I] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#    [J] ---                   DI<=25   RP>= 0%   GS>= 0%   BG<=0
+#
+# In case of emergency you can now select condition "A" to
+# mobilize all forces. This is done at the upper half of page 4,
+# below the applied strategy.
+
+Note that the a-limits have been set to zero, to as far as
+possible prevent the TCC from moving players from one group to
+another (players should be undisturbed during an emergency). The
+r-limits may be left to the default value, since 100% of zero is
+still zero (remember that the r-limit refers to the a-limit, not
+to the number of group members being alive).
+
+The limit for the danger index has been raised to 70, so players
+are only allowed to retreat when absolutely needed. Consistently,
+the other limits have been set to zero, so missions are never
+aborted, and no bodyguards are used.
+
+
+
+
+=================================================================
+=== Chapter 24
+=== In the Realm of the Numbers
+===
+
+Manually selecting the condition to be applied by the TCC is
+useful for purposes of learning and testing, but for a real match
+this should be done automatically. To this end, you have to
+specify the occasion of usage for each condition.
+
+The TCC determines the condition to be applied by the following
+procedure:
+
+   1. Test whether the occasion of condition "A" fits to the
+      current situation of combat. If so, apply condition "A."
+
+   2. If the previous condition could not be applied, try the
+      next one.
+
+   3. Step 2 is repeated until an occasion fits, or all
+      conditions from "A" to "Z" have been tested. In the latter
+      case, the default condition (condition "?") is applied.
+
+To temporarily prevent a condition from being applied, it's
+possible to turn them off. Note that, when creating a new
+strategy, all conditions (except the default condition) are
+turned off. The default condition cannot be turned off.
+
+An occasion consists of up to six clauses. An occasion fits to a
+given situation, if at least one of its clauses fits. Like
+conditions, clauses can be turned on and off. A clause that is
+turned off never fits.
+
+A clause consists of up to ten predicates. A clause fits to a
+given situation, if all of its predicates fit. An unused
+predicate always fits.
+
+A predicate consists of a magnitude, a comparison operator, and a
+constant value (which usually acts as a limit). The following
+magnitudes are available:
+
+   - YTS  (#1)
+     "Your Team: Size"
+     number of players in your team
+
+   - OTS  (#2)
+     "Opposing Team: Size"
+     number of opponents
+
+   - BTS  (#3)
+     "Balance of Team Sizes"
+     YTS - OTS
+
+   - RSPD (#4)
+     "ReSPawn Delay"
+     respawn delay in seconds
+
+   - YAP  (#5)
+     "Your team: players Alive, Percentage"
+     100% * (YAQ / YTS)
+
+   - YAQ  (#6)
+     "Your team: players Alive, Quantity"
+     number of players alive in your team
+
+   - OAP  (#7)
+     "Opposing team: players Alive, Percentage"
+     100% * (OAQ / OTS)
+
+   - OAQ  (#8)
+     "Opposing team: players Alive, Quantity"
+     number of opponents alive
+
+   - BAP  (#9)
+     "Balance of players Alive, Percentage"
+     YAP - OAP
+
+     Note: If all players are alive, this is zero, even if the
+     teams are different in size. It's assumed that the teams are
+     always equal in strength; maybe the larger team consists of
+     less skilled players.
+
+   - BAQ  (#10)
+     "Balance of players Alive, Quantity"
+     YAQ - OAQ
+
+   - YAMP (#11)
+     "Your team: players Alive, Medium-term prediction,
+     Percentage"
+     100% * (YAMQ / YTS)
+
+   - YAMQ (#12)
+     "Your team: players Alive, Medium-term prediction, Quantity"
+     YAQ + dead players of your team who respawn in the medium
+     term
+
+   - OAMP (#13)
+     "Opposing team: players Alive, Medium-term prediction,
+     Percentage"
+     100% * (OAMQ / OTS)
+
+   - OAMQ (#14)
+     "Opposing team: players Alive, Medium-term prediction,
+     Quantity"
+     OAQ + dead players of the opposing team who respawn in the
+     medium term
+
+   - BAMP (#15)
+     "Balance of players Alive, Medium-term prediction,
+     Percentage"
+     YAMP - OAMP
+
+   - BAMQ (#16)
+     "Balance of players Alive, Medium-term prediction, Quantity"
+     YAMQ - OAMQ
+
+   - YALQ (#17)
+     "Your team: players Alive, Long-term prediction, Percentage"
+     100% * (YALQ / YTS)
+
+   - YALQ (#18)
+     "Your team: players Alive, Long-term prediction, Quantity"
+     YAQ + dead players of your team who respawn in the long term
+
+   - OALP (#19)
+     "Opposing team: players Alive, Long-term prediction,
+     Percentage"
+     100% * (OALQ / OTS)
+
+   - OALQ (#20)
+     "Opposing team: players Alive, Long-term prediction,
+     Quantity"
+     OAQ + dead players of the opposing team who respawn in the
+     long term
+
+   - BALP (#21)
+     "Balance of players Alive, Long-term prediction, Percentage"
+     YALP - OALP
+
+   - BALQ (#22)
+     "Balance of players Alive, Long-term prediction, Quantity"
+     YALQ - OALQ
+
+   - BAMT (#23)
+     "Balance of players Alive, Medium-term Tendency"
+     100% * [(BAMQ - BAQ) / (YTS + OTS)]
+
+   - BALT (#24)
+     "Balance of players Alive, Long-term Tendency"
+     100% * [(BALQ - BAQ) / (YTS + OTS)]
+
+   - RFAP (#25)
+     "Readiness For Attack, Percentage"
+     100% * (RFAQ / YTS)
+
+   - RFAQ (#26)
+     "Readiness For Attack, Quantity"
+     number of players in your team who are ready for attack
+
+   - RFDP (#27)
+     "Readiness For Defence, Percentage"
+     100% * (RFDQ / YTS)
+
+   - RFDQ (#28)
+     "Readiness For Defence, Quantity"
+     number of players in your team who are ready for defence
+
+   - FIN  (#29)
+     "Fight INtensity"
+     100% * [(number of fighting players in your team) / YAQ]
+
+   - TIDY (#30)
+     "tidiness"
+     100% * [(number of co-operating players in your team) / YAQ]
+     
+     Note: a player is assumed to co-operate if he's near the
+     group leader.
+
+   - AVST (#31)
+     "AVerage STamina"
+     100% * [(total stamina of players alive in your team) / YAQ]
+
+   - TIME (#32)
+     "time left"
+     number of minutes to the time limit (max. 100), or 999 if
+     there's no time limit
+
+   - YRS  (#33)
+     "Your team: Remaining Score"
+     max. 100, or 999 if there's no score limit
+
+   - ORS  (#34)
+     "Opposing team: Remaining Score"
+     max. 100, or 999 if there's no score limit
+
+   - SCB  (#35)
+     "SCore Balance"
+     your team's score - opposing team's score
+
+   - YFS  (#36)
+     "Your team's Flag: Status"
+     at base = 1-bas, dropped = 2-dro, taken = 3-tak
+
+   - OFS  (#37)
+     "Opposing team's Flag: Status"
+     at base = 1-bas, dropped = 2-dro, taken = 3-tak
+
+   - YFP  (#38)
+     "Your team's Flag: Position"
+     at opponent's base = -100 ... at home base = +100
+
+   - OFP  (#39)
+     "Opposing team's Flag: Position"
+     at opponent's base = -100 ... at home base = +100
+
+# Don't worry: you don't need to learn this list by heart, as
+# it's also available at page 5 of the TSS Interface.
+
+You can define "medium term" and "long term" as a percentage of
+the respawn delay at page 3, section 3 ("Global Adjustments of
+the Selected Strategy").
+
+Note that the list of the magnitudes is so lengthy partly because
+of all these "balance" magnitudes. These are needed because you
+can't compare a magnitude against another one. It's only possible
+to compare magnitudes against constants.
+
+The following comparison operators are available:
+
+   - lower
+   - lower or equal
+   - greater or equal
+   - greater
+   - equal
+   - unequal
+
+Note that the TSS Interface uses the mathematical symbols. As
+some of them are not available in 7-bit ASCII, I'll use the
+following symbols:
+
+   - lower or equal:   <=
+   - greater or equal: >=
+   - unequal:          <>
+
+Now let's return to the strategy you created during the previous
+chapters. We've to define what "case of emergency" does mean. For
+the sake of simplicity, let's use the following definition:
+
+   Emergency: the opposing team has your flag, but your team not
+   that of the opposing team
+
+To translate this into something the TCC is able to understand,
+you need 1 clause consisting of 2 predicates:
+
+   clause #1:
+      YFS = 3-tak (means: your flag has been taken)
+      OFS = 1-bas (means: the opp. team's flag is at their base)
+
+# To program this, create a CTF match, open the TSS Interface,
+# and make sure your new strategy is selected. Then go to page 4
+# and select "A" as the condition to be edited. Make sure that
+# this condition is turned on; the switch for this is located to
+# the right of the name field of the condition.
+#
+# Now go to section 3 ("Occasion") and enter the following:
+#
+# [X] YFS =3-tak  OFS =1-bas  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# Note that the predicates of a clause can edited only while the
+# clause is turned on. Click on "[ ]" to turn a clause on.
+#
+# Asterisks mark predicates and clauses that fit to the current
+# situation. This is useful when debugging strategies.
+#
+# Finally, switch from "Manual Tactics" to "Auto Tactics." The
+# switch for this is located directly over the words "Edit
+# Condition."
+
+Maybe you're not satisfied with the current definition of
+"emergency." What if your flag has been dropped while the
+opposing team's flag is still at their base? The TCC could switch
+to the emergency condition to enforce returning our flag. Try
+this:
+
+   clause #1:
+      YFS<> 1-bas (means: your flag is not at home)
+      OFS = 1-bas (means: the opp. team's flag is at their base)
+
+Well, if your flag is still near the home base, that's not very
+dangerous, so try this one:
+
+   clause #1:
+      YFP < +50%  (means: your flag isn't near the home base)
+      OFS = 1-bas (means: the opp. team's flag is at their base)
+
+Suppose you're playing with respawn delay and many players of
+your team have been fragged, while the other team is still nearly
+complete. That's an emergency, too, isn't it? Now you need two
+clauses to define emergency:
+
+   clause #1:
+      YFP < +50%  (means: your flag isn't near the home base)
+      OFS = 1-bas (means: the opp. team's flag is at their base)
+
+   clause #2:
+      BAP < -50%  (means: your team lost considerable more
+                          players than the other team)
+
+# Enter this as follows:
+#
+# [X] YFP < +50%  OFS =1-bas  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [X] BAP < -50%  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+#
+# [ ] ----------  ----------  ----------  ----------  ----------
+#     ----------  ----------  ----------  ----------  ----------
+
+I leave it to you to further refine your strategy.
+
+
+
+
+=================================================================
+=== Chapter 25
+=== The Greatest Challenge
+===
+
+You mastered all challenges of combat from weapon handling to
+tactical and strategic planning. Now you're worth to take part in
+the greatest battle of this universe.
+
+Only a few know that there's a struggle between the Vadrigar and
+a nameless race of beings emerged from the 99th dimension. These
+beings try to invade our universe since aeons. They are too
+numerous to fight them back. But recently it has been discovered
+that they need mysterious artefacts to survive in our world.
+
+For unknown reason all artefacts are concentrated in one
+location. We need a small team to intrude this heavily guarded
+area, find the artefacts, and collect them. But note that these
+artefacts create a chain between the worlds. You can only grab
+the artefact that is completely part of our universe. When you
+have it, the next one will materialize shortly after.
+
+We don't know the exact location of the artefacts, but you'll be
+equipped with an detector. When you're near enough to an artefact
+(approximately 100m or 300ft), you'll hear a beep that becomes
+faster the closer you get.
+
+Due to interferences caused by the artefacts, we're not able to
+regenerate your health or armour, so keep an eye open for useful
+items.
+
+There're two types of monsters. They can easily distinguished by
+their size.
+
+The small monsters are called "predators." They can only attack
+with their claws, so try to keep them distant. Note that they can
+jump quite far and high, but they don't run faster than you.
+
+The big monsters are called "guards." They're equipped with a
+rocket launcher which can fire at a very high rate. Fortunately,
+the guards are a bit clumsy.
+
+A last warning. This is an extremely dangerous task. Be very
+careful. Your enemy's sight's bad but their hearing is good. So
+make intensive usage of your cloaking device. Only shoot if you
+need to. Your only goal is to catch these artefacts! If we come
+to the conclusion that the task is beyond your capabilities, the
+mission is aborted immediately.
+
+Now go saving the universe. Good luck!
+
+# To accept this challenge set up a new game and choose "Save the
+# Universe" as the game type. Note that the map strongly
+# influences difficulty. Q3DM6 and Q3DM7 are nice maps of medium
+# difficulty. Q3DM12 may be a challenge even for experienced
+# players, but this also depends on other factors (see below).
+#
+# In "Save the Universe" all players (including bots) form a
+# single team. Your enemy can be controlled via the "Advanced
+# Options" menu. Five options determine the difficulty:
+#
+#    - Min. # of Monsters
+#      If the number of monsters drops below this level, new
+#      monsters spawn rapidly until this limit is reached. Valid
+#      values are between 0 and 200.
+#
+#    - Max. # of Monsters
+#      The number of monsters never exceeds this limit. Valid
+#      values are between 1 and 200.
+#
+#    - Monster Spawn Delay
+#      As long as the number of monsters is between the minimum
+#      and maximum level new monsters spawn at this rate. Valid
+#      values are between 1 and 999 seconds.
+#
+#    - Monster Constitution
+#      Determines the monster healthiness. Valid values are
+#      between 1% and 1000%. The smaller the value the easier the
+#      monsters are to kill. Note that 100% is already quite
+#      hard.
+#
+#    - Avg. Part of Monsters Spawning as Guards
+#      You can decide how many monsters spawn as a guard by this
+#      option. Note that the actual number may differ slightly.
+#
+# Note that the first monster spawns five seconds after the game
+# begins.
+#
+# You can also determine the models used by the monsters by
+# clicking the "Monster Model" options.
+#
+# The victory condition is always the collection of all
+# artefacts. On the other hand, the defeat condition can be
+# determined by:
+#
+#    - fraglimit
+#      Limits the number of respawns available for your team.
+#      Similar to the "lifes" counter in old 2D shooter days, but
+#      this time the counter is shared by all members of the
+#      team. Unwise to use with a mixed team (partly experienced
+#      players, partly newbies). Note that any death among your
+#      team members counts as a frag, independantly of the cause.
+#
+#    - timelimit
+#      Limits the available time. Results in much more action
+#      than a fraglimit.
+#
+#    - overkill
+#      This can only happen if you specify a respawn delay. If
+#      all players are dead at the same time and waiting for the
+#      end of the respawn delay, you loose.
+
+
+
+
+=================================================================
+=== Chapter 26
+=== All's Well that Ends Well
+===
+
+"Over? I haven't found the blue key card yet!"
+
+                                         [Doom]
+
+Congratulations! You just completed this tutorial. You must be a
+great warrior. You are not the kind of person who always reads
+the last page first, are you?
+
+If you lost your wallet somewhere at Q3DM15, or are still trying
+to break holes into walls with your BFG ... don't give up!
+
+Over and out.

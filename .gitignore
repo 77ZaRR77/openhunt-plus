@@ -1,6 +1,7 @@
 .gitignore
 openhunt.layout
 openhunt.cbp
+openhunt.cscope_file_list
 compile.bat.lnk
 *.qvm
 *.jts

@@ -1,0 +1,203 @@
+OpenHunt
+cvars
+
+dmg
+speed
+health
+
+
+
+ui_local.h
+
+
+
+additional serverinfo cvars
+g_baseHealth
+g_stamina
+g_weaponLimit
+g_tss
+g_tssSafetyMode
+
+
+
+serverinfo cvars used in STU
+g_artefacts
+g_monsterLauncher
+g_maxMonsters
+
+
+serverinfo cvars used in EFH
+g_distanceLimit
+g_debugEFH
+
+
+serverinfo cvars used for the hook
+g_hookMode
+
+
+-------
+EFH cvars
+cg_drawSegment
+CG_DrawLineSegment not working
+CG_AdjustParticles
+
+CG_AddNearbox nots
+
+cg_glassCloaking
+cg_lensFlare
+
+cg_mapFlare
+cg_sunFlare
+cg_missileFlare
+
+cg_BFGsuperExpl
+cg_nearbox
+cg_autoGLC
+
+
+cg_music
+
+---------------------------------------
+ENTITIES:
+efh_entrance
+efh_hull
+efh_exit
+efh_brush
+efh_null_brush
+efh_model
+efh_monster
+efh_waypoint
+
+func_timer
+target_earthquake
+
+variables:
+idnum
+
+-------------------------------
+G.SPAWN.C
+JUHOX: MapOriginToWorldOrigin
+==============
+*/
+#if ESCAPE_MODE
+static void MapOriginToWorldOrigin(const vec3_t mapOrigin, efhVector_t* worldOrigin) {
+	worldOrigin->x = (long) (level.referenceOrigin.x + mapOrigin[0]);
+	worldOrigin->y = (long) (level.referenceOrigin.y + mapOrigin[1]);
+	worldOrigin->z = (long) (level.referenceOrigin.z + mapOrigin[2]);
+}
+#endif
+
+/*
+==============
+JUHOX: WorldOriginToMapOrigin
+==============
+*/
+#if ESCAPE_MODE
+static void WorldOriginToMapOrigin(const efhVector_t* worldOrigin, vec3_t mapOrigin) {
+	mapOrigin[0] = worldOrigin->x - level.referenceOrigin.x;
+	mapOrigin[1] = worldOrigin->y - level.referenceOrigin.y;
+	mapOrigin[2] = worldOrigin->z - level.referenceOrigin.z;
+}
+#endif
+
+
+
+What seed realates:
+#if 1	// JUHOX: definitions for the game seed
+typedef enum {
+	GST_monsterSpawning,
+	GST_artefactSpawning,
+	GST_playerSpawning,
+	GST_redPlayerSpawning,
+	GST_bluePlayerSpawning,
+#if ESCAPE_MODE
+	GST_worldCreation,
+#endif
+
+--
+#if MAPLENSFLARES	// JUHOX: cvars for map lens flares
+extern	vmCvar_t	g_editmode;
+#endif
+
+--
+#if MONSTER_MODE	// JUHOX: STU cvar definition
+extern	vmCvar_t	g_artefacts;
+extern	vmCvar_t	g_minMonsters;
+extern	vmCvar_t	g_maxMonsters;
+extern	vmCvar_t	g_monsterSpawnDelay;
+extern	vmCvar_t	g_monsterHealthScale;
+extern	vmCvar_t	g_monsterGuards;
+extern	vmCvar_t	g_monsterTitans;
+extern	vmCvar_t	g_monstersPerTrap;
+extern	vmCvar_t	g_skipEndSequence;
+extern	vmCvar_t	g_monsterLauncher;
+extern	vmCvar_t	g_maxMonstersPP;
+extern	vmCvar_t	g_monsterBreeding;
+extern	vmCvar_t	g_monsterProgression;
+extern	vmCvar_t	g_scoreMode;
+#endif
+#if ESCAPE_MODE	// JUHOX: EFH cvar definitions
+extern	vmCvar_t	g_monsterLoad;
+extern	vmCvar_t	g_distanceLimit;
+extern	vmCvar_t	g_challengingEnv;
+extern	vmCvar_t	g_debugEFH;
+#endif
+extern	vmCvar_t	g_template;	// JUHOX
+extern	vmCvar_t	g_gameSeed;	// JUHOX
+extern	vmCvar_t	g_respawnDelay;	// JUHOX
+extern	vmCvar_t	g_respawnAtPOD;	// JUHOX
+extern	vmCvar_t	g_tss;	// JUHOX
+extern	vmCvar_t	g_tssSafetyMode;	// JUHOX
+extern	vmCvar_t	g_armorFragments;	// JUHOX
+extern	vmCvar_t	g_stamina;	// JUHOX
+extern	vmCvar_t	g_baseHealth;	// JUHOX
+extern	vmCvar_t	g_lightningDamageLimit;	// JUHOX
+extern	vmCvar_t	g_grapple;	// JUHOX
+extern	vmCvar_t	g_noItems;	// JUHOX
+extern	vmCvar_t	g_noHealthRegen;	// JUHOX
+extern	vmCvar_t	g_unlimitedAmmo;	// JUHOX
+extern	vmCvar_t	g_cloakingDevice;	// JUHOX
+extern	vmCvar_t	g_weaponLimit;	// JUHOX
+#if MEETING
+extern	vmCvar_t	g_meeting;	// JUHOX
+#endif
+extern	vmCvar_t	g_friendlyFire;
+extern	vmCvar_t	g_password;
+extern	vmCvar_t	g_needpass;
+extern	vmCvar_t	g_gravity;
+extern	vmCvar_t	g_speed;
+extern	vmCvar_t	g_knockback;
+extern	vmCvar_t	g_quadfactor;
+extern	vmCvar_t	g_forcerespawn;
+extern	vmCvar_t	g_inactivity;
+extern	vmCvar_t	g_debugMove;
+extern	vmCvar_t	g_debugAlloc;
+extern	vmCvar_t	g_debugDamage;
+extern	vmCvar_t	g_weaponRespawn;
+extern	vmCvar_t	g_weaponTeamRespawn;
+extern	vmCvar_t	g_synchronousClients;
+extern	vmCvar_t	g_motd;
+extern	vmCvar_t	g_warmup;
+extern	vmCvar_t	g_doWarmup;
+extern	vmCvar_t	g_blood;
+extern	vmCvar_t	g_allowVote;
+extern	vmCvar_t	g_teamAutoJoin;
+extern	vmCvar_t	g_teamForceBalance;
+extern	vmCvar_t	g_banIPs;
+extern	vmCvar_t	g_filterBan;
+extern	vmCvar_t	g_obeliskHealth;
+extern	vmCvar_t	g_obeliskRegenPeriod;
+extern	vmCvar_t	g_obeliskRegenAmount;
+extern	vmCvar_t	g_obeliskRespawnDelay;
+extern	vmCvar_t	g_cubeTimeout;
+extern	vmCvar_t	g_redteam;
+extern	vmCvar_t	g_blueteam;
+extern	vmCvar_t	g_smoothClients;
+extern	vmCvar_t	pmove_fixed;
+extern	vmCvar_t	pmove_msec;
+extern	vmCvar_t	g_rankings;
+extern	vmCvar_t	g_enableDust;
+extern	vmCvar_t	g_enableBreath;
+extern	vmCvar_t	g_singlePlayer;
+extern	vmCvar_t	g_proxMineTimeout;
+extern	vmCvar_t	g_mapName;	// JUHOX

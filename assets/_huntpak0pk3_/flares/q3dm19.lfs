@@ -1,0 +1,84 @@
+import juhox/fire.lfs
+
+gnc/light_spot01
+{
+	range -200
+	fadeAngle 45
+	{
+		shader gnc_flare2
+		mode star
+		size .5
+		rotation 0 .5 .5 0
+		/*
+		entityAngleFactor .7
+		fadeAngleFactor .7
+		*/
+		intensitythreshold 0.5
+		alpha 4
+	}
+	{
+		shader gnc_line0
+		rotation 45 1 1 0
+		/*
+		entityAngleFactor .4
+		fadeAngleFactor .4
+		*/
+		size 15
+		alpha 15
+		intensitythreshold 0.7
+	}
+	{
+		shader gnc_glare0
+		mode glare
+		size 5
+		/*
+		entityAngleFactor .3
+		fadeAngleFactor .3
+		*/
+		intensitythreshold 0.6
+	}
+	{
+		shader gnc_glare0
+		mode glare
+		size 1
+	}
+	{
+		shader gnc_penta0
+		pos .6
+		size .3
+		alpha .5
+		rotation 0 0 0 1
+	}
+	{
+		shader gnc_penta0
+		pos .33
+		size .7
+		color 1 0 1
+		alpha .5
+		rotation 0 0 0 1
+	}
+	{
+		shader gnc_penta0
+		pos .25
+		size .3
+		color .8 .9 .1
+		alpha .5
+		rotation 0 0 0 1
+	}
+	{
+		shader gnc_penta0
+		pos .2
+		size .2
+		color 1 .5 1
+		alpha .5
+		rotation 0 0 0 1
+	}
+	{
+		shader gnc_penta0
+		pos -1.25
+		size .5
+		color .5 .75 .75
+		alpha .5
+		rotation 0 0 0 1
+	}
+}
