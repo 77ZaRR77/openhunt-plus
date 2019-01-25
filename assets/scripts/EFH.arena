@@ -1,0 +1,11 @@
+{
+	map	        "efh01"
+	longname	"EFH01"
+	type		"efh"
+}
+
+{
+	map			"efh02"
+	longname	"EFH02"
+	type		"efh"
+}
