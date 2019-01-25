@@ -60,7 +60,7 @@ void CG_LoadingItem( int itemNum ) {
 	gitem_t		*item;
 
 	item = &bg_itemlist[itemNum];
-	
+
 	if ( item->icon && loadingItemIconCount < MAX_LOADING_ITEM_ICONS ) {
 		loadingItemIcons[loadingItemIconCount++] = trap_R_RegisterShaderNoMip( item->icon );
 	}
@@ -122,7 +122,7 @@ void CG_LoadingClient( int clientNum ) {
 		}
 
 		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin );
-		
+
 		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
 		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
 			Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin );
@@ -281,17 +281,7 @@ void CG_DrawInformation( void ) {
 	case GT_CTF:
 		s = "Capture The Flag";
 		break;
-#ifdef MISSIONPACK
-	case GT_1FCTF:
-		s = "One Flag CTF";
-		break;
-	case GT_OBELISK:
-		s = "Overload";
-		break;
-	case GT_HARVESTER:
-		s = "Harvester";
-		break;
-#endif
+
 #if MONSTER_MODE	// JUHOX: STU name for info screen
 	case GT_STU:
 		s = "Save the Universe";
@@ -309,7 +299,7 @@ void CG_DrawInformation( void ) {
 	UI_DrawProportionalString( 320, y, s,
 		UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
 	y += PROP_HEIGHT;
-		
+
 	value = atoi( Info_ValueForKey( info, "timelimit" ) );
 	if ( value ) {
 #if 0	// JUHOX: don't use va() in CG_DrawInformation()
@@ -369,7 +359,7 @@ void CG_DrawInformation( void ) {
 		if (value == 999) {
 			UI_DrawProportionalString(320, y, "unlimited artefacts",
 				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
-			y += PROP_HEIGHT;			
+			y += PROP_HEIGHT;
 		}
 		else if (value) {
 			Com_sprintf(buf, sizeof(buf), "artefacts %i", value);

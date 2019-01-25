@@ -134,9 +134,9 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;
-	
+
 	backoff = DotProduct (in, normal);
-	
+
 	if ( backoff < 0 ) {
 		backoff *= overbounce;
 	} else {
@@ -162,9 +162,9 @@ static void PM_Friction( void ) {
 	float	*vel;
 	float	speed, newspeed, control;
 	float	drop;
-	
+
 	vel = pm->ps->velocity;
-	
+
 	VectorCopy( vel, vec );
 	if ( pml.walking ) {
 		vec[2] = 0;	// ignore slope movement
@@ -263,9 +263,9 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 	if (accelspeed > addspeed) {
 		accelspeed = addspeed;
 	}
-	
+
 	for (i=0 ; i<3 ; i++) {
-		pm->ps->velocity[i] += accelspeed*wishdir[i];	
+		pm->ps->velocity[i] += accelspeed*wishdir[i];
 	}
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
@@ -359,7 +359,7 @@ static void PM_SetMovementDir( void ) {
 			pm->ps->movementDir = 1;
 		} else if ( pm->ps->movementDir == 6 ) {
 			pm->ps->movementDir = 7;
-		} 
+		}
 	}
 }
 
@@ -561,7 +561,7 @@ static void PM_WaterMove( void ) {
 	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 ) {
 		vel = VectorLength(pm->ps->velocity);
 		// slide along the ground plane
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 
 		VectorNormalize(pm->ps->velocity);
@@ -570,22 +570,6 @@ static void PM_WaterMove( void ) {
 
 	PM_SlideMove( qfalse );
 }
-
-#ifdef MISSIONPACK
-/*
-===================
-PM_InvulnerabilityMove
-
-Only with the invulnerability powerup
-===================
-*/
-static void PM_InvulnerabilityMove( void ) {
-	pm->cmd.forwardmove = 0;
-	pm->cmd.rightmove = 0;
-	pm->cmd.upmove = 0;
-	VectorClear(pm->ps->velocity);
-}
-#endif
 
 /*
 ===================
@@ -677,7 +661,7 @@ static void PM_AirMove( void ) {
 	// though we don't have a groundentity
 	// slide along the steep plane
 	if ( pml.groundPlane ) {
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 	}
 
@@ -731,14 +715,14 @@ static void PM_GrappleMove( void ) {
 			VectorSubtract(v, pm->ps->origin, vel);
 			vlen = VectorLength(vel);
 			VectorNormalize( vel );
-	
+
 			if (vlen <= 100.0f)
 				VectorScale(vel, 10.0f * vlen, vel);
 			else
 				VectorScale(vel, GRAPPLE_PULL_SPEED_CLASSIC, vel);
-	
+
 			VectorCopy(vel, pm->ps->velocity);
-	
+
 			pml.groundPlane = qfalse;
 		}
 		break;
@@ -764,19 +748,19 @@ static void PM_GrappleMove( void ) {
 			}
 			else {
 				float desiredPullSpeed;
-	
+
 				if (pullSpeed < 0) {
 					pullSpeed = -pullSpeed;
 					VectorMA(pm->ps->velocity, 2 * pullSpeed, v, pm->ps->velocity);
 					VectorScale(pm->ps->velocity, 0.7, pm->ps->velocity);
 				}
-	
+
 				desiredPullSpeed = pm->ps->stats[STAT_GRAPPLE_SPEED];
 				pullSpeed = VectorLength(pm->ps->velocity);
 				if (pullSpeed < desiredPullSpeed) {
 					VectorMA(pm->ps->velocity, (desiredPullSpeed - pullSpeed), v, pm->ps->velocity);
 				}
-		
+
 				pml.groundPlane = qfalse;
 			}
 		}
@@ -894,7 +878,7 @@ static void PM_WalkMove( void ) {
 	vel = VectorLength(pm->ps->velocity);
 
 	// slide along the ground plane
-	PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+	PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 		pm->ps->velocity, OVERCLIP );
 
 	// don't decrease velocity when going up or down a slope
@@ -983,7 +967,7 @@ static void PM_NoclipMove( void ) {
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
-	
+
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	wishvel[2] += pm->cmd.upmove;
@@ -1291,7 +1275,7 @@ static void PM_GroundTrace( void ) {
 		pml.walking = qfalse;
 		return;
 	}
-	
+
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[2] < MIN_WALK_NORMAL ) {
 		if ( pm->debugLevel ) {
@@ -1320,7 +1304,7 @@ static void PM_GroundTrace( void ) {
 		if ( pm->debugLevel ) {
 			Com_Printf("%i:Land\n", c_pmove);
 		}
-		
+
 		PM_CrashLand();
 
 		// don't do landing time if we were just going down a slope
@@ -1361,7 +1345,7 @@ static void PM_SetWaterLevel( void ) {
 	point[1] = pm->ps->origin[1];
 	// JUHOX: let PM_SetWaterLevel() handle player scale
 #if !MONSTER_MODE
-	point[2] = pm->ps->origin[2] + MINS_Z + 1;	
+	point[2] = pm->ps->origin[2] + MINS_Z + 1;
 #else
 	point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + 1;
 #endif
@@ -1564,7 +1548,7 @@ static void PM_Footsteps( void ) {
 		}
 		return;
 	}
-	
+
 
 	footstep = qfalse;
 
@@ -1744,7 +1728,7 @@ static void PM_BeginWeaponChange( int weapon ) {
 	if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
 		return;
 	}
-	
+
 	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
 		return;
 	}
@@ -1901,7 +1885,7 @@ static void PM_WeaponShake(playerState_t* ps) {
 		viewSpread *= wearinessFactor;
 		knockbackTime = knockbackTime * wearinessFactor;
 	}
-	
+
 	viewSpread *= WEAPON_KICK_FACTOR;
 	if (
 		(ps->pm_flags & PMF_DUCKED) &&
@@ -1923,7 +1907,7 @@ static void PM_WeaponShake(playerState_t* ps) {
 	if (knockbackTime) {
 		vec3_t forward;
 
-		AngleVectors(ps->viewangles, forward, NULL, NULL);	
+		AngleVectors(ps->viewangles, forward, NULL, NULL);
 		VectorMA(ps->velocity, -knockback, forward, ps->velocity);
 		if (!ps->pm_time) {
 			ps->pm_time = knockbackTime;
@@ -2042,7 +2026,7 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
-	
+
 #if 1	// JUHOX: check for new weapon state
 	if (pm->ps->weapon == WP_MACHINEGUN) {
 		if (
@@ -2186,17 +2170,6 @@ static void PM_Weapon( void ) {
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;
 		break;
-#ifdef MISSIONPACK
-	case WP_NAILGUN:
-		addTime = 1000;
-		break;
-	case WP_PROX_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_CHAINGUN:
-		addTime = 30;
-		break;
-#endif
 #if MONSTER_MODE	// JUHOX: reload time for monster launcher
 	case WP_MONSTER_LAUNCHER:
 		addTime = 300;
@@ -2204,16 +2177,6 @@ static void PM_Weapon( void ) {
 #endif
 	}
 
-#ifdef MISSIONPACK
-	if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		addTime /= 1.5;
-	}
-	else
-	if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		addTime /= 1.3;
-  }
-  else
-#endif
 #if 0	// JUHOX: no normal haste
 	if ( pm->ps->powerups[PW_HASTE] ) {
 		addTime /= 1.3;
@@ -2238,38 +2201,6 @@ static void PM_Animate( void ) {
 			pm->ps->torsoTimer = TIMER_GESTURE;
 			PM_AddEvent( EV_TAUNT );
 		}
-#ifdef MISSIONPACK
-	} else if ( pm->cmd.buttons & BUTTON_GETFLAG ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_GETFLAG );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_GUARDBASE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_GUARDBASE );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_PATROL ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_PATROL );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_FOLLOWME ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_FOLLOWME );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_AFFIRMATIVE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_AFFIRMATIVE);
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_NEGATIVE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_NEGATIVE );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-#endif
 	}
 }
 
@@ -2412,7 +2343,7 @@ void CalcWeariness(void) {
 			pm->ps->stats[STAT_STRENGTH] -= 0.5 * WEARY_ONE_SECOND * pml.frametime;
 			weary = qtrue;
 		}
-	
+
 		// refreshing
 		if (!weary) {
 			if (pm->cmd.forwardmove || pm->cmd.rightmove || pm->cmd.upmove) {
@@ -2515,7 +2446,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// clear the respawned flag if attack and use are cleared
-	if ( pm->ps->stats[STAT_HEALTH] > 0 && 
+	if ( pm->ps->stats[STAT_HEALTH] > 0 &&
 		!( pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) ) ) {
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
@@ -2628,11 +2559,6 @@ void PmoveSingle (pmove_t *pmove) {
 
 	CalcWeariness(); // JUHOX: weariness & refreshing
 
-#ifdef MISSIONPACK
-	if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-		PM_InvulnerabilityMove();
-	} else
-#endif
 	if ( pm->ps->powerups[PW_FLIGHT] ) {
 		// flight powerup doesn't allow jump and has different friction
 		PM_FlyMove();

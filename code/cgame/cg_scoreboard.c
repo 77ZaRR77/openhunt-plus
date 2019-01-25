@@ -58,7 +58,7 @@
 //
 //	0   32   80  112  144   240  320  400   <-- pixel position
 //  bot head bot head score ping time name
-//  
+//
 //  wins/losses are drawn on bot icon now
 
 static qboolean localClient; // true if local client has been displayed
@@ -80,7 +80,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		Com_Printf( "Bad score->client: %i\n", score->client );
 		return;
 	}
-	
+
 #if 1	// JUHOX: STU scoreboard
 	xx = 0;
 #if MONSTER_MODE
@@ -155,24 +155,13 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	VectorClear( headAngles );
 	headAngles[YAW] = 180;
 	if( largeFormat ) {
-		CG_DrawHead( headx, y - ( ICON_SIZE - BIGCHAR_HEIGHT ) / 2, ICON_SIZE, ICON_SIZE, 
+		CG_DrawHead( headx, y - ( ICON_SIZE - BIGCHAR_HEIGHT ) / 2, ICON_SIZE, ICON_SIZE,
 			score->client, headAngles );
 	}
 	else {
 		CG_DrawHead( headx, y, 16, 16, score->client, headAngles );
 	}
 
-#ifdef MISSIONPACK
-	// draw the team task
-	if ( ci->teamTask != TEAMTASK_NONE ) {
-		if ( ci->teamTask == TEAMTASK_OFFENSE ) {
-			CG_DrawPic( headx + 48, y, 16, 16, cgs.media.assaultShader );
-		}
-		else if ( ci->teamTask == TEAMTASK_DEFENSE ) {
-			CG_DrawPic( headx + 48, y, 16, 16, cgs.media.defendShader );
-		}
-	}
-#endif
 	// draw the score line
 #if 0	// JUHOX: draw the new score line (extended by the 'killed'-count)
 	if ( score->ping == -1 ) {
@@ -202,7 +191,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 			string, sizeof(string), "%7i:%-3i %4i %4i %s",
 			score->score, score->killed,
 			score->ping, score->time, ci->name
-		);		
+		);
 	}
 #endif
 	else {
@@ -221,7 +210,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 
 		localClient = qtrue;
 
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR 
+		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR
 			|| cgs.gametype >= GT_TEAM ) {
 			rank = -1;
 		} else {
@@ -247,10 +236,10 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 
 		hcolor[3] = fade * 0.7;
 #if 0	// JUHOX: draw a longer bar
-		CG_FillRect( SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y, 
+		CG_FillRect( SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y,
 			640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor );
 #else
-		CG_FillRect( SB_SCORELINE_X + (SB_RATING_WIDTH / 2) - xx, y, 
+		CG_FillRect( SB_SCORELINE_X + (SB_RATING_WIDTH / 2) - xx, y,
 			640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor );
 #endif
 	}
@@ -371,7 +360,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 		if (!cg.intermissionMusicStarted) {
 			qboolean winning, loosing;
-			
+
 			winning = loosing = qfalse;
 			if (cgs.gametype < GT_TEAM) {
 				if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
@@ -441,7 +430,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 					len = trap_FS_FOpenFile("music/hunt_victory.wav", &f, FS_READ);
 					if (f) trap_FS_FCloseFile(f);
-					
+
 					if (len > 0) {
 						trap_S_StartBackgroundTrack("music/hunt_victory.wav", "");
 					}
@@ -489,7 +478,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	} else {
 #if 0	// JUHOX: don't fade scoreboard
 		fadeColor = CG_FadeColor( cg.scoreFadeTime, FADE_TIME );
-		
+
 		if ( !fadeColor ) {
 			// next time scoreboard comes up, don't print killer
 			cg.deferredPlayerLoading = 0;
@@ -543,7 +532,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 				x = (SCREEN_WIDTH - w) / 2;
 				y = 62 + BIGCHAR_HEIGHT;
 				CG_DrawBigString(x, y, s, fade);
-				
+
 				if (cgs.artefacts <= 0) {
 					s = "";
 				}
@@ -691,7 +680,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 			x = (SCREEN_WIDTH - w2) / 2;
 			y = 62 + BIGCHAR_HEIGHT;
 			CG_DrawStringExt(x, y, s2, colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0);
-			
+
 			x = (SCREEN_WIDTH - w3) / 2;
 			y = 62 + BIGCHAR_HEIGHT + SMALLCHAR_HEIGHT;
 			CG_DrawStringExt(x, y, s3, colorWhite, qfalse, qtrue, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0);
@@ -1026,7 +1015,7 @@ void CG_DrawOldTourneyScoreboard( void ) {
 		CG_DrawStringExt( 8, y, "Red Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
 		s = va("%i", cg.teamScores[0] );
 		CG_DrawStringExt( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-		
+
 		y += 64;
 
 		CG_DrawStringExt( 8, y, "Blue Team", color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );

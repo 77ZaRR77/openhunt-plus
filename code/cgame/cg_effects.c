@@ -76,7 +76,7 @@ CG_SmokePuff
 Adds a smoke puff or blood trail localEntity.
 =====================
 */
-localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel, 
+localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
 				   float duration,
@@ -109,7 +109,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 	}
 	le->color[0] = r;
-	le->color[1] = g; 
+	le->color[1] = g;
 	le->color[2] = b;
 	le->color[3] = a;
 
@@ -163,201 +163,17 @@ void CG_SpawnEffect( vec3_t org ) {
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 
 	re = &le->refEntity;
-
 	re->reType = RT_MODEL;
 	re->shaderTime = cg.time / 1000.0f;
-
-#ifndef MISSIONPACK
 	re->customShader = cgs.media.teleportEffectShader;
-#endif
 	re->hModel = cgs.media.teleportEffectModel;
+
 	AxisClear( re->axis );
-
 	VectorCopy( org, re->origin );
-#ifdef MISSIONPACK
-	re->origin[2] += 16;
-#else
+
 	re->origin[2] -= 24;
-#endif
 }
 
-
-#ifdef MISSIONPACK
-/*
-===============
-CG_LightningBoltBeam
-===============
-*/
-void CG_LightningBoltBeam( vec3_t start, vec3_t end ) {
-	localEntity_t	*le;
-	refEntity_t		*beam;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_SHOWREFENTITY;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 50;
-
-	beam = &le->refEntity;
-
-	VectorCopy( start, beam->origin );
-	// this is the end point
-	VectorCopy( end, beam->oldorigin );
-
-	beam->reType = RT_LIGHTNING;
-	beam->customShader = cgs.media.lightningShader;
-}
-
-/*
-==================
-CG_KamikazeEffect
-==================
-*/
-void CG_KamikazeEffect( vec3_t org ) {
-	localEntity_t	*le;
-	refEntity_t		*re;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_KAMIKAZE;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 3000;//2250;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
-
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
-
-	VectorClear(le->angles.trBase);
-
-	re = &le->refEntity;
-
-	re->reType = RT_MODEL;
-	re->shaderTime = cg.time / 1000.0f;
-
-	re->hModel = cgs.media.kamikazeEffectModel;
-
-	VectorCopy( org, re->origin );
-
-}
-
-/*
-==================
-CG_ObeliskExplode
-==================
-*/
-void CG_ObeliskExplode( vec3_t org, int entityNum ) {
-	localEntity_t	*le;
-	vec3_t origin;
-
-	// create an explosion
-	VectorCopy( org, origin );
-	origin[2] += 64;
-	le = CG_MakeExplosion( origin, vec3_origin,
-						   cgs.media.dishFlashModel,
-						   cgs.media.rocketExplosionShader,
-						   600, qtrue );
-	le->light = 300;
-	le->lightColor[0] = 1;
-	le->lightColor[1] = 0.75;
-	le->lightColor[2] = 0.0;
-}
-
-/*
-==================
-CG_ObeliskPain
-==================
-*/
-void CG_ObeliskPain( vec3_t org ) {
-	float r;
-	sfxHandle_t sfx;
-
-	// hit sound
-	r = rand() & 3;
-	if ( r < 2 ) {
-		sfx = cgs.media.obeliskHitSound1;
-	} else if ( r == 2 ) {
-		sfx = cgs.media.obeliskHitSound2;
-	} else {
-		sfx = cgs.media.obeliskHitSound3;
-	}
-	trap_S_StartSound ( org, ENTITYNUM_NONE, CHAN_BODY, sfx );
-}
-
-
-/*
-==================
-CG_InvulnerabilityImpact
-==================
-*/
-void CG_InvulnerabilityImpact( vec3_t org, vec3_t angles ) {
-	localEntity_t	*le;
-	refEntity_t		*re;
-	int				r;
-	sfxHandle_t		sfx;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_INVULIMPACT;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 1000;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
-
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
-
-	re = &le->refEntity;
-
-	re->reType = RT_MODEL;
-	re->shaderTime = cg.time / 1000.0f;
-
-	re->hModel = cgs.media.invulnerabilityImpactModel;
-
-	VectorCopy( org, re->origin );
-	AnglesToAxis( angles, re->axis );
-
-	r = rand() & 3;
-	if ( r < 2 ) {
-		sfx = cgs.media.invulnerabilityImpactSound1;
-	} else if ( r == 2 ) {
-		sfx = cgs.media.invulnerabilityImpactSound2;
-	} else {
-		sfx = cgs.media.invulnerabilityImpactSound3;
-	}
-	trap_S_StartSound (org, ENTITYNUM_NONE, CHAN_BODY, sfx );
-}
-
-/*
-==================
-CG_InvulnerabilityJuiced
-==================
-*/
-void CG_InvulnerabilityJuiced( vec3_t org ) {
-	localEntity_t	*le;
-	refEntity_t		*re;
-	vec3_t			angles;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_INVULJUICED;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 10000;
-	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
-
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
-
-	re = &le->refEntity;
-
-	re->reType = RT_MODEL;
-	re->shaderTime = cg.time / 1000.0f;
-
-	re->hModel = cgs.media.invulnerabilityJuicedModel;
-
-	VectorCopy( org, re->origin );
-	VectorClear(angles);
-	AnglesToAxis( angles, re->axis );
-
-	trap_S_StartSound (org, ENTITYNUM_NONE, CHAN_BODY, cgs.media.invulnerabilityJuicedSound );
-}
-
-#endif
 
 /*
 ==================
@@ -382,10 +198,10 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 	le->endTime = cg.time + 4000;
 	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 
-	
+
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 	le->radius = score;
-	
+
 	VectorCopy( org, le->pos.trBase );
 	if (org[2] >= lastPos[2] - 20 && org[2] <= lastPos[2] + 20) {
 		le->pos.trBase[2] -= 20;
@@ -410,7 +226,7 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 CG_MakeExplosion
 ====================
 */
-localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir, 
+localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 								qhandle_t hModel, qhandle_t shader,
 								int msec, qboolean isSprite ) {
 	float			ang;
@@ -502,7 +318,7 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 
 	ex->startTime = cg.time;
 	ex->endTime = ex->startTime + 500;
-	
+
 	VectorCopy ( origin, ex->refEntity.origin);
 	ex->refEntity.reType = RT_SPRITE;
 	ex->refEntity.rotation = rand() % 360;
@@ -516,7 +332,7 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 
 		ex->startTime = cg.time;
 		ex->endTime = ex->startTime + 500;
-	
+
 		VectorCopy ( origin, ex->refEntity.origin);
 		ex->refEntity.reType = RT_SPRITE;
 		ex->refEntity.rotation = rand() % 360;
@@ -764,7 +580,7 @@ static void CG_LaunchBFGExpl(vec3_t origin, float radius) {
 	le->pos.trDelta[1] = BFGEXP_VELOCITY * crandom();
 	le->pos.trDelta[2] = BFGEXP_VELOCITY * crandom();
 	le->pos.trTime = cg.time - 200;
-	
+
 	le->bounceFactor = 0.75;
 
 	le->leBounceSoundType = LEBS_NONE;

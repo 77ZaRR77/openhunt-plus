@@ -34,9 +34,6 @@ void CG_CheckAmmo( void ) {
 		case WP_GRENADE_LAUNCHER:
 		case WP_RAILGUN:
 		case WP_SHOTGUN:
-#ifdef MISSIONPACK
-		case WP_PROX_LAUNCHER:
-#endif
 			total += cg.snap->ps.ammo[i] * 1000;
 			break;
 		default:
@@ -127,7 +124,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		}
 
 		cg.v_dmg_roll = kick * left;
-		
+
 		cg.v_dmg_pitch = -kick * front;
 
 		if ( front <= 0.1 ) {
@@ -290,15 +287,6 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 	if ( ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS] ) {
 		armor  = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
 		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
-#ifdef MISSIONPACK
-		if (armor > 50 ) {
-			trap_S_StartLocalSound( cgs.media.hitSoundHighArmor, CHAN_LOCAL_SOUND );
-		} else if (armor || health > 100) {
-			trap_S_StartLocalSound( cgs.media.hitSoundLowArmor, CHAN_LOCAL_SOUND );
-		} else {
-			trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
-		}
-#else
 #if !MONSTER_MODE	// JUHOX: no hit sound in STU
 		trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
 #else
@@ -306,7 +294,7 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 			trap_S_StartLocalSound( cgs.media.hitSound, CHAN_LOCAL_SOUND );
 		}
 #endif
-#endif
+
 	} else if ( ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS] ) {
 		trap_S_StartLocalSound( cgs.media.hitTeamSound, CHAN_LOCAL_SOUND );
 	}
@@ -336,43 +324,22 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops ) {
 		//Com_Printf("capture\n");
 	}
 	if (ps->persistant[PERS_IMPRESSIVE_COUNT] != ops->persistant[PERS_IMPRESSIVE_COUNT]) {
-#ifdef MISSIONPACK
-		if (ps->persistant[PERS_IMPRESSIVE_COUNT] == 1) {
-			sfx = cgs.media.firstImpressiveSound;
-		} else {
-			sfx = cgs.media.impressiveSound;
-		}
-#else
 		sfx = cgs.media.impressiveSound;
-#endif
+
 		pushReward(sfx, cgs.media.medalImpressive, ps->persistant[PERS_IMPRESSIVE_COUNT]);
 		reward = qtrue;
 		//Com_Printf("impressive\n");
 	}
 	if (ps->persistant[PERS_EXCELLENT_COUNT] != ops->persistant[PERS_EXCELLENT_COUNT]) {
-#ifdef MISSIONPACK
-		if (ps->persistant[PERS_EXCELLENT_COUNT] == 1) {
-			sfx = cgs.media.firstExcellentSound;
-		} else {
-			sfx = cgs.media.excellentSound;
-		}
-#else
 		sfx = cgs.media.excellentSound;
-#endif
+
 		pushReward(sfx, cgs.media.medalExcellent, ps->persistant[PERS_EXCELLENT_COUNT]);
 		reward = qtrue;
 		//Com_Printf("excellent\n");
 	}
 	if (ps->persistant[PERS_GAUNTLET_FRAG_COUNT] != ops->persistant[PERS_GAUNTLET_FRAG_COUNT]) {
-#ifdef MISSIONPACK
-		if (ops->persistant[PERS_GAUNTLET_FRAG_COUNT] == 1) {
-			sfx = cgs.media.firstHumiliationSound;
-		} else {
-			sfx = cgs.media.humiliationSound;
-		}
-#else
 		sfx = cgs.media.humiliationSound;
-#endif
+
 		pushReward(sfx, cgs.media.medalGauntlet, ps->persistant[PERS_GAUNTLET_FRAG_COUNT]);
 		reward = qtrue;
 		//Com_Printf("guantlet frag\n");
@@ -513,7 +480,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 		cg.mapRestart = qfalse;
 	}
 
-	if ( cg.snap->ps.pm_type != PM_INTERMISSION 
+	if ( cg.snap->ps.pm_type != PM_INTERMISSION
 		&& ps->persistant[PERS_TEAM] != TEAM_SPECTATOR ) {
 		CG_CheckLocalSounds( ps, ops );
 	}

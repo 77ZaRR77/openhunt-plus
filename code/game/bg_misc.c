@@ -21,7 +21,7 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 "count" override quantity or duration on most items.
 */
 
-gitem_t	bg_itemlist[] = 
+gitem_t	bg_itemlist[] =
 {
 	{
 		NULL,
@@ -45,9 +45,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_shard", 
+		"item_armor_shard",
 		"sound/misc/ar1_pkup.wav",
-		{ "models/powerups/armor/shard.md3", 
+		{ "models/powerups/armor/shard.md3",
 		"models/powerups/armor/shard_sphere.md3",
 		0, 0} ,
 /* icon */		"icons/iconr_shard",
@@ -62,7 +62,7 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_combat", 
+		"item_armor_combat",
 		"sound/misc/ar2_pkup.wav",
         { "models/powerups/armor/armor_yel.md3",
 		0, 0, 0},
@@ -78,7 +78,7 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_body", 
+		"item_armor_body",
 		"sound/misc/ar2_pkup.wav",
         { "models/powerups/armor/armor_red.md3",
 		0, 0, 0},
@@ -99,8 +99,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_small",
 		"sound/items/s_health.wav",
-        { "models/powerups/health/small_cross.md3", 
-		"models/powerups/health/small_sphere.md3", 
+        { "models/powerups/health/small_cross.md3",
+		"models/powerups/health/small_sphere.md3",
 		0, 0 },
 /* icon */		"icons/iconh_green",
 /* pickup */	"5 Health",
@@ -116,8 +116,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health",
 		"sound/items/n_health.wav",
-        { "models/powerups/health/medium_cross.md3", 
-		"models/powerups/health/medium_sphere.md3", 
+        { "models/powerups/health/medium_cross.md3",
+		"models/powerups/health/medium_sphere.md3",
 		0, 0 },
 /* icon */		"icons/iconh_yellow",
 /* pickup */	"25 Health",
@@ -133,8 +133,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_large",
 		"sound/items/l_health.wav",
-        { "models/powerups/health/large_cross.md3", 
-		"models/powerups/health/large_sphere.md3", 
+        { "models/powerups/health/large_cross.md3",
+		"models/powerups/health/large_sphere.md3",
 		0, 0 },
 /* icon */		"icons/iconh_red",
 /* pickup */	"50 Health",
@@ -150,8 +150,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_mega",
 		"sound/items/m_health.wav",
-        { "models/powerups/health/mega_cross.md3", 
-		"models/powerups/health/mega_sphere.md3", 
+        { "models/powerups/health/mega_cross.md3",
+		"models/powerups/health/mega_sphere.md3",
 		0, 0 },
 /* icon */		"icons/iconh_mega",
 /* pickup */	"Mega Health",
@@ -164,13 +164,13 @@ gitem_t	bg_itemlist[] =
 
 
 	//
-	// WEAPONS 
+	// WEAPONS
 	//
 
 /*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_gauntlet", 
+		"weapon_gauntlet",
 		"sound/misc/w_pkup.wav",
         { "models/weapons2/gauntlet/gauntlet.md3",
 		0, 0, 0},
@@ -186,9 +186,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_shotgun", 
+		"weapon_shotgun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/shotgun/shotgun.md3", 
+        { "models/weapons2/shotgun/shotgun.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_shotgun",
 /* pickup */	"Shotgun",
@@ -202,9 +202,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_machinegun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_machinegun", 
+		"weapon_machinegun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/machinegun/machinegun.md3", 
+        { "models/weapons2/machinegun/machinegun.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_machinegun",
 /* pickup */	"Machinegun",
@@ -220,7 +220,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_grenadelauncher",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grenadel/grenadel.md3", 
+        { "models/weapons2/grenadel/grenadel.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_grenade",
 /* pickup */	"Grenade Launcher",
@@ -236,7 +236,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_rocketlauncher",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/rocketl/rocketl.md3", 
+        { "models/weapons2/rocketl/rocketl.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_rocket",
 /* pickup */	"Rocket Launcher",
@@ -250,9 +250,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_lightning (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_lightning", 
+		"weapon_lightning",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/lightning/lightning.md3", 
+        { "models/weapons2/lightning/lightning.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_lightning",
 /* pickup */	"Lightning Gun",
@@ -266,9 +266,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_railgun", 
+		"weapon_railgun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/railgun/railgun.md3", 
+        { "models/weapons2/railgun/railgun.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_railgun",
 /* pickup */	"Railgun",
@@ -282,9 +282,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_plasmagun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_plasmagun", 
+		"weapon_plasmagun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/plasma/plasma.md3", 
+        { "models/weapons2/plasma/plasma.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_plasma",
 /* pickup */	"Plasma Gun",
@@ -300,7 +300,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_bfg",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/bfg/bfg.md3", 
+        { "models/weapons2/bfg/bfg.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_bfg",
 /* pickup */	"BFG10K",
@@ -316,7 +316,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_grapplinghook",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grapple/grapple.md3", 
+        { "models/weapons2/grapple/grapple.md3",
 		0, 0, 0},
 /* icon */		"icons/iconw_grapple",
 /* pickup */	"Grappling Hook",
@@ -336,7 +336,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_shells",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/shotgunam.md3", 
+        { "models/powerups/ammo/shotgunam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_shotgun",
 /* pickup */	"Shells",
@@ -352,7 +352,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_bullets",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/machinegunam.md3", 
+        { "models/powerups/ammo/machinegunam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_machinegun",
 /* pickup */	"Bullets",
@@ -368,7 +368,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_grenades",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/grenadeam.md3", 
+        { "models/powerups/ammo/grenadeam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_grenade",
 /* pickup */	"Grenades",
@@ -384,7 +384,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_cells",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/plasmaam.md3", 
+        { "models/powerups/ammo/plasmaam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_plasma",
 /* pickup */	"Cells",
@@ -400,7 +400,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_lightning",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/lightningam.md3", 
+        { "models/powerups/ammo/lightningam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_lightning",
 /* pickup */	"Lightning",
@@ -416,7 +416,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_rockets",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/rocketam.md3", 
+        { "models/powerups/ammo/rocketam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_rocket",
 /* pickup */	"Rockets",
@@ -432,7 +432,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_slugs",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/railgunam.md3", 
+        { "models/powerups/ammo/railgunam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_railgun",
 /* pickup */	"Slugs",
@@ -448,7 +448,7 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_bfg",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/bfgam.md3", 
+        { "models/powerups/ammo/bfgam.md3",
 		0, 0, 0},
 /* icon */		"icons/icona_bfg",
 /* pickup */	"Bfg Ammo",
@@ -465,9 +465,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED holdable_teleporter (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"holdable_teleporter", 
+		"holdable_teleporter",
 		"sound/items/holdable.wav",
-        { "models/powerups/holdable/teleporter.md3", 
+        { "models/powerups/holdable/teleporter.md3",
 		0, 0, 0},
 /* icon */		"icons/teleporter",
 /* pickup */	"Personal Teleporter",
@@ -480,10 +480,10 @@ gitem_t	bg_itemlist[] =
 /*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"holdable_medkit", 
+		"holdable_medkit",
 		"sound/items/holdable.wav",
-        { 
-		"models/powerups/holdable/medkit.md3", 
+        {
+		"models/powerups/holdable/medkit.md3",
 		"models/powerups/holdable/medkit_sphere.md3",
 		0, 0},
 /* icon */		"icons/medkit",
@@ -501,9 +501,9 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_quad", 
+		"item_quad",
 		"sound/items/quaddamage.wav",
-        { "models/powerups/instant/quad.md3", 
+        { "models/powerups/instant/quad.md3",
         "models/powerups/instant/quad_ring.md3",
 		0, 0 },
 /* icon */		"icons/quad",
@@ -520,8 +520,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_enviro",
 		"sound/items/protect.wav",
-        { "models/powerups/instant/enviro.md3", 
-		"models/powerups/instant/enviro_ring.md3", 
+        { "models/powerups/instant/enviro.md3",
+		"models/powerups/instant/enviro_ring.md3",
 		0, 0 },
 /* icon */		"icons/envirosuit",
 /* pickup */	"Battle Suit",
@@ -537,8 +537,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_haste",
 		"sound/items/haste.wav",
-        { "models/powerups/instant/haste.md3", 
-		"models/powerups/instant/haste_ring.md3", 
+        { "models/powerups/instant/haste.md3",
+		"models/powerups/instant/haste_ring.md3",
 		0, 0 },
 /* icon */		"icons/haste",
 /* pickup */	"Speed",
@@ -554,8 +554,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_invis",
 		"sound/items/invisibility.wav",
-        { "models/powerups/instant/invis.md3", 
-		"models/powerups/instant/invis_ring.md3", 
+        { "models/powerups/instant/invis.md3",
+		"models/powerups/instant/invis_ring.md3",
 		0, 0 },
 /* icon */		"icons/invis",
 /* pickup */	"Invisibility",
@@ -571,8 +571,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_regen",
 		"sound/items/regeneration.wav",
-        { "models/powerups/instant/regen.md3", 
-		"models/powerups/instant/regen_ring.md3", 
+        { "models/powerups/instant/regen.md3",
+		"models/powerups/instant/regen_ring.md3",
 		0, 0 },
 /* icon */		"icons/regen",
 /* pickup */	"Regeneration",
@@ -588,8 +588,8 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_flight",
 		"sound/items/flight.wav",
-        { "models/powerups/instant/flight.md3", 
-		"models/powerups/instant/flight_ring.md3", 
+        { "models/powerups/instant/flight.md3",
+		"models/powerups/instant/flight_ring.md3",
 		0, 0 },
 /* icon */		"icons/flight",
 /* pickup */	"Flight",
@@ -634,275 +634,13 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-#ifdef MISSIONPACK
-/*QUAKED holdable_kamikaze (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_kamikaze", 
-		"sound/items/holdable.wav",
-        { "models/powerups/kamikazi.md3", 
-		0, 0, 0},
-/* icon */		"icons/kamikaze",
-/* pickup */	"Kamikaze",
-		60,
-		IT_HOLDABLE,
-		HI_KAMIKAZE,
-/* precache */ "",
-/* sounds */ "sound/items/kamikazerespawn.wav"
-	},
-
-/*QUAKED holdable_portal (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_portal", 
-		"sound/items/holdable.wav",
-        { "models/powerups/holdable/porter.md3",
-		0, 0, 0},
-/* icon */		"icons/portal",
-/* pickup */	"Portal",
-		60,
-		IT_HOLDABLE,
-		HI_PORTAL,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED holdable_invulnerability (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_invulnerability", 
-		"sound/items/holdable.wav",
-        { "models/powerups/holdable/invulnerability.md3", 
-		0, 0, 0},
-/* icon */		"icons/invulnerability",
-/* pickup */	"Invulnerability",
-		60,
-		IT_HOLDABLE,
-		HI_INVULNERABILITY,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_nails (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_nails",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/nailgunam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_nailgun",
-/* pickup */	"Nails",
-		20,
-		IT_AMMO,
-		WP_NAILGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_mines (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_mines",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/proxmineam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_proxlauncher",
-/* pickup */	"Proximity Mines",
-		10,
-		IT_AMMO,
-		WP_PROX_LAUNCHER,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_belt (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_belt",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/chaingunam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_chaingun",
-/* pickup */	"Chaingun Belt",
-		100,
-		IT_AMMO,
-		WP_CHAINGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	//
-	// PERSISTANT POWERUP ITEMS
-	//
-/*QUAKED item_scout (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_scout",
-		"sound/items/scout.wav",
-        { "models/powerups/scout.md3", 
-		0, 0, 0 },
-/* icon */		"icons/scout",
-/* pickup */	"Scout",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_SCOUT,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_guard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_guard",
-		"sound/items/guard.wav",
-        { "models/powerups/guard.md3", 
-		0, 0, 0 },
-/* icon */		"icons/guard",
-/* pickup */	"Guard",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_GUARD,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_doubler (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_doubler",
-		"sound/items/doubler.wav",
-        { "models/powerups/doubler.md3", 
-		0, 0, 0 },
-/* icon */		"icons/doubler",
-/* pickup */	"Doubler",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_DOUBLER,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_doubler (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_ammoregen",
-		"sound/items/ammoregen.wav",
-        { "models/powerups/ammo.md3",
-		0, 0, 0 },
-/* icon */		"icons/ammo_regen",
-/* pickup */	"Ammo Regen",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_AMMOREGEN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	/*QUAKED team_CTF_neutralflag (0 0 1) (-16 -16 -16) (16 16 16)
-Only in One Flag CTF games
-*/
-	{
-		"team_CTF_neutralflag",
-		NULL,
-        { "models/flags/n_flag.md3",
-		0, 0, 0 },
-/* icon */		"icons/iconf_neutral1",
-/* pickup */	"Neutral Flag",
-		0,
-		IT_TEAM,
-		PW_NEUTRALFLAG,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	{
-		"item_redcube",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/orb/r_orb.md3",
-		0, 0, 0 },
-/* icon */		"icons/iconh_rorb",
-/* pickup */	"Red Cube",
-		0,
-		IT_TEAM,
-		0,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	{
-		"item_bluecube",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/orb/b_orb.md3",
-		0, 0, 0 },
-/* icon */		"icons/iconh_borb",
-/* pickup */	"Blue Cube",
-		0,
-		IT_TEAM,
-		0,
-/* precache */ "",
-/* sounds */ ""
-	},
-/*QUAKED weapon_nailgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_nailgun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/nailgun/nailgun.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_nailgun",
-/* pickup */	"Nailgun",
-		10,
-		IT_WEAPON,
-		WP_NAILGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED weapon_prox_launcher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_prox_launcher", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/proxmine/proxmine.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_proxlauncher",
-/* pickup */	"Prox Launcher",
-		5,
-		IT_WEAPON,
-		WP_PROX_LAUNCHER,
-/* precache */ "",
-/* sounds */ "sound/weapons/proxmine/wstbtick.wav "
-			"sound/weapons/proxmine/wstbactv.wav "
-			"sound/weapons/proxmine/wstbimpl.wav "
-			"sound/weapons/proxmine/wstbimpm.wav "
-			"sound/weapons/proxmine/wstbimpd.wav "
-			"sound/weapons/proxmine/wstbactv.wav"
-	},
-
-/*QUAKED weapon_chaingun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_chaingun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/vulcan/vulcan.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_chaingun",
-/* pickup */	"Chaingun",
-		80,
-		IT_WEAPON,
-		WP_CHAINGUN,
-/* precache */ "",
-/* sounds */ "sound/weapons/vulcan/wvulwind.wav"
-	},
-#endif
-
 // JUHOX: charge powerup item definition
 /*QUAKED item_charge (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_charge",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/instant/regen.md3", 
+        { "models/powerups/instant/regen.md3",
 		0, 0, 0 },
 /* icon */		"icons/iconw_lightning",
 /* pickup */	"Charge",
@@ -917,9 +655,9 @@ Only in One Flag CTF games
 /*QUAKED item_shield (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_shield", 
+		"item_shield",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/instant/regen.md3", 
+        { "models/powerups/instant/regen.md3",
 		0, 0, 0},
 /* icon */		"icons/envirosuit",
 /* pickup */	"Shield",
@@ -934,9 +672,9 @@ Only in One Flag CTF games
 /*QUAKED item_armor_smallfrag (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_smallfrag", 
+		"item_armor_smallfrag",
 		"sound/misc/ar1_pkup.wav",
-		{ "models/powerups/armor/shard.md3", 
+		{ "models/powerups/armor/shard.md3",
 		0, 0, 0} ,
 /* icon */		"icons/iconr_shard",
 /* pickup */	"Armor Fragment 5",
@@ -951,9 +689,9 @@ Only in One Flag CTF games
 /*QUAKED item_armor_largefrag (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_largefrag", 
+		"item_armor_largefrag",
 		"sound/misc/ar1_pkup.wav",
-		{ "models/powerups/armor/shard.md3", 
+		{ "models/powerups/armor/shard.md3",
 		0, 0, 0} ,
 /* icon */		"icons/iconr_shard",
 /* pickup */	"Armor Fragment 25",
@@ -968,9 +706,9 @@ Only in One Flag CTF games
 /*QUAKED item_pod (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_pod", 
+		"item_pod",
 		"sound/misc/ar1_pkup.wav",
-		{ "models/players/bones/head.md3", 
+		{ "models/players/bones/head.md3",
 		0, 0, 0} ,
 /* icon */		"sprites/deathlocation",
 /* pickup */	"POD marker",
@@ -986,10 +724,10 @@ Only in One Flag CTF games
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_artefact", 
+		"item_artefact",
 		//"sound/items/quaddamage.wav",
 		"sound/earthquake.wav",
-        { "models/powerups/instant/quad.md3", 
+        { "models/powerups/instant/quad.md3",
 		0, 0, 0 },
 /* icon */		"icons/artefact",
 /* pickup */	"Artefact",
@@ -1008,7 +746,7 @@ Only in One Flag CTF games
 	{
 		"weapon_monsterlauncher",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grenadel/grenadel.md3", 
+        { "models/weapons2/grenadel/grenadel.md3",
 		0, 0, 0},
 /* icon */		"models/weapons2/monsterl/icon.tga",
 /* pickup */	"Monster Launcher",
@@ -1024,7 +762,7 @@ Only in One Flag CTF games
 	{
 		"ammo_seeds",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/health/small_sphere.md3", 
+        { "models/powerups/health/small_sphere.md3",
 		0, 0, 0},
 /* icon */		"models/weapons2/monsterl/icon.tga",
 /* pickup */	"Monster Seeds",
@@ -1045,7 +783,7 @@ int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
 // JUHOX: ammo characteristics
 #if 1
 weaponAmmoCharacteristic_t weaponAmmoCharacteristics[] = {
-	{0, 0},		// 
+	{0, 0},		//
 	{WP_GAUNTLET_MAX_AMMO, WP_GAUNTLET_AMMO_REFRESH},
 	{WP_MACHINEGUN_MAX_AMMO, WP_MACHINEGUN_AMMO_REFRESH},
 	{WP_SHOTGUN_MAX_AMMO, WP_SHOTGUN_AMMO_REFRESH},
@@ -1070,9 +808,9 @@ gitem_t	*BG_FindItemForPowerup( powerup_t pw ) {
 	int		i;
 
 	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( (bg_itemlist[i].giType == IT_POWERUP || 
+		if ( (bg_itemlist[i].giType == IT_POWERUP ||
 					bg_itemlist[i].giType == IT_TEAM ||
-					bg_itemlist[i].giType == IT_PERSISTANT_POWERUP) && 
+					bg_itemlist[i].giType == IT_PERSISTANT_POWERUP) &&
 			bg_itemlist[i].giTag == pw ) {
 			return &bg_itemlist[i];
 		}
@@ -1110,7 +848,7 @@ BG_FindItemForWeapon
 */
 gitem_t	*BG_FindItemForWeapon( weapon_t weapon ) {
 	gitem_t	*it;
-	
+
 	for ( it = bg_itemlist + 1 ; it->classname ; it++) {
 		if ( it->giType == IT_WEAPON && it->giTag == weapon ) {
 			return it;
@@ -1129,7 +867,7 @@ BG_FindItem
 */
 gitem_t	*BG_FindItem( const char *pickupName ) {
 	gitem_t	*it;
-	
+
 	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
 		if ( !Q_stricmp( it->pickup_name, pickupName ) )
 			return it;
@@ -1176,9 +914,6 @@ This needs to be the same for client side prediction and server use.
 */
 qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps ) {
 	gitem_t	*item;
-#ifdef MISSIONPACK
-	int		upperBound;
-#endif
 
 	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
@@ -1200,39 +935,15 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_ARMOR:
-#ifdef MISSIONPACK
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-			return qfalse;
-		}
-
-		// we also clamp armor to the maxhealth for handicapping
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			upperBound = ps->stats[STAT_MAX_HEALTH];
-		}
-		else {
-			upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
-		}
-
-		if ( ps->stats[STAT_ARMOR] >= upperBound ) {
-			return qfalse;
-		}
-#else
 		if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
 			return qfalse;
 		}
-#endif
 		return qtrue;
 
 	case IT_HEALTH:
 		if (ps->powerups[PW_CHARGE]) return qtrue;	// JUHOX: pick up all health if charged
 		// small and mega healths will go over the max, otherwise
 		// don't pick up if already at max
-#ifdef MISSIONPACK
-		if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			upperBound = ps->stats[STAT_MAX_HEALTH];
-		}
-		else
-#endif
 		if ( item->quantity == 5 || item->quantity == 100 ) {
 			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
 				return qfalse;
@@ -1248,42 +959,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 	case IT_POWERUP:
 		return qtrue;	// powerups are always picked up
 
-#ifdef MISSIONPACK
-	case IT_PERSISTANT_POWERUP:
-		// can only hold one item at a time
-		if ( ps->stats[STAT_PERSISTANT_POWERUP] ) {
-			return qfalse;
-		}
-
-		// check team only
-		if( ( ent->generic1 & 2 ) && ( ps->persistant[PERS_TEAM] != TEAM_RED ) ) {
-			return qfalse;
-		}
-		if( ( ent->generic1 & 4 ) && ( ps->persistant[PERS_TEAM] != TEAM_BLUE ) ) {
-			return qfalse;
-		}
-
-		return qtrue;
-#endif
-
 	case IT_TEAM: // team items, such as flags
-#ifdef MISSIONPACK		
-		if( gametype == GT_1FCTF ) {
-			// neutral flag can always be picked up
-			if( item->giTag == PW_NEUTRALFLAG ) {
-				return qtrue;
-			}
-			if (ps->persistant[PERS_TEAM] == TEAM_RED) {
-				if (item->giTag == PW_BLUEFLAG  && ps->powerups[PW_NEUTRALFLAG] ) {
-					return qtrue;
-				}
-			} else if (ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-				if (item->giTag == PW_REDFLAG  && ps->powerups[PW_NEUTRALFLAG] ) {
-					return qtrue;
-				}
-			}
-		}
-#endif
 		if( gametype == GT_CTF ) {
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
@@ -1306,11 +982,6 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		}
 #endif
 
-#ifdef MISSIONPACK
-		if( gametype == GT_HARVESTER ) {
-			return qtrue;
-		}
-#endif
 		return qfalse;
 
 	case IT_HOLDABLE:
@@ -1515,7 +1186,6 @@ char *eventnames[] = {
 	"EV_GIB_PLAYER",			// gib a previously living player
 	"EV_SCOREPLUM",			// score plum
 
-//#ifdef MISSIONPACK
 	"EV_PROXIMITY_MINE_STICK",
 	"EV_PROXIMITY_MINE_TRIGGER",
 	"EV_KAMIKAZE",			// kamikaze explodes
@@ -1523,7 +1193,6 @@ char *eventnames[] = {
 	"EV_INVUL_IMPACT",		// invulnerability sphere impact
 	"EV_JUICED",				// invulnerability juiced effect
 	"EV_LIGHTNINGBOLT",		// lightning bolt bounced of invulnerability sphere
-//#endif
 
 	"EV_DEBUG_LINE",
 	"EV_STOPLOOPINGSOUND",
@@ -2003,7 +1672,7 @@ void BG_TSS_DecodeInstructions(const char** buf, tss_instructions_t* instr) {
 	int i;
 
 	instr->division.unassignedPlayers = TSS_DecodeInt(buf, 0, 100);
-	
+
 	for (i = 0; i < MAX_GROUPS; i++) {
 		instr->groupOrganization[i] = TSS_DecodeInt(buf, 0, MAX_GROUPS-1);
 		instr->division.group[i].minTotalMembers = TSS_DecodeInt(buf, 0, 100);

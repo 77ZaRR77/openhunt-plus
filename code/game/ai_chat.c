@@ -20,22 +20,17 @@
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 #include "be_ai_weap.h"
-//
+
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
 #include "ai_cmd.h"
 #include "ai_dmnet.h"
-//
+
 #include "chars.h"				//characteristics
 #include "inv.h"				//indexes into the inventory
 #include "syn.h"				//synonyms
 #include "match.h"				//string matching types and vars
-
-// for the voice chats
-#ifdef MISSIONPACK // bk001205
-#include "../../ui/menudef.h"
-#endif
 
 #define TIME_BETWEENCHATTING	25
 
@@ -273,13 +268,6 @@ char *BotWeaponNameForMeansOfDeath(int mod) {
 		case MOD_LIGHTNING: return "Lightning Gun";
 		case MOD_BFG:
 		case MOD_BFG_SPLASH: return "BFG10K";
-#ifdef MISSIONPACK
-		case MOD_NAIL: return "Nailgun";
-		case MOD_CHAINGUN: return "Chaingun";
-		case MOD_PROXIMITY_MINE: return "Proximity Launcher";
-		case MOD_KAMIKAZE: return "Kamikaze";
-		case MOD_JUICED: return "Prox mine";
-#endif
 		case MOD_GRAPPLE: return "Grapple";
 #if MONSTER_MODE
 		case MOD_CLAW: return "claw";	// JUHOX
@@ -300,11 +288,8 @@ BotRandomWeaponName
 char *BotRandomWeaponName(void) {
 	int rnd;
 
-#ifdef MISSIONPACK
-	rnd = random() * 11.9;
-#else
 	rnd = random() * 8.9;
-#endif
+
 	switch(rnd) {
 		case 0: return "Gauntlet";
 		case 1: return "Shotgun";
@@ -314,11 +299,6 @@ char *BotRandomWeaponName(void) {
 		case 5: return "Plasmagun";
 		case 6: return "Railgun";
 		case 7: return "Lightning Gun";
-#ifdef MISSIONPACK
-		case 8: return "Nailgun";
-		case 9: return "Chaingun";
-		case 10: return "Proximity Launcher";
-#endif
 		default: return "BFG10K";
 	}
 }
@@ -517,7 +497,7 @@ int BotChat_EndLevel(bot_state_t *bs) {
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	// teamplay
-	if (TeamPlayIsOn()) 
+	if (TeamPlayIsOn())
 	{
 		if (BotIsFirstInRankings(bs)) {
 			//trap_EA_Command(bs->client, "vtaunt");	// JUHOX: no vtaunt available
@@ -619,10 +599,6 @@ int BotChat_Death(bot_state_t *bs) {
 			BotAI_BotInitialChat(bs, "death_suicide", BotRandomOpponentName(bs), NULL);
 		else if (bs->botdeathtype == MOD_TELEFRAG)
 			BotAI_BotInitialChat(bs, "death_telefrag", name, NULL);
-#ifdef MISSIONPACK
-		else if (bs->botdeathtype == MOD_KAMIKAZE && trap_BotNumInitialChats(bs->cs, "death_kamikaze"))
-			BotAI_BotInitialChat(bs, "death_kamikaze", name, NULL);
-#endif
 		else {
 			if ((bs->botdeathtype == MOD_GAUNTLET ||
 				bs->botdeathtype == MOD_RAILGUN ||
@@ -713,10 +689,6 @@ int BotChat_Kill(bot_state_t *bs) {
 		else if (bs->enemydeathtype == MOD_TELEFRAG) {
 			BotAI_BotInitialChat(bs, "kill_telefrag", name, NULL);
 		}
-#ifdef MISSIONPACK
-		else if (bs->botdeathtype == MOD_KAMIKAZE && trap_BotNumInitialChats(bs->cs, "kill_kamikaze"))
-			BotAI_BotInitialChat(bs, "kill_kamikaze", name, NULL);
-#endif
 		//choose between insult and praise
 		else if (random() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_INSULT, 0, 1)) {
 			BotAI_BotInitialChat(bs, "kill_insult", name, NULL);
