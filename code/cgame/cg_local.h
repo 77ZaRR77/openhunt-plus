@@ -140,17 +140,17 @@ typedef struct {
 	int				barrelTime;
 	qboolean		barrelSpinning;
 	// JUHOX: new machinegun spinning
-#if 1
+
 	float			mgAngle;
 	int				mgTime;
 	int				mgPhase;	// 0=stopped, 1=wind up, 2=spinning, 3=wind off
-#endif
+
 } playerEntity_t;
 
 //=================================================
 
 
-#if 1	// JUHOX: discharge flash definitions
+// JUHOX: discharge flash definitions
 #define MAX_DISCHARGE_FLASHES_PER_ENTITY 8
 
 typedef struct {
@@ -158,7 +158,6 @@ typedef struct {
 	int lastChangeTime;
 	int nextChangeTime;
 } dischargeFlash_t;
-#endif
 
 // centity_t have a direct corespondence with gentity_t in the game, but
 // only the entityState_t is directly communicated to the cgame
@@ -453,15 +452,6 @@ typedef struct {
 typedef struct {
 	int				itemNum;
 } powerupInfo_t;
-
-
-#define MAX_SKULLTRAIL		10
-
-typedef struct {
-	vec3_t positions[MAX_SKULLTRAIL];
-	int numpositions;
-} skulltrail_t;
-
 
 #define MAX_REWARDSTACK		10
 #define MAX_SOUNDBUFFER		20
@@ -917,9 +907,6 @@ typedef struct {
 	int				spectatorPaintLen; 									// current offset from start
 	qboolean	intermissionMusicStarted;	// JUHOX
 	int			oldRespawnTimer;			// JUHOX
-
-	// skull trails
-	skulltrail_t	skulltrails[MAX_CLIENTS];
 
 	// centerprinting
 	int			centerPrintTime;

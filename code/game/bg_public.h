@@ -8,7 +8,7 @@
 #ifndef __BG_PUBLIC_H	// JUHOX
 #define __BG_PUBLIC_H	// JUHOX
 
-#define	GAME_VERSION		"OpenHunt"	// JUHOX: was "baseq3-1"
+#define	GAME_VERSION		"openhunt"	// JUHOX: was "baseq3-1"
 
 #define SCREENSHOT_TOOLS	0	// JUHOX
 #define PLAYER_SCREENSHOTS	0	// JUHOX
@@ -170,15 +170,7 @@ typedef enum {
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
-// JUHOX BUGFIX: CS_PARTICLES unused
-#if 0
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS)
-
-#define CS_MAX					(CS_PARTICLES+MAX_LOCATIONS)
-#else
 #define CS_MAX					(CS_LOCATIONS+MAX_LOCATIONS)
-#endif
-
 #define CS_NEARBOX				(CS_MAX+0)	// JUHOX
 #define CS_MEETING				(CS_MAX+1)	// JUHOX
 #define CS_HIGHSCORETEXT		(CS_MAX+2)	// JUHOX
@@ -717,13 +709,7 @@ typedef enum {
 	STAT_HOLDABLE_ITEM,
 	STAT_WEAPONS,					// 16 bit fields
 	STAT_ARMOR,
-#if 0	// JUHOX: STAT_DEAD_YAW no longer needed
-	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
-#endif
 	STAT_WEAPON_KICK,				// JUHOX: pitch speed
-#if 0	// JUHOX: STAT_CLIENTS_READY now done via configstring
-	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-#endif
 	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
 	STAT_TARGET,					// JUHOX: client number
 	STAT_STRENGTH,					// JUHOX
@@ -744,15 +730,16 @@ typedef enum {
 } statIndex_t;
 #define STAT_RESPAWN_INFO STAT_ARMOR	// JUHOX: remaining seconds & respawnLocationType_t, valid only if dead
 #define WEAPON_KICK_FACTOR 50	// JUHOX: for STAT_WEAPON_KICK
-#if 1	// JUHOX: STAT_RESPAWN_INFO values
+
+// JUHOX: STAT_RESPAWN_INFO values
 typedef enum {
 	RLT_here = 0,
 	RLT_atPOD,
 	RLT_regular,
 	RLT_invalid
 } respawnLocationType_t;
-#endif
-#if 1	// JUHOX: STAT_EFFECT values
+
+// JUHOX: STAT_EFFECT values
 typedef enum {
 	PE_spawn,
 	PE_fade_in,
@@ -760,20 +747,18 @@ typedef enum {
 	PE_hibernation,
 	PE_titan_awaking
 } playerEffect_t;
-#endif
 
 #define STRENGTH_UNIT 100		// JUHOX
 #define WEARINESS_FACTOR 3.0	// JUHOX: strength decrease is this times faster than strength increase
 #define MAX_STRENGTH_TIME 60.0	// JUHOX: time in seconds of weariness
 #define JUMP_WEARINESS 5.0		// JUHOX: time in seconds of weariness
 #define LOW_STRENGTH_TIME 10.0	// JUHOX: time in seconds of weariness
-#if 1	// JUHOX: derived values
+// JUHOX: derived values
 #define REFRESH_ONE_SECOND (STRENGTH_UNIT)	// refresh after one second of relax
 #define WEARY_ONE_SECOND (WEARINESS_FACTOR*STRENGTH_UNIT)	// weariness after one second of fatigue
 #define JUMP_STRENGTH_DECREASE (JUMP_WEARINESS*WEARY_ONE_SECOND) // weariness for one jump
 #define MAX_STRENGTH_VALUE (MAX_STRENGTH_TIME*WEARY_ONE_SECOND)
 #define LOW_STRENGTH_VALUE (LOW_STRENGTH_TIME*WEARY_ONE_SECOND)
-#endif
 
 // player_state->persistant[] indexes
 // these fields are the only part of player_state that isn't
@@ -830,11 +815,7 @@ typedef enum {
 // this is needed because only 16bit of playerState_t.eFlags are transmitted over
 // the net, and 'CG_TSS_DrawInterface()' references 'EF_TEAMVOTED'
 // note that EF_TEAMVOTED uses now the currently unused value of EF_TICKING (see above)
-#if 0
-#define EF_TEAMVOTED		0x00080000		// already cast a team vote
-#else
 #define EF_TEAMVOTED		0x00000002
-#endif
 #define EF_DUCKED			0x00000020		// JUHOX: for players
 
 // NOTE: may not have more than 16
@@ -847,22 +828,12 @@ typedef enum {
 	PW_INVIS,
 	PW_REGEN,
 	PW_FLIGHT,
-
 	PW_REDFLAG,
 	PW_BLUEFLAG,
 	PW_NEUTRALFLAG,
-
-#if 0	// JUHOX: replace the missionpack powerups with the hunt powerups
-	PW_SCOUT,
-	PW_GUARD,
-	PW_DOUBLER,
-	PW_AMMOREGEN,
-	PW_INVULNERABILITY,
-#else
 	PW_CHARGE,
 	PW_SHIELD,
 	PW_BFG_RELOADING,
-#endif
 
 	PW_NUM_POWERUPS
 
@@ -904,7 +875,7 @@ typedef enum {
 	WP_NUM_WEAPONS
 } weapon_t;
 
-#if 1	// JUHOX: ammo definitions. refresh is per 10 seconds
+// JUHOX: ammo definitions. refresh is per 10 seconds
 #define WP_GAUNTLET_MAX_AMMO				-1
 #define WP_GAUNTLET_AMMO_REFRESH			0.0f
 
@@ -944,8 +915,6 @@ typedef struct {
 } weaponAmmoCharacteristic_t;
 
 extern weaponAmmoCharacteristic_t weaponAmmoCharacteristics[];
-
-#endif
 
 
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
@@ -1076,7 +1045,7 @@ typedef enum {
 	EV_TAUNT_GUARDBASE,
 	EV_TAUNT_PATROL
 
-#if 1	// JUHOX: new event types
+	// JUHOX: new event types
 	,EV_OVERKILL
 	,EV_DISCHARGE_FLASH
 	,EV_PANT
@@ -1090,7 +1059,6 @@ typedef enum {
 	,EV_THROW_HOOK
 #if GRAPPLE_ROPE
 	,EV_ROPE_EXPLOSION
-#endif
 #endif
 
 } entity_event_t;
@@ -1218,12 +1186,12 @@ typedef enum {
 	MOD_SHOTGUN,
 	MOD_GAUNTLET,
 #if MONSTER_MODE
-	MOD_CLAW,		// JUHOX
-	MOD_GUARD,		// JUHOX
-	MOD_TITAN,	// JUHOX
+	MOD_CLAW,		        // JUHOX
+	MOD_GUARD,		        // JUHOX
+	MOD_TITAN,	            // JUHOX
 	MOD_MONSTER_LAUNCHER,	// JUHOX
 #endif
-	MOD_CHARGE,		// JUHOX
+	MOD_CHARGE,		        // JUHOX
 	MOD_MACHINEGUN,
 	MOD_GRENADE,
 	MOD_GRENADE_SPLASH,
@@ -1262,8 +1230,8 @@ typedef enum {
 	IT_HOLDABLE,			// single use, holdable item
 							// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
-	IT_TEAM
-	, IT_POD_MARKER			// JUHOX: rotate + countdown
+	IT_TEAM,
+	IT_POD_MARKER			// JUHOX: rotate + countdown
 } itemType_t;
 
 #define MAX_ITEM_MODELS 4
