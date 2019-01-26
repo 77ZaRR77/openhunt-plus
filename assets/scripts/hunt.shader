@@ -1067,7 +1067,7 @@ models/gibs/monstergibs
 		rgbGen lightingDiffuse
 	}
 	{
-		map textures/sfx/firegorre.tga
+		map textures/effects/firegorre_red.tga
 		blendfunc add
 		rgbGen identity
 		tcMod scroll -0.4 2

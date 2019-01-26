@@ -1,19 +1,17 @@
 #### BUGS n FIX
 
 * change name of mod to OpenHunt Plus
-* rename hunts pk3s to openhunt and sort them into one (LepusC)
-* fix the bug in UI both skirmish and from multiplayer changing
-ADVANCED OPTIONS simply not applying to game
-probably same goes to game templates
-* fix the bug with grapplinghook, while crouching it will brake.
-Probably because shooting entry is too low from player,
-also possible to change grapplinghook type by cvar.
-* additional names at the end of credits
 
 
 
-DONE fix angle of railgun shot so it will simply push player back straight
-DONE remove TEAM ARENA and CINEMATICS options on main menu
+
+DONE:
+
+fix advanced options menu
+rename hunts pk3s to openhunt and sort them into one (LepusC) 
+fix angle of railgun shot so it will simply push player back straight
+remove TEAM ARENA and CINEMATICS options on main menu
+fix the bug with grapplinghook, while crouching it will brake //lol removed
 
 #### FEATURES
 
@@ -27,8 +25,8 @@ DONE remove TEAM ARENA and CINEMATICS options on main menu
 #### Addons were made
 
 * autoexec.cfg - more accurate gameplay
-* zzz-hunt_sfx.pk3 - fix lens gfx in ffa gamemode
-* zzz-hunt_redblood.pk3 - red blood instead of brown
+* zzz-hunt_sfx.pk3 - fix lens gfx in ffa gamemode (inside of default openhunt.pk3)
+* zzz-hunt_redblood.pk3 - red blood instead of brown(inside of default openhunt.pk3)
 
 
 #### Additional info
