@@ -222,15 +222,6 @@ static void CG_OffsetThirdPersonView( void ) {
 
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
-	// JUHOX: STAT_DEAD_YAW no longer needed
-#if 0
-	// if dead, look at killer
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		focusAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
-		cg.refdefViewAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
-	}
-#endif
-
 	if ( focusAngles[PITCH] > 45 ) {
 		focusAngles[PITCH] = 45;		// don't go too far overhead
 	}
@@ -290,8 +281,7 @@ static void CG_StepOffset( void ) {
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
 	if ( timeDelta < STEP_TIME ) {
-		cg.refdef.vieworg[2] -= cg.stepChange
-			* (STEP_TIME - timeDelta) / STEP_TIME;
+		cg.refdef.vieworg[2] -= cg.stepChange * (STEP_TIME - timeDelta) / STEP_TIME;
 	}
 }
 
@@ -312,16 +302,10 @@ static void CG_OffsetFirstPersonView( void ) {
 	vec3_t			predictedVelocity;
 	int				timeDelta;
 
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
-		return;
-	}
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) return;
 
 	// JUHOX: no view offsets for dead spectators
-#if 1
-	if (/*cg.snap->ps.stats[STAT_HEALTH] <= 0 &&*/ cg.snap->ps.pm_type == PM_SPECTATOR) {
-		return;
-	}
-#endif
+	if ( cg.snap->ps.pm_type == PM_SPECTATOR ) return;
 
 	origin = cg.refdef.vieworg;
 	angles = cg.refdefViewAngles;
@@ -330,10 +314,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 ) {
 		angles[ROLL] = 40;
 		angles[PITCH] = -15;
-		// JUHOX: STAT_DEAD_YAW no longer needed
-#if 0
-		angles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
-#endif
 		origin[2] += cg.predictedPlayerState.viewheight;
 		return;
 	}
@@ -356,14 +336,6 @@ static void CG_OffsetFirstPersonView( void ) {
 			}
 		}
 	}
-
-	// add pitch based on fall kick
-#if 0
-	ratio = ( cg.time - cg.landTime) / FALL_TIME;
-	if (ratio < 0)
-		ratio = 0;
-	angles[PITCH] += ratio * cg.fall_value;
-#endif
 
 	// add angles based on velocity
 	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
@@ -397,13 +369,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 	// smooth out duck height changes
 	// JUHOX: don't smooth out duck height changes for spectators
-#if 0
-	timeDelta = cg.time - cg.duckTime;
-	if ( timeDelta < DUCK_TIME) {
-		cg.refdef.vieworg[2] -= cg.duckChange
-			* (DUCK_TIME - timeDelta) / DUCK_TIME;
-	}
-#else
+
 	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		timeDelta = cg.time - cg.duckTime;
 		if ( timeDelta < DUCK_TIME) {
@@ -411,7 +377,6 @@ static void CG_OffsetFirstPersonView( void ) {
 				* (DUCK_TIME - timeDelta) / DUCK_TIME;
 		}
 	}
-#endif
 
 	// add bob height
 	bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
@@ -439,19 +404,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	// add kick offset
 
 	VectorAdd (origin, cg.kick_origin, origin);
-
-	// pivot the eye based on a neck length
-#if 0
-	{
-#define	NECK_LENGTH		8
-	vec3_t			forward, up;
-
-	cg.refdef.vieworg[2] -= NECK_LENGTH;
-	AngleVectors( cg.refdefViewAngles, forward, NULL, up );
-	VectorMA( cg.refdef.vieworg, 3, forward, cg.refdef.vieworg );
-	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
-	}
-#endif
 }
 
 //======================================================================
@@ -529,8 +481,8 @@ static int CG_CalcFov( void ) {
 				fov_x = zoomFov + f * ( fov_x - zoomFov );
 			}
 		}
+
 		// JUHOX: gauntlet provides wider fov
-#if 1
 		if (cg.predictedPlayerState.weapon == WP_GAUNTLET) {
 			float wideFov;
 
@@ -554,7 +506,6 @@ static int CG_CalcFov( void ) {
 				break;
 			}
 		}
-#endif
 
 	x = cg.refdef.width / tan( fov_x / 360 * M_PI );
 	fov_y = atan2( cg.refdef.height, x );
@@ -604,10 +555,6 @@ static void CG_DamageBlendBlob( void ) {
 		return;
 	}
 
-	//if (cg.cameraMode) {
-	//	return;
-	//}
-
 	// ragePro systems can't fade blends, so don't obscure the screen
 	if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO ) {
 		return;
@@ -618,7 +565,6 @@ static void CG_DamageBlendBlob( void ) {
 	if ( t <= 0 || t >= maxTime ) {
 		return;
 	}
-
 
 	memset( &ent, 0, sizeof( ent ) );
 	ent.reType = RT_SPRITE;
@@ -779,20 +725,6 @@ static int CG_CalcViewValues( void ) {
 	CG_CalcVrect();
 
 	ps = &cg.predictedPlayerState;
-/*
-	if (cg.cameraMode) {
-		vec3_t origin, angles;
-		if (trap_getCameraInfo(cg.time, &origin, &angles)) {
-			VectorCopy(origin, cg.refdef.vieworg);
-			angles[ROLL] = 0;
-			VectorCopy(angles, cg.refdefViewAngles);
-			AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
-			return CG_CalcFov();
-		} else {
-			cg.cameraMode = qfalse;
-		}
-	}
-*/
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION ) {
@@ -977,8 +909,8 @@ static void CG_PowerupTimerSounds( void ) {
 		if ( t <= cg.time ) {
 			continue;
 		}
+
 		// JUHOX: don't play timer sounds for misused powerups
-#if 1
 		if (
 			i == PW_HASTE ||
 			i == PW_BATTLESUIT ||
@@ -988,7 +920,7 @@ static void CG_PowerupTimerSounds( void ) {
 		) {
 			continue;
 		}
-#endif
+
 		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
 			continue;
 		}
@@ -1761,12 +1693,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// clear all the render lists
 	trap_R_ClearScene();
 
-#if 0//ESCAPE_MODE	// -JUHOX: clear screen in EFH
-	if (cgs.gametype == GT_EFH) {
-		CG_FillRect(0, 0, 640, 480, colorBlack);
-	}
-#endif
-
 	// set up cg.snap and possibly cg.nextSnap
 	CG_ProcessSnapshots();
 
@@ -1787,13 +1713,9 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 #endif
 
 	// let the client system know what our weapon and zoom settings are
-#if 0	// JUHOX: 'weaponSelect' may be WP_NONE
-	trap_SetUserCmdValue( cg.weaponSelect, cg.zoomSensitivity );
-#else
 	CG_AutoSwitchToBestWeapon();
 	if (cg.weaponSelect == WP_NONE) cg.weaponSelect = cg.snap->ps.weapon;
 	trap_SetUserCmdValue(cg.weaponSelect==WP_NONE? WP_MACHINEGUN : cg.weaponSelect, cg.zoomSensitivity );
-#endif
 
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
@@ -1835,14 +1757,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	}
 #endif
 
-	// decide on third person view
-#if 0	// JUHOX: no third person view for dead spectators
-	cg.renderingThirdPerson = cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0);
-#else
-	cg.renderingThirdPerson =
-		(cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0)) &&
-		cg.snap->ps.pm_type != PM_SPECTATOR;
-#endif
+
+	cg.renderingThirdPerson = (cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0)) && cg.snap->ps.pm_type != PM_SPECTATOR;
 
 	// build cg.refdef
 	inwater = CG_CalcViewValues();
@@ -1851,7 +1767,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.additionalTremble = 0;	// JUHOX
 #endif
 
-#if 1	// JUHOX: fill framebuffer with the picture to show on cloaked players
+	// JUHOX: fill framebuffer with the picture to show on cloaked players
 	if (cg_glassCloaking.integer) {
 		qboolean cloakedPlayers;
 
@@ -1886,8 +1802,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 			VectorCopy(cg.refdef.vieworg, vieworg);
 			AngleVectors(cg.refdefViewAngles, forward, right, up);
 			VectorMA(cg.refdef.vieworg, 8, forward, cg.refdef.vieworg);
-			//VectorMA(cg.refdef.vieworg, 5, right, cg.refdef.vieworg);
-			//VectorMA(cg.refdef.vieworg, 5, up, cg.refdef.vieworg);
 
 			if (!cg.hyperspace) {
 				CG_AddPacketEntitiesForGlassLook();
@@ -1906,7 +1820,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 			VectorCopy(vieworg, cg.refdef.vieworg);
 		}
 	}
-#endif
 
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson ) {
@@ -2042,6 +1955,4 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
 	}
 
-
 }
-

@@ -1120,26 +1120,20 @@ typedef struct {
 // stored in the clientInfo_t, itemInfo_t, weaponInfo_t, and powerupInfo_t
 typedef struct {
 	// JUHOX: new charsetShader
-#if 0
-	qhandle_t	charsetShader;
-#else
 	qhandle_t	oldCharsetShader;
 	qhandle_t	charsetShaders[8];
-#endif
 	qhandle_t	charsetProp;
 	qhandle_t	charsetPropGlow;
 	qhandle_t	charsetPropB;
 	qhandle_t	whiteShader;
 
 	// JUHOX: nearbox shaders
-#if 1
 	//qhandle_t	nearbox_up;
 	qhandle_t	nearbox_dn;
 	qhandle_t	nearbox_ft;
 	qhandle_t	nearbox_bk;
 	qhandle_t	nearbox_lf;
 	qhandle_t	nearbox_rt;
-#endif
 
 	qhandle_t	redCubeModel;
 	qhandle_t	blueCubeModel;
@@ -1202,8 +1196,8 @@ typedef struct {
 	qhandle_t	navaidGoalShader;		// JUHOX
 	qhandle_t	glassCloakingShader;	// JUHOX
 	qhandle_t	glassCloakingSpecShader;// JUHOX
+
 	// JUHOX: shaders for new spawn effect
-#if 1
 	qhandle_t	spawnHullShader;
 	qhandle_t	spawnHullGlow1Shader;
 	qhandle_t	spawnHullGlow2Shader;
@@ -1214,10 +1208,8 @@ typedef struct {
 	qhandle_t	spawnHullGlow2WeaponShader;
 	qhandle_t	spawnHullGlow3WeaponShader;
 	qhandle_t	spawnHullGlow4WeaponShader;
-#endif
 
 	// JUHOX: HUD shaders
-#if 1
 	qhandle_t	fightInProgressShader;
 #if MONSTER_MODE
 	qhandle_t	artefactsShader;
@@ -1225,22 +1217,18 @@ typedef struct {
 	qhandle_t	clockShader;
 	qhandle_t	detectorShader;
 #endif
-#endif
 
-	qhandle_t	huntNameShader;	// JUHOX
-
+	qhandle_t	huntNameShader;	    // JUHOX
 	qhandle_t	deathBlurryShader;	// JUHOX
-	qhandle_t	podSkullSkin;			// JUHOX
+	qhandle_t	podSkullSkin;		// JUHOX
 #if SPECIAL_VIEW_MODES
 	qhandle_t	scannerShader;		// JUHOX
 	qhandle_t	amplifierShader;	// JUHOX
 #endif
 
 	qhandle_t	friendShader;
-
 	qhandle_t	balloonShader;
 	qhandle_t	connectionShader;
-
 	qhandle_t	selectShader;
 	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
@@ -1269,9 +1257,7 @@ typedef struct {
 #endif
 
 	qhandle_t	numberShaders[11];
-
 	qhandle_t	shadowMarkShader;
-
 	qhandle_t	botSkillShaders[5];
 
 	// wall mark shaders
@@ -1342,11 +1328,9 @@ typedef struct {
 	qhandle_t	medalCapture;
 
 	// JUHOX: sprites used to mark group members
-#if 1
 	qhandle_t	groupTemporary;
 	qhandle_t	groupDesignated;
 	qhandle_t	groupMarks[MAX_GROUPS];
-#endif
 
 	// sounds
 	sfxHandle_t	silence;	// JUHOX
@@ -1494,13 +1478,6 @@ typedef struct {
 	sfxHandle_t	n_healthSound;
 	sfxHandle_t	hgrenb1aSound;
 	sfxHandle_t	hgrenb2aSound;
-	// JUHOX: the following sounds only needed for missionpack
-#if 0
-	sfxHandle_t	wstbimplSound;
-	sfxHandle_t	wstbimpmSound;
-	sfxHandle_t	wstbimpdSound;
-	sfxHandle_t	wstbactvSound;
-#endif
 
 } cgMedia_t;
 
@@ -1541,13 +1518,14 @@ typedef struct {
 	float			sunFlarePitch;
 	float			sunFlareDistance;
 #endif
-#if 1	// JUHOX: additional serverinfo cvars
+
+	// JUHOX: additional serverinfo cvars
 	int				baseHealth;
 	qboolean		stamina;
 	qboolean		tss;
 	qboolean		tssSafetyMode;
 	int				weaponLimit;
-#endif
+
 #if MONSTER_MODE	// JUHOX: serverinfo cvars used in STU
 	qboolean		artefacts;
 	qboolean		monsterLauncher;
@@ -1561,9 +1539,8 @@ typedef struct {
 	hookMode_t		hookMode;
 #endif
 
-#if 1	// JUHOX: nearbox info
+    // JUHOX: nearbox info
 	char			nearboxShaderName[128];
-#endif
 
 	int				voteTime;
 	int				voteYes;
@@ -1703,7 +1680,7 @@ extern	vmCvar_t		cg_tracerWidth;
 extern	vmCvar_t		cg_tracerLength;
 extern	vmCvar_t		cg_autoswitch;
 extern	vmCvar_t		cg_autoswitchAmmoLimit;	// JUHOX
-extern	vmCvar_t		cg_weaponOrder[];	// JUHOX
+extern	vmCvar_t		cg_weaponOrder[];	    // JUHOX
 extern	vmCvar_t		cg_weaponOrderName[];	// JUHOX
 extern	vmCvar_t		cg_ignore;
 #if MONSTER_MODE	// JUHOX: STU cvars
@@ -1743,7 +1720,7 @@ extern  vmCvar_t		cg_scorePlum;
 extern	vmCvar_t		cg_smoothClients;
 extern	vmCvar_t		pmove_fixed;
 extern	vmCvar_t		pmove_msec;
-//extern	vmCvar_t		cg_pmove_fixed;
+//extern	vmCvar_t		cg_pmove_fixed; // SLK> implement?
 extern	vmCvar_t		cg_cameraOrbit;
 extern	vmCvar_t		cg_cameraOrbitDelay;
 extern	vmCvar_t		cg_timescaleFadeEnd;
@@ -1846,30 +1823,18 @@ qboolean CG_GetScreenCoordinates(const vec3_t origin, float* x, float* y);	// JU
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void CG_FillRect( float x, float y, float width, float height, const float *color );
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void CG_DrawString( float x, float y, const char *string,
-				   float charWidth, float charHeight, const float *modulate );
-
-
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
-		qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars );
+void CG_DrawString( float x, float y, const char *string, float charWidth, float charHeight, const float *modulate );
+void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,	qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars );
 void CG_DrawBigString( int x, int y, const char *s, float alpha );
 void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color );
 void CG_DrawSmallString( int x, int y, const char *s, float alpha );
 void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color );
-
 int CG_DrawStrlen( const char *str );
-
-float	*CG_FadeColor( int startMsec, int totalMsec );
+float *CG_FadeColor( int startMsec, int totalMsec );
 float *CG_TeamColor( int team );
 void CG_TileClear( void );
 void CG_ColorForHealth( vec4_t hcolor );
-// JUHOX: new parameter for CG_GetColorForHealth()
-#if 0
-void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
-#else
 void CG_GetColorForHealth(int health, int armor, int maxhealth, vec4_t hcolor);
-#endif
-
 void UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color );
 void CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void CG_DrawSides(float x, float y, float w, float h, float size);
@@ -1908,11 +1873,7 @@ void CG_InitTeamChat();
 void CG_GetTeamColor(vec4_t *color);
 const char *CG_GetGameStatusText();
 const char *CG_GetKillerText();
-#if 0	// JUHOX: new parameter for CG_Draw3DModel()
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles );
-#else
 void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, qhandle_t shader);	// JUHOX: added 'shader'
-#endif
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader);
 void CG_CheckOrderPending();
 const char *CG_GameTypeString();
@@ -1929,10 +1890,8 @@ void CG_DrawTeamVote(void);
 //
 // cg_player.c
 //
-void AddDischargeFlash(	// JUHOX
-	const vec3_t origin, const vec3_t startAngles, dischargeFlash_t* flash, int entnum,
-	const vec3_t mins, const vec3_t maxs, qhandle_t shader
-);
+// JUHOX
+void AddDischargeFlash(	const vec3_t origin, const vec3_t startAngles, dischargeFlash_t* flash, int entnum,	const vec3_t mins, const vec3_t maxs, qhandle_t shader );
 void CG_Player( centity_t *cent );
 void CG_ResetPlayerEntity( centity_t *cent );
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team );
@@ -1942,28 +1901,17 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
 #if MONSTER_MODE
 void CG_InitMonsterClientInfo(int clientNum);
 #endif
-#if 1	// JUHOX: prototype for CG_GetSpawnEffectParameters()
-qboolean CG_GetSpawnEffectParameters(
-	entityState_t* state,
-	float* intensity, qboolean* skipOthers, int* powerups,
-	refEntity_t* refEnt
-);
-#endif
+// JUHOX: prototype for CG_GetSpawnEffectParameters()
+qboolean CG_GetSpawnEffectParameters( entityState_t* state,	float* intensity, qboolean* skipOthers, int* powerups, refEntity_t* refEnt );
 
 //
 // cg_predict.c
 //
 void CG_BuildSolidList( void );
 int	CG_PointContents( const vec3_t point, int passEntityNum );
-void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-					 int skipNumber, int mask );
-#if 1	// JUHOX: prototype for CG_SmoothTrace()
-void CG_SmoothTrace(
-	trace_t *result,
-	const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int skipNumber, int mask
-);
-#endif
+void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask );
+// JUHOX: prototype for CG_SmoothTrace()
+void CG_SmoothTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask );
 void CG_PredictPlayerState( void );
 void CG_LoadDeferredPlayers( void );
 
@@ -1983,19 +1931,11 @@ void CG_PainEvent( centity_t *cent, int health );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
-#if 1	// JUHOX: prototype for CG_DrawLineSegment()
-float CG_DrawLineSegment(
-	const vec3_t start, const vec3_t end,
-	float totalLength, float segmentSize, float scrollspeed,
-	qhandle_t shader
-);
-#endif
+// JUHOX: prototype for CG_DrawLineSegment()
+float CG_DrawLineSegment( const vec3_t start, const vec3_t end,	float totalLength, float segmentSize, float scrollspeed, qhandle_t shader );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
-
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName );
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName );
+void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName );
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,	qhandle_t parentModel, char *tagName );
 void CG_AddPacketEntitiesForGlassLook(void);	// JUHOX
 #if MAPLENSFLARES	// JUHOX: prototypes
 void CG_Mover(centity_t *cent);
@@ -2036,14 +1976,9 @@ void CG_OutOfAmmoChange( void );	// should this be in pmove?
 //
 // cg_marks.c
 //
-void	CG_InitMarkPolys( void );
-void	CG_AddMarks( void );
-void	CG_ImpactMark( qhandle_t markShader,
-				    const vec3_t origin, const vec3_t dir,
-					float orientation,
-				    float r, float g, float b, float a,
-					qboolean alphaFade,
-					float radius, qboolean temporary );
+void CG_InitMarkPolys( void );
+void CG_AddMarks( void );
+void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float r, float g, float b, float a, qboolean alphaFade, float radius, qboolean temporary );
 void CG_AddNearbox(void);	// JUHOX
 // JUHOX: CG_AddLightningMarks() prototype
 #if MONSTER_MODE
@@ -2066,15 +2001,7 @@ void CG_AdjustLocalEntities(const vec3_t delta);
 //
 // cg_effects.c
 //
-localEntity_t *CG_SmokePuff( const vec3_t p,
-				   const vec3_t vel,
-				   float radius,
-				   float r, float g, float b, float a,
-				   float duration,
-				   int startTime,
-				   int fadeInTime,
-				   int leFlags,
-				   qhandle_t hShader );
+localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel, float radius, float r, float g, float b, float a, float duration, int startTime, int fadeInTime, int leFlags, qhandle_t hShader );
 void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_SpawnEffect( vec3_t org );
 void CG_ScorePlum( int client, vec3_t org, int score );
@@ -2087,12 +2014,8 @@ void CG_GibPlayer(vec3_t playerOrigin, centity_t* cent);
 #endif
 void CG_BFGsuperExpl(vec3_t origin);	// JUHOX
 void CG_BigExplode( vec3_t playerOrigin );
-
 void CG_Bleed( vec3_t origin, int entityNum );
-
-localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
-								qhandle_t hModel, qhandle_t shader, int msec,
-								qboolean isSprite );
+localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,	qhandle_t hModel, qhandle_t shader, int msec, qboolean isSprite );
 
 //
 // cg_snapshot.c
@@ -2396,7 +2319,6 @@ void trap_SnapVector( float *v );
 qboolean	trap_loadCamera(const char *name);
 void		trap_startCamera(int time);
 qboolean	trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
-
 qboolean	trap_GetEntityToken( char *buffer, int bufferSize );
 
 void	CG_ClearParticles (void);
@@ -2410,8 +2332,8 @@ void	CG_ParticleSparks (vec3_t org, vec3_t vel, int duration, float x, float y, 
 void	CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir);
 void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
-extern qboolean		initparticles;
-int CG_NewParticleArea ( int num );
+extern  qboolean initparticles;
+int     CG_NewParticleArea ( int num );
 
 #if ESCAPE_MODE
 void CG_AdjustParticles(const vec3_t delta);	// JUHOX

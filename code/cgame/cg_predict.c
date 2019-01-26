@@ -139,11 +139,7 @@ void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 JUHOX: CG_SmoothTrace
 ================
 */
-void CG_SmoothTrace(
-	trace_t *result,
-	const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int skipNumber, int mask
-) {
+void CG_SmoothTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask) {
 	int physicsTime;
 
 	physicsTime = cg.physicsTime;
@@ -157,7 +153,7 @@ void CG_SmoothTrace(
 CG_PointContents
 ================
 */
-int		CG_PointContents( const vec3_t point, int passEntityNum ) {
+int	CG_PointContents( const vec3_t point, int passEntityNum ) {
 	int			i;
 	entityState_t	*ent;
 	centity_t	*cent;
@@ -184,11 +180,8 @@ int		CG_PointContents( const vec3_t point, int passEntityNum ) {
 			continue;
 		}
 
-#if 0	// JUHOX: consider moving entities
-		contents |= trap_CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
-#else
+        // JUHOX: consider moving entities
 		contents |= trap_CM_TransformedPointContents(point, cmodel, cent->lerpOrigin, cent->lerpAngles);
-#endif
 	}
 
 	return contents;
@@ -455,16 +448,12 @@ void CG_PredictPlayerState( void ) {
 	else {
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	}
-#if 0	// JUHOX: let mission leaders in safety mode behave like spectators
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-#else
-	if (
-		cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ||
-		(cg.snap->ps.pm_type == PM_SPECTATOR && cg.snap->ps.stats[STAT_HEALTH] > 0)
-	) {
-#endif
+
+	// JUHOX: let mission leaders in safety mode behave like spectators
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ||	(cg.snap->ps.pm_type == PM_SPECTATOR && cg.snap->ps.stats[STAT_HEALTH] > 0)	) {
 		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
 	}
+
 #if MAPLENSFLARES	// JUHOX: set player tracemask for lens flare editor
 	if (cgs.editMode == EM_mlf) {
 		cg_pmove.tracemask = 0;
@@ -610,11 +599,8 @@ void CG_PredictPlayerState( void ) {
 		cg_pmove.scale = 1;
 #endif
 
-#if 1	// JUHOX: set target
-		if (
-			cg.predictedPlayerState.stats[STAT_TARGET] >= 0 &&
-			cg.predictedPlayerState.stats[STAT_TARGET] < ENTITYNUM_MAX_NORMAL
-		) {
+        // JUHOX: set target
+		if ( cg.predictedPlayerState.stats[STAT_TARGET] >= 0 &&	cg.predictedPlayerState.stats[STAT_TARGET] < ENTITYNUM_MAX_NORMAL ) {
 			const centity_t* target;
 			float pos;
 
@@ -634,7 +620,7 @@ void CG_PredictPlayerState( void ) {
 			}
 			cg_pmove.target[2] += BG_PlayerTargetOffset(&target->currentState, pos);
 		}
-#endif
+
 
 #if MAPLENSFLARES	// JUHOX: lens flare editor movement
 		if (
@@ -843,9 +829,6 @@ void CG_PredictPlayerState( void ) {
 		}
 	}
 
-#if 1	// JUHOX: make some results of the Pmove persistant
+    // JUHOX: make some results of the Pmove persistant
 	predictionSource->generic1 = cg.predictedPlayerState.generic1;
-#endif
 }
-
-

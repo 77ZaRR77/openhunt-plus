@@ -118,5 +118,3 @@
 #define TIME							6
 #define NAME							6
 #define MORE							6
-
-

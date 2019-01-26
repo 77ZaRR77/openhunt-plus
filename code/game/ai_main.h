@@ -101,7 +101,6 @@ typedef struct bot_activategoal_s
 } bot_activategoal_t;
 
 // JUHOX: definitions for view history
-#if 1
 #define VIEWHISTORY_SIZE 128
 typedef struct viewhistory_s
 {
@@ -117,11 +116,10 @@ typedef struct viewhistory_s
 		vec3_t viewdistortion;
 	} entryTab[VIEWHISTORY_SIZE];
 } viewhistory_t;
-#endif
 
 #define MAX_SUBTEAM_SIZE 32	// JUHOX
 
-#if 1	// JUHOX: definitions for NBG history
+// JUHOX: definitions for NBG history
 #define NBGHISTORY_SIZE 64
 typedef struct nbghistory_s
 {
@@ -132,9 +130,8 @@ typedef struct nbghistory_s
 		int entitynum;
 	} entryTab[NBGHISTORY_SIZE];
 } nbghistory_t;
-#endif
 
-#if	1	// JUHOX: definitions for LTG item reachability memory
+// JUHOX: definitions for LTG item reachability memory
 #define LTG_ITEM_MEMORY_SIZE 64
 typedef struct
 {
@@ -144,7 +141,6 @@ typedef struct
 		float unreachable_time;
 	} entryTab[LTG_ITEM_MEMORY_SIZE];
 } ltgitemmemory_t;
-#endif
 
 //bot state
 typedef struct bot_state_s
@@ -157,7 +153,7 @@ typedef struct bot_state_s
 	int last_eFlags;								//last ps flags
 	usercmd_t lastucmd;								//usercmd from last frame
 	int entityeventTime[1024];						//last entity event time
-	//
+
 	bot_settings_t settings;						//several bot settings
 	int (*ainode)(struct bot_state_s *bs);			//current AI node
 	float thinktime;								//time the bot thinks this frame
@@ -266,11 +262,11 @@ typedef struct bot_state_s
 	float lineOfFireNotBlocked_time;				// JUHOX
 	vec3_t enemyvelocity;							//enemy velocity 0.5 secs ago during battle
 	vec3_t enemyorigin;								//enemy origin 0.5 secs ago during battle
-	//
+
 	int kamikazebody;								//kamikaze body
 	int proxmines[MAX_PROXMINES];
 	int numproxmines;
-	//
+
 	int character;									//the bot character
 	int ms;											//move state of the bot
 	float railgunJump_ordertime;					// JUHOX
@@ -282,7 +278,7 @@ typedef struct bot_state_s
 	int gs;											//goal state of the bot
 	int cs;											//chat state of the bot
 	int ws;											//weapon state of the bot
-	//
+
 	int enemy;										//enemy entity number
 	int lastenemyareanum;							//last reachability area the enemy was in
 	vec3_t lastenemyorigin;							//last origin of the enemy in the reachability area
@@ -309,7 +305,7 @@ typedef struct bot_state_s
 	vec3_t dynamicRoamGoal;							// JUHOX: only used if solely looking for dynamic roam goals
 	float roamgoal_time;							// JUHOX: next time the roaming view goal is to be determined
 	int roamgoalcnt;								// JUHOX: do not roam view if this is zero
-	//
+
 	int ltgtype;									//long term goal type
 	float singlebot_ltg_check_time;					// JUHOX
 	float teamleader_ltg_check_time;				// JUHOX
@@ -343,18 +339,14 @@ typedef struct bot_state_s
 	float leadvisible_time;							//last time the team mate was visible
 	float leadmessage_time;							//last time a messaged was sent to the team mate
 	float leadbackup_time;							//time backing up towards team mate
-	//
+
 	float noTeamLeaderGoal_time;					// JUHOX
 	qboolean teamleadernotreachable;				// JUHOX
 	float teamleaderreachable_time;					// JUHOX: last time the team leader was reachable
-#if 0	// JUHOX: new team leader determination mechanism
-	char teamleader[32];							//netname of the team leader
-	float askteamleader_time;						//time asked for team leader
-	float becometeamleader_time;					//time the bot will become the team leader
-#else
+
 	int leader;										// client number or -1
 	float leaderCheckTime;							// next time the leader is to be checked
-#endif
+
 	float teamgiveorders_time;						//time to give team orders
 	float lastflagcapture_time;						//last time a flag was captured
 	int numteammates;								//number of team mates

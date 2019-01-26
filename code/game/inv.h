@@ -1,4 +1,3 @@
-
 #define INVENTORY_NONE				0
 //armor
 #define INVENTORY_ARMOR				1
@@ -99,7 +98,6 @@
 #define MODELINDEX_BLUEFLAG			35
 
 // mission pack only defines
-
 #define MODELINDEX_KAMIKAZE			36
 #define MODELINDEX_PORTAL			37
 #define MODELINDEX_INVULNERABILITY	38
@@ -121,8 +119,6 @@
 #define MODELINDEX_PROXLAUNCHER		50
 #define MODELINDEX_CHAINGUN			51
 
-
-//
 #define WEAPONINDEX_GAUNTLET			1
 #define WEAPONINDEX_MACHINEGUN			2
 #define WEAPONINDEX_SHOTGUN				3

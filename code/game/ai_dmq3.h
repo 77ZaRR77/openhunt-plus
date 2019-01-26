@@ -107,18 +107,12 @@ qboolean InFieldOfVision(vec3_t viewangles, float fov, vec3_t angles);
 int BotFindEnemy(bot_state_t *bs, int curenemy);
 //returns a roam goal
 // JUHOX: BotRoamGoal has now a return value
-#if 0
-void BotRoamGoal(bot_state_t *bs, vec3_t goal);
-#else
 qboolean BotRoamGoal(bot_state_t *bs, vec3_t goal, qboolean dynamicOnly);
-#endif
+
 //returns entity visibility in the range [0, 1]
 // JUHOX: new parameter set for BotEntityVisible()
-#if 0
-float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int ent);
-#else
 float BotEntityVisible(playerState_t* ps, float fov, int ent);
-#endif
+
 //the bot will aim at the current enemy
 void BotAimAtEnemy(bot_state_t *bs);
 //check if the bot should attack

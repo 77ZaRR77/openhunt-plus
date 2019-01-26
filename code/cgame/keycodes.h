@@ -5,8 +5,6 @@
 
 //
 // these are the key numbers that should be passed to KeyEvent
-//
-
 // normal keys should be passed as lowercased ascii
 
 typedef enum {
