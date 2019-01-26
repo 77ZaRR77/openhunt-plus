@@ -718,7 +718,7 @@ static void CG_TSS_UpdateInterface(void) {
 
 		cg.tssTeamMateList[n] = &cg.tssTeamMateNames[n][0];
 		cg.tssTeamMatesClientNum[n] = i;
-		
+
 		Q_strncpyz(buf, cgs.clientinfo[i].name, sizeof(buf));
 		Q_CleanStr(buf);
 		Q_strncpyz(cg.tssTeamMateNames[n], buf, 16);
@@ -1083,7 +1083,7 @@ static qboolean CG_TSS_Parameter(
 
 				for (i = parmin; i <= parmax; i++) {
 					int size;
-	
+
 					size = strlen(CG_TSS_MapStr(i, parmin, translationTable1, translationTable2));
 					if (size > width) width = size;
 				}
@@ -1500,7 +1500,7 @@ void CG_TSS_SPrintTacticalMeasure(
 		"1-bas", "2-dro", "3-tak"
 	};
 	const char* sign;
-	
+
 	switch (magnitude) {
 	case TSSTM_no:
 		buf[0] = 0;
@@ -1714,7 +1714,7 @@ static void TSS_CheckModifications(void) {
 		index = TSS_PaletteSlotIndex(cg.tssSelectedStrategy);
 		if (index >= 0) {
 			int oldIndex;
-			
+
 			oldIndex = index;
 			index += selectedStrategyScrollOffset;
 			if (index < 0) index = 0;
@@ -2037,7 +2037,7 @@ void CG_TSS_DrawInterface(void) {
 			const char* groupCommand;
 
 			Com_sprintf(
-				buf, sizeof(buf), "\nYour navigation aid is %s.   ", 
+				buf, sizeof(buf), "\nYour navigation aid is %s.   ",
 				BG_TSS_GetPlayerInfo(&cg.snap->ps, TSSPI_navAid)? "active" : "inactive"
 			);
 			TSS_Print(buf);
@@ -2438,7 +2438,7 @@ void CG_TSS_DrawInterface(void) {
 			TSS_Print("\n");
 		}
 		TSS_Print("\n");
-		
+
 		TSS_Print("===== Edit ");
 		if (cg.tssSelectedStrategy) {
 			Com_sprintf(
@@ -2585,7 +2585,7 @@ void CG_TSS_DrawInterface(void) {
 				di = r = s = g = qfalse;
 				for (i = 0; i < MAX_GROUPS; i++) {
 					int group;
-	
+
 					group = directive->instr.groupOrganization[i];
 					parameterChangeNotifier = &groupOrganizationChanged;
 					parameterReversedHome = qtrue;
@@ -2682,7 +2682,7 @@ void CG_TSS_DrawInterface(void) {
 						parameterInUse = clause->inUse;
 						TSS_TacticalPredicatePar(&clause->predicate[j]);
 					}
-					
+
 					TSS_Print("\n");
 				}
 			}
@@ -3006,11 +3006,8 @@ CG_TSS_OpenInterface
 =================
 */
 void CG_TSS_OpenInterface(void) {
-	if (
-		cgs.gametype < GT_TEAM ||
-		cg.showScores ||
-		cg.predictedPlayerState.pm_type == PM_INTERMISSION
-	) return;
+
+	if ( cgs.gametype < GT_TEAM || cg.showScores ||	cg.predictedPlayerState.pm_type == PM_INTERMISSION ) return;
 
 	groupOrganizationChanged = qfalse;
 
@@ -3021,9 +3018,12 @@ void CG_TSS_OpenInterface(void) {
 	cg.tssCurrentValue = NULL;
 	cg.tssMouseX = TSS_MOUSE_FACTOR * (TSS_X + SMALLCHAR_WIDTH * (cg.tssCursorCol + 0.5));
 	cg.tssMouseY = TSS_MOUSE_FACTOR * (TSS_Y + SMALLCHAR_HEIGHT * (cg.tssCursorLine + 0.5));
+
 	CG_TSS_UpdateInterface();
+
 	trap_Key_SetCatcher(trap_Key_GetCatcher() | TSS_KEYCATCHER);
 	trap_SendConsoleCommand("tssiopen\n");
+
 	lastKey = -1;
 	altKey = 0;
 }
@@ -3034,11 +3034,15 @@ CG_TSS_CloseInterface
 =================
 */
 void CG_TSS_CloseInterface(void) {
+
 	TSS_ApplyChanges();
 	cg.tssInterfaceOn = qfalse;
+
 	trap_SendConsoleCommand("tssiclose\n");
+
 	lastKey = -1;
 	altKey = 0;
+
 	#if TSSINCVAR
 		TSS_SaveInterfaceIfNeeded();
 	#endif
@@ -3050,6 +3054,7 @@ CG_TSS_KeyEvent
 =================
 */
 void CG_TSS_KeyEvent(int key, qboolean down) {
+
 	int oldCol, oldLine;
 	int oldValue;
 	qboolean keyRepeated;
@@ -3061,6 +3066,7 @@ void CG_TSS_KeyEvent(int key, qboolean down) {
 	oldLine = cg.tssCursorLine;
 	oldValue = 0;
 	changesMade = qfalse;
+
 	if (cg.tssCurrentValue) oldValue = *cg.tssCurrentValue;
 
 	if (!down) {
@@ -3226,7 +3232,7 @@ void CG_TSS_KeyEvent(int key, qboolean down) {
 	IncreaseValue:
 		if (cg.tssCurrentValue) {
 			int step;
-			
+
 			step = trap_Key_IsDown(K_CTRL)? 5 : 1;
 			*cg.tssCurrentValue += step;
 			if (*cg.tssCurrentValue > cg.tssCurrentValueMax) {
@@ -3481,7 +3487,7 @@ static const char* TSS_ParseNumber(const char* buf, int* number) {
 	if ((*buf < '0' || *buf > '9') && *buf != '-') return NULL;
 
 	*number = atoi(buf);
-	
+
 	while (*buf == '-' || (*buf >= '0' && *buf <= '9')) {
 		buf++;
 	}
