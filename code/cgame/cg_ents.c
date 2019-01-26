@@ -1916,8 +1916,6 @@ void CG_AddPacketEntitiesForGlassLook(void) {
 	}
 
 #if ESCAPE_MODE
-	if (sortMovers) {
-		CG_DrawSortedMovers();
-	}
+	if (sortMovers) CG_DrawSortedMovers();
 #endif
 }

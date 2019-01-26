@@ -604,7 +604,7 @@ void CG_BFGsuperExpl(vec3_t origin) {
 #if 0
 /*
 ==================
-CG_LaunchGib
+CG_LaunchExplode
 ==================
 */
 void CG_LaunchExplode( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
@@ -637,9 +637,7 @@ void CG_LaunchExplode( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 #define	EXP_JUMP		150
 /*
 ===================
-CG_GibPlayer
-
-Generated a bunch of gibs launching out from the bodies location
+CG_BigExplode
 ===================
 */
 void CG_BigExplode( vec3_t playerOrigin ) {

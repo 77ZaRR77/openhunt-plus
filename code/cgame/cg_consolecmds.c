@@ -12,9 +12,7 @@ void CG_TargetCommand_f( void ) {
 	char	test[4];
 
 	targetNum = CG_CrosshairPlayer();
-	if (!targetNum ) {
-		return;
-	}
+	if ( !targetNum ) return;
 
 	trap_Argv( 1, test, 4 );
 	trap_SendConsoleCommand( va( "gc %i %i", targetNum, atoi( test ) ) );
@@ -54,9 +52,7 @@ Debugging command to print the current position
 =============
 */
 static void CG_Viewpos_f (void) {
-	CG_Printf ("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0],
-		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2],
-		(int)cg.refdefViewAngles[YAW]);
+	CG_Printf ("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0], (int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], (int)cg.refdefViewAngles[YAW]);
 }
 
 
@@ -205,9 +201,7 @@ static void CG_TellTarget_f( void ) {
 	char	message[128];
 
 	clientNum = CG_CrosshairPlayer();
-	if ( clientNum == -1 ) {
-		return;
-	}
+	if ( clientNum == -1 ) return;
 
 	trap_Args( message, 128 );
 	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
@@ -220,9 +214,7 @@ static void CG_TellAttacker_f( void ) {
 	char	message[128];
 
 	clientNum = CG_LastAttacker();
-	if ( clientNum == -1 ) {
-		return;
-	}
+	if ( clientNum == -1 ) return;
 
 	trap_Args( message, 128 );
 	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
@@ -235,9 +227,7 @@ static void CG_VoiceTellTarget_f( void ) {
 	char	message[128];
 
 	clientNum = CG_CrosshairPlayer();
-	if ( clientNum == -1 ) {
-		return;
-	}
+	if ( clientNum == -1 ) return;
 
 	trap_Args( message, 128 );
 	Com_sprintf( command, 128, "vtell %i %s", clientNum, message );
@@ -250,9 +240,7 @@ static void CG_VoiceTellAttacker_f( void ) {
 	char	message[128];
 
 	clientNum = CG_LastAttacker();
-	if ( clientNum == -1 ) {
-		return;
-	}
+	if ( clientNum == -1 ) return;
 
 	trap_Args( message, 128 );
 	Com_sprintf( command, 128, "vtell %i %s", clientNum, message );
@@ -284,9 +272,8 @@ static void CG_StartOrbit_f( void ) {
 	char var[MAX_TOKEN_CHARS];
 
 	trap_Cvar_VariableStringBuffer( "developer", var, sizeof( var ) );
-	if ( !atoi(var) ) {
-		return;
-	}
+	if ( !atoi(var) ) return;
+
 	if (cg_cameraOrbit.value != 0) {
 		trap_Cvar_Set ("cg_cameraOrbit", "0");
 		trap_Cvar_Set("cg_thirdPerson", "0");
@@ -392,16 +379,6 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("say");
 	trap_AddCommand ("say_team");
 	trap_AddCommand ("tell");
-	// JUHOX: no voice chat commands accepted
-#if 0
-	trap_AddCommand ("vsay");
-	trap_AddCommand ("vsay_team");
-	trap_AddCommand ("vtell");
-	trap_AddCommand ("vtaunt");
-	trap_AddCommand ("vosay");
-	trap_AddCommand ("vosay_team");
-	trap_AddCommand ("votell");
-#endif
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
 	trap_AddCommand ("notarget");
@@ -417,8 +394,8 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("teamvote");
 	trap_AddCommand ("stats");
 	trap_AddCommand ("teamtask");
-	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
+	trap_AddCommand ("loaddefered");
 	trap_AddCommand ("drophealth");	// JUHOX
 	trap_AddCommand ("droparmor");	// JUHOX
-	trap_AddCommand ("navaid");	// JUHOX
+	trap_AddCommand ("navaid"); 	// JUHOX
 }
