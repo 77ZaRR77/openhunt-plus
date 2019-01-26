@@ -7,13 +7,7 @@
 
 #include "g_local.h"
 
-
-// JUHOX: increased memory pool size
-#if 0
-#define POOLSIZE	(256 * 1024)
-#else
 #define POOLSIZE	(512 * 1024)
-#endif
 
 static char		memoryPool[POOLSIZE];
 static int		allocPoint;
@@ -26,7 +20,7 @@ void *G_Alloc( int size ) {
 	}
 
 	if ( allocPoint + size > POOLSIZE ) {
-	  G_Error( "G_Alloc: failed on allocation of %i bytes\n", size ); // bk010103 - was %u, but is signed
+	  G_Error( "G_Alloc: failed on allocation of %i bytes\n", size );
 		return NULL;
 	}
 
