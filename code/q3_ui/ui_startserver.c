@@ -16,10 +16,6 @@ START SERVER MENU *****
 #define GAMESERVER_BACK1		"menu/art/back_1"
 #define GAMESERVER_NEXT0		"menu/art/next_0"
 #define GAMESERVER_NEXT1		"menu/art/next_1"
-#if 0	// JUHOX: no frame for map selector
-#define GAMESERVER_FRAMEL		"menu/art/frame2_l"
-#define GAMESERVER_FRAMER		"menu/art/frame1_r"
-#endif
 #define GAMESERVER_SELECT		"menu/art/maps_select"
 #define GAMESERVER_SELECTED		"menu/art/maps_selected"
 #define GAMESERVER_FIGHT0		"menu/art/fight_0"
@@ -29,15 +25,9 @@ START SERVER MENU *****
 #define GAMESERVER_ARROWSL		"menu/art/gs_arrows_l"
 #define GAMESERVER_ARROWSR		"menu/art/gs_arrows_r"
 
-#if 0	// JUHOX: more maps per page
-#define MAX_MAPROWS		2
-#define MAX_MAPCOLS		2
-#define MAX_MAPSPERPAGE	4
-#else
 #define MAX_MAPROWS		2
 #define MAX_MAPCOLS		4
 #define MAX_MAPSPERPAGE 8
-#endif
 
 #define	MAX_SERVERSTEXT	8192
 
@@ -45,7 +35,7 @@ START SERVER MENU *****
 #define MAX_NAMELENGTH	16
 
 #define ID_GAMETYPE				10
-#define ID_PICTURES				11	// 12, 13, 14
+#define ID_PICTURES				11
 #define ID_PREVPAGE				15
 #define ID_NEXTPAGE				16
 #define ID_STARTSERVERBACK		17
@@ -55,18 +45,11 @@ typedef struct {
 	menuframework_s	menu;
 
 	menutext_s		banner;
-#if 0	// JUHOX: no frame for map selector
-	menubitmap_s	framel;
-	menubitmap_s	framer;
-#endif
 
-#if 0	// JUHOX: game type selection menu instead of spin control
-	menulist_s		gametype;
-#else
-	int				gametype;
+	int				gametype;     // JUHOX: game type selection menu instead of spin control
 	menutext_s		gametitle;
 	char			gamename[32];
-#endif
+
 	menubitmap_s	mappics[MAX_MAPSPERPAGE];
 	menubitmap_s	mapbuttons[MAX_MAPSPERPAGE];
 	menubitmap_s	arrows;
@@ -93,26 +76,6 @@ typedef struct {
 static startserver_t s_startserver;
 static int initialGameType;	// JUHOX
 
-#if 0	// JUHOX: game type selection menu instead of spin control
-static const char *gametype_items[] = {
-	"Free For All",
-	"Team Deathmatch",
-	"Tournament",
-	"Capture the Flag",
-#if MONSTER_MODE	// JUHOX: STU name
-	"Save the Universe",
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH name
-	"Escape from Hell",
-#endif
-	0
-};
-#endif
-
-#if 0	// JUHOX: game type selection menu instead of spin control
-static int gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF};
-static int gametype_remap2[] = {0, 2, 0, 1, 3};
-#else
 static const char* gametype_names[] = {
 	"Free For All",
 	"Tournament",
@@ -129,7 +92,6 @@ static const char* gametype_names[] = {
 #endif
 #endif
 };
-#endif
 
 // use ui_servers2.c definition
 //extern const char* punkbuster_items[];
@@ -338,15 +300,10 @@ static void StartServer_GametypeEvent( void* ptr, int event ) {
 
 	count = UI_GetNumArenas();
 	s_startserver.nummaps = 0;
-#if 0	// JUHOX: no game type spin control
-	matchbits = 1 << gametype_remap[s_startserver.gametype.curvalue];
-	if( gametype_remap[s_startserver.gametype.curvalue] == GT_FFA ) {
-		matchbits |= ( 1 << GT_SINGLE_PLAYER );
-	}
-#else
+
 	matchbits = 1 << s_startserver.gametype;
 	if(s_startserver.gametype == GT_FFA) matchbits |= (1 << GT_SINGLE_PLAYER);
-#endif
+
 	for( i = 0; i < count; i++ ) {
 		info = UI_GetArenaInfoByNumber( i );
 
@@ -397,11 +354,9 @@ static void StartServer_MenuEvent( void* ptr, int event ) {
 		ClearTemplate();	// JUHOX
 		Q_strncpyz(s_startserver.choosenmap, s_startserver.maplist[s_startserver.currentmap], sizeof(s_startserver.choosenmap));	// JUHOX
 		Q_strncpyz(s_startserver.choosenmapname, s_startserver.mapname.string, sizeof(s_startserver.choosenmapname));	// JUHOX
-#if 0	// JUHOX: no game type spin control
-		trap_Cvar_SetValue( "g_gameType", gametype_remap[s_startserver.gametype.curvalue] );
-#else
+
 		trap_Cvar_SetValue("g_gameType", s_startserver.gametype);
-#endif
+
 		UI_ServerOptionsMenu( s_startserver.multiplayer );
 		break;
 
@@ -509,35 +464,6 @@ static void StartServer_MenuInit( void ) {
 #endif
 
 
-#if 0	// JUHOX: no frame for map selector
-	s_startserver.framel.generic.type  = MTYPE_BITMAP;
-	s_startserver.framel.generic.name  = GAMESERVER_FRAMEL;
-	s_startserver.framel.generic.flags = QMF_INACTIVE;
-	s_startserver.framel.generic.x	   = 0;
-	s_startserver.framel.generic.y	   = 78;
-	s_startserver.framel.width  	   = 256;
-	s_startserver.framel.height  	   = 329;
-
-	s_startserver.framer.generic.type  = MTYPE_BITMAP;
-	s_startserver.framer.generic.name  = GAMESERVER_FRAMER;
-	s_startserver.framer.generic.flags = QMF_INACTIVE;
-	s_startserver.framer.generic.x	   = 376;
-	s_startserver.framer.generic.y	   = 76;
-	s_startserver.framer.width  	   = 256;
-	s_startserver.framer.height  	   = 334;
-#endif
-
-#if 0	// JUHOX: no game type spin control
-	s_startserver.gametype.generic.type		= MTYPE_SPINCONTROL;
-	s_startserver.gametype.generic.name		= "Game Type:";
-	s_startserver.gametype.generic.flags	= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_startserver.gametype.generic.callback	= StartServer_GametypeEvent;
-	s_startserver.gametype.generic.id		= ID_GAMETYPE;
-	s_startserver.gametype.generic.x		= 320 - 24;
-	s_startserver.gametype.generic.y		= 368;
-	s_startserver.gametype.itemnames		= gametype_items;
-#endif
-
 	for (i=0; i<MAX_MAPSPERPAGE; i++)
 	{
 #if 0	// JUHOX: adapt map selector position
@@ -640,14 +566,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.item_null.height			= 480;
 
 	Menu_AddItem( &s_startserver.menu, &s_startserver.banner );
-#if 0	// JUHOX: no frame for map selector
-	Menu_AddItem( &s_startserver.menu, &s_startserver.framel );
-	Menu_AddItem( &s_startserver.menu, &s_startserver.framer );
-#endif
 
-#if 0	// JUHOX: no game type spin control
-	Menu_AddItem( &s_startserver.menu, &s_startserver.gametype );
-#endif
 	for (i=0; i<MAX_MAPSPERPAGE; i++)
 	{
 		Menu_AddItem( &s_startserver.menu, &s_startserver.mappics[i] );
@@ -682,16 +601,6 @@ void StartServer_Cache( void )
 	trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );
 	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT0 );
 	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );
-#if 0	// JUHOX: no frame for map selector
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMEL );
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMER );
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECTED );
-	trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWS );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSL );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSR );
-#endif
 
 	precache = trap_Cvar_VariableValue("com_buildscript");
 #if 1	// JUHOX: precaching
@@ -834,7 +743,6 @@ typedef struct {
 	int					newBotIndex;
 	char				newBotName[16];
 
-	//menulist_s		punkbuster;
 } serveroptions_t;
 
 static serveroptions_t s_serveroptions;
@@ -1974,7 +1882,6 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 #else
 	s_serveroptions.gametype = (int)Com_Clamp( 0, GT_MAX_GAME_TYPE-1, trap_Cvar_VariableValue( "g_gameType" ) );
 #endif
-	//s_serveroptions.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_punkbuster" ) );
 
 	ServerOptions_Cache();
 

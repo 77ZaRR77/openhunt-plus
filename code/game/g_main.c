@@ -128,12 +128,9 @@ vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
 vmCvar_t	g_mapName;	// JUHOX
 
-#if 0	// JUHOX: need gameCvarTable[] global accessible
-// bk001129 - made static to avoid aliasing
-static cvarTable_t		gameCvarTable[] = {
-#else
+// JUHOX: need gameCvarTable[] global accessible (not static)
 cvarTable_t		gameCvarTable[] = {
-#endif
+
 	// don't override the cheat state set by the system
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
 
