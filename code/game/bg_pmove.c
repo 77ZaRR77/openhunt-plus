@@ -36,9 +36,8 @@ PM_AddEvent
 ===============
 */
 void PM_AddEvent( int newEvent ) {
-#if 1	// JUHOX BUGFIX: don't add zero event
-	if (!newEvent) return;
-#endif
+
+	if (!newEvent) return; // JUHOX BUGFIX: don't add zero event
 	BG_AddPredictableEventToPlayerstate( newEvent, 0, pm->ps );
 }
 
@@ -50,28 +49,17 @@ PM_AddTouchEnt
 void PM_AddTouchEnt( int entityNum ) {
 	int		i;
 
-	if ( entityNum == ENTITYNUM_WORLD ) {
-		return;
-	}
-	if ( pm->numtouch == MAXTOUCH ) {
-		return;
-	}
+	if ( entityNum == ENTITYNUM_WORLD ) return;
+	if ( pm->numtouch == MAXTOUCH ) return;
 
 	// see if it is already added
 	for ( i = 0 ; i < pm->numtouch ; i++ ) {
-		if ( pm->touchents[ i ] == entityNum ) {
-			return;
-		}
+		if ( pm->touchents[ i ] == entityNum ) return;
 	}
 
 	// add it
 	pm->touchents[pm->numtouch] = entityNum;
 	pm->numtouch++;
-#if 0	// -JUHOX: if an invisible player touches another player, mark him
-	if (entityNum < MAX_CLIENTS && pm->ps->powerups[PW_INVIS]) {
-		pm->ps->powerups[PW_BATTLESUIT] = pm->ps->commandTime + 500;
-	}
-#endif
 }
 
 /*
@@ -80,46 +68,38 @@ PM_StartTorsoAnim
 ===================
 */
 static void PM_StartTorsoAnim( int anim ) {
-	if ( pm->ps->pm_type >= PM_DEAD ) {
-		return;
-	}
-	pm->ps->torsoAnim = ( ( pm->ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
-		| anim;
+
+	if ( pm->ps->pm_type >= PM_DEAD ) return;
+	pm->ps->torsoAnim = ( ( pm->ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 }
+
 static void PM_StartLegsAnim( int anim ) {
-	if ( pm->ps->pm_type >= PM_DEAD ) {
-		return;
-	}
-	if ( pm->ps->legsTimer > 0 ) {
-		return;		// a high priority animation is running
-	}
-	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
-		| anim;
+
+	if ( pm->ps->pm_type >= PM_DEAD ) return;
+	if ( pm->ps->legsTimer > 0 ) return;		// a high priority animation is running
+
+	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 }
 
 static void PM_ContinueLegsAnim( int anim ) {
-	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) {
-		return;
-	}
-	if ( pm->ps->legsTimer > 0 ) {
-		return;		// a high priority animation is running
-	}
-	PM_StartLegsAnim( anim );
+
+	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) return;
+	if ( pm->ps->legsTimer > 0 ) return;		// a high priority animation is running
+
+	PM_StartLegsAnim ( anim );
 }
 
 static void PM_ContinueTorsoAnim( int anim ) {
-	if ( ( pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim ) {
-		return;
-	}
-	if ( pm->ps->torsoTimer > 0 ) {
-		return;		// a high priority animation is running
-	}
-	PM_StartTorsoAnim( anim );
+
+	if ( ( pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim ) return;
+	if ( pm->ps->torsoTimer > 0 ) return;		// a high priority animation is running
+
+	PM_StartTorsoAnim ( anim );
 }
 
 static void PM_ForceLegsAnim( int anim ) {
 	pm->ps->legsTimer = 0;
-	PM_StartLegsAnim( anim );
+	PM_StartLegsAnim ( anim );
 }
 
 
@@ -166,9 +146,7 @@ static void PM_Friction( void ) {
 	vel = pm->ps->velocity;
 
 	VectorCopy( vel, vec );
-	if ( pml.walking ) {
-		vec[2] = 0;	// ignore slope movement
-	}
+	if ( pml.walking ) vec[2] = 0;	// ignore slope movement
 
 	speed = VectorLength(vec);
 	if (speed < 1) {
@@ -206,9 +184,7 @@ static void PM_Friction( void ) {
 		drop += speed*pm_spectatorfriction*pml.frametime;
 	}
 
-#if	1	// JUHOX: scale friction by player size to simulate inertia
-	drop /= pm->scale;
-#endif
+	drop /= pm->scale; // JUHOX: scale friction by player size to simulate inertia
 
 	// scale the velocity
 	newspeed = speed - drop;
@@ -237,13 +213,13 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 		wishspeed *= 0.55 + 0.45 * pm->ps->stats[STAT_STRENGTH] / LOW_STRENGTH_VALUE;
 	}
 #endif
+
 	// JUHOX: spectators have infinite acceleration
-#if 1
 	if (pm->ps->pm_type == PM_SPECTATOR) {
 		VectorScale(wishdir, wishspeed, pm->ps->velocity);
 		return;
 	}
-#endif
+
 	{	// JUHOX: so variable declaration works
 
 #if 1
@@ -312,12 +288,10 @@ static float PM_CmdScale( usercmd_t *cmd ) {
 	if ( abs( cmd->upmove ) > max ) {
 		max = abs( cmd->upmove );
 	}
-	if ( !max ) {
-		return 0;
-	}
+	if ( !max ) return 0;
 
-	total = sqrt( cmd->forwardmove * cmd->forwardmove
-		+ cmd->rightmove * cmd->rightmove + cmd->upmove * cmd->upmove );
+
+	total = sqrt( cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove + cmd->upmove * cmd->upmove );
 	scale = (float)pm->ps->speed * max / ( 127.0 * total );
 
 	return scale;
@@ -370,14 +344,11 @@ PM_CheckJump
 =============
 */
 static qboolean PM_CheckJump( void ) {
-	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-		return qfalse;		// don't allow jump until all buttons are up
-	}
 
-	if ( pm->cmd.upmove < 10 ) {
-		// not holding jump
-		return qfalse;
-	}
+	if ( pm->ps->pm_flags & PMF_RESPAWNED ) return qfalse;		// don't allow jump until all buttons are up
+
+	if ( pm->cmd.upmove < 10 ) return qfalse;	// not holding jump
+
 
 	// must wait for jump to be released
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD ) {
@@ -434,14 +405,10 @@ static qboolean	PM_CheckWaterJump( void ) {
 	int		cont;
 	vec3_t	flatforward;
 
-	if (pm->ps->pm_time) {
-		return qfalse;
-	}
+	if (pm->ps->pm_time) return qfalse;
 
 	// check for water jump
-	if ( pm->waterlevel != 2 ) {
-		return qfalse;
-	}
+	if ( pm->waterlevel != 2 ) 	return qfalse;
 
 	flatforward[0] = pml.forward[0];
 	flatforward[1] = pml.forward[1];
@@ -451,19 +418,12 @@ static qboolean	PM_CheckWaterJump( void ) {
 	VectorMA (pm->ps->origin, 30, flatforward, spot);
 	spot[2] += 4;
 	cont = pm->pointcontents (spot, pm->ps->clientNum );
-	if ( !(cont & CONTENTS_SOLID) ) {
-		return qfalse;
-	}
+	if ( !(cont & CONTENTS_SOLID) ) return qfalse;
 
 	spot[2] += 16;
 	cont = pm->pointcontents (spot, pm->ps->clientNum );
-#if 0	// JUHOX BUGFIX
-	if ( cont ) {
-#else
-	if (cont & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY)) {
-#endif
-		return qfalse;
-	}
+
+	if (cont & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY)) return qfalse;
 
 	// jump out of water
 	VectorScale (pml.forward, 200, pm->ps->velocity);
@@ -865,14 +825,12 @@ static void PM_WalkMove( void ) {
 
 	PM_Accelerate (wishdir, wishspeed, accelerate);
 
-	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
-	//Com_Printf("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
-
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) {
 		pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
 	} else {
-		// don't reset the z velocity for slopes
-//		pm->ps->velocity[2] = 0;
+#if 0
+		pm->ps->velocity[2] = 0; 		// don't reset the z velocity for slopes
+#endif
 	}
 
 	vel = VectorLength(pm->ps->velocity);
@@ -886,13 +844,9 @@ static void PM_WalkMove( void ) {
 	VectorScale(pm->ps->velocity, vel, pm->ps->velocity);
 
 	// don't do anything if standing still
-	if (!pm->ps->velocity[0] && !pm->ps->velocity[1]) {
-		return;
-	}
+	if (!pm->ps->velocity[0] && !pm->ps->velocity[1]) return;
 
 	PM_StepSlideMove( qfalse );
-
-	//Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
 
 }
 
@@ -905,9 +859,7 @@ PM_DeadMove
 static void PM_DeadMove( void ) {
 	float	forward;
 
-	if ( !pml.walking ) {
-		return;
-	}
+	if ( !pml.walking ) return;
 
 	// extra friction
 
@@ -994,22 +946,15 @@ Returns an event number apropriate for the groundsurface
 static int PM_FootstepForSurface( void ) {
 	// JUHOX BUGFIX: never generate footsteps if walking
 #if 1
-	if (
-		(
-			(pm->cmd.buttons & (BUTTON_WALKING)) ||
-			(pm->cmd.upmove < 0)
-		)
+	if ( ( (pm->cmd.buttons & (BUTTON_WALKING)) || (pm->cmd.upmove < 0)	)
 #if MONSTER_MODE
 		&& pm->scale < 1.5
 #endif
 	) return 0;
 #endif
-	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS ) {
-		return 0;
-	}
-	if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS ) {
-		return EV_FOOTSTEP_METAL;
-	}
+	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS ) return 0;
+	if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS ) return EV_FOOTSTEP_METAL;
+    // SLK : add flesh sounds, or more?
 	return EV_FOOTSTEP;
 }
 
@@ -1055,35 +1000,24 @@ static void PM_CrashLand( void ) {
 	c = -dist;
 
 	den =  b * b - 4 * a * c;
-	if ( den < 0 ) {
-		return;
-	}
+	if ( den < 0 ) return;
 	t = (-b - sqrt( den ) ) / ( 2 * a );
 
 	delta = vel + t * acc;
 	delta = delta*delta * 0.0001;
 
 	// ducking while falling doubles damage
-	if ( pm->ps->pm_flags & PMF_DUCKED ) {
-		delta *= 2;
-	}
+	if ( pm->ps->pm_flags & PMF_DUCKED ) delta *= 2;
 
 	// never take falling damage if completely underwater
-	if ( pm->waterlevel == 3 ) {
-		return;
-	}
+	if ( pm->waterlevel == 3 ) return;
 
 	// reduce falling damage if there is standing water
-	if ( pm->waterlevel == 2 ) {
-		delta *= 0.25;
-	}
-	if ( pm->waterlevel == 1 ) {
-		delta *= 0.5;
-	}
+	if ( pm->waterlevel == 2 ) delta *= 0.25;
 
-	if ( delta < 1 ) {
-		return;
-	}
+	if ( pm->waterlevel == 1 ) delta *= 0.5;
+
+	if ( delta < 1 ) return;
 
 	// create a local entity event to play the sound
 
@@ -1113,7 +1047,7 @@ static void PM_CrashLand( void ) {
 PM_CheckStuck
 =============
 */
-/*
+#if 0
 void PM_CheckStuck(void) {
 	trace_t trace;
 
@@ -1122,7 +1056,7 @@ void PM_CheckStuck(void) {
 		//int shit = qtrue;
 	}
 }
-*/
+#endif
 
 /*
 =============
@@ -1133,9 +1067,7 @@ static int PM_CorrectAllSolid( trace_t *trace ) {
 	int			i, j, k;
 	vec3_t		point;
 
-	if ( pm->debugLevel ) {
-		Com_Printf("%i:allsolid\n", c_pmove);
-	}
+	if ( pm->debugLevel ) Com_Printf("%i:allsolid\n", c_pmove);
 
 	// jitter around
 	for (i = -1; i <= 1; i++) {
@@ -1317,10 +1249,12 @@ static void PM_GroundTrace( void ) {
 
 	pm->ps->groundEntityNum = trace.entityNum;
 
-	// don't reset the z velocity for slopes
-//	pm->ps->velocity[2] = 0;
+#if 0
+    pm->ps->velocity[2] = 0; // don't reset the z velocity for slopes
+#endif
 
 	PM_AddTouchEnt( trace.entityNum );
+
 }
 
 
@@ -1335,7 +1269,6 @@ static void PM_SetWaterLevel( void ) {
 	int			sample1;
 	int			sample2;
 
-	//
 	// get waterlevel, accounting for ducking
 	//
 	pm->waterlevel = 0;
@@ -1378,9 +1311,8 @@ static void PM_SetWaterLevel( void ) {
 			point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + sample2;
 #endif
 			cont = pm->pointcontents (point, pm->ps->clientNum );
-			if ( cont & MASK_WATER ){
-				pm->waterlevel = 3;
-			}
+			if ( cont & MASK_WATER ) pm->waterlevel = 3;
+
 		}
 	}
 
@@ -1507,8 +1439,7 @@ static void PM_Footsteps( void ) {
 	// calculate speed and cycle to be used for
 	// all cyclic walking effects
 	//
-	pm->xyspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
-		+  pm->ps->velocity[1] * pm->ps->velocity[1] );
+	pm->xyspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0] +  pm->ps->velocity[1] * pm->ps->velocity[1] );
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
 
@@ -1688,30 +1619,26 @@ static void PM_WaterEvents( void ) {		// FIXME?
 	//
 	// if just entered a water volume, play a sound
 	//
-	if (!pml.previous_waterlevel && pm->waterlevel) {
-		PM_AddEvent( EV_WATER_TOUCH );
-	}
+	if (!pml.previous_waterlevel && pm->waterlevel) PM_AddEvent( EV_WATER_TOUCH );
+
 
 	//
 	// if just completely exited a water volume, play a sound
 	//
-	if (pml.previous_waterlevel && !pm->waterlevel) {
-		PM_AddEvent( EV_WATER_LEAVE );
-	}
+	if (pml.previous_waterlevel && !pm->waterlevel) PM_AddEvent( EV_WATER_LEAVE );
+
 
 	//
 	// check for head just going under water
 	//
-	if (pml.previous_waterlevel != 3 && pm->waterlevel == 3) {
-		PM_AddEvent( EV_WATER_UNDER );
-	}
+	if (pml.previous_waterlevel != 3 && pm->waterlevel == 3) PM_AddEvent( EV_WATER_UNDER );
+
 
 	//
 	// check for head just coming out of water
 	//
-	if (pml.previous_waterlevel == 3 && pm->waterlevel != 3) {
-		PM_AddEvent( EV_WATER_CLEAR );
-	}
+	if (pml.previous_waterlevel == 3 && pm->waterlevel != 3) PM_AddEvent( EV_WATER_CLEAR );
+
 }
 
 
@@ -1721,17 +1648,10 @@ PM_BeginWeaponChange
 ===============
 */
 static void PM_BeginWeaponChange( int weapon ) {
-	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS ) {
-		return;
-	}
 
-	if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
-		return;
-	}
-
-	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
-		return;
-	}
+	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS ) return;
+	if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) return;
+	if ( pm->ps->weaponstate == WEAPON_DROPPING ) return;
 
 	PM_AddEvent( EV_CHANGE_WEAPON );
 	pm->ps->weaponstate = WEAPON_DROPPING;
@@ -1858,7 +1778,7 @@ static void PM_WeaponShake(playerState_t* ps) {
 		{0, 300, 200, 0, 50, 200},	// WP_BFG
 		{0, 0, 0, 0, 0, 0},				// WP_GRAPPLING_HOOK
 #if MONSTER_MODE
-		{0, 100, 100, 0, 0, 0},		// WP_MONSTER_LAUNCHER
+		{0, 100, 100, 0, 0, 0},		// WP_MONSTER_LAUNCHER //SLK: might use this one as PORTAL GUN for self teleportation?
 #endif
 	};
 	float viewSpread;
@@ -1927,14 +1847,10 @@ static void PM_Weapon( void ) {
 	int		addTime;
 
 	// don't allow attack until all buttons are up
-	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-		return;
-	}
+	if ( pm->ps->pm_flags & PMF_RESPAWNED ) return;
 
 	// ignore if spectator
-	if ( pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		return;
-	}
+	if ( pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) return;
 
 	// check for dead player
 	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
@@ -2165,7 +2081,7 @@ static void PM_Weapon( void ) {
 		addTime = 1500;
 		break;
 	case WP_BFG:
-		addTime = 4000;	// JUHOX: 200
+		addTime = 4000;	// JUHOX: 200 // SLK@ZaRR heres your BFG reload if want to change
 		break;
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;
@@ -2249,18 +2165,11 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 	short		temp;
 	int		i;
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION) {
-		return;		// no view changes at all
-	}
+	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION) return;		// no view changes at all
+	if ( ps->pm_type != PM_SPECTATOR && ps->stats[STAT_HEALTH] <= 0 ) return;		// no view changes at all
 
-	if ( ps->pm_type != PM_SPECTATOR && ps->stats[STAT_HEALTH] <= 0 ) {
-		return;		// no view changes at all
-	}
-
-#if MEETING	// JUHOX: no view changes during meeting
-	if (ps->pm_type == PM_MEETING) {
-		return;
-	}
+#if MEETING
+	if (ps->pm_type == PM_MEETING) return;      // JUHOX: no view changes during meeting
 #endif
 
 #if 1	// JUHOX: gauntlet lock target mechanism
@@ -2693,9 +2602,7 @@ void Pmove (pmove_t *pmove) {
 
 	finalTime = pmove->cmd.serverTime;
 
-	if ( finalTime < pmove->ps->commandTime ) {
-		return;	// should not happen
-	}
+	if ( finalTime < pmove->ps->commandTime ) return;	// should not happen
 
 	if ( finalTime > pmove->ps->commandTime + 1000 ) {
 		pmove->ps->commandTime = finalTime - 1000;
