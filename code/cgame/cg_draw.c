@@ -26,14 +26,10 @@ static void CG_DrawField (int x, int y, int width, int value) {
 	int		l;
 	int		frame;
 
-	if ( width < 1 ) {
-		return;
-	}
+	if ( width < 1 ) return;
 
 	// draw number string
-	if ( width > 5 ) {
-		width = 5;
-	}
+	if ( width > 5 ) width = 5;
 
 	switch ( width ) {
 	case 1:
@@ -80,14 +76,11 @@ static void CG_DrawField (int x, int y, int width, int value) {
 ================
 CG_Draw3DModel
 
+JUHOX: new parameter 'shader' for CG_Draw3DModel()
 ================
 */
-// JUHOX: new parameter 'shader' for CG_Draw3DModel()
-#if 0
-void CG_Draw3DModel( float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles ) {
-#else
 void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, qhandle_t skin, vec3_t origin, vec3_t angles, qhandle_t shader) {
-#endif
+
 	refdef_t		refdef;
 	refEntity_t		ent;
 
@@ -104,10 +97,8 @@ void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, qhandle
 	VectorCopy( origin, ent.origin );
 	ent.hModel = model;
 	ent.customSkin = skin;
-	// JUHOX: set shader
-#if 1
-	ent.customShader = shader;
-#endif
+
+	ent.customShader = shader;      // JUHOX: set shader
 	ent.renderfx = RF_NOSHADOW;		// no stencil shadows
 
 	refdef.rdflags = RDF_NOWORLDMODEL;
@@ -147,9 +138,7 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 
 	if ( cg_draw3dIcons.integer ) {
 		cm = ci->headModel;
-		if ( !cm ) {
-			return;
-		}
+		if ( !cm ) return;
 
 		// offset the origin y and z to center the head
 		trap_R_ModelBounds( cm, mins, maxs );
@@ -165,11 +154,8 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 		// allow per-model tweaking
 		VectorAdd( origin, ci->headOffset, origin );
 
-#if 0	// JUHOX: new parameter for CG_Draw3DModel()
-		CG_Draw3DModel( x, y, w, h, ci->headModel, ci->headSkin, origin, headAngles );
-#else
 		CG_Draw3DModel(x, y, w, h, ci->headModel, ci->headSkin, origin, headAngles, 0);
-#endif
+
 	} else if ( cg_drawIcons.integer ) {
 		CG_DrawPic( x, y, w, h, ci->modelIcon );
 	}
@@ -222,11 +208,9 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 		} else {
 			return;
 		}
-#if 0	// JUHOX: new parameter for CG_Draw3DModel()
-		CG_Draw3DModel( x, y, w, h, handle, 0, origin, angles );
-#else
+
 		CG_Draw3DModel(x, y, w, h, handle, 0, origin, angles, 0);
-#endif
+
 	} else if ( cg_drawIcons.integer ) {
 		gitem_t *item;
 
@@ -298,8 +282,7 @@ static void CG_DrawStatusBarHead( float x ) {
 	angles[YAW] = cg.headStartYaw + ( cg.headEndYaw - cg.headStartYaw ) * frac;
 	angles[PITCH] = cg.headStartPitch + ( cg.headEndPitch - cg.headStartPitch ) * frac;
 
-	CG_DrawHead( x, 480 - size, size, size,
-				cg.snap->ps.clientNum, angles );
+	CG_DrawHead( x, 480 - size, size, size,	cg.snap->ps.clientNum, angles );
 }
 
 
@@ -348,7 +331,6 @@ JUHOX: CG_SetValueColor
 */
 static void CG_SetValueColor(int value, int stdValue, qboolean flash) {
 	static float colors[4][4] = {
-//		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
 		{ 1, 0.69, 0, 1.0 } ,		// normal
 		{ 1.0, 0.2, 0.2, 1.0 },		// low health
 		{0.5, 0.5, 0.5, 1},			// weapon firing
@@ -451,15 +433,12 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
 	static float colors[4][4] = {
-//		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
-		{ 1.0f, 0.69f, 0.0f, 1.0f } ,		// normal
+		{ 1.0f, 0.69f, 0.0f, 1.0f } ,	// normal
 		{ 1.0f, 0.2f, 0.2f, 1.0f },		// low health
-		{0.5f, 0.5f, 0.5f, 1.0f},			// weapon firing
-		{ 1.0f, 1.0f, 1.0f, 1.0f } };			// health > 100
+		{0.5f, 0.5f, 0.5f, 1.0f},		// weapon firing
+		{ 1.0f, 1.0f, 1.0f, 1.0f } };	// health > 100
 
-	if ( cg_drawStatus.integer == 0 ) {
-		return;
-	}
+	if ( cg_drawStatus.integer == 0 ) return;
 
 	// draw the team background
 	CG_DrawTeamBackground( 0, 420, 640, 60, 0.33f, cg.snap->ps.persistant[PERS_TEAM] );
@@ -477,10 +456,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = 0;
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
-#if 0	// JUHOX: new parameter for CG_Draw3DModel()
-		CG_Draw3DModel( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
-#else
+
 #if MONSTER_MODE
 		if (cent->currentState.weapon == WP_MONSTER_LAUNCHER) {
 			CG_Draw3DModel(
@@ -497,7 +473,6 @@ static void CG_DrawStatusBar( void ) {
 				cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, 0
 			);
 		}
-#endif
 	}
 
 	CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
@@ -517,13 +492,8 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = -10;
 		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-#if 0	// JUHOX: armor may be >999; new parameter for CG_Draw3DModel()
-		CG_Draw3DModel( 370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-					   cgs.media.armorModel, 0, origin, angles );
-#else
-		CG_Draw3DModel( 370 + CHAR_WIDTH*4 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-					   cgs.media.armorModel, 0, origin, angles, 0);
-#endif
+
+		CG_Draw3DModel( 370 + CHAR_WIDTH*4 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorModel, 0, origin, angles, 0);
 	}
 	//
 	// ammo
@@ -566,27 +536,10 @@ static void CG_DrawStatusBar( void ) {
 	// health
 	//
 	value = ps->stats[STAT_HEALTH];
-#if 0	// JUHOX: consider handicap
-	if ( value > 100 ) {
-		trap_R_SetColor( colors[3] );		// white
-	} else if (value > 25) {
-		trap_R_SetColor( colors[0] );	// green
-	} else if (value > 0) {
-		color = (cg.time >> 8) & 1;	// flash
-		trap_R_SetColor( colors[color] );
-	} else {
-		trap_R_SetColor( colors[1] );	// red
-	}
-#else
 	CG_SetValueColor(value, ps->stats[STAT_MAX_HEALTH], qtrue/*flash if low*/);
-#endif
 
 	// stretch the health up when taking damage
-#if 0	// JUHOX: health may be >999
-	CG_DrawField ( 185, 432, 3, value);
-#else
 	CG_DrawField(185-CHAR_WIDTH, 432, 4, value);
-#endif
 	CG_ColorForHealth( hcolor );
 	trap_R_SetColor( hcolor );
 
@@ -596,26 +549,13 @@ static void CG_DrawStatusBar( void ) {
 	//
 	value = ps->stats[STAT_ARMOR];
 	if (value > 0 ) {
-#if 0	// JUHOX: consider handicap
-		trap_R_SetColor( colors[0] );
-#else
 		CG_SetValueColor(value, ps->stats[STAT_MAX_HEALTH], qfalse/*don't flash if low*/);
-#endif
-#if 0	// JUHOX: armor may be >999
-		CG_DrawField (370, 432, 3, value);
-#else
 		CG_DrawField(370, 432, 4, value);
-#endif
 		trap_R_SetColor( NULL );
-		// if we didn't draw a 3D icon, draw a 2D icon for armor
-		if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
-#if 0	// JUHOX: armor may be >999
-			CG_DrawPic( 370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon );
-#else
-			CG_DrawPic(370 + CHAR_WIDTH*4 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
-#endif
-		}
 
+		// if we didn't draw a 3D icon, draw a 2D icon for armor
+		if ( !cg_draw3dIcons.integer && cg_drawIcons.integer )
+			CG_DrawPic(370 + CHAR_WIDTH*4 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon);
 	}
 }
 
@@ -642,18 +582,11 @@ static float CG_DrawAttacker( float y ) {
 	const char	*name;
 	int			clientNum;
 
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		return y;
-	}
-
-	if ( !cg.attackerTime ) {
-		return y;
-	}
+	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) return y;
+	if ( !cg.attackerTime ) return y;
 
 	clientNum = cg.predictedPlayerState.persistant[PERS_ATTACKER];
-	if ( clientNum < 0 || clientNum >= MAX_CLIENTS || clientNum == cg.snap->ps.clientNum ) {
-		return y;
-	}
+	if ( clientNum < 0 || clientNum >= MAX_CLIENTS || clientNum == cg.snap->ps.clientNum ) return y;
 
 	t = cg.time - cg.attackerTime;
 	if ( t > ATTACKER_HEAD_TIME ) {
@@ -685,8 +618,7 @@ static float CG_DrawSnapshot( float y ) {
 	char		*s;
 	int			w;
 
-	s = va( "time:%i snap:%i cmd:%i", cg.snap->serverTime,
-		cg.latestSnapshotNum, cgs.serverCommandSequence );
+	s = va( "time:%i snap:%i cmd:%i", cg.snap->serverTime, cg.latestSnapshotNum, cgs.serverCommandSequence );
 	w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 
 	CG_DrawBigString( 635 - w, y + 2, s, 1.0F);
@@ -841,13 +773,8 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 	int ret_y, count;
 
 	if (cg.tssInterfaceOn) return y;	// JUHOX
-	if ( !cg_drawTeamOverlay.integer ) {
-		return y;
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] != TEAM_RED && cg.snap->ps.persistant[PERS_TEAM] != TEAM_BLUE ) {
-		return y; // Not on any team
-	}
+	if ( !cg_drawTeamOverlay.integer ) return y;
+	if ( cg.snap->ps.persistant[PERS_TEAM] != TEAM_RED && cg.snap->ps.persistant[PERS_TEAM] != TEAM_BLUE ) return y; // Not on any team
 
 	plyrs = 0;
 
@@ -864,11 +791,11 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 		}
 	}
 
-	if (!plyrs)
-		return y;
+	if (!plyrs) return y;
 
 	if (pwidth > TEAM_OVERLAY_MAXNAME_WIDTH)
 		pwidth = TEAM_OVERLAY_MAXNAME_WIDTH;
+
 	pwidth += 2;	// JUHOX: make room for the group mark
 
 	// max location name width
@@ -893,11 +820,9 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 	w = (pwidth + lwidth + 4 + 7) * TINYCHAR_WIDTH;
 
-#if 1	// JUHOX: make more room for health & armor if needed
-	if (cgs.baseHealth >= 500) {
+	// JUHOX: make more room for health & armor if needed
+	if (cgs.baseHealth >= 500)
 		w += 2 * TINYCHAR_WIDTH;
-	}
-#endif
 
 	if ( right )
 		x = 640 - w;
@@ -940,7 +865,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				ci->name, hcolor, qfalse, qfalse,
 				TINYCHAR_WIDTH, TINYCHAR_HEIGHT, TEAM_OVERLAY_MAXNAME_WIDTH);
 
-#if 1	// JUHOX: draw the group mark
+            // JUHOX: draw the group mark
 			if (ci->group >= 0 && ci->health > 0 && ci->location >= 0) {
 				char buf[4];
 				const vec4_t leaderColor = {1, 0.7, 0, 1};
@@ -966,7 +891,6 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				xx += (pwidth - 1) * TINYCHAR_WIDTH;
 				CG_DrawStringExt(xx, y, buf, color, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
 			}
-#endif
 
 #if 0	// JUHOX: don't draw location for dead players or spectating mission leaders
 			if (lwidth) {
@@ -989,37 +913,11 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				if (len > lwidth)
 					len = lwidth;
 
-//				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth +
-//					((lwidth/2 - len/2) * TINYCHAR_WIDTH);
 				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth;
-				CG_DrawStringExt( xx, y,
-					p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-					TEAM_OVERLAY_MAXLOCATION_WIDTH);
+				CG_DrawStringExt( xx, y, p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, TEAM_OVERLAY_MAXLOCATION_WIDTH);
 			}
 
-#if 0	// JUHOX: new health, armor, & weapon drawing in team overlay
-			CG_GetColorForHealth( ci->health, ci->armor, hcolor );
 
-			Com_sprintf (st, sizeof(st), "%3i %3i", ci->health,	ci->armor);
-
-			xx = x + TINYCHAR_WIDTH * 3 +
-				TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
-
-			CG_DrawStringExt( xx, y,
-				st, hcolor, qfalse, qfalse,
-				TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0 );
-
-			// draw weapon icon
-			xx += TINYCHAR_WIDTH * 3;
-
-			if ( cg_weapons[ci->curWeapon].weaponIcon ) {
-				CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-					cg_weapons[ci->curWeapon].weaponIcon );
-			} else {
-				CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-					cgs.media.deferShader );
-			}
-#else
 			if (ci->location >= 0) {
 				xx = x + TINYCHAR_WIDTH * 3 +
 					TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
@@ -1047,7 +945,6 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 						cgs.media.deferShader );
 				}
 			}
-#endif
 
 			// Draw powerup icons
 			if (right) {
@@ -1055,16 +952,16 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			} else {
 				xx = x + w - TINYCHAR_WIDTH;
 			}
-#if 1	// JUHOX: draw fight-in-progress icon
+	// JUHOX: draw fight-in-progress icon
 			if (ci->pfmi & PFMI_FIGHTING) {
 				if (cg.time % 1200 < 900) {
 					CG_DrawPic(xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, cgs.media.fightInProgressShader);
 				}
 				xx += right? -TINYCHAR_WIDTH : TINYCHAR_WIDTH;
 			}
-#endif
+
 			for (j = /*0*/1; j </*=*/ PW_NUM_POWERUPS; j++) {	// JUHOX
-#if 1	// JUHOX: don't draw the misused powerups
+	// JUHOX: don't draw the misused powerups
 				if (
 					j == PW_INVIS ||
 					j == PW_BATTLESUIT ||
@@ -1074,7 +971,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				) {
 					continue;
 				}
-#endif
+
 				if (ci->powerups & (1 << j)) {
 
 					item = BG_FindItemForPowerup( j );
@@ -1096,7 +993,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 	}
 
 	return ret_y;
-//#endif
+
 }
 
 
@@ -1107,9 +1004,9 @@ CG_DrawUpperRight
 =====================
 */
 static void CG_DrawUpperRight( void ) {
-	float	y;
+	float	y = 0;
 
-	y = 0;
+	//y = 0;
 
 #if MAPLENSFLARES	// JUHOX: draw lens flare editor title
 	if (cgs.editMode == EM_mlf) {
@@ -1146,11 +1043,11 @@ static void CG_DrawUpperRight( void ) {
 	if ( cg_drawTimer.integer ) {
 		y = CG_DrawTimer( y );
 	}
-#if 1	// JUHOX: draw weapon limit
+	// JUHOX: draw weapon limit
 	if (cgs.weaponLimit > 0) {
 		y = CG_DrawWeaponLimit(y);
 	}
-#endif
+
 	if ( cg_drawAttacker.integer ) {
 		y = CG_DrawAttacker( y );
 	}
@@ -3168,10 +3065,7 @@ CG_DrawTeamVote
 		sec = 0;
 	}
 	// JUHOX: show teamvote client as name
-#if 0
-	s = va("TEAMVOTE(%i):%s yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
-							cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
-#else
+
 	if (!Q_strncmp("leader", cgs.teamVoteString[cs_offset], 6)) {
 		s = va(
 			"TEAMVOTE(%i):mission leader %s - yes:%i no:%i",
@@ -3183,8 +3077,8 @@ CG_DrawTeamVote
 		s = va("TEAMVOTE(%i):%s - yes:%i no:%i", sec, cgs.teamVoteString[cs_offset],
 								cgs.teamVoteYes[cs_offset], cgs.teamVoteNo[cs_offset] );
 	}
-#endif
-#if	1	// JUHOX: teamvote string background
+
+	// JUHOX: teamvote string background
 	{
 		static const vec4_t backColor = {
 			0, 0, 0, 0.5
@@ -3192,7 +3086,7 @@ CG_DrawTeamVote
 
 		CG_FillRect(0, 90, CG_DrawStrlen(s) * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, backColor);
 	}
-#endif
+
 	CG_DrawSmallString( 0, 90, s, 1.0F );
 }
 
@@ -3215,10 +3109,10 @@ static void CG_DrawIntermission( void ) {
 
 	cg.scoreFadeTime = cg.time;
 	cg.scoreBoardShowing = CG_DrawScoreboard();
-#if 1	// JUHOX: draw vote string during intermission
+	// JUHOX: draw vote string during intermission
 	CG_DrawVote();
 	CG_DrawTeamVote();
-#endif
+
 }
 
 /*
@@ -3231,9 +3125,8 @@ static qboolean CG_DrawFollow( void ) {
 	vec4_t		color;
 	const char	*name;
 
-	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) {
-		return qfalse;
-	}
+	if ( !(cg.snap->ps.pm_flags & PMF_FOLLOW) ) return qfalse;
+
 	color[0] = 1;
 	color[1] = 1;
 	color[2] = 1;
@@ -3250,38 +3143,6 @@ static qboolean CG_DrawFollow( void ) {
 
 	return qtrue;
 }
-
-
-
-/*
-=================
-CG_DrawAmmoWarning
-=================
-*/
-static void CG_DrawAmmoWarning( void ) {
-	// JUHOX: don't draw the ammo warning
-#if 0
-	const char	*s;
-	int			w;
-
-	if ( cg_drawAmmoWarning.integer == 0 ) {
-		return;
-	}
-
-	if ( !cg.lowAmmoWarning ) {
-		return;
-	}
-
-	if ( cg.lowAmmoWarning == 2 ) {
-		s = "OUT OF AMMO";
-	} else {
-		s = "LOW AMMO WARNING";
-	}
-	w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
-	CG_DrawBigString(320 - w / 2, 64, s, 1.0F);
-#endif
-}
-
 
 /*
 =================
@@ -3627,7 +3488,6 @@ static void CG_Draw2D( void ) {
 		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
 
 			CG_DrawStatusBar();
-			CG_DrawAmmoWarning();
 			CG_DrawCrosshair();
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
@@ -3635,7 +3495,7 @@ static void CG_Draw2D( void ) {
 			CG_DrawReward();
 		}
 
-#if 1	// JUHOX: if dead, draw at least the strength bar
+        // JUHOX: if dead, draw at least the strength bar
 		if (cg.snap->ps.stats[STAT_HEALTH] <= 0) {
 			vec4_t color;
 			float x, y, w, h, s, t;
@@ -3656,7 +3516,6 @@ static void CG_Draw2D( void ) {
 			trap_R_SetColor(NULL);
 			CG_DrawStrengthBar(qfalse);
 		}
-#endif
 
 		if ( cgs.gametype >= GT_TEAM ) {
 			CG_DrawTeamInfo();
@@ -3679,11 +3538,10 @@ static void CG_Draw2D( void ) {
 	if ( !cg.scoreBoardShowing) {
 		CG_DrawCenterString();
 	}
-#if 1	// JUHOX: draw TSS interface
+	// JUHOX: draw TSS interface
 	if (cg.tssInterfaceOn) {
 		CG_TSS_DrawInterface();
 	}
-#endif
 }
 
 
@@ -3863,6 +3721,3 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	}
 #endif
 }
-
-
-

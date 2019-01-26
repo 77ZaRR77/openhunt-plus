@@ -225,7 +225,7 @@ void CG_RailTrail( clientInfo_t *ci, vec3_t start, vec3_t end ) {
 	re = &le->refEntity;
 
             le->leFlags = LEF_PUFF_DONT_SCALE;
-			le->leType = /*LE_MOVE_SCALE_FADE*/LE_TRAIL_PARTICLE;	// JUHOX
+			le->leType = LE_TRAIL_PARTICLE;	// JUHOX
 			le->radius = 1.1f;	// JUHOX
 	le->startTime = cg.time;
             le->endTime = cg.time + (i>>1) + 600;
@@ -447,14 +447,10 @@ static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 		return;
 	}
 
-#if 1	// JUHOX: no bubbles with lava/slime hack
-	if (
-		(contents & (CONTENTS_SLIME | CONTENTS_LAVA)) &&
-		(contents & CONTENTS_WATER)
-	) {
+	// JUHOX: no bubbles with lava/slime hack
+	if ( (contents & (CONTENTS_SLIME | CONTENTS_LAVA)) && (contents & CONTENTS_WATER) ) {
 		contents &= ~(CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA);
 	}
-#endif
 
 	BG_EvaluateTrajectory( &es->pos, ent->trailTime, lastPos );
 	lastContents = CG_PointContents( lastPos, -1 );
@@ -470,19 +466,10 @@ static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 
 	for ( ; t <= ent->trailTime ; t += step ) {
 		BG_EvaluateTrajectory( &es->pos, t, lastPos );
-
-		smoke = CG_SmokePuff( lastPos, up,
-					  wi->trailRadius,
-					  1, 1, 1, 0.33f,
-					  wi->wiTrailTime,
-					  t,
-					  0,
-					  0,
-					  cgs.media.smokePuffShader );
+		smoke = CG_SmokePuff( lastPos, up, wi->trailRadius, 1, 1, 1, 0.33f, wi->wiTrailTime, t, 0, 0, cgs.media.smokePuffShader );
 		// use the optimized local entity add
 		smoke->leType = LE_SCALE_FADE;
 	}
-
 }
 
 /*
@@ -491,107 +478,19 @@ CG_PlasmaTrail
 ==========================
 */
 static void CG_PlasmaTrail( centity_t *cent, const weaponInfo_t *wi ) {
-#if 0	// JUHOX: new plasma trail
-	localEntity_t	*le;
-	refEntity_t		*re;
-	entityState_t	*es;
-	vec3_t			velocity, xvelocity, origin;
-	vec3_t			offset, xoffset;
-	vec3_t			v[3];
-	int				t, startTime, step;
-
-	float	waterScale = 1.0f;
-#else
+	// JUHOX: new plasma trail
 	localEntity_t	*le;
 	refEntity_t		*re;
 	entityState_t	*es;
 	vec3_t			origin;
 	int				t, startTime, step;
-#endif
 
-	if ( cg_noProjectileTrail.integer || cg_oldPlasma.integer ) {
-		return;
-	}
+	if ( cg_noProjectileTrail.integer || cg_oldPlasma.integer ) return;
 
 #if SCREENSHOT_TOOLS
 	if (cg.stopTime) return;	// JUHOX
 #endif
 
-#if 0	// JUHOX: new plasma trail
-	step = 50;
-
-	es = &cent->currentState;
-	startTime = cent->trailTime;
-	t = step * ( (startTime + step) / step );
-
-	BG_EvaluateTrajectory( &es->pos, cg.time, origin );
-
-	le = CG_AllocLocalEntity();
-	re = &le->refEntity;
-
-	velocity[0] = 60 - 120 * crandom();
-	velocity[1] = 40 - 80 * crandom();
-	velocity[2] = 100 - 200 * crandom();
-
-	le->leType = LE_MOVE_SCALE_FADE;
-	le->leFlags = LEF_TUMBLE;
-	le->leBounceSoundType = LEBS_NONE;
-	le->leMarkType = LEMT_NONE;
-
-	le->startTime = cg.time;
-	le->endTime = le->startTime + 600;
-
-	le->pos.trType = TR_GRAVITY;
-	le->pos.trTime = cg.time;
-
-	AnglesToAxis( cent->lerpAngles, v );
-
-	offset[0] = 2;
-	offset[1] = 2;
-	offset[2] = 2;
-
-	xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
-	xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
-	xoffset[2] = offset[0] * v[0][2] + offset[1] * v[1][2] + offset[2] * v[2][2];
-
-	VectorAdd( origin, xoffset, re->origin );
-	VectorCopy( re->origin, le->pos.trBase );
-
-	if ( CG_PointContents( re->origin, -1 ) & CONTENTS_WATER ) {
-		waterScale = 0.10f;
-	}
-
-	xvelocity[0] = velocity[0] * v[0][0] + velocity[1] * v[1][0] + velocity[2] * v[2][0];
-	xvelocity[1] = velocity[0] * v[0][1] + velocity[1] * v[1][1] + velocity[2] * v[2][1];
-	xvelocity[2] = velocity[0] * v[0][2] + velocity[1] * v[1][2] + velocity[2] * v[2][2];
-	VectorScale( xvelocity, waterScale, le->pos.trDelta );
-
-	AxisCopy( axisDefault, re->axis );
-    re->shaderTime = cg.time / 1000.0f;
-    re->reType = RT_SPRITE;
-    re->radius = 0.25f;
-	re->customShader = cgs.media.railRingsShader;
-	le->bounceFactor = 0.3f;
-
-    re->shaderRGBA[0] = wi->flashDlightColor[0] * 63;
-    re->shaderRGBA[1] = wi->flashDlightColor[1] * 63;
-    re->shaderRGBA[2] = wi->flashDlightColor[2] * 63;
-    re->shaderRGBA[3] = 63;
-
-    le->color[0] = wi->flashDlightColor[0] * 0.2;
-    le->color[1] = wi->flashDlightColor[1] * 0.2;
-    le->color[2] = wi->flashDlightColor[2] * 0.2;
-    le->color[3] = 0.25f;
-
-	le->angles.trType = TR_LINEAR;
-	le->angles.trTime = cg.time;
-	le->angles.trBase[0] = rand()&31;
-	le->angles.trBase[1] = rand()&31;
-	le->angles.trBase[2] = rand()&31;
-	le->angles.trDelta[0] = 1;
-	le->angles.trDelta[1] = 0.5;
-	le->angles.trDelta[2] = 0;
-#else
 	step = 20;
 
 	es = &cent->currentState;
@@ -632,8 +531,6 @@ static void CG_PlasmaTrail( centity_t *cent, const weaponInfo_t *wi ) {
 
 		le->color[3] = 1;
 	}
-#endif
-
 }
 
 /*
@@ -711,13 +608,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	weaponInfo = &cg_weapons[weaponNum];
 
-	if ( weaponNum == 0 ) {
-		return;
-	}
-
-	if ( weaponInfo->registered ) {
-		return;
-	}
+	if ( weaponNum == 0 ) return;
+	if ( weaponInfo->registered ) return;
 
 	memset( weaponInfo, 0, sizeof( *weaponInfo ) );
 	weaponInfo->registered = qtrue;
@@ -728,9 +620,9 @@ void CG_RegisterWeapon( int weaponNum ) {
 			break;
 		}
 	}
-	if ( !item->classname ) {
-		CG_Error( "Couldn't find weapon %i", weaponNum );
-	}
+
+	if ( !item->classname ) CG_Error( "Couldn't find weapon %i", weaponNum );
+
 	CG_RegisterItemVisuals( item - bg_itemlist );
 
 	// load cmodel before model so filecache works
@@ -769,6 +661,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 	strcat( path, "_hand.md3" );
 	weaponInfo->handsModel = trap_R_RegisterModel( path );
 
+	// SLK this is default hands model, if no other existing
 	if ( !weaponInfo->handsModel ) {
 		weaponInfo->handsModel = trap_R_RegisterModel( "models/weapons2/shotgun/shotgun_hand.md3" );
 	}
@@ -788,11 +681,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->firingSound = trap_S_RegisterSound( "sound/weapons/lightning/lg_hum.wav", qfalse );
 
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/lightning/lg_fire.wav", qfalse );
-#if 0	// JUHOX: use Hunt's lightning bolt shader
-		cgs.media.lightningShader = trap_R_RegisterShader( "lightningBoltNew");
-#else
+
 		cgs.media.lightningShader = trap_R_RegisterShader( "lightningBoltHunt");
-#endif
 		cgs.media.lightningExplosionModel = trap_R_RegisterModel( "models/weaphits/crackle.md3" );
 		cgs.media.sfx_lghit1 = trap_S_RegisterSound( "sound/weapons/lightning/lg_hit.wav", qfalse );
 		cgs.media.sfx_lghit2 = trap_S_RegisterSound( "sound/weapons/lightning/lg_hit2.wav", qfalse );
@@ -804,16 +694,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	case WP_GRAPPLING_HOOK:
 		MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
-#if !GRAPPLE_ROPE	// JUHOX: new grapple media
-		weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/rocket/rocket.md3" );
-		weaponInfo->missileTrailFunc = CG_GrappleTrail;
-		weaponInfo->missileDlight = 200;
-		weaponInfo->wiTrailTime = 2000;
-		weaponInfo->trailRadius = 64;
-		MAKERGB( weaponInfo->missileDlightColor, 1, 0.75f, 0 );
-		weaponInfo->readySound = trap_S_RegisterSound( "sound/weapons/melee/fsthum.wav", qfalse );
-		weaponInfo->firingSound = trap_S_RegisterSound( "sound/weapons/melee/fstrun.wav", qfalse );
-#else
+
 		weaponInfo->missileTrailFunc = CG_GrappleTrail;
 		weaponInfo->missileModel = trap_R_RegisterModel("models/weapons2/grapple/hook.md3");
 		cgs.media.grappleShotSound = trap_S_RegisterSound("sound/weapons/grenade/grenlf1a.wav", qfalse);
@@ -825,19 +706,11 @@ void CG_RegisterWeapon( int weaponNum ) {
 		cgs.media.grappleBlockingSound = trap_S_RegisterSound("sound/weapons/grapple/blocked.wav", qfalse);
 		weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/grenade/grenlf1a.wav", qfalse);
 		cgs.media.grappleShader = trap_R_RegisterShader("grappleRope");
-#endif
 		break;
 
 	case WP_MACHINEGUN:
 		MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
-#if 0	// JUHOX: only 1 flash sound for the machinegun
-		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/machinegun/machgf1b.wav", qfalse );
-		weaponInfo->flashSound[1] = trap_S_RegisterSound( "sound/weapons/machinegun/machgf2b.wav", qfalse );
-		weaponInfo->flashSound[2] = trap_S_RegisterSound( "sound/weapons/machinegun/machgf3b.wav", qfalse );
-		weaponInfo->flashSound[3] = trap_S_RegisterSound( "sound/weapons/machinegun/machgf4b.wav", qfalse );
-#else
 		weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/machinegun/mgshot.wav", qfalse);
-#endif
 		weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 		cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 		break;
@@ -897,17 +770,12 @@ void CG_RegisterWeapon( int weaponNum ) {
 #endif
 
 	case WP_PLASMAGUN:
-//		weaponInfo->missileModel = cgs.media.invulnerabilityPowerupModel;
 		weaponInfo->missileTrailFunc = CG_PlasmaTrail;
 		weaponInfo->missileSound = trap_S_RegisterSound( "sound/weapons/plasma/lasfly.wav", qfalse );
 		MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/plasma/hyprbf1a.wav", qfalse );
 		cgs.media.plasmaExplosionShader = trap_R_RegisterShader( "plasmaExplosion" );
-#if 0	// JUHOX: use new shader for railRings effect
-		cgs.media.railRingsShader = trap_R_RegisterShader( "railDisc" );
-#else
 		cgs.media.railRingsShader = trap_R_RegisterShader("plasmaParticle");
-#endif
 		break;
 
 	case WP_RAILGUN:
@@ -916,11 +784,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/railgun/railgf1a.wav", qfalse );
 		cgs.media.railExplosionShader = trap_R_RegisterShader( "railExplosion" );
 		cgs.media.plasmaExplosionShader = trap_R_RegisterShader( "plasmaExplosion" );
-#if 0	// JUHOX: use new shader for railRings effect
-		cgs.media.railRingsShader = trap_R_RegisterShader( "railDisc" );
-#else
 		cgs.media.railRingsShader = trap_R_RegisterShader("plasmaParticle");
-#endif
 		cgs.media.railCoreShader = trap_R_RegisterShader( "railCore" );
 		break;
 
@@ -929,9 +793,6 @@ void CG_RegisterWeapon( int weaponNum ) {
 		MAKERGB( weaponInfo->flashDlightColor, 1, 0.7f, 1 );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/bfg/bfg_fire.wav", qfalse );
 		cgs.media.bfgExplosionShader = trap_R_RegisterShader( "bfgExplosion" );
-#if 0	// JUHOX: we no longer use the old BFG missile model
-		weaponInfo->missileModel = trap_R_RegisterModel( "models/weaphits/bfg.md3" );
-#endif
 		cgs.media.bfgLFGlareShader = trap_R_RegisterShader("bfgLFGlare");	// JUHOX
 		cgs.media.bfgLFDiscShader = trap_R_RegisterShader("bfgLFDisc");	// JUHOX
 		cgs.media.bfgLFRingShader = trap_R_RegisterShader("bfgLFRing");	// JUHOX
@@ -967,9 +828,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 	}
 
 	itemInfo = &cg_items[ itemNum ];
-	if ( itemInfo->registered ) {
-		return;
-	}
+	if ( itemInfo->registered ) return;
 
 	item = &bg_itemlist[ itemNum ];
 
@@ -994,7 +853,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 		}
 	}
 
-#if 1	// JUHOX: get midpoint for armor fragments
+	// JUHOX: get midpoint for armor fragments
 	if (item->giType == IT_ARMOR && item->giTag) {
 		float* midpoint;
 
@@ -1017,7 +876,6 @@ void CG_RegisterItemVisuals( int itemNum ) {
 			}
 		}
 	}
-#endif
 }
 
 
@@ -1093,16 +951,6 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
 	}
 
-#if 0
-	// drop the weapon when stair climbing
-	delta = cg.time - cg.stepTime;
-	if ( delta < STEP_TIME/2 ) {
-		origin[2] -= cg.stepChange*0.25 * delta / (STEP_TIME/2);
-	} else if ( delta < STEP_TIME ) {
-		origin[2] -= cg.stepChange*0.25 * (STEP_TIME - delta) / (STEP_TIME/2);
-	}
-#endif
-
 	// idle drift
 	scale = cg.xyspeed + 40;
 	fracsin = sin( cg.time * 0.001 );
@@ -1117,10 +965,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 JUHOX: CG_CurvedLine
 ===============
 */
-static void CG_CurvedLine(
-	const vec3_t start, const vec3_t end, const vec3_t startDir,
-	qhandle_t shader, float segmentLen, float scrollSpeed
-) {
+static void CG_CurvedLine( const vec3_t start, const vec3_t end, const vec3_t startDir,	qhandle_t shader, float segmentLen, float scrollSpeed ) {
 	float dist;
 	vec3_t dir1;
 	vec3_t dir2;
@@ -1149,12 +994,7 @@ static void CG_CurvedLine(
 		VectorSubtract(p2, p1, p2);
 		VectorMA(p1, x * x * x, p2, nextPos);
 
-		totalLength = CG_DrawLineSegment(
-			currentPos, nextPos,
-			totalLength, segmentLen, scrollSpeed,
-			shader
-		);
-
+		totalLength = CG_DrawLineSegment( currentPos, nextPos, totalLength, segmentLen, scrollSpeed, shader	);
 		VectorCopy(nextPos, currentPos);
 	}
 }
@@ -1252,172 +1092,6 @@ static void CG_LightningBolt(centity_t* cent, vec3_t origin) {
 
 /*
 ===============
-CG_LightningBolt
-
-Origin will be the exact tag point, which is slightly
-different than the muzzle point used for determining hits.
-The cent should be the non-predicted cent if it is from the player,
-so the endpoint will reflect the simulated strike (lagging the predicted
-angle)
-===============
-*/
-// JUHOX: new version of CG_LightningBolt() above
-#if 0
-static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
-	trace_t		trace;
-	refEntity_t		beam;
-	vec3_t			forward;
-	vec3_t			muzzlePoint, endPoint;
-
-	if ( cent->currentState.weapon != WP_LIGHTNING ) {
-		return;
-	}
-
-	memset( &beam, 0, sizeof( beam ) );
-
-	// CPMA  "true" lightning
-	if ((cent->currentState.number == cg.predictedPlayerState.clientNum) && (cg_trueLightning.value != 0)) {
-		vec3_t angle;
-		int i;
-
-		for (i = 0; i < 3; i++) {
-			float a = cent->lerpAngles[i] - cg.refdefViewAngles[i];
-			if (a > 180) {
-				a -= 360;
-			}
-			if (a < -180) {
-				a += 360;
-			}
-
-			angle[i] = cg.refdefViewAngles[i] + a * (1.0 - cg_trueLightning.value);
-			if (angle[i] < 0) {
-				angle[i] += 360;
-			}
-			if (angle[i] > 360) {
-				angle[i] -= 360;
-			}
-		}
-
-		AngleVectors(angle, forward, NULL, NULL );
-	VectorCopy( cent->lerpOrigin, muzzlePoint );
-//		VectorCopy(cg.refdef.vieworg, muzzlePoint );
-	} else {
-		// !CPMA
-	AngleVectors( cent->lerpAngles, forward, NULL, NULL );
-		VectorCopy(cent->lerpOrigin, muzzlePoint );
-	}
-
-	// FIXME: crouch
-	muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
-
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-
-	// project forward by the lightning range
-	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
-
-	// see if it hit a wall
-	CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
-		cent->currentState.number, MASK_SHOT );
-
-	// this is the endpoint
-	VectorCopy( trace.endpos, beam.oldorigin );
-
-	// use the provided origin, even though it may be slightly
-	// different than the muzzle origin
-	VectorCopy( origin, beam.origin );
-
-	beam.reType = RT_LIGHTNING;
-	beam.customShader = cgs.media.lightningShader;
-	trap_R_AddRefEntityToScene( &beam );
-
-	// add the impact flare if it hit something
-	if ( trace.fraction < 1.0 ) {
-		vec3_t	angles;
-		vec3_t	dir;
-
-		VectorSubtract( beam.oldorigin, beam.origin, dir );
-		VectorNormalize( dir );
-
-		memset( &beam, 0, sizeof( beam ) );
-		beam.hModel = cgs.media.lightningExplosionModel;
-
-		VectorMA( trace.endpos, -16, dir, beam.origin );
-
-		// make a random orientation
-		angles[0] = rand() % 360;
-		angles[1] = rand() % 360;
-		angles[2] = rand() % 360;
-		AnglesToAxis( angles, beam.axis );
-		trap_R_AddRefEntityToScene( &beam );
-	}
-}
-/*
-
-static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
-	trace_t		trace;
-	refEntity_t		beam;
-	vec3_t			forward;
-	vec3_t			muzzlePoint, endPoint;
-
-	if ( cent->currentState.weapon != WP_LIGHTNING ) {
-		return;
-	}
-
-	memset( &beam, 0, sizeof( beam ) );
-
-	// find muzzle point for this frame
-	VectorCopy( cent->lerpOrigin, muzzlePoint );
-	AngleVectors( cent->lerpAngles, forward, NULL, NULL );
-
-	// FIXME: crouch
-	muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
-
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-
-	// project forward by the lightning range
-	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
-
-	// see if it hit a wall
-	CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
-		cent->currentState.number, MASK_SHOT );
-
-	// this is the endpoint
-	VectorCopy( trace.endpos, beam.oldorigin );
-
-	// use the provided origin, even though it may be slightly
-	// different than the muzzle origin
-	VectorCopy( origin, beam.origin );
-
-	beam.reType = RT_LIGHTNING;
-	beam.customShader = cgs.media.lightningShader;
-	trap_R_AddRefEntityToScene( &beam );
-
-	// add the impact flare if it hit something
-	if ( trace.fraction < 1.0 ) {
-		vec3_t	angles;
-		vec3_t	dir;
-
-		VectorSubtract( beam.oldorigin, beam.origin, dir );
-		VectorNormalize( dir );
-
-		memset( &beam, 0, sizeof( beam ) );
-		beam.hModel = cgs.media.lightningExplosionModel;
-
-		VectorMA( trace.endpos, -16, dir, beam.origin );
-
-		// make a random orientation
-		angles[0] = rand() % 360;
-		angles[1] = rand() % 360;
-		angles[2] = rand() % 360;
-		AnglesToAxis( angles, beam.axis );
-		trap_R_AddRefEntityToScene( &beam );
-	}
-}
-*/
-#endif
-
-/*
-===============
 JUHOX: CG_Draw3DLine
 ===============
 */
@@ -1445,12 +1119,9 @@ different than the muzzle point used for determining hits.
 static void CG_SpawnRailTrail( centity_t *cent, vec3_t origin ) {
 	clientInfo_t	*ci;
 
-	if ( cent->currentState.weapon != WP_RAILGUN ) {
-		return;
-	}
-	if ( !cent->pe.railgunFlash ) {
-		return;
-	}
+	if ( cent->currentState.weapon != WP_RAILGUN ) return;
+	if ( !cent->pe.railgunFlash ) return;
+
 	cent->pe.railgunFlash = qtrue;
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	CG_RailTrail( ci, origin, cent->pe.railgunImpact );
@@ -1560,15 +1231,11 @@ static float CG_NewMachinegunSpinAngle(centity_t *cent) {
 CG_AddWeaponWithPowerups
 ========================
 */
-// JUHOX: 'state', 'team', & 'ps' parameter for CG_AddWeaponWithPowerups()
-#if 0
-static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
-#else
 static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, playerState_t* ps, int team) {
 	int powerups;	// to support the old parameter
 
 	powerups = state->powerups;
-#endif
+
 	// JUHOX: set corrected lighting origin for EFH
 #if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
@@ -1576,8 +1243,8 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 		VectorCopy(state->origin, gun->lightingOrigin);
 	}
 #endif
+
 	// JUHOX: draw spawn hull
-#if 1
 	{
 		float intensity;
 		qboolean skipOthers;
@@ -1617,7 +1284,7 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 			gun->customShader = oldShader;
 		}
 	}
-#endif
+
 	// JUHOX: draw monster glow
 #if MONSTER_MODE
 	if (
@@ -1659,14 +1326,11 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 		}
 	}
 #endif
+
 	// add powerup effects
 	if ( powerups & ( 1 << PW_INVIS ) ) {
-#if 0	// JUHOX: draw the marks even if the entity is invisible
-		gun->customShader = cgs.media.invisShader;
-		trap_R_AddRefEntityToScene( gun );
-#else
-		qboolean drawInvisShader;
 
+		qboolean drawInvisShader;
 		drawInvisShader = qtrue;
 		if (
 			cgs.gametype >= GT_TEAM &&
@@ -1708,26 +1372,6 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 				trap_R_AddRefEntityToScene(gun);
 
 				if (drawInvisShader) {
-					/*
-					if (cg.clientNum == state->number) {
-						gun->customShader = cgs.media.glassCloakingSpecShader;
-						gun->shaderRGBA[3] = 255;
-						trap_R_AddRefEntityToScene(gun);
-					}
-					else {
-						float distance;
-
-						distance = Distance(cg.snap->ps.origin, state->pos.trBase);
-						if (distance < GLASSCLOAKINGSPECSHADER_MAXDISTANCE) {
-							gun->customShader = cgs.media.glassCloakingSpecShader;
-							gun->shaderRGBA[3] =
-								GLASSCLOAKINGSPECSHADER_MAXALPHA *
-								(1.0 - distance / GLASSCLOAKINGSPECSHADER_MAXDISTANCE);
-							trap_R_AddRefEntityToScene(gun);
-						}
-
-					}
-					*/
 					if (cg.clientNum == state->number) {
 						gun->customShader = cgs.media.invisShader;
 						trap_R_AddRefEntityToScene(gun);
@@ -1739,7 +1383,7 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 				trap_R_AddRefEntityToScene(gun);
 			}
 		}
-#endif
+
 	} else {
 		trap_R_AddRefEntityToScene( gun );
 
@@ -1751,35 +1395,32 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 			gun->customShader = cgs.media.quadWeaponShader;
 			trap_R_AddRefEntityToScene( gun );
 		}
-#if 1	// JUHOX: draw the charge shader for the weapon
+
+        // JUHOX: draw the charge shader for the weapon
 		if (powerups & (1 << PW_CHARGE)) {
 			gun->customShader = cgs.media.chargeWeaponShader;
 			gun->shaderRGBA[3] = 128;
 			trap_R_AddRefEntityToScene(gun);
 		}
-#endif
-#if 1	// JUHOX: draw the shield shader for the weapon
+
+        // JUHOX: draw the shield shader for the weapon
 		if (powerups & (1 << PW_SHIELD)) {
 			gun->customShader = cgs.media.shieldWeaponShader;
 			trap_R_AddRefEntityToScene(gun);
 		}
-#endif
-#if 1	// JUHOX: draw the BFG reloading shader
+
+        // JUHOX: draw the BFG reloading shader
 		if (powerups & (1 << PW_BFG_RELOADING)) {
 			gun->customShader = cgs.media.bfgReloadingShader;
 			trap_R_AddRefEntityToScene(gun);
 		}
-#endif
 	}
-#if 1	// JUHOX: users of the gauntlet get the target marked
-	if (
-		cg.snap->ps.weapon == WP_GAUNTLET &&
-		cg.snap->ps.stats[STAT_TARGET] == state->number
-	) {
+
+	// JUHOX: mark target for gauntlet
+	if ( cg.snap->ps.weapon == WP_GAUNTLET && cg.snap->ps.stats[STAT_TARGET] == state->number ) {
 		gun->customShader = cgs.media.targetMarker;
 		trap_R_AddRefEntityToScene(gun);
 	}
-#endif
 }
 
 
@@ -1793,14 +1434,13 @@ sound should only be done on the world model case.
 =============
 */
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team ) {
-	refEntity_t	gun;
-	refEntity_t	barrel;
-	refEntity_t	flash;
-	vec3_t		angles;
-	weapon_t	weaponNum;
+	refEntity_t	    gun;
+	refEntity_t	    barrel;
+	refEntity_t	    flash;
+	vec3_t		    angles;
+	weapon_t	    weaponNum;
 	weaponInfo_t	*weapon;
-	centity_t	*nonPredictedCent;
-//	int	col;
+	centity_t	    *nonPredictedCent;
 
 	weaponNum = cent->currentState.weapon;
 	// JUHOX: speed-up for monsters
@@ -1818,25 +1458,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	gun.renderfx = parent->renderfx;
 
 	// JUHOX: set custom shading for railgun and bfg refire rate
-#if 0
-	// set custom shading for railgun refire rate
-	if ( ps ) {
-		if ( cg.predictedPlayerState.weapon == WP_RAILGUN
-			&& cg.predictedPlayerState.weaponstate == WEAPON_FIRING ) {
-			float	f;
 
-			f = (float)cg.predictedPlayerState.weaponTime / 1500;
-			gun.shaderRGBA[1] = 0;
-			gun.shaderRGBA[0] =
-			gun.shaderRGBA[2] = 255 * ( 1.0 - f );
-		} else {
-			gun.shaderRGBA[0] = 255;
-			gun.shaderRGBA[1] = 255;
-			gun.shaderRGBA[2] = 255;
-			gun.shaderRGBA[3] = 255;
-		}
-	}
-#else
 	if (ps) {
 		switch (cg.predictedPlayerState.weapon) {
 		case WP_RAILGUN:
@@ -1880,7 +1502,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		gun.shaderRGBA[2] = 255;
 		gun.shaderRGBA[3] = 255;
 	}
-#endif
 
 	gun.hModel = weapon->weaponModel;
 	if (!gun.hModel) {
@@ -1906,13 +1527,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
-
-	// JUHOX: 'state', 'team', & 'ps' parameter for CG_AddWeaponWithPowerups()
-#if 0
-	CG_AddWeaponWithPowerups( &gun, cent->currentState.powerups );
-#else
 	CG_AddWeaponWithPowerups(&gun, &cent->currentState, ps, team);
-#endif
 
 	// add the spinning barrel
 	if ( weapon->barrelModel ) {
@@ -1924,10 +1539,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		barrel.hModel = weapon->barrelModel;
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
+
 		// JUHOX: new barrel spinning with machinegun
-#if 0
-		angles[ROLL] = CG_MachinegunSpinAngle( cent );
-#else
 		if (weaponNum == WP_MACHINEGUN) {
 			angles[ROLL] = CG_NewMachinegunSpinAngle(cent);
 		}
@@ -1935,24 +1548,19 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			cent->pe.mgPhase = 0;
 			angles[ROLL] = CG_MachinegunSpinAngle(cent);
 		}
-#endif
+
 		AnglesToAxis( angles, barrel.axis );
 
 		CG_PositionRotatedEntityOnTag( &barrel, &gun, weapon->weaponModel, "tag_barrel" );
 
-	// JUHOX: 'state', 'team', & 'ps' parameter for CG_AddWeaponWithPowerups()
-#if 0
-		CG_AddWeaponWithPowerups( &barrel, cent->currentState.powerups );
-#else
+
 		CG_AddWeaponWithPowerups(&barrel, &cent->currentState, ps, team);
-#endif
+
 	}
 	// JUHOX: reset machinegun while not using it
-#if 1
 	else {
 		cent->pe.mgPhase = 0;
 	}
-#endif
 
 	// make sure we aren't looking at cg.predictedPlayerEntity for LG
 	nonPredictedCent = &cg_entities[cent->currentState.clientNum];
@@ -1966,19 +1574,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	// add the flash
 	// JUHOX: let grappling hook do an impulse flash
-#if 0
-	if ( ( weaponNum == WP_LIGHTNING || weaponNum == WP_GAUNTLET || weaponNum == WP_GRAPPLING_HOOK )
-#else
-	if ( ( weaponNum == WP_LIGHTNING || weaponNum == WP_GAUNTLET )
-#endif
-		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) )
-	{
+	if ( ( weaponNum == WP_LIGHTNING || weaponNum == WP_GAUNTLET ) && ( nonPredictedCent->currentState.eFlags & EF_FIRING ) ) {
 		// continuous flash
 	} else {
 		// impulse flash
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash ) {
-			return;
-		}
+		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash ) return;
 	}
 
 	memset( &flash, 0, sizeof( flash ) );
@@ -1987,9 +1587,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	flash.renderfx = parent->renderfx;
 
 	flash.hModel = weapon->flashModel;
-	if (!flash.hModel) {
-		return;
-	}
+	if (!flash.hModel) return;
+
 	angles[YAW] = 0;
 	angles[PITCH] = 0;
 	angles[ROLL] = crandom() * 10;
@@ -2006,12 +1605,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
+
 	// JUHOX: move flash for new machinegun barrel
-#if 1
 	if (weaponNum == WP_MACHINEGUN) {
 		VectorMA(flash.origin, 9, flash.axis[0], flash.origin);
 	}
-#endif
+
 	trap_R_AddRefEntityToScene( &flash );
 
 	if ( ps || cg.renderingThirdPerson ||
@@ -2044,8 +1643,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		else
 #endif
 		if ( weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2] ) {
-			trap_R_AddLightToScene( flash.origin, 300 + (rand()&31), weapon->flashDlightColor[0],
-				weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
+			trap_R_AddLightToScene( flash.origin, 300 + (rand()&31), weapon->flashDlightColor[0], weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
 		}
 	}
 }
@@ -2065,19 +1663,11 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	vec3_t		angles;
 	weaponInfo_t	*weapon;
 
-	if ( ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		return;
-	}
+	if ( ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) return;
+	if ( ps->pm_type == PM_INTERMISSION ) return;
 
-	if ( ps->pm_type == PM_INTERMISSION ) {
-		return;
-	}
-
-	// no gun if in third person view or a camera is active
-	//if ( cg.renderingThirdPerson || cg.cameraMode) {
-	if ( cg.renderingThirdPerson ) {
-		return;
-	}
+	// no gun if in third person view
+	if ( cg.renderingThirdPerson ) return;
 
 	// allow the gun to be completely removed
 	if ( !cg_drawGun.integer ) {
@@ -2093,9 +1683,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	}
 
 	// don't draw if testing a gun model
-	if ( cg.testGun ) {
-		return;
-	}
+	if ( cg.testGun ) return;
 
 	// drop gun lower at higher fov
 	if ( cg_fov.integer > 90 ) {
@@ -2104,7 +1692,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		fovOffset = 0;
 	}
 
-	cent = &cg.predictedPlayerEntity;	// &cg_entities[cg.snap->ps.clientNum];
+	cent = &cg.predictedPlayerEntity;
 	CG_RegisterWeapon( ps->weapon );
 	weapon = &cg_weapons[ ps->weapon ];
 
@@ -2161,9 +1749,7 @@ void CG_DrawWeaponSelect( void ) {
 	float	*color;
 
 	// don't display if dead
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		return;
-	}
+	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) return;
 
 	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 	if ( !color ) {
@@ -2187,9 +1773,7 @@ void CG_DrawWeaponSelect( void ) {
 	y = 380;
 
 	for ( i = 1 ; i < 16 ; i++ ) {
-		if ( !( bits & ( 1 << i ) ) ) {
-			continue;
-		}
+		if ( !( bits & ( 1 << i ) ) ) continue;
 
 		CG_RegisterWeapon( i );
 
@@ -2303,7 +1887,6 @@ JUHOX: CG_AutoSwitchToBestWeapon
 void CG_AutoSwitchToBestWeapon(void) {
 	if (!cg.snap) return;
 	if (cg.snap->ps.pm_flags & PMF_FOLLOW) return;
-
 	if (!cg_autoswitch.integer) return;
 	if (!cg.weaponOrderActive) return;
 	if (cg.weaponManuallySet) return;
@@ -2464,13 +2047,8 @@ void CG_NextWeapon_f( void ) {
 	int		i;
 	int		original;
 
-	if ( !cg.snap ) {
-		return;
-	}
-	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-		return;
-	}
-
+	if ( !cg.snap ) return;
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) return;
 
 	// JUHOX: select effect in lens flare editor
 #if MAPLENSFLARES
@@ -2496,9 +2074,7 @@ void CG_NextWeapon_f( void ) {
 	memset(tmpSkipWeapon, 0, sizeof(tmpSkipWeapon));	// JUHOX: not really needed i think
 
 	// JUHOX: this is a workaround to the late server side weapon selection
-#if 1
 	if (cg.weaponSelect == WP_NONE) cg.weaponSelect = cg.snap->ps.weapon;
-#endif
 
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
@@ -2508,19 +2084,14 @@ void CG_NextWeapon_f( void ) {
 		if ( cg.weaponSelect == 16 ) {
 			cg.weaponSelect = 0;
 		}
-		// JUHOX: we now may cycle to gauntlet
-#if 0
-		if ( cg.weaponSelect == WP_GAUNTLET ) {
-			continue;		// never cycle to gauntlet
-		}
-#endif
+
 		// JUHOX: never cycle to the grappling hook
-#if 1
+		// SLK: yes we CAN
+#if 0
 		if (cg.weaponSelect == WP_GRAPPLING_HOOK) continue;
 #endif
-		if ( CG_WeaponSelectable( cg.weaponSelect ) ) {
-			break;
-		}
+		if ( CG_WeaponSelectable( cg.weaponSelect ) ) break;
+
 	}
 	if ( i == 16 ) {
 		cg.weaponSelect = original;

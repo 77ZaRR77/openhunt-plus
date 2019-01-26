@@ -25,11 +25,11 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	if ( i ) {
 		ent->flags |= FL_NO_HUMANS;
 	}
-#if 1	// JUHOX: new name for initial spawn points
+	// JUHOX: new name for initial spawn points
 	if (ent->spawnflags & 1) {
 		ent->classname = "info_player_initial";
 	}
-#endif
+
 #if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_info_player_deathmatch;
 #endif
@@ -129,38 +129,6 @@ qboolean PositionWouldTelefrag(const vec3_t position, const vec3_t pmins, const 
 	return qfalse;
 }
 
-/*
-================
-SelectNearestDeathmatchSpawnPoint
-
-Find the spot that we DON'T want to use
-================
-*/
-#if 0	// JUHOX: SelectNearestDeathmatchSpawnPoint() no longer used
-#define	MAX_SPAWN_POINTS	128
-gentity_t *SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
-	gentity_t	*spot;
-	vec3_t		delta;
-	float		dist, nearestDist;
-	gentity_t	*nearestSpot;
-
-	nearestDist = 999999;
-	nearestSpot = NULL;
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-
-		VectorSubtract( spot->s.origin, from, delta );
-		dist = VectorLength( delta );
-		if ( dist < nearestDist ) {
-			nearestDist = dist;
-			nearestSpot = spot;
-		}
-	}
-
-	return nearestSpot;
-}
-#endif
 
 
 /*
@@ -502,40 +470,6 @@ gentity_t* SelectAppropriateSpawnPoint(team_t team, const vec3_t avoidPoint, qbo
 	return spot;
 }
 
-/*
-================
-SelectRandomDeathmatchSpawnPoint
-
-go to a random point that doesn't telefrag
-================
-*/
-#if 0	// JUHOX: SelectRandomDeathmatchSpawnPoint() no longer used
-#define	MAX_SPAWN_POINTS	128
-gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
-	gentity_t	*spot;
-	int			count;
-	int			selection;
-	gentity_t	*spots[MAX_SPAWN_POINTS];
-
-	count = 0;
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if ( SpotWouldTelefrag( spot ) ) {
-			continue;
-		}
-		spots[ count ] = spot;
-		count++;
-	}
-
-	if ( !count ) {	// no spots that won't telefrag
-		return G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-	}
-
-	selection = rand() % count;
-	return spots[ selection ];
-}
-#endif
 
 /*
 ===========
@@ -545,64 +479,8 @@ Chooses a player start, deathmatch start, etc
 ============
 */
 gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
-#if 0	// JUHOX: use new spawn logic
-	gentity_t	*spot;
-	vec3_t		delta;
-	float		dist;
-	float		list_dist[64];
-	gentity_t	*list_spot[64];
-	int			numSpots, rnd, i, j;
 
-	numSpots = 0;
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if ( SpotWouldTelefrag( spot ) ) {
-			continue;
-		}
-		VectorSubtract( spot->s.origin, avoidPoint, delta );
-		dist = VectorLength( delta );
-		for (i = 0; i < numSpots; i++) {
-			if ( dist > list_dist[i] ) {
-				if ( numSpots >= 64 )
-					numSpots = 64-1;
-				for (j = numSpots; j > i; j--) {
-					list_dist[j] = list_dist[j-1];
-					list_spot[j] = list_spot[j-1];
-				}
-				list_dist[i] = dist;
-				list_spot[i] = spot;
-				numSpots++;
-				if (numSpots > 64)
-					numSpots = 64;
-				break;
-			}
-		}
-		if (i >= numSpots && numSpots < 64) {
-			list_dist[numSpots] = dist;
-			list_spot[numSpots] = spot;
-			numSpots++;
-		}
-	}
-	if (!numSpots) {
-		spot = G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-		if (!spot)
-			G_Error( "Couldn't find a spawn point" );
-		VectorCopy (spot->s.origin, origin);
-		origin[2] += 9;
-		VectorCopy (spot->s.angles, angles);
-		return spot;
-	}
-
-	// select a random spot from the spawn points furthest away
-	rnd = random() * (numSpots / 2);
-
-	VectorCopy (list_spot[rnd]->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (list_spot[rnd]->s.angles, angles);
-
-	return list_spot[rnd];
-#else
+    // JUHOX: use new spawn logic
 	gentity_t* spot;
 
 	spot = SelectAppropriateSpawnPoint(TEAM_FREE, avoidPoint, qfalse);
@@ -612,7 +490,7 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 		VectorCopy(spot->s.angles, angles);
 	}
 	return spot;
-#endif
+
 }
 
 /*
@@ -624,34 +502,6 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
 	return SelectRandomFurthestSpawnPoint( avoidPoint, origin, angles );
-
-	/*
-	gentity_t	*spot;
-	gentity_t	*nearestSpot;
-
-	nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
-
-	spot = SelectRandomDeathmatchSpawnPoint ( );
-	if ( spot == nearestSpot ) {
-		// roll again if it would be real close to point of death
-		spot = SelectRandomDeathmatchSpawnPoint ( );
-		if ( spot == nearestSpot ) {
-			// last try
-			spot = SelectRandomDeathmatchSpawnPoint ( );
-		}
-	}
-
-	// find a single player start spot
-	if (!spot) {
-		G_Error( "Couldn't find a spawn point" );
-	}
-
-	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (spot->s.angles, angles);
-
-	return spot;
-	*/
 }
 
 /*
@@ -795,12 +645,11 @@ void CopyToBodyQue( gentity_t *ent ) {
 	gentity_t		*body;
 	int			contents;
 
-#if 1	// JUHOX: check the 'corpseProduced' flag
+	// JUHOX: check the 'corpseProduced' flag
 	if (ent->client) {
 		if (ent->client->corpseProduced) return;
 		ent->client->corpseProduced = qtrue;
 	}
-#endif
 
 	trap_UnlinkEntity (ent);
 
@@ -816,10 +665,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 
 	trap_UnlinkEntity (body);
 
-#if 0	// JUHOX: toggle teleport flag
-	body->s = ent->s;
-	body->s.eFlags = EF_DEAD;		// clear EF_TALK, etc
-#else
+	// JUHOX: toggle teleport flag
 	{
 		int oldEFlags;
 
@@ -829,7 +675,6 @@ void CopyToBodyQue( gentity_t *ent ) {
 		body->s.eFlags ^= EF_TELEPORT_BIT;
 		body->s.eFlags |= EF_DEAD;
 	}
-#endif
 
 	body->s.powerups = 0;	// clear powerups
 	body->s.loopSound = 0;	// clear lava burning
@@ -962,10 +807,6 @@ respawn
 void respawn( gentity_t *ent ) {
 	gentity_t	*tent;
 
-	// JUHOX: 'CopyToBodyQue()' is now done earlier (in 'ClientThink_real()'), so dead spectators can see their corpse
-#if 0
-	CopyToBodyQue (ent);
-#endif
 	ClientSpawn(ent);
 	if (ent->client->ps.stats[STAT_HEALTH] <= 0) return;	// JUHOX: spawning failed
 	if (level.meeting) return;	// JUHOX: no teleportation effect during meeting
@@ -1264,45 +1105,6 @@ void ClientUserinfoChanged( int clientNum ) {
 		team = client->sess.sessionTeam;
 	}
 
-#if 0	// JUHOX 1.29h: all model issues done client side
-#if !MONSTER_MODE	// JUHOX: don't force client skins to match the team in STU
-	// team
-	switch( team ) {
-	case TEAM_RED:
-		ForceClientSkin(client, model, "red");
-		ForceClientSkin(client, headModel, "red");
-		break;
-	case TEAM_BLUE:
-		ForceClientSkin(client, model, "blue");
-		ForceClientSkin(client, headModel, "blue");
-		break;
-	}
-	// don't ever use a default skin in teamplay, it would just waste memory
-	// however bots will always join a team but they spawn in as spectator
-	if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
-		ForceClientSkin(client, model, "red");
-		ForceClientSkin(client, headModel, "red");
-	}
-#else
-	if (g_gametype.integer < GT_STU) {
-		switch(team) {
-		case TEAM_RED:
-			ForceClientSkin(client, model, "red");
-			ForceClientSkin(client, headModel, "red");
-			break;
-		case TEAM_BLUE:
-			ForceClientSkin(client, model, "blue");
-			ForceClientSkin(client, headModel, "blue");
-			break;
-		}
-		if (g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
-			ForceClientSkin(client, model, "red");
-			ForceClientSkin(client, headModel, "red");
-		}
-	}
-#endif
-#endif
-
 	// teamInfo
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
 	if ( ! *s || atoi( s ) != 0 ) {
@@ -1311,7 +1113,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.teamInfo = qfalse;
 	}
 
-	/*
+	/* SLK: should use this?
 	s = Info_ValueForKey( userinfo, "cg_pmove_fixed" );
 	if ( !*s || atoi( s ) == 0 ) {
 		client->pers.pmoveFixed = qfalse;
@@ -1603,59 +1405,6 @@ void ClientBegin( int clientNum ) {
 
 /*
 ===========
-JUHOX: GoAwayFromWall
-============
-*/
-/*
-static qboolean GoAwayFromWall(int clientNum, vec3_t origin, int* start) {
-	trace_t trace;
-	int i;
-
-	i = -1;
-	if (start) i = *start;
-	for (; i < 27; i++) {
-		vec3_t pos;
-
-		VectorCopy(origin, pos);
-		if (i >= 0) {
-			switch (i % 3) {
-			case 0:
-				pos[0] -= 12;
-				break;
-			case 2:
-				pos[0] += 12;
-				break;
-			}
-			switch ((i/3) % 3) {
-			case 0:
-				pos[1] -= 12;
-				break;
-			case 2:
-				pos[1] += 12;
-				break;
-			}
-			switch ((i/9) % 3) {
-			case 0:
-				pos[2] -= 29;
-				break;
-			case 2:
-				pos[2] += 21;
-				break;
-			}
-		}
-		trap_Trace(&trace, pos, playerMins, playerMaxs, pos, clientNum, MASK_PLAYERSOLID);
-		if (!trace.allsolid) {
-			VectorCopy(pos, origin);
-			if (start) *start = i;
-			return qtrue;
-		}
-	}
-	return qfalse;
-}
-*/
-
-/*
-===========
 JUHOX: GetRespawnLocationType
 ============
 */
@@ -1785,28 +1534,28 @@ void ClientSpawn(gentity_t *ent) {
 	}
 	else if (g_gametype.integer >= GT_TEAM && g_gametype.integer < GT_STU) {
 #endif
-#if 1	// JUHOX: check if a free spawn is possible
+        // JUHOX: check if a free spawn is possible
 		if (CheckFreeSpawn(ent)) {
 			spawnPoint = NULL;
 			VectorCopy(client->ps.origin, spawn_origin);
 			VectorCopy(client->ps.viewangles, spawn_angles);
 			goto SpawnPointChoosen;
 		}
-#endif
+
 		// all base oriented team games use the CTF spawn points
 		spawnPoint = SelectCTFSpawnPoint (
 						client->sess.sessionTeam,
 						client->pers.teamState.state,
 						spawn_origin, spawn_angles);
 	} else {
-#if 1	// JUHOX: check if a free spawn is possible
+        // JUHOX: check if a free spawn is possible
 		if (CheckFreeSpawn(ent)) {
 			spawnPoint = NULL;
 			VectorCopy(client->ps.origin, spawn_origin);
 			VectorCopy(client->ps.viewangles, spawn_angles);
 			goto SpawnPointChoosen;
 		}
-#endif
+
 		do {
 			// the first spawn should be at a good looking spot
 #if MONSTER_MODE	// JUHOX: in STU use level.time to check for initial spawn
@@ -1904,20 +1653,7 @@ void ClientSpawn(gentity_t *ent) {
 #endif
 	client->ps.stats[STAT_STRENGTH] = savedStrength;	// JUHOX
 	memcpy(&client->ps.powerups[PW_NUM_POWERUPS], savedPowerups, (16-PW_NUM_POWERUPS) * sizeof(int));	// JUHOX
-#if 0	// -JUHOX: activate shield on first spawn and on overkill
-	if (client->sess.sessionTeam == TEAM_SPECTATOR) {
-		if (client->ps.persistant[PERS_SPAWN_COUNT] == 0 || overkillSpawn) {
-			client->ps.powerups[PW_SHIELD] = level.time + 10000;
-		}
-		/*
-		else if (g_gametype.integer >= GT_CTF) {
-			if (!NearHomeBase(client->sess.sessionTeam, spawn_origin, 1)) {
-				client->ps.powerups[PW_QUAD] = level.time + 5000;
-			}
-		}
-		*/
-	}
-#endif
+
 #if 1	// JUHOX: add shield
 	if (client->sess.sessionTeam != TEAM_SPECTATOR) {
 		client->ps.powerups[PW_SHIELD] = level.time + 400;	// JUHOX
@@ -1972,19 +1708,6 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->ps.clientNum = index;
 
-#if 0	// JUHOX: weapon initialization done later
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
-	if ( g_gametype.integer == GT_TEAM ) {
-		client->ps.ammo[WP_MACHINEGUN] = 50;
-	} else {
-		client->ps.ammo[WP_MACHINEGUN] = 100;
-	}
-
-	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
-	client->ps.ammo[WP_GAUNTLET] = -1;
-	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
-#endif
-
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
 
@@ -1997,11 +1720,7 @@ void ClientSpawn(gentity_t *ent) {
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	SetClientViewAngle( ent, spawn_angles );
 
-#if 0	// JUHOX: don't KillBox() on dead spawn
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-#else
 	if ( deadSpawn || ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-#endif
 
 	} else {
 		G_KillBox( ent );

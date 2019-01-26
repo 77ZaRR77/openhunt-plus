@@ -42,12 +42,7 @@ Adjusted for resolution and screen aspect ratio
 ================
 */
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h ) {
-#if 0
-	// adjust for wide screens
-	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 ) {
-		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
-	}
-#endif
+
 	// scale for screen sizes
 	*x *= cgs.screenXScale;
 	*y *= cgs.screenYScale;
@@ -101,8 +96,8 @@ Coordinates are 640*480 virtual values
 void CG_DrawRect( float x, float y, float width, float height, float size, const float *color ) {
 	trap_R_SetColor( color );
 
-  CG_DrawTopBottom(x, y, width, height, size);
-  CG_DrawSides(x, y, width, height, size);
+    CG_DrawTopBottom(x, y, width, height, size);
+    CG_DrawSides(x, y, width, height, size);
 
 	trap_R_SetColor( NULL );
 }
@@ -138,9 +133,7 @@ void CG_DrawChar( int x, int y, int width, int height, int ch ) {
 
 	ch &= 255;
 
-	if ( ch == ' ' ) {
-		return;
-	}
+	if ( ch == ' ' ) return;
 
 	ax = x;
 	ay = y;
@@ -149,19 +142,6 @@ void CG_DrawChar( int x, int y, int width, int height, int ch ) {
 	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
 
 	// JUHOX: we've now more than one charsetShader
-#if 0
-	row = ch>>4;
-	col = ch&15;
-
-	frow = row*0.0625;
-	fcol = col*0.0625;
-	size = 0.0625;
-
-	trap_R_DrawStretchPic( ax, ay, aw, ah,
-					   fcol, frow, 
-					   fcol + size, frow + size, 
-					   cgs.media.charsetShader );
-#else
 	if (ah >= 12) {
 		qhandle_t charsetShader;
 
@@ -191,11 +171,10 @@ void CG_DrawChar( int x, int y, int width, int height, int ch ) {
 
 		trap_R_DrawStretchPic(
 			ax, ay, aw, ah,
-			fcol, frow, fcol + size, frow + size, 
+			fcol, frow, fcol + size, frow + size,
 			cgs.media.oldCharsetShader
 		);
 	}
-#endif
 }
 
 
@@ -209,8 +188,9 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, 
+void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 		qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars ) {
+
 	vec4_t		color;
 	const char	*s;
 	int			xx;
@@ -228,10 +208,12 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 		xx = x;
 		cnt = 0;
 		while ( *s && cnt < maxChars) {
+
 			if ( Q_IsColorString( s ) ) {
 				s += 2;
 				continue;
 			}
+
 			CG_DrawChar( xx + 2, y + 2, charWidth, charHeight, *s );
 			cnt++;
 			xx += charWidth;
@@ -245,6 +227,7 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 	cnt = 0;
 	trap_R_SetColor( setColor );
 	while ( *s && cnt < maxChars) {
+
 		if ( Q_IsColorString( s ) ) {
 			if ( !forceColor ) {
 				memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
@@ -254,11 +237,13 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 			s += 2;
 			continue;
 		}
+
 		CG_DrawChar( xx, y, charWidth, charHeight, *s );
 		xx += charWidth;
 		cnt++;
 		s++;
 	}
+
 	trap_R_SetColor( NULL );
 }
 
@@ -343,7 +328,7 @@ void CG_TileClear( void ) {
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
 
-	if ( cg.refdef.x == 0 && cg.refdef.y == 0 && 
+	if ( cg.refdef.x == 0 && cg.refdef.y == 0 &&
 		cg.refdef.width == w && cg.refdef.height == h ) {
 		return;		// full screen rendering
 	}
@@ -377,15 +362,11 @@ float *CG_FadeColor( int startMsec, int totalMsec ) {
 	static vec4_t		color;
 	int			t;
 
-	if ( startMsec == 0 ) {
-		return NULL;
-	}
+	if ( startMsec == 0 ) return NULL;
 
 	t = cg.time - startMsec;
 
-	if ( t >= totalMsec ) {
-		return NULL;
-	}
+	if ( t >= totalMsec ) return NULL;
 
 	// fade out
 	if ( totalMsec - t < FADE_TIME ) {
@@ -430,11 +411,8 @@ CG_GetColorForHealth
 =================
 */
 // JUHOX: new parameter for CG_GetColorForHealth()
-#if 0
-void CG_GetColorForHealth( int health, int armor, vec4_t hcolor ) {
-#else
 void CG_GetColorForHealth(int health, int armor, int maxhealth, vec4_t hcolor) {
-#endif
+
 	int		count;
 	int		max;
 
@@ -445,18 +423,17 @@ void CG_GetColorForHealth(int health, int armor, int maxhealth, vec4_t hcolor) {
 		hcolor[3] = 1;
 		return;
 	}
+
 	count = armor;
 	max = health * ARMOR_PROTECTION / ( 1.0 - ARMOR_PROTECTION );
-	if ( max < count ) {
-		count = max;
-	}
+
+	if ( max < count ) count = max;
+
 	health += count;
 
 	// JUHOX: normalize health to 100
-#if 1
 	if (maxhealth < 1) maxhealth = 1;
 	health = (100 * health) / maxhealth;
-#endif
 
 	// set the color based on health
 	hcolor[0] = 1.0;
@@ -486,26 +463,14 @@ CG_ColorForHealth
 void CG_ColorForHealth( vec4_t hcolor ) {
 
 	// JUHOX: include new parameter for CG_GetColorForHealth()
-#if 0
-	CG_GetColorForHealth( cg.snap->ps.stats[STAT_HEALTH], 
-		cg.snap->ps.stats[STAT_ARMOR], hcolor );
-#else
-	CG_GetColorForHealth(
-		cg.snap->ps.stats[STAT_HEALTH], 
-		cg.snap->ps.stats[STAT_ARMOR],
-		cg.snap->ps.stats[STAT_MAX_HEALTH],
-		hcolor
-	);
-#endif
+	CG_GetColorForHealth (cg.snap->ps.stats[STAT_HEALTH], cg.snap->ps.stats[STAT_ARMOR], cg.snap->ps.stats[STAT_MAX_HEALTH], hcolor	);
+
 }
-
-
-
 
 // bk001205 - code below duplicated in q3_ui/ui-atoms.c
 // bk001205 - FIXME: does this belong in ui_shared.c?
 // bk001205 - FIXME: HARD_LINKED flags not visible here
-#ifndef Q3_STATIC // bk001205 - q_shared defines not visible here 
+#ifndef Q3_STATIC // bk001205 - q_shared defines not visible here
 /*
 =================
 UI_DrawProportionalString2
@@ -677,7 +642,7 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 
 	// draw the colored text
 	trap_R_SetColor( color );
-	
+
 	ax = x * cgs.screenXScale + cgs.screenXBias;
 	ay = y * cgs.screenXScale;
 
@@ -759,12 +724,15 @@ int UI_ProportionalStringWidth( const char* str ) {
 	s = str;
 	width = 0;
 	while ( *s ) {
+
 		ch = *s & 127;
 		charWidth = propMap[ch][2];
+
 		if ( charWidth != -1 ) {
 			width += charWidth;
 			width += PROP_GAP_WIDTH;
 		}
+
 		s++;
 	}
 
@@ -787,7 +755,7 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 
 	// draw the colored text
 	trap_R_SetColor( color );
-	
+
 	ax = x * cgs.screenXScale + cgs.screenXBias;
 	ay = y * cgs.screenXScale;
 
@@ -822,10 +790,8 @@ UI_ProportionalSizeScale
 =================
 */
 float UI_ProportionalSizeScale( int style ) {
-	if(  style & UI_SMALLFONT ) {
-		return 0.75;
-	}
 
+	if(  style & UI_SMALLFONT ) return 0.75;
 	return 1.00;
 }
 
