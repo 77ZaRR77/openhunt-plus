@@ -32,43 +32,37 @@
 #define	SINK_TIME			1000		// time for fragments to sink into ground before going away
 #define	ATTACKER_HEAD_TIME	10000
 #define	REWARD_TIME			3000
+
 #define DISCHARGE_MAX_DURATION		500		// JUHOX
 #define DISCHARGE_MAX_ANGLE_DIFF	40.0	// JUHOX
 #define DISCHARGE_MIN_LEN			15.0	// JUHOX
 #define DISCHARGE_MAX_ADD			30.0	// JUHOX
 
 #define	PULSE_SCALE			1.5			// amount to scale up the icons when activating
-
 #define	MAX_STEP_CHANGE		32
-
 #define	MAX_VERTS_ON_POLY	10
 #define	MAX_MARK_POLYS		256
-
 #define STAT_MINUS			10	// num frame for '-' stats digit
-
 #define	ICON_SIZE			48
 #define	CHAR_WIDTH			32
 #define	CHAR_HEIGHT			48
 #define	TEXT_ICON_SPACE		4
-
 #define	TEAMCHAT_WIDTH		80
 #define TEAMCHAT_HEIGHT		8
 
 // very large characters
 #define	GIANT_WIDTH			32
 #define	GIANT_HEIGHT		48
-
 #define	NUM_CROSSHAIRS		10
 
-#define TEAM_OVERLAY_MAXNAME_WIDTH	12
+#define TEAM_OVERLAY_MAXNAME_WIDTH	    12
 #define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
 
 #define	DEFAULT_MODEL			"sarge"
 #define	DEFAULT_TEAM_MODEL		"sarge"
 #define	DEFAULT_TEAM_HEAD		"sarge"
-
-#define DEFAULT_REDTEAM_NAME		"Stroggs"
-#define DEFAULT_BLUETEAM_NAME		"Pagans"
+#define DEFAULT_REDTEAM_NAME	"Stroggs"
+#define DEFAULT_BLUETEAM_NAME	"Pagans"
 
 #define NUM_WEAPONORDERS	6	// JUHOX: should match the #define in ui_local.h
 #define GLASSCLOAKINGSPECSHADER_MAXDISTANCE 200.0	// JUHOX
@@ -228,8 +222,8 @@ typedef enum {
 	LE_FADE_RGB,
 	LE_SCALE_FADE,
 	LE_SCOREPLUM,
-	LE_BFGEXPL	// JUHOX
-	,LE_TRAIL_PARTICLE	// JUHOX
+	LE_BFGEXPL,	// JUHOX
+	LE_TRAIL_PARTICLE	// JUHOX
 #if MONSTER_MODE
 	,LE_MOVE_SCALE_RGBFADE		// JUHOX
 	,LE_FIREBALL_TRAIL_PARTICLE	// JUHOX
@@ -990,7 +984,6 @@ typedef struct {
 	int     nextOrbitTime;
 
 	// JUHOX: variables for the TSS interface
-#if 1
 	int tssGametype;
 #if !TSSINCVAR
 	qboolean tssPureServer;
@@ -1080,10 +1073,8 @@ typedef struct {
 	int tssAccessClock;
 
 	int tssAutoGLCUpdateTime;
-#endif
 
 	// JUHOX: variables for the nav aid
-#if 1
 	int navAidStopTime;	// 0 if no nav aid to draw
 	int navAidLatestUpdateTime;
 	qboolean navAidRetreat;
@@ -1094,9 +1085,6 @@ typedef struct {
 	qboolean navAidGoalAvailable;
 	int navAidGoalEntityNum;
 	centity_t* navAidGoalEntity;
-#endif
-
-	//qboolean cameraMode;		// if rendering from a loaded camera
 
 	// development tool
 	refEntity_t		testModelEntity;
@@ -1125,7 +1113,6 @@ typedef struct {
 	qhandle_t	whiteShader;
 
 	// JUHOX: nearbox shaders
-	//qhandle_t	nearbox_up;
 	qhandle_t	nearbox_dn;
 	qhandle_t	nearbox_ft;
 	qhandle_t	nearbox_bk;
@@ -1220,7 +1207,6 @@ typedef struct {
 	qhandle_t	podSkullSkin;		// JUHOX
 	qhandle_t	scannerShader;		// JUHOX
 	qhandle_t	amplifierShader;	// JUHOX
-
 
 	qhandle_t	friendShader;
 	qhandle_t	balloonShader;
@@ -1715,7 +1701,7 @@ extern  vmCvar_t		cg_scorePlum;
 extern	vmCvar_t		cg_smoothClients;
 extern	vmCvar_t		pmove_fixed;
 extern	vmCvar_t		pmove_msec;
-//extern	vmCvar_t		cg_pmove_fixed; // SLK> implement?
+
 extern	vmCvar_t		cg_cameraOrbit;
 extern	vmCvar_t		cg_cameraOrbitDelay;
 extern	vmCvar_t		cg_timescaleFadeEnd;
@@ -1748,24 +1734,23 @@ extern	vmCvar_t		cg_music;			// JUHOX
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
+int CG_CrosshairPlayer( void );
+int CG_LastAttacker( void );
+
+score_t *CG_GetSelectedScore();
+
 void QDECL CG_Printf( const char *msg, ... );
 void QDECL CG_Error( const char *msg, ... );
 
 void CG_StartMusic( void );
-
 void CG_UpdateCvars( void );
-
-int CG_CrosshairPlayer( void );
-int CG_LastAttacker( void );
 void CG_LoadMenus(const char *menuFile);
 void CG_KeyEvent(int key, qboolean down);
 void CG_MouseEvent(int x, int y);
 void CG_EventHandling(int type);
 void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
-score_t *CG_GetSelectedScore();
 void CG_BuildSpectatorString();
-
 void CG_LFEntOrigin(const lensFlareEntity_t* lfent, vec3_t origin);
 void CG_SetLFEntOrigin(lensFlareEntity_t* lfent, const vec3_t origin);
 void CG_SetLFEdMoveMode(lfeMoveMode_t mode);
@@ -1773,7 +1758,6 @@ void CG_SelectLFEnt(int lfentnum);
 void CG_LoadLensFlares(void);
 void CG_ComputeMaxVisAngle(lensFlareEntity_t* lfent);
 void CG_LoadLensFlareEntities(void);
-
 
 
 //
@@ -2045,7 +2029,7 @@ void CG_Respawn( void );
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 void CG_CheckChangedPredictableEvents( playerState_t *ps );
 
-#if 1	// JUHOX: cg_tssfile.c prototypes
+// JUHOX: cg_tssfile.c prototypes
 #if !TSSINCVAR
 qboolean CG_TSS_LoadStrategy(const char* filename, tss_strategy_t* strategy);
 qboolean CG_TSS_SaveStrategy(const char* filename, const tss_strategy_t* strategy);
@@ -2068,9 +2052,8 @@ void CG_TSS_FreePaletteSlot(tss_strategyPaletteSlot_t* pslot);
 qboolean CG_TSS_CreateNewStrategy(tss_strategyPaletteSlot_t* pslot);
 void CG_TSS_SetSearchPattern(const char* pattern);
 int CG_TSS_StrategyNameChanged(int sortIndex, tss_strategySortOrder_t order);
-#endif
 
-#if 1	// JUHOX: cg_tss.c prototypes
+// JUHOX: cg_tss.c prototypes
 void TSS_GetPalette(tss_savedPalette_t* palette);
 void TSS_SetPalette(const tss_savedPalette_t* palette);
 void CG_TSS_InitInterface(void);
@@ -2088,7 +2071,7 @@ void CG_TSS_KeyEvent(int key, qboolean down);
 void CG_TSS_MouseEvent(int dx, int dy);
 void CG_TSS_CheckKeyEvents(void);
 void CG_TSS_CheckMouseEvents(void);
-#endif
+
 
 #if PLAYLIST	// JUHOX: prototypes for cg_playlist.c
 void CG_InitPlayList(void);
