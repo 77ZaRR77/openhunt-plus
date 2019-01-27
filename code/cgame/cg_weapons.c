@@ -1965,7 +1965,6 @@ void CG_NextWeaponOrder_f(void) {
 	if (!cg.snap) return;
 
 	// JUHOX: select effect in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		cg.lfEditor.selectedEffect++;
 		if (cg.lfEditor.selectedEffect < 0) cg.lfEditor.selectedEffect = 0;
@@ -1974,7 +1973,6 @@ void CG_NextWeaponOrder_f(void) {
 		}
 		return;
 	}
-#endif
 
 	// JUHOX: select segment in EFH debug mode
 #if ESCAPE_MODE
@@ -2006,7 +2004,6 @@ void CG_PrevWeaponOrder_f(void) {
 	if (!cg.snap) return;
 
 	// JUHOX: select effect in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		cg.lfEditor.selectedEffect--;
 		if (cg.lfEditor.selectedEffect < 0) cg.lfEditor.selectedEffect = 0;
@@ -2015,7 +2012,6 @@ void CG_PrevWeaponOrder_f(void) {
 		}
 		return;
 	}
-#endif
 
 	// JUHOX: select segment in EFH debug mode
 #if ESCAPE_MODE
@@ -2051,7 +2047,6 @@ void CG_NextWeapon_f( void ) {
 	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) return;
 
 	// JUHOX: select effect in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		cg.lfEditor.selectedEffect++;
 		if (cg.lfEditor.selectedEffect < 0) cg.lfEditor.selectedEffect = 0;
@@ -2060,7 +2055,6 @@ void CG_NextWeapon_f( void ) {
 		}
 		return;
 	}
-#endif
 
 	// JUHOX: select segment in EFH debug mode
 #if ESCAPE_MODE
@@ -2119,7 +2113,6 @@ void CG_PrevWeapon_f( void ) {
 	}
 
 	// JUHOX: select effect in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		cg.lfEditor.selectedEffect--;
 		if (cg.lfEditor.selectedEffect < 0) cg.lfEditor.selectedEffect = 0;
@@ -2128,7 +2121,6 @@ void CG_PrevWeapon_f( void ) {
 		}
 		return;
 	}
-#endif
 
 	// JUHOX: select segment in EFH debug mode
 #if ESCAPE_MODE
@@ -2182,7 +2174,6 @@ void CG_PrevWeapon_f( void ) {
 JUHOX: CG_AddLensFlareEntity
 ===============
 */
-#if MAPLENSFLARES
 static lensFlareEntity_t* CG_AddLensFlareEntity(const lensFlareEntity_t* model) {
 	int entnum;
 	lensFlareEntity_t* lfent;
@@ -2213,14 +2204,13 @@ static lensFlareEntity_t* CG_AddLensFlareEntity(const lensFlareEntity_t* model) 
 
 	return lfent;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CG_DeleteLensFlareEntity
 ===============
 */
-#if MAPLENSFLARES
 static void CG_DeleteLensFlareEntity(lensFlareEntity_t* lfent) {
 	int lfentnum;
 	int i;
@@ -2234,46 +2224,13 @@ static void CG_DeleteLensFlareEntity(lensFlareEntity_t* lfent) {
 	}
 	cgs.numLensFlareEntities--;
 }
-#endif
 
-/*
-=========================
-JUHOX: CG_NearestMover
-=========================
-*/
-/*
-#if MAPLENSFLARES
-static centity_t* CG_NearestMover(const vec3_t pos) {
-	int i;
-	centity_t* nearestMover;
-	float nearestDistanceSqr;
-
-	nearestMover = NULL;
-	nearestDistanceSqr = Square(100000.0);
-	for (i = MAX_CLIENTS; i < ENTITYNUM_WORLD; i++) {
-		centity_t* cent;
-		float distanceSqr;
-
-		cent = &cg_entities[i];
-		if (cent->currentState.eType != ET_MOVER) continue;
-
-		distanceSqr = DistanceSquared(pos, cent->lerpOrigin);
-		if (distanceSqr > nearestDistanceSqr) continue;
-
-		nearestDistanceSqr = distanceSqr;
-		nearestMover = cent;
-	}
-	return nearestMover;
-}
-#endif
-*/
 
 /*
 =========================
 JUHOX: CG_FindNextEntityByEffect
 =========================
 */
-#if MAPLENSFLARES
 static int CG_FindNextEntityByEffect(void) {
 	const lensFlareEffect_t* lfeff;
 	int start;
@@ -2294,14 +2251,13 @@ static int CG_FindNextEntityByEffect(void) {
 	}
 	return -1;
 }
-#endif
+
 
 /*
 =========================
 JUHOX: CG_EvaluateViewDir
 =========================
 */
-#if MAPLENSFLARES
 #define MAX_VIEWTESTS 200
 static vec3_t viewDirList[MAX_VIEWTESTS];
 static float CG_EvaluateViewDir(const vec3_t viewDir, int listSize) {
@@ -2319,14 +2275,13 @@ static float CG_EvaluateViewDir(const vec3_t viewDir, int listSize) {
 	}
 	return evaluation;
 }
-#endif
+
 
 /*
 =========================
 JUHOX: CG_FindBestViewOrg
 =========================
 */
-#if MAPLENSFLARES
 static void CG_FindBestViewOrg(const lensFlareEntity_t* lfent, vec3_t viewOrg) {
 	vec3_t origin;
 	float viewDistance;
@@ -2383,14 +2338,12 @@ static void CG_FindBestViewOrg(const lensFlareEntity_t* lfent, vec3_t viewOrg) {
 		VectorAdd(origin, viewDirList[bestDir], viewOrg);
 	}
 }
-#endif
 
 /*
 =========================
 JUHOX: CG_NextMover
 =========================
 */
-#if MAPLENSFLARES
 static centity_t* CG_NextMover(centity_t* current) {
 	int start, i;
 
@@ -2406,14 +2359,13 @@ static centity_t* CG_NextMover(centity_t* current) {
 	}
 	return NULL;
 }
-#endif
+
 
 /*
 =========================
 JUHOX: CG_HandleCopyOptions
 =========================
 */
-#if MAPLENSFLARES
 static void CG_HandleCopyOptions(int command) {
 	switch (command) {
 	case 1:	// cancel
@@ -2436,7 +2388,6 @@ static void CG_HandleCopyOptions(int command) {
 		break;
 	}
 }
-#endif
 
 /*
 ===============
@@ -2460,7 +2411,6 @@ void CG_Weapon_f( void ) {
 	}
 
 	// JUHOX: in lens flare editor weapon chooses a command
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		if (num != 3) cg.lfEditor.delAck = qfalse;
 
@@ -2686,13 +2636,10 @@ void CG_Weapon_f( void ) {
 		}
 		return;
 	}
-#endif
 
 	cg.weaponSelectTime = cg.time;
 
-	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
-		return;		// don't have the weapon
-	}
+	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) return;		// don't have the weapon
 
 	cg.weaponManuallySet = qtrue;	// JUHOX
 	memset(tmpSkipWeapon, 0, sizeof(tmpSkipWeapon));	// JUHOX

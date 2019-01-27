@@ -164,17 +164,17 @@ void CG_ParseServerinfo( void ) {
 	trap_Cvar_Set("g_redTeam", cgs.redTeam);
 	Q_strncpyz( cgs.blueTeam, Info_ValueForKey( info, "g_blueTeam" ), sizeof(cgs.blueTeam) );
 	trap_Cvar_Set("g_blueTeam", cgs.blueTeam);
-#if MAPLENSFLARES	// JUHOX: parse serverinfo cvars for map lens flares
+    // JUHOX: parse serverinfo cvars for map lens flares
 	cgs.editMode = atoi(Info_ValueForKey(info, "g_editmode"));
 	if (cgs.maxclients > 1) cgs.editMode = EM_none;
 	if (atoi(Info_ValueForKey(CG_ConfigString(CS_SYSTEMINFO), "sv_cheats")) != 1) cgs.editMode = EM_none;
-#endif
-#if 1	// JUHOX: parse additional serverinfo cvars
+
+    // JUHOX: parse additional serverinfo cvars
 	cgs.baseHealth = atoi(Info_ValueForKey(info, "g_baseHealth"));
 	cgs.stamina = atoi(Info_ValueForKey(info, "g_stamina"));
 	cgs.tss = atoi(Info_ValueForKey(info, "tss"));
 	cgs.tssSafetyMode = atoi(Info_ValueForKey(info, "tssSafetyModeAllowed"));
-#endif
+
 #if MONSTER_MODE	// JUHOX: parse STU serverinfo cvars
 	cgs.artefacts = atoi(Info_ValueForKey(info, "g_artefacts"));
 	cgs.monsterLauncher = atoi(Info_ValueForKey(info, "g_monsterLauncher"));

@@ -857,9 +857,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 	clientInfo_t	*match;
 
 	// JUHOX: don't care about client models in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) return;
-#endif
 
 	// if someone else is already the same models and skins we
 	// can just load the client info
@@ -870,28 +868,19 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 		}
 		if ( Q_stricmp( ci->skinName, match->skinName ) ||
 			 Q_stricmp( ci->modelName, match->modelName ) ||
-			 // JUHOX: 1.29h
-#if 0
-			 Q_stricmp( ci->headModelName, match->headModelName ) ||
-			 Q_stricmp( ci->headSkinName, match->headSkinName ) ) {
-#else
+
 			 // JUHOX: in STU all teams use their normal skins
 #if !MONSTER_MODE
 			 (cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
 #else
 			 (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU && ci->team != match->team) ) {
 #endif
-#endif
+
 			continue;
 		}
 		// just load the real info cause it uses the same models and skins
-
-		// JUHOX: additional parameter for CG_LoacClientInfo()
-#if 0
-		CG_LoadClientInfo( ci );
-#else
 		CG_LoadClientInfo(ci, NULL);
-#endif
+
 		return;
 	}
 
@@ -944,11 +933,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 	CG_Printf( "CG_SetDeferredClientInfo: no valid clients!\n" );
 
 	// JUHOX: additional parameter for CG_LoacClientInfo()
-#if 0
-	CG_LoadClientInfo( ci );
-#else
 	CG_LoadClientInfo(ci, NULL);
-#endif
 }
 
 

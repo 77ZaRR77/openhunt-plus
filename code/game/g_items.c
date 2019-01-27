@@ -864,15 +864,11 @@ ClearRegisteredItems
 void ClearRegisteredItems( void ) {
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
-#if MAPLENSFLARES	// JUHOX: don't load items for lens flare editor
+    // JUHOX: don't load items for lens flare editor
 	if (g_editmode.integer == EM_mlf) return;
-#endif
 
 	// players always start with the base weapon
-#if 0	// JUHOX: new base weapons
-	RegisterItem( BG_FindItemForWeapon( WP_MACHINEGUN ) );
-	RegisterItem( BG_FindItemForWeapon( WP_GAUNTLET ) );
-#else
+
 	RegisterItem(BG_FindItem("5 Health"));
 	RegisterItem(BG_FindItem("Armor Shard"));
 	if (g_armorFragments.integer) {
@@ -902,7 +898,7 @@ void ClearRegisteredItems( void ) {
 	if (g_respawnAtPOD.integer && g_gametype.integer == GT_CTF) {
 		RegisterItem(BG_FindItem("POD marker"));
 	}
-#endif
+
 #if MONSTER_MODE	// JUHOX: register artefact item
 	if (g_gametype.integer == GT_STU) {
 		RegisterItem(BG_FindItem("Artefact"));

@@ -19,7 +19,7 @@ typedef struct {
 gentity_t		g_entities[MAX_GENTITIES];
 gclient_t		g_clients[MAX_CLIENTS];
 
-#if 1	// JUHOX: server global variables for game templates
+// JUHOX: server global variables for game templates
 char templateFileList[TEMPLATE_FILE_LIST_SIZE];
 int numTemplateFiles;
 gametemplatelist_t templateList;
@@ -37,11 +37,8 @@ static int numClientsToServe;
 static int nextServiceTime;
 long sv_mapChecksum;
 static const char* hiscoreRejectionReason;
-#endif
 
-#if MAPLENSFLARES	// JUHOX: cvars for map lens flares
-vmCvar_t	g_editmode;
-#endif
+vmCvar_t	g_editmode; // JUHOX: cvar for map lens flares
 vmCvar_t	g_gametype;
 vmCvar_t	g_dmflags;
 vmCvar_t	g_fraglimit;
@@ -140,9 +137,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
 	{ NULL, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
 
-#if MAPLENSFLARES	// JUHOX: cvars for map lens flares
+    // JUHOX: cvars for map lens flares
 	{ &g_editmode, "g_editmode", "0", CVAR_SERVERINFO | CVAR_INIT, 0, qfalse },
-#endif
+
 	// latched vars
 	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH, 0, qfalse  },
 

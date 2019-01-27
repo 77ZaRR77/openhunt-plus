@@ -1281,7 +1281,6 @@ static void UI_TemplatesComplete_f(void) {
 JUHOX: UI_LFEdit_f
 =================
 */
-#if MAPLENSFLARES
 static void UI_LFEdit_f(void) {
 	const char* mapname;
 
@@ -1300,7 +1299,7 @@ static void UI_LFEdit_f(void) {
 	// the wait commands will allow the dedicated to take effect
 	trap_Cmd_ExecuteText(EXEC_APPEND, va( "wait ; wait ; devmap %s\n", mapname));
 }
-#endif
+
 
 /*
 =================
@@ -1465,12 +1464,10 @@ qboolean UI_ConsoleCommand( int realTime ) {
 	}
 #endif
 
-#if MAPLENSFLARES	// JUHOX: commands for map lens flares
 	if (Q_stricmp(cmd, "lfedit") == 0) {
 		UI_LFEdit_f();
 		return qtrue;
 	}
-#endif
 
 #if TSSINCVAR	// JUHOX: commands for loading TSS files
 	if (Q_stricmp(cmd, "tssdata") == 0) {

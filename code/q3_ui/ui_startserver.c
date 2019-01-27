@@ -1087,9 +1087,7 @@ static void ServerOptions_Start( void ) {
 	trap_Cvar_SetValue("ui_additionalSlots", Com_Clamp(0, MAX_CLIENTS, additionalSlots));	// JUHOX
 	trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, /*12*/MAX_CLIENTS, maxclients ) );	// JUHOX
 	trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, dedicated ) );
-#if MAPLENSFLARES	// JUHOX: reset edit mode
 	trap_Cvar_SetValue("g_editmode", 0);
-#endif
 	trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
 	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
 	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );

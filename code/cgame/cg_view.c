@@ -857,23 +857,8 @@ static int CG_CalcViewValues( void ) {
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
 
 	// JUHOX: offset vieworg for lens flare editor fine move mode
-#if MAPLENSFLARES
-	/*
-	if (
-		cgs.editMode == EM_mlf &&
-		cg.lfEditor.selectedLFEnt &&
-		cg.lfEditor.editMode > LFEEM_none &&
-		cg.lfEditor.selectedLFEnt->lock
-	) {
-		VectorAdd(cg.lfEditor.selectedLFEnt->lock->lerpOrigin, cg.lfEditorMoverOffset, cg.refdef.vieworg);
-	}
-	*/
-	if (
-		cgs.editMode == EM_mlf &&
-		cg.lfEditor.selectedLFEnt &&
-		cg.lfEditor.editMode > LFEEM_none &&
-		cg.lfEditor.moveMode == LFEMM_fine
-	) {
+
+	if ( cgs.editMode == EM_mlf && cg.lfEditor.selectedLFEnt &&	cg.lfEditor.editMode > LFEEM_none && cg.lfEditor.moveMode == LFEMM_fine	) {
 		vec3_t cursor;
 
 		CG_LFEntOrigin(cg.lfEditor.selectedLFEnt, cursor);
@@ -883,7 +868,6 @@ static int CG_CalcViewValues( void ) {
 		}
 		VectorMA(cursor, -cg.lfEditor.fmm_distance, cg.refdef.viewaxis[0], cg.refdef.vieworg);
 	}
-#endif
 
 	if ( cg.hyperspace ) {
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;
@@ -966,7 +950,6 @@ static void CG_PlayBufferedSounds( void ) {
 JUHOX: CG_DrawMapLensFlare
 ===============
 */
-#if MAPLENSFLARES
 static void CG_DrawMapLensFlare(
 	const lensFlare_t* lf,
 	float distance,
@@ -992,13 +975,6 @@ static void CG_DrawMapLensFlare(
 		radius *= visibleLight * 1000000.0 / Square(distance);
 		break;
 	case LFM_star:
-		/*
-		alpha *= lf->rgba[3];
-		radius *= 40000.0 / (distance * sqrt(distance) * sqrt(sqrt(sqrt(distance))));
-
-		radius *= cg.refdef.fov_x / 90;	// lens flares do not change size through zooming
-		alpha /= radius;
-		*/
 		alpha *= lf->rgba[3];
 		radius *= visibleLight * 40000.0 / (distance * sqrt(distance) * sqrt(sqrt(sqrt(distance))));
 		break;
@@ -1024,14 +1000,13 @@ static void CG_DrawMapLensFlare(
 	VectorMA(center, lf->pos, dir, ent.origin);
 	trap_R_AddRefEntityToScene(&ent);
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_AddLensFlareMarker
 =====================
 */
-#if MAPLENSFLARES
 static void CG_AddLensFlareMarker(int lfe) {
 	const lensFlareEntity_t* lfent;
 	float radius;
@@ -1118,29 +1093,25 @@ static void CG_AddLensFlareMarker(int lfe) {
 		}
 	}
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_IsLFVisible
 =====================
 */
-#if MAPLENSFLARES
 static qboolean CG_IsLFVisible(const vec3_t origin, const vec3_t pos, float lfradius) {
 	trace_t trace;
-
 	CG_SmoothTrace(&trace, cg.refdef.vieworg, NULL, NULL, pos, cg.snap->ps.clientNum, MASK_OPAQUE|CONTENTS_BODY);
-	//return (1.0 - trace.fraction) * distance <= lfradius;
 	return Distance(trace.endpos, origin) <= lfradius;
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_ComputeVisibleLightSample
 =====================
 */
-#if MAPLENSFLARES
 #define NUMVISSAMPLES 50
 static float CG_ComputeVisibleLightSample(
 	lensFlareEntity_t* lfent,
@@ -1149,16 +1120,7 @@ static float CG_ComputeVisibleLightSample(
 	vec3_t visOrigin,
 	int quality
 ) {
-	/*
-	static const float angleTab[48] = {
-		0, 45, 90, 135, 180, 225, 270, 315,
-		7.5, 15, 22.5, 30, 37.5, 52.5, 60, 67.5,
-		75, 82.5, 97.5, 105, 112.5, 120, 127.5, 142.5,
-		150, 157.5, 165, 172.5, 187.5, 195, 202.5, 210,
-		217.5, 232.5, 240, 247.5, 255, 262.5, 277.5, 285,
-		292.5, 300, 307.5, 322.5, 330, 337.5, 345, 352.5
-	};
-	*/
+
 	vec3_t vx, vy;
 	int visCount;
 	int i;
@@ -1211,21 +1173,7 @@ static float CG_ComputeVisibleLightSample(
 			float radius;
 			float x, y;
 
-			/*
-			if (i == 8) {
-				if (visCount <= 0) return 0;
-				if (visCount >= 8) {
-					VectorCopy(origin, visOrigin);
-					return 1;
-				}
-			}
-			*/
-			/*
-			angle = (M_PI/180) * (angleTab[i] + offset);
-			x = 0.95 * lfent->lightRadius * cos(angle);
-			y = 0.95 * lfent->lightRadius * sin(angle);
-			*/
-			angle = (2*M_PI) * /*random()*/i / (float)NUMVISSAMPLES;
+			angle = (2*M_PI) *i / (float)NUMVISSAMPLES;
 			radius = 0.95 * lfent->lightRadius * sqrt(random());
 
 			x = radius * cos(angle);
@@ -1247,14 +1195,13 @@ static float CG_ComputeVisibleLightSample(
 
 	return (float)visCount / (float)NUMVISSAMPLES;
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_SetVisibleLightSample
 =====================
 */
-#if MAPLENSFLARES
 static void CG_SetVisibleLightSample(lensFlareEntity_t* lfent, float visibleLight, const vec3_t visibleOrigin) {
 	vec3_t vorg;
 
@@ -1274,14 +1221,13 @@ static void CG_SetVisibleLightSample(lensFlareEntity_t* lfent, float visibleLigh
 	}
 	lfent->libNumEntries++;
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_GetVisibleLight
 =====================
 */
-#if MAPLENSFLARES
 static float CG_GetVisibleLight(lensFlareEntity_t* lfent, vec3_t visibleOrigin) {
 	int maxLibEntries;
 	int i;
@@ -1335,14 +1281,13 @@ static float CG_GetVisibleLight(lensFlareEntity_t* lfent, vec3_t visibleOrigin) 
 	}
 	return visLight;
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_AddMapLensFlares
 =====================
 */
-#if MAPLENSFLARES
 #define SPRITE_DISTANCE 8
 static void CG_AddMapLensFlares(void) {
 	int i;
@@ -1483,14 +1428,6 @@ static void CG_AddMapLensFlares(void) {
 			alpha = 1.0 - distance / lfeff->range;
 		}
 
-		/*
-		if (fabs(angles[YAW]) > 0.5 * cg.refdef.fov_x) {
-			alpha *= 1.0 - (fabs(angles[YAW]) - 0.5 * cg.refdef.fov_x) / (90 - 0.5 * cg.refdef.fov_x);
-		}
-		if (fabs(angles[PITCH]) > 0.5 * cg.refdef.fov_y) {
-			alpha *= 1.0 - (fabs(angles[PITCH]) - 0.5 * cg.refdef.fov_y) / (90 - 0.5 * cg.refdef.fov_y);
-		}
-		*/
 		if (viewAngle > 0.5 * cg.refdef.fov_x) {
 			alpha *= 1.0 - (viewAngle - 0.5 * cg.refdef.fov_x) / (90 - 0.5 * cg.refdef.fov_x);
 		}
@@ -1544,14 +1481,13 @@ static void CG_AddMapLensFlares(void) {
 
 	VectorCopy(cg.refdef.vieworg, cg.lastViewOrigin);
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_AddLFEditorCursor
 =====================
 */
-#if MAPLENSFLARES
 void CG_AddLFEditorCursor(void) {
 	trace_t trace;
 	vec3_t end;
@@ -1649,7 +1585,6 @@ void CG_AddLFEditorCursor(void) {
 		}
 	}
 }
-#endif
 
 //=========================================================================
 
@@ -1848,10 +1783,9 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 #endif
 		CG_AddParticles ();
 		CG_AddLocalEntities();
-#if MAPLENSFLARES	// JUHOX: add map lens flares
 		CG_AddMapLensFlares();
-#endif
 	}
+
 	CG_AddViewWeapon( &cg.predictedPlayerState );
 
 	// add buffered sounds
@@ -1861,9 +1795,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_PlayBufferedVoiceChats();
 
 	// finish up the rest of the refdef
-	if ( cg.testModelEntity.hModel ) {
-		CG_AddTestModel();
-	}
+	if ( cg.testModelEntity.hModel ) CG_AddTestModel();
+
 	cg.refdef.time = cg.time;
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 

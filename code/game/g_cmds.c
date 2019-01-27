@@ -1810,7 +1810,6 @@ static void Cmd_BotDebug_f(gentity_t* ent) {
 JUHOX: Cmd_LFEMM_f
 =================
 */
-#if MAPLENSFLARES
 static void Cmd_LFEMM_f(gentity_t* ent) {
 	char arg[16];
 
@@ -1847,7 +1846,7 @@ static void Cmd_LFEMM_f(gentity_t* ent) {
 		}
 	}
 }
-#endif
+
 
 /*
 =================
@@ -1938,14 +1937,14 @@ void ClientCommand( int clientNum ) {
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-#if MAPLENSFLARES	// JUHOX: don't accept normal client commands in edit mode
+    // JUHOX: don't accept normal client commands in edit mode
 	if (g_editmode.integer > EM_none) {
 		if (!Q_stricmp(cmd, "lfemm")) {
 			Cmd_LFEMM_f(ent);
 		}
 		return;
 	}
-#endif
+
 	if (Q_stricmp (cmd, "say") == 0) {
 		Cmd_Say_f (ent, SAY_ALL, qfalse);
 		return;

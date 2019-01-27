@@ -59,7 +59,6 @@ static void CG_Viewpos_f (void) {
 static void CG_ScoresDown_f( void ) {
 
 	// JUHOX: toggle lens flare editor move mode
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		if (
 			cg.lfEditor.selectedLFEnt &&
@@ -70,7 +69,6 @@ static void CG_ScoresDown_f( void ) {
 		}
 		return;
 	}
-#endif
 
 	if ( cg.scoresRequestTime + 2000 < cg.time ) {
 		// the scores are more than two seconds out of data,
@@ -103,7 +101,6 @@ static void CG_ScoresUp_f( void ) {
 JUHOX: CG_SaveLensFlareEntities_f
 =================
 */
-#if MAPLENSFLARES
 static void CG_SaveLensFlareEntities_f(void) {
 	char mapname[256];
 	char name[256];
@@ -164,27 +161,25 @@ static void CG_SaveLensFlareEntities_f(void) {
 
 	CG_Printf("%d lens flare entities saved\n", n);
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_RevertLensFlareEntities_f
 =================
 */
-#if MAPLENSFLARES
 static void CG_RevertLensFlareEntities_f(void) {
 	if (cgs.editMode != EM_mlf) return;
 
 	CG_LoadLensFlareEntities();
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_UpdateLensFlares_f
 =================
 */
-#if MAPLENSFLARES
 static void CG_UpdateLensFlares_f(void) {
 	if (cgs.editMode != EM_mlf) return;
 
@@ -192,8 +187,6 @@ static void CG_UpdateLensFlares_f(void) {
 	CG_LoadLensFlares();
 	CG_LoadLensFlareEntities();
 }
-#endif
-
 
 static void CG_TellTarget_f( void ) {
 	int		clientNum;
@@ -321,11 +314,9 @@ static consoleCommand_t	commands[] = {
 	{ "+throwhook", CG_Hook_Plus_f },	// JUHOX
 	{ "-throwhook", CG_Hook_Minus_f },	// JUHOX
 	// JUHOX: add lens flare editor commands
-#if MAPLENSFLARES
 	{ "lfsave", CG_SaveLensFlareEntities_f },
 	{ "lfrevert", CG_RevertLensFlareEntities_f },
 	{ "lfupdate", CG_UpdateLensFlares_f },
-#endif
 	{ "startOrbit", CG_StartOrbit_f },
 	{ "loaddeferred", CG_LoadDeferredPlayers }
 };

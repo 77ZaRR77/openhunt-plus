@@ -16,7 +16,6 @@
 #define ESCAPE_MODE			1	// JUHOX: also requires MONSTER_MODE
 #define SPECIAL_VIEW_MODES	1	// JUHOX: also requires MONSTER_MODE
 #define GRAPPLE_ROPE		1	// JUHOX
-#define MAPLENSFLARES		1	// JUHOX
 #define TSSINCVAR			1	// JUHOX
 #define PLAYLIST			1	// JUHOX
 #define MEETING				1	// JUHOX
@@ -222,17 +221,14 @@ typedef enum {
 } gametype_t;
 
 // JUHOX: global definitions for map lens flares
-#if MAPLENSFLARES
 typedef enum {
 	EM_none,
 	EM_mlf		// map lens flares
 } editMode_t;
-#endif
 
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 // JUHOX: definitions for game templates
-#if 1
 typedef enum {
 	TKS_missing,
 	TKS_defaultValue,
@@ -356,7 +352,7 @@ void BG_GetGameTemplateList(gametemplatelist_t* list, int numFiles, const char* 
 long BG_TemplateChecksum(const char* name, int highscoreType, const char* highscore, const char* highscoreDescriptor);
 char BG_ChecksumChar(long checksum);
 unsigned long BG_VectorChecksum(const vec3_t v);
-#endif
+
 
 // JUHOX: grapple states; these are stored in player's entityState.modelindex
 #if GRAPPLE_ROPE

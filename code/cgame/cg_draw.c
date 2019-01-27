@@ -1006,14 +1006,11 @@ CG_DrawUpperRight
 static void CG_DrawUpperRight( void ) {
 	float	y = 0;
 
-	//y = 0;
-
-#if MAPLENSFLARES	// JUHOX: draw lens flare editor title
+	// JUHOX: draw lens flare editor title
 	if (cgs.editMode == EM_mlf) {
 		CG_DrawBigString(640 - 17 * BIGCHAR_WIDTH, y, "lens flare editor", 1);
 		y += BIGCHAR_HEIGHT;
 	}
-#endif
 
 	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 1 ) {
 		y = CG_DrawTeamOverlay( y, qtrue, qtrue );
@@ -1575,9 +1572,7 @@ static void CG_DrawLowerRight( void ) {
 	float	y;
 
 	// JUHOX: don't draw scores in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) return;
-#endif
 
 	y = 480 - ICON_SIZE;
 
@@ -2711,7 +2706,6 @@ static void CG_DrawCrosshairNames( void ) {
 JUHOX: CG_DrawLensFlareEffectList
 =================
 */
-#if MAPLENSFLARES
 static void CG_DrawLensFlareEffectList(void) {
 	int firstEffect;
 	int y;
@@ -2737,14 +2731,13 @@ static void CG_DrawLensFlareEffectList(void) {
 		y += TINYCHAR_HEIGHT;
 	}
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_DrawCopyOptions
 =================
 */
-#if MAPLENSFLARES
 static void CG_DrawCopyOptions(void) {
 	int y;
 	char buf[256];
@@ -2779,7 +2772,7 @@ static void CG_DrawCopyOptions(void) {
 	Com_sprintf(buf, sizeof(buf), "[1] done");
 	CG_DrawStringExt(0, y, buf, colorWhite, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
 }
-#endif
+
 
 /*
 =================
@@ -2788,7 +2781,6 @@ CG_DrawSpectator
 */
 static void CG_DrawSpectator(void) {
 	// JUHOX: map lens flares edit mode
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) {
 		static const vec4_t backFillColor = {
 			0.0, 0.0, 0.0, 0.6
@@ -2976,7 +2968,7 @@ static void CG_DrawSpectator(void) {
 		}
 	}
 	else
-#endif
+
 	CG_DrawBigString(320 - 9 * 8, 440, "SPECTATOR", 1.0F);
 	if ( cgs.gametype == GT_TOURNAMENT ) {
 		CG_DrawBigString(320 - 15 * 8, 460, "waiting to play", 1.0F);
@@ -3598,22 +3590,16 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		VectorMA( cg.refdef.vieworg, -separation, cg.refdef.viewaxis[1], cg.refdef.vieworg );
 	}
 
-#if MAPLENSFLARES	// JUHOX: add lens flare editor cursor
-	if (
-		cgs.editMode == EM_mlf &&
-		!(
-			cg.lfEditor.moversStopped &&
-			cg.lfEditor.selectedMover
-		)
-	) {
+	// JUHOX: add lens flare editor cursor
+	if ( cgs.editMode == EM_mlf && !(cg.lfEditor.moversStopped && cg.lfEditor.selectedMover ) ) {
 		CG_AddLFEditorCursor();
 	}
-#endif
+
 
 	// draw 3D view
 	trap_R_RenderScene( &cg.refdef );
 
-#if MAPLENSFLARES	// JUHOX: mark selected mover for lens flare editor
+	// JUHOX: mark selected mover for lens flare editor
 	if (
 		cgs.editMode == EM_mlf &&
 		cg.lfEditor.moversStopped &&
@@ -3628,7 +3614,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL;
 		trap_R_RenderScene(&cg.refdef);
 	}
-#endif
+
 
 	// restore original viewpoint if running stereo
 	if ( separation != 0 ) {

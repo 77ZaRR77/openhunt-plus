@@ -170,23 +170,15 @@ vmCvar_t	cg_oldPlasma;
 vmCvar_t	cg_trueLightning;
 vmCvar_t	cg_glassCloaking;	// JUHOX
 vmCvar_t	cg_lensFlare;		// JUHOX
-#if MAPLENSFLARES
 vmCvar_t	cg_mapFlare;		// JUHOX
 vmCvar_t	cg_sunFlare;		// JUHOX
 vmCvar_t	cg_missileFlare;	// JUHOX
-#endif
 vmCvar_t	cg_BFGsuperExpl;		// JUHOX
 vmCvar_t	cg_nearbox;			// JUHOX
 vmCvar_t	cg_autoGLC;			// JUHOX
 #if PLAYLIST
 vmCvar_t	cg_music;	// JUHOX: 0 = no music, 1 = default music, 2 = playlist
 #endif
-/*
-vmCvar_t	cg_tssFileService;	// JUHOX
-vmCvar_t	cg_tssFileLen;		// JUHOX
-vmCvar_t	cg_tssPacketLen;	// JUHOX
-*/
-
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -209,8 +201,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_tmplcmd, "tmplcmd", "", CVAR_ROM },	// JUHOX
 	{ &cg_noTrace, "cg_noTrace", "0", CVAR_ARCHIVE },	// JUHOX
 	{ &cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE },
-	// JUHOX: new weapon switching cvars
-#if 1
+
 	{ &cg_autoswitchAmmoLimit, "cg_autoswitchAmmoLimit", "50", CVAR_ARCHIVE },
 	{ &cg_weaponOrder[0], "cg_weaponOrder0", "ICFJDHGLEB", CVAR_ARCHIVE },
 	{ &cg_weaponOrder[1], "cg_weaponOrder1", "DCGHLBIFEJ", CVAR_ARCHIVE },
@@ -224,7 +215,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_weaponOrderName[3], "cg_weaponOrder3Name", "annihilation", CVAR_ARCHIVE },
 	{ &cg_weaponOrderName[4], "cg_weaponOrder4Name", "revenge", CVAR_ARCHIVE },
 	{ &cg_weaponOrderName[5], "cg_weaponOrder5Name", "defence", CVAR_ARCHIVE },
-#endif
+
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22.5", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "120", CVAR_ARCHIVE },
@@ -288,11 +279,11 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_stats, "cg_stats", "0", 0 },
 	{ &cg_glassCloaking, "cg_glassCloaking", "0", CVAR_ARCHIVE | CVAR_USERINFO},	// JUHOX
 	{ &cg_lensFlare, "cg_lensFlare", "1", CVAR_ARCHIVE},	// JUHOX
-#if MAPLENSFLARES
+
 	{ &cg_mapFlare, "cg_mapFlare", "2", CVAR_ARCHIVE},		// JUHOX
 	{ &cg_sunFlare, "cg_sunFlare", "2", CVAR_ARCHIVE},		// JUHOX
 	{ &cg_missileFlare, "cg_missileFlare", "1", CVAR_ARCHIVE},	// JUHOX
-#endif
+
 	{ &cg_BFGsuperExpl, "cg_BFGsuperExpl", "1", CVAR_ARCHIVE},	// JUHOX
 	{ &cg_nearbox, "cg_nearbox", "1", CVAR_ARCHIVE},	// JUHOX
 	{ &cg_autoGLC, "cg_autoGLC", "1", CVAR_ARCHIVE},	// JUHOX
@@ -306,24 +297,14 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE },
 	{ &cg_synchronousClients, "g_synchronousClients", "0", 0 },	// communicated by systeminfo
-/*
-	{ &cg_tssFileService, "cg_tssFileService", "0", CVAR_ROM },	// JUHOX
-	{ &cg_tssFileLen, "cg_tssFileLen", "0", CVAR_ROM },	// JUHOX
-	{ &cg_tssPacketLen, "cg_tssPacketLen", "0", CVAR_ROM },	// JUHOX
-*/
 
 	{ &cg_cameraOrbit, "cg_cameraOrbit", "0", CVAR_CHEAT},
 	{ &cg_cameraOrbitDelay, "cg_cameraOrbitDelay", "50", CVAR_ARCHIVE},
 	// JUHOX: make timescale cvars be cheat protected
-#if 0
-	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
-	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
-	{ &cg_timescale, "timescale", "1", 0},
-#else
 	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", CVAR_CHEAT},
 	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", CVAR_CHEAT},
 	{ &cg_timescale, "timescale", "1", CVAR_CHEAT},
-#endif
+
 	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
@@ -343,7 +324,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_oldRocket, "cg_oldRocket", "1", CVAR_ARCHIVE},
 	{ &cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE}
-//	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 };
 
 		static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
@@ -441,7 +421,6 @@ void CG_UpdateCvars( void ) {
 	}
 
 	// JUHOX: check for mouse & keyboard events
-#if 1
 	if (tssiMouseModificationCount != cg_tssiMouse.modificationCount) {
 		tssiMouseModificationCount = cg_tssiMouse.modificationCount;
 		CG_TSS_CheckMouseEvents();
@@ -450,10 +429,9 @@ void CG_UpdateCvars( void ) {
 		tssiKeyModificationCount = cg_tssiKey.modificationCount;
 		CG_TSS_CheckKeyEvents();
 	}
-#endif
+
 
 	// JUHOX: check for template list commands from the UI module
-#if 1
 	if (
 		!cg.infoScreenText[0] &&
 		cg.snap &&
@@ -468,7 +446,6 @@ void CG_UpdateCvars( void ) {
 			lastTmplcmdTime = cg.time;
 		}
 	}
-#endif
 }
 
 int CG_CrosshairPlayer( void ) {
@@ -745,19 +722,15 @@ static void CG_RegisterSounds( void ) {
 #endif
 
 	// JUHOX: register pant sounds
-#if 1
 	cgs.media.malePantSound = trap_S_RegisterSound("sound/player/pantm.wav", qfalse);
 	cgs.media.femalePantSound = trap_S_RegisterSound("sound/player/pantf.wav", qfalse);
 	cgs.media.neuterPantSound = trap_S_RegisterSound("sound/player/pantn.wav", qfalse);
-#endif
 
 	// only register the items that the server says we need
 	strcpy( items, CG_ConfigString( CS_ITEMS ) );
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
-//		if ( items[ i ] == '1' || cg_buildScript.integer ) {
-			CG_RegisterItemSounds( i );
-//		}
+        CG_RegisterItemSounds( i );
 	}
 
 	for ( i = 1 ; i < MAX_SOUNDS ; i++ ) {
@@ -798,21 +771,19 @@ static void CG_RegisterSounds( void ) {
 JUHOX: CG_LFEntOrigin
 =====================
 */
-#if MAPLENSFLARES
 void CG_LFEntOrigin(const lensFlareEntity_t* lfent, vec3_t origin) {
 	VectorCopy(lfent->origin, origin);
 	if (lfent->lock) {
 		VectorAdd(origin, lfent->lock->lerpOrigin, origin);
 	}
 }
-#endif
+
 
 /*
 =====================
 JUHOX: CG_SetLFEntOrigin
 =====================
 */
-#if MAPLENSFLARES
 void CG_SetLFEntOrigin(lensFlareEntity_t* lfent, const vec3_t origin) {
 	if (lfent->lock) {
 		VectorSubtract(origin, lfent->lock->lerpOrigin, lfent->origin);
@@ -821,14 +792,13 @@ void CG_SetLFEntOrigin(lensFlareEntity_t* lfent, const vec3_t origin) {
 		VectorCopy(origin, lfent->origin);
 	}
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_SetLFEdMoveMode
 =================
 */
-#if MAPLENSFLARES
 void CG_SetLFEdMoveMode(lfeMoveMode_t mode) {
 	vec3_t origin;
 
@@ -859,14 +829,13 @@ void CG_SetLFEdMoveMode(lfeMoveMode_t mode) {
 
 	cg.lfEditor.moveMode = mode;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_SelectLFEnt
 =================
 */
-#if MAPLENSFLARES
 void CG_SelectLFEnt(int lfentnum) {
 	lensFlareEntity_t* lfent;
 
@@ -879,9 +848,9 @@ void CG_SelectLFEnt(int lfentnum) {
 	cg.lfEditor.editMode = LFEEM_none;
 	cg.lfEditor.originalLFEnt = *lfent;
 }
-#endif
 
-#if MAPLENSFLARES	// JUHOX: definitions needed for parsing the lens flare files
+
+// JUHOX: definitions needed for parsing the lens flare files
 #define FILESTACK_NAMESIZE 128
 typedef struct {
 	char path[FILESTACK_NAMESIZE];
@@ -891,18 +860,15 @@ typedef struct {
 #define FILESTACK_SIZE 128
 static int numFilesOnStack;
 static lfFileData_t fileStack[FILESTACK_SIZE];
-
 static char lfNameBase[128];
-
 static char lfbuf[65536];
-#endif
+
 
 /*
 =================
 JUHOX: CG_InitFileStack
 =================
 */
-#if MAPLENSFLARES
 static void CG_InitFileStack(void) {
 #if LFDEBUG
 	CG_LoadingString("LF: CG_InitFileStack()");
@@ -910,14 +876,13 @@ static void CG_InitFileStack(void) {
 	numFilesOnStack = 0;
 	lfbuf[0] = 0;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_PushFile
 =================
 */
-#if MAPLENSFLARES
 static void CG_PushFile(const char* path, const char* name) {
 #if LFDEBUG
 	CG_LoadingString(va("LF: CG_PushFile(%s)", name));
@@ -928,14 +893,13 @@ static void CG_PushFile(const char* path, const char* name) {
 	Q_strncpyz(fileStack[numFilesOnStack].name, name, FILESTACK_NAMESIZE);
 	numFilesOnStack++;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_PopFile
 =================
 */
-#if MAPLENSFLARES
 static qboolean CG_PopFile(void) {
 	char name[256];
 	fileHandle_t file;
@@ -980,14 +944,13 @@ static qboolean CG_PopFile(void) {
 	trap_FS_FCloseFile(file);
 	return qtrue;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_ParseLensFlare
 =================
 */
-#if MAPLENSFLARES
 static qboolean CG_ParseLensFlare(char** p, lensFlare_t* lf, const char* lfename) {
 	char* token;
 
@@ -1095,14 +1058,13 @@ static qboolean CG_ParseLensFlare(char** p, lensFlare_t* lf, const char* lfename
 	}
 	return qtrue;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_FindLensFlareEffect
 =================
 */
-#if MAPLENSFLARES
 static const lensFlareEffect_t* CG_FindLensFlareEffect(const char* name) {
 	int i;
 
@@ -1116,14 +1078,13 @@ static const lensFlareEffect_t* CG_FindLensFlareEffect(const char* name) {
 	}
 	return NULL;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_FinalizeLensFlareEffect
 =================
 */
-#if MAPLENSFLARES
 static void CG_FinalizeLensFlareEffect(lensFlareEffect_t* lfeff) {
 	int i;
 
@@ -1140,14 +1101,13 @@ static void CG_FinalizeLensFlareEffect(lensFlareEffect_t* lfeff) {
 		lf->intensityThreshold = 1 / (1 - lf->intensityThreshold) - 1;
 	}
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_ParseLensFlareEffect
 =================
 */
-#if MAPLENSFLARES
 static qboolean CG_ParseLensFlareEffect(char** p, lensFlareEffect_t* lfe) {
 	char* token;
 	char* name;
@@ -1240,14 +1200,13 @@ static qboolean CG_ParseLensFlareEffect(char** p, lensFlareEffect_t* lfe) {
 
 	return qtrue;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_LoadLensFlares
 =================
 */
-#if MAPLENSFLARES
 void CG_LoadLensFlares(void) {
 	char* p;
 
@@ -1275,14 +1234,13 @@ void CG_LoadLensFlares(void) {
 	}
 	CG_Printf("%d lens flare effects loaded\n", cgs.numLensFlareEffects);
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_ComputeMaxVisAngle
 =================
 */
-#if MAPLENSFLARES
 void CG_ComputeMaxVisAngle(lensFlareEntity_t* lfent) {
 	const lensFlareEffect_t* lfeff;
 	int i;
@@ -1308,14 +1266,13 @@ void CG_ComputeMaxVisAngle(lensFlareEntity_t* lfent) {
 	}
 	lfent->maxVisAngle = maxVisAngle;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_ParseLensFlareEntity
 =================
 */
-#if MAPLENSFLARES
 static qboolean CG_ParseLensFlareEntity(char** p, lensFlareEntity_t* lfent) {
 	char* token;
 
@@ -1338,7 +1295,6 @@ static qboolean CG_ParseLensFlareEntity(char** p, lensFlareEntity_t* lfent) {
 	lfent->lfeff = CG_FindLensFlareEffect(token);
 	if (!lfent->lfeff) {
 		CG_Printf(S_COLOR_YELLOW "undefined lens flare effect '%s'\n", token);
-		//return qfalse;
 	}
 
 	lfent->origin[0] = atof(COM_Parse(p));
@@ -1392,14 +1348,13 @@ static qboolean CG_ParseLensFlareEntity(char** p, lensFlareEntity_t* lfent) {
 
 	return qtrue;
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_LoadLensFlareEntities
 =================
 */
-#if MAPLENSFLARES
 void CG_LoadLensFlareEntities(void) {
 	char name[256];
 	fileHandle_t f;
@@ -1476,7 +1431,7 @@ void CG_LoadLensFlareEntities(void) {
 	CG_LoadingString("LF: CG_LoadLensFlareEntities() ready");
 #endif
 }
-#endif
+
 
 /*
 =================
@@ -1510,25 +1465,21 @@ static void CG_RegisterGraphics( void ) {
 
 	trap_R_LoadWorldMap( cgs.mapname );
 
-#if MAPLENSFLARES	// JUHOX: load map lens flares
+    // JUHOX: load map lens flares
 	CG_LoadingString("lens flares");
 	CG_LoadLensFlares();
 	CG_LoadLensFlareEntities();
 	cg.lfEditor.copyOptions = -1;
 	cg.lfEditor.copiedLFEnt.dir[0] = 1;
-#endif
 
 	// JUHOX: load nearbox shaders
-#if 1
 	if (cgs.nearboxShaderName[0]) {
-		//cgs.media.nearbox_up = trap_R_RegisterShader(va("%s_up", cgs.nearboxShaderName));
 		cgs.media.nearbox_dn = trap_R_RegisterShader(va("%s_dn", cgs.nearboxShaderName));
 		cgs.media.nearbox_ft = trap_R_RegisterShader(va("%s_ft", cgs.nearboxShaderName));
 		cgs.media.nearbox_bk = trap_R_RegisterShader(va("%s_bk", cgs.nearboxShaderName));
 		cgs.media.nearbox_lf = trap_R_RegisterShader(va("%s_lf", cgs.nearboxShaderName));
 		cgs.media.nearbox_rt = trap_R_RegisterShader(va("%s_rt", cgs.nearboxShaderName));
 	}
-#endif
 
 	// precache status bar pics
 	CG_LoadingString( "game media" );
@@ -1581,12 +1532,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.quadWeaponShader = trap_R_RegisterShader("powerups/quadWeapon" );
 	cgs.media.battleSuitShader = trap_R_RegisterShader("powerups/battleSuit" );
 	cgs.media.battleWeaponShader = trap_R_RegisterShader("powerups/battleWeapon" );
-	// JUHOX: new invisibility shader
-#if 0
-	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility" );
-#else
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/stdInvis" );
-#endif
 	cgs.media.regenShader = trap_R_RegisterShader("powerups/regen" );
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff" );
 	cgs.media.chargeShader = trap_R_RegisterShader("powerups/charge");				// JUHOX
@@ -1597,7 +1543,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.glassCloakingShader = trap_R_RegisterShader("powerups/glassCloaking");	// JUHOX
 	cgs.media.glassCloakingSpecShader = trap_R_RegisterShader("powerups/glassCloakingSpecular");	// JUHOX
 	// JUHOX: load shaders for new spawn effect
-#if 1
 	cgs.media.spawnHullShader = trap_R_RegisterShader("spawnHull");
 	cgs.media.spawnHullGlow1Shader = trap_R_RegisterShader("spawnHullGlow1");
 	cgs.media.spawnHullGlow2Shader = trap_R_RegisterShader("spawnHullGlow2");
@@ -1608,7 +1553,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.spawnHullGlow2WeaponShader = trap_R_RegisterShader("spawnHullGlow2Weapon");
 	cgs.media.spawnHullGlow3WeaponShader = trap_R_RegisterShader("spawnHullGlow3Weapon");
 	cgs.media.spawnHullGlow4WeaponShader = trap_R_RegisterShader("spawnHullGlow4Weapon");
-#endif
 
 	cgs.media.navaidShader = trap_R_RegisterShader("navaidline");	// JUHOX
 	cgs.media.navaid2Shader = trap_R_RegisterShader("navaidline2");	// JUHOX
@@ -1634,11 +1578,10 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.deathBlurryShader = trap_R_RegisterShader("deathBlurry");	// JUHOX
 	// JUHOX: load skull skin for CTF place-of-death marker
-#if 1
 	if (cgs.gametype == GT_CTF) {
 		cgs.media.podSkullSkin = trap_R_RegisterSkin("models/players/bones/head_bones.skin");
 	}
-#endif
+
 #if SPECIAL_VIEW_MODES
 	cgs.media.scannerShader = trap_R_RegisterShader("scannerFilter");		// JUHOX
 	cgs.media.amplifierShader = trap_R_RegisterShader("lightAmplifier");	// JUHOX
@@ -1722,7 +1665,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.medalCapture = trap_R_RegisterShaderNoMip( "medal_capture" );
 
 	// JUHOX: load group mark sprites
-#if 1
 	cgs.media.groupDesignated = trap_R_RegisterShader("tssgroupDesignated");
 	cgs.media.groupTemporary = trap_R_RegisterShader("tssgroupTemporary");
 	for (i = 0; i < MAX_GROUPS; i++) {
@@ -1731,7 +1673,6 @@ static void CG_RegisterGraphics( void ) {
 		Com_sprintf(name, sizeof(name), "tssgroup%c", i + 'A');
 		cgs.media.groupMarks[i] = trap_R_RegisterShader(name);
 	}
-#endif
 
 	memset( cg_items, 0, sizeof( cg_items ) );
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
@@ -1819,9 +1760,7 @@ static void CG_RegisterClients( void ) {
 	int		i;
 
 	// JUHOX: don't load client models in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) return;
-#endif
 
 	CG_LoadingClient(cg.clientNum);
 	CG_NewClientInfo(cg.clientNum);
@@ -1938,10 +1877,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	CG_TSS_InitInterface();	// JUHOX
 
-	// load a few needed things before we do any screen updates
-#if 0	// JUHOX: new charsetShader
-	cgs.media.charsetShader		= trap_R_RegisterShader( "gfx/2d/bigchars" );
-#else
 	cgs.media.oldCharsetShader = trap_R_RegisterShader("gfx/2d/bigchars");	// better readable with low resolutions
 	cgs.media.charsetShaders[0] = trap_R_RegisterShader("gfx/2d/bigchar0");
 	cgs.media.charsetShaders[1] = trap_R_RegisterShader("gfx/2d/bigchar1");
@@ -1951,7 +1886,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	cgs.media.charsetShaders[5] = trap_R_RegisterShader("gfx/2d/bigchar5");
 	cgs.media.charsetShaders[6] = trap_R_RegisterShader("gfx/2d/bigchar6");
 	cgs.media.charsetShaders[7] = trap_R_RegisterShader("gfx/2d/bigchar7");
-#endif
+
 	cgs.media.whiteShader		= trap_R_RegisterShader( "white" );
 	cgs.media.charsetProp		= trap_R_RegisterShaderNoMip( "menu/art/font1_prop.tga" );
 	cgs.media.charsetPropGlow	= trap_R_RegisterShaderNoMip( "menu/art/font1_prop_glo.tga" );
@@ -1986,9 +1921,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
 
-#if 1	// JUHOX: get nearbox shader name
+	// JUHOX: get nearbox shader name
 	Q_strncpyz(cgs.nearboxShaderName, CG_ConfigString(CS_NEARBOX), sizeof(cgs.nearboxShaderName));
-#endif
 
 	CG_ParseServerinfo();
 
@@ -2023,17 +1957,12 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
-#if 0	// JUHOX: don't play in-game music
-	CG_StartMusic();
-#else
-
+	// JUHOX: don't play in-game music
 #if !PLAYLIST	// JUHOX: init playlist
 	trap_S_StopBackgroundTrack();
 #else
 	CG_InitPlayList();
 	CG_ParsePlayList();
-#endif
-
 #endif
 
 
@@ -2051,7 +1980,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 		cg.timelimitWarnings = 4;
 	}
 #endif
-#if 1	// JUHOX: get record
+
+	// JUHOX: get record
 	{
 		int recordType;
 
@@ -2060,7 +1990,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 		sscanf(CG_ConfigString(CS_RECORD), "%d,%d", &recordType, &cgs.record);
 		cgs.recordType = recordType;
 	}
-#endif
 }
 
 /*
@@ -2089,8 +2018,6 @@ CG_EventHandling
 
 void CG_EventHandling(int type) {
 }
-
-
 
 void CG_KeyEvent(int key, qboolean down) {
 }

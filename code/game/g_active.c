@@ -2205,21 +2205,13 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	return;
 #endif
 
-#if MAPLENSFLARES	// JUHOX: never touch triggers in lens flare editor
+	// JUHOX: never touch triggers in lens flare editor
 	if (g_editmode.integer == EM_mlf) return;
-#endif
+
 
 	// dead clients don't activate triggers!
-#if 0	// JUHOX: only ignore dead clients if not spectating
-	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 ) {
-#else
-	if (
-		ent->client->ps.stats[STAT_HEALTH] <= 0 &&
-		ent->client->ps.pm_type != PM_SPECTATOR
-	) {
-#endif
-		return;
-	}
+
+	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 &&	ent->client->ps.pm_type != PM_SPECTATOR ) return;
 
 	VectorSubtract( ent->client->ps.origin, range, mins );
 	VectorAdd( ent->client->ps.origin, range, maxs );
@@ -2233,19 +2225,13 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	for ( i=0 ; i<num ; i++ ) {
 		hit = &g_entities[touch[i]];
 
-		if ( !hit->touch && !ent->touch ) {
-			continue;
-		}
-		if ( !( hit->r.contents & CONTENTS_TRIGGER ) ) {
-			continue;
-		}
+		if ( !hit->touch && !ent->touch ) continue;
+		if ( !( hit->r.contents & CONTENTS_TRIGGER ) ) continue;
+
 
 		// ignore most entities if a spectator
-#if 0	// JUHOX: determine spectators by 'pm_type'
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-#else
 		if (ent->client->ps.pm_type == PM_SPECTATOR) {
-#endif
+
 			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
 				// this is ugly but adding a new ET_? type will
 				// most likely cause network incompatibilities
@@ -2338,7 +2324,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 
 		pm.gametype = g_gametype.integer;	// JUHOX
 
-#if MAPLENSFLARES	// JUHOX: set player tracemask & speed for lens flare editor
+        // JUHOX: set player tracemask & speed for lens flare editor
 		if (g_editmode.integer == EM_mlf) {
 			pm.tracemask = 0;
 			if (level.lfeFMM) {
@@ -2351,7 +2337,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 				pm.cmd.upmove = 0;
 			}
 		}
-#endif
+
 
 		// perform a pmove
 		Pmove (&pm);

@@ -98,10 +98,7 @@ void InGame_Event( void *ptr, int notification ) {
 		break;
 
 	case ID_LEAVEARENA:
-		// JUHOX: reset edit mode
-#if MAPLENSFLARES
 		trap_Cvar_Set("g_editmode", "0");
-#endif
 		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		break;
 
@@ -277,14 +274,12 @@ void InGame_MenuInit( void ) {
 	s_ingame.quit.color					= color_red;
 	s_ingame.quit.style					= UI_CENTER|UI_SMALLFONT;
 
-#if MAPLENSFLARES	// JUHOX: grey out the unneeded menu items in edit mode
 	if (trap_Cvar_VariableValue("g_editmode") > 0) {
 		s_ingame.addbots.generic.flags |= QMF_GRAYED;
 		s_ingame.removebots.generic.flags |= QMF_GRAYED;
 		s_ingame.gametemplates.generic.flags |= QMF_GRAYED;
 		s_ingame.team.generic.flags |= QMF_GRAYED;
 	}
-#endif
 
 #if ESCAPE_MODE	// JUHOX: no bots in EFH
 	if (trap_Cvar_VariableValue("g_gametype") == GT_EFH) {

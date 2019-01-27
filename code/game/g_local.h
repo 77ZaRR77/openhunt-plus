@@ -10,13 +10,13 @@
 
 // the "gameversion" client command will print this plus compile date
 #define GAMEVERSION "openhunt"	// JUHOX: was "baseq3"
-#define JUHOX_BOT_DEBUG 0	// JUHOX DEBUG
+#define JUHOX_BOT_DEBUG 0   	// JUHOX DEBUG
 
 #define BODY_QUEUE_SIZE		16	// JUHOX: was 8
 
 #define INFINITE			1000000
 
-#define	FRAMETIME			100					// msec
+#define	FRAMETIME			100	// msec
 #define	CARNAGE_REWARD_TIME	3000
 #define REWARD_SPRITE_TIME	2000
 
@@ -41,9 +41,8 @@
 #define FL_NO_BOTS				0x00002000	// spawn point not for bot use
 #define FL_NO_HUMANS			0x00004000	// spawn point just for bots
 #define FL_FORCE_GESTURE		0x00008000	// force gesture on client
-#if 1
 #define FL_NON_SOLID			0x00000001	// JUHOX: for movers
-#endif
+
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
@@ -133,7 +132,7 @@ typedef enum {
 } gentityClass_t;
 #endif
 
-#if 1	// JUHOX: definitions used by the TSS server part
+// JUHOX: definitions used by the TSS server part
 typedef struct tss_serverdata_s {
 	qboolean isValid;
 	int lastUpdateTime;
@@ -174,7 +173,7 @@ typedef struct tss_serverdata_s {
 	int yts;
 	int ots;
 } tss_serverdata_t;
-#endif
+
 
 //============================================================================
 
@@ -376,10 +375,9 @@ typedef struct {
 	int			lastUsedWeapon;		// JUHOX
 	qboolean	glassCloakingEnabled;	// JUHOX: to be displayed in the scoreboard
 	qboolean	crouchingCutsRope;		// JUHOX
-#if 1	// JUHOX: variables for weapon limit
+	// JUHOX: variables for weapon limit
 	int			numChoosenWeapons;
 	int			choosenWeapons[MAX_WEAPONS];
-#endif
 } clientPersistant_t;
 
 
@@ -628,22 +626,21 @@ typedef struct {
 	int			efhSpeed;
 #endif
 
-#if MAPLENSFLARES	// JUHOX: level locals for the lens flare editor
+	// JUHOX: level locals for the lens flare editor
 	qboolean	lfeFMM;	// FMM = fine move mode
-#endif
 
-#if 1	// JUHOX: variables needed for template loading
+    // JUHOX: variables needed for template loading
 	qboolean	loadingTemplates;
 	int			templateCounter;
 	char		templateName[MAX_STRING_CHARS];
-#endif
+
 
 #if MEETING
 	qboolean	meeting;	// JUHOX
 #endif
 } level_locals_t;
 
-#if 1	// JUHOX: definitions for the game seed
+// JUHOX: definitions for the game seed
 typedef enum {
 	GST_monsterSpawning,
 	GST_artefactSpawning,
@@ -660,9 +657,9 @@ typedef enum {
 void SetGameSeed(void);
 unsigned long SeededRandom(gameseed_type_t type);
 void InitLocalSeed(gameseed_type_t type, localseed_t* seed);
-#endif
 
-#if 1	// JUHOX: definitions used by the server for game templates
+
+// JUHOX: definitions used by the server for game templates
 #define TEMPLATE_FILE_LIST_SIZE 1024
 extern char templateFileList[TEMPLATE_FILE_LIST_SIZE];
 extern int numTemplateFiles;
@@ -680,7 +677,6 @@ void G_TemplateList_Error(int clientNum, const char* checkString);
 void G_SendGameTemplate(void);
 void G_PrintTemplateList(void);
 void G_PlayTemplate(int index);
-#endif
 
 //
 // g_spawn.c
@@ -764,11 +760,7 @@ void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 void	G_InitGentity( gentity_t *e );
 gentity_t	*G_Spawn (void);
 int G_NumEntitiesFree(void);	// JUHOX
-#if 0	// JUHOX BUGFIX: added 'const' to G_TempEntity() parm 'origin'
-gentity_t *G_TempEntity( vec3_t origin, int event );
-#else
 gentity_t *G_TempEntity(const vec3_t origin, int event);
-#endif
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
 void	G_FreeEntity( gentity_t *e );
 qboolean	G_EntitiesFree( void );
@@ -784,11 +776,7 @@ float vectoyaw( const vec3_t vec );
 
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
-#if 0	// JUHOX BUGFIX: added 'const' to G_SetOrigin() parm 'origin'
-void G_SetOrigin( gentity_t *ent, vec3_t origin );
-#else
 void G_SetOrigin(gentity_t *ent, const vec3_t origin);
-#endif
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset);
 const char *BuildShaderStateConfig();
 
@@ -854,11 +842,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
 void Weapon_GrapplingHook_Throw(gentity_t* ent);	// JUHOX
 qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
-#if 0	// JUHOX: added a "const" to SnapVectorTowards()
-void SnapVectorTowards( vec3_t v, vec3_t to );
-#else
 void SnapVectorTowards(vec3_t v, const vec3_t to);
-#endif
 qboolean CheckGauntletAttack( gentity_t *ent );
 #if MONSTER_MODE
 qboolean CheckTitanAttack(gentity_t *ent);	// JUHOX
@@ -1088,10 +1072,7 @@ extern	gentity_t		g_entities[MAX_GENTITIES];
 
 #define	FOFS(x) ((int)&(((gentity_t *)0)->x))
 
-
-#if MAPLENSFLARES	// JUHOX: cvars for map lens flares
-extern	vmCvar_t	g_editmode;
-#endif
+extern	vmCvar_t	g_editmode;             // JUHOX: cvar for map lens flares
 extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;

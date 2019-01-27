@@ -457,7 +457,7 @@ typedef struct {
 #define MAX_SOUNDBUFFER		20
 
 // JUHOX: definitions used for map lens flares
-#if MAPLENSFLARES
+
 #define MAX_LENSFLARE_EFFECTS 200
 #define MAX_LENSFLARES_PER_EFFECT 32
 typedef enum {
@@ -561,7 +561,7 @@ typedef struct {
 	qboolean moversStopped;
 	centity_t* selectedMover;
 } lfEditor_t;
-#endif
+
 
 //======================================================================
 
@@ -843,15 +843,13 @@ typedef struct {
 	refdef_t	refdef;
 	vec3_t		refdefViewAngles;		// will be converted to refdef.viewaxis
 
-#if MAPLENSFLARES	// JUHOX: variables for map lens flares
+    // JUHOX: variables for map lens flares
 	vec3_t		lastViewOrigin;
 	float		viewMovement;
 	int			numFramesWithoutViewMovement;
-#endif
 
-#if MAPLENSFLARES	// JUHOX: lens flare editor variables
+    // JUHOX: lens flare editor variables
 	lfEditor_t lfEditor;
-#endif
 
 #if MONSTER_MODE	// JUHOX: earthquake variables (STU)
 	int earthquakeStartedTime;
@@ -1511,13 +1509,13 @@ typedef struct {
 	char			blueTeam[MAX_QPATH];
 	int				record;		// JUHOX: for templated games with hiscore
 	gameChallenge_t	recordType;	// JUHOX
-#if MAPLENSFLARES	// JUHOX: serverinfo cvars for map lens flares
+    // JUHOX: serverinfo cvars for map lens flares
 	editMode_t		editMode;
 	char			sunFlareEffect[128];
 	float			sunFlareYaw;
 	float			sunFlarePitch;
 	float			sunFlareDistance;
-#endif
+
 
 	// JUHOX: additional serverinfo cvars
 	int				baseHealth;
@@ -1605,14 +1603,13 @@ typedef struct {
 	int acceptLeader;
 	char acceptVoice[MAX_NAME_LENGTH];
 
-#if MAPLENSFLARES	// JUHOX: variables for map lens flares
+    // JUHOX: variables for map lens flares
 	int numLensFlareEffects;
 	lensFlareEffect_t lensFlareEffects[MAX_LENSFLARE_EFFECTS];
 
 	int numLensFlareEntities;
 	lensFlareEntity_t sunFlare;
 	lensFlareEntity_t lensFlareEntities[MAX_LIGHTS_PER_MAP];
-#endif
 
 #if MEETING
 	qboolean meeting;	// JUHOX
@@ -1737,22 +1734,15 @@ extern	vmCvar_t		cg_oldPlasma;
 extern	vmCvar_t		cg_trueLightning;
 extern	vmCvar_t		cg_glassCloaking;	// JUHOX
 extern	vmCvar_t		cg_lensFlare;		// JUHOX
-#if MAPLENSFLARES
 extern	vmCvar_t		cg_mapFlare;		// JUHOX
 extern	vmCvar_t		cg_sunFlare;		// JUHOX
 extern	vmCvar_t		cg_missileFlare;	// JUHOX
-#endif
 extern	vmCvar_t		cg_BFGsuperExpl;	// JUHOX
 extern	vmCvar_t		cg_nearbox;			// JUHOX
 extern	vmCvar_t		cg_autoGLC;			// JUHOX
 #if PLAYLIST
 extern	vmCvar_t		cg_music;			// JUHOX
 #endif
-/*
-extern	vmCvar_t		cg_tssFileService;	// JUHOX // SLK: whats this doin exactly?
-extern	vmCvar_t		cg_tssFileLen;		// JUHOX
-extern	vmCvar_t		cg_tssPacketLen;	// JUHOX
-*/
 
 //
 // cg_main.c
@@ -1777,7 +1767,7 @@ void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);
 score_t *CG_GetSelectedScore();
 void CG_BuildSpectatorString();
-#if MAPLENSFLARES	// JUHOX: prototypes
+
 void CG_LFEntOrigin(const lensFlareEntity_t* lfent, vec3_t origin);
 void CG_SetLFEntOrigin(lensFlareEntity_t* lfent, const vec3_t origin);
 void CG_SetLFEdMoveMode(lfeMoveMode_t mode);
@@ -1785,7 +1775,7 @@ void CG_SelectLFEnt(int lfentnum);
 void CG_LoadLensFlares(void);
 void CG_ComputeMaxVisAngle(lensFlareEntity_t* lfent);
 void CG_LoadLensFlareEntities(void);
-#endif
+
 
 
 //
@@ -1812,9 +1802,8 @@ void CG_AddEarthquake(
 void CG_AdjustEarthquakes(const vec3_t delta);
 #endif
 
-#if MAPLENSFLARES	// JUHOX: prototypes
 void CG_AddLFEditorCursor(void);
-#endif
+
 
 //
 // cg_drawtools.c
@@ -1937,9 +1926,7 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,	qhandle_t parentModel, char *tagName );
 void CG_AddPacketEntitiesForGlassLook(void);	// JUHOX
-#if MAPLENSFLARES	// JUHOX: prototypes
 void CG_Mover(centity_t *cent);
-#endif
 void CG_CalcEntityLerpPositions( centity_t *cent );	// JUHOX
 
 

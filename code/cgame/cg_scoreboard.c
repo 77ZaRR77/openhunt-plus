@@ -332,18 +332,13 @@ qboolean CG_DrawOldScoreboard( void ) {
 	int		x, y, w, i, n1, n2;
 	float	fade;
 	float	*fadeColor;
-#if 0	// JUHOX
-	char	*s;
-#else
 	const char* s;
-#endif
 	int maxClients;
 	int lineHeight;
 	int topBorderSize, bottomBorderSize;
 
-#if MAPLENSFLARES	// JUHOX: don't draw scoreboard in lens flare editor
+    // JUHOX: don't draw scoreboard in lens flare editor
 	if (cgs.editMode == EM_mlf) return qfalse;
-#endif
 
 	// don't draw amuthing if the menu or console is up
 	if ( cg_paused.integer ) {
@@ -356,7 +351,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 		return qfalse;
 	}
 
-#if 1	// JUHOX: if at the intermission play an appropriate music
+    // JUHOX: if at the intermission play an appropriate music
 	if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 		if (!cg.intermissionMusicStarted) {
 			qboolean winning, loosing;
@@ -460,7 +455,6 @@ qboolean CG_DrawOldScoreboard( void ) {
 			cg.intermissionMusicStarted = qfalse;
 		}
 	}
-#endif
 
 	// don't draw scoreboard during death while warmup up
 	if ( cg.warmup && !cg.showScores ) {

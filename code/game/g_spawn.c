@@ -453,17 +453,17 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 				return qfalse;
 			}
 #endif
-#if MAPLENSFLARES	// JUHOX: no items in lens flare editor
+
 			if (g_editmode.integer == EM_mlf) {
 				// don't remove, otherwise movers could change their entity number
 				ent->s.eType = ET_INVISIBLE;
 				return qtrue;
 			}
-#endif
-#if 1	// JUHOX: check for no-items option
+
+            // JUHOX: check for no-items option
 			if (g_noItems.integer && item->giType != IT_TEAM) return qfalse;
-#endif
-#if 1	// JUHOX: item replacement
+
+            // JUHOX: item replacement
 #if ESCAPE_MODE
 			if (g_gametype.integer == GT_EFH) {
 				// no replacement
@@ -524,7 +524,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 				}
 				if (!item) return qfalse;
 			}
-#endif
+
 			G_SpawnItem( ent, item );
 			return qtrue;
 		}

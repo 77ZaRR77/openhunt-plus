@@ -163,9 +163,7 @@ void UI_MainMenu( void ) {
 		trap_Cvar_Set("ui_init", "1");
 	}
 
-#if MAPLENSFLARES	// JUHOX: reset g_editmode
 	trap_Cvar_Set("g_editmode", "0");
-#endif
 
 	memset( &s_main, 0 ,sizeof(mainmenu_t) );
 	memset( &s_errorMessage, 0 ,sizeof(errorMessage_t) );

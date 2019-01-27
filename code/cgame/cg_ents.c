@@ -1273,24 +1273,6 @@ CG_Mover
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 	AnglesToAxis( cent->lerpAngles, ent.axis );
 
-	// -JUHOX: mark selected mover
-#if 0//MAPLENSFLARES
-	if (cg.lfEditor.selectedMover == cent && cg.lfEditor.moversStopped) {
-		static int onoff;
-
-		/* JUHOX FIXME: This doesn't work. I don't know why.
-		ent.customShader = trap_R_RegisterShader("lfeditorcursor");
-		ent.shaderRGBA[0] = 0x60;
-		ent.shaderRGBA[1] = 0x00;
-		ent.shaderRGBA[2] = 0x00;
-		ent.shaderRGBA[3] = 0xff;
-		*/
-		//if (cg.time % 200 >= 100) return;
-		onoff = !onoff;
-		if (onoff) return;
-	}
-#endif
-
 	ent.renderfx = RF_NOSHADOW;
 
 	// flicker between two skins (FIXME?)
@@ -1299,15 +1281,6 @@ CG_Mover
 	// get the model, either as a bmodel or a modelindex
 	if ( s1->solid == SOLID_BMODEL ) {
 		ent.hModel = cgs.inlineDrawModel[s1->modelindex];
-		// JUHOX: set corrected lighting origin for bmodels in EFH
-		// JUHOX FIXME: doesn't work, there's still no dynamic lighting
-#if 0//ESCAPE_MODE
-		if (cgs.gametype == GT_EFH) {
-			ent.renderfx |= RF_LIGHTING_ORIGIN;
-			VectorAdd(ent.origin, cgs.inlineModelMidpoints[s1->modelindex], ent.lightingOrigin);
-			//VectorClear(ent.lightingOrigin);
-		}
-#endif
 	} else {
 		// JUHOX: set corrected light origin for EFH
 #if ESCAPE_MODE
@@ -1513,23 +1486,6 @@ CG_CalcEntityLerpPositions
 		CG_InterpolateEntityPosition( cent );
 		return;
 	}
-
-	// -JUHOX: check for stopped movers
-#if 0//MAPLENSFLARES
-	if (
-		cgs.editMode == EM_mlf &&
-		cent->currentState.eType == ET_MOVER &&
-		(
-			cg.lfEditor.moversStopped ||
-			(
-				cg.lfEditor.selectedLFEnt &&
-				cg.lfEditor.selectedLFEnt->lock == cent
-			)
-		)
-	) {
-		return;
-	}
-#endif
 
 #if SCREENSHOT_TOOLS
 	cg.time -= cg.serverOffset;	// JUHOX

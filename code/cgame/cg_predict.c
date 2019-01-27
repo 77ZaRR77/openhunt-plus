@@ -326,20 +326,14 @@ static void CG_TouchTriggerPrediction( void ) {
 	qboolean	spectator;
 
 	// dead clients don't activate triggers
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		return;
-	}
+	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) return;
 
 	// JUHOX: don't touch triggers in lens flare editor
-#if MAPLENSFLARES
 	if (cgs.editMode == EM_mlf) return;
-#endif
 
 	spectator = ( cg.predictedPlayerState.pm_type == PM_SPECTATOR );
 
-	if ( cg.predictedPlayerState.pm_type != PM_NORMAL && !spectator ) {
-		return;
-	}
+	if ( cg.predictedPlayerState.pm_type != PM_NORMAL && !spectator ) return;
 
 	for ( i = 0 ; i < cg_numTriggerEntities ; i++ ) {
 		cent = cg_triggerEntities[ i ];
@@ -350,21 +344,15 @@ static void CG_TouchTriggerPrediction( void ) {
 			continue;
 		}
 
-		if ( ent->solid != SOLID_BMODEL ) {
-			continue;
-		}
+		if ( ent->solid != SOLID_BMODEL ) continue;
 
 		cmodel = trap_CM_InlineModel( ent->modelindex );
-		if ( !cmodel ) {
-			continue;
-		}
+		if ( !cmodel ) continue;
 
 		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
 			cg_pmove.mins, cg_pmove.maxs, cmodel, -1 );
 
-		if ( !trace.startsolid ) {
-			continue;
-		}
+		if ( !trace.startsolid ) continue;
 
 		if ( ent->eType == ET_TELEPORT_TRIGGER ) {
 			cg.hyperspace = qtrue;
@@ -454,11 +442,11 @@ void CG_PredictPlayerState( void ) {
 		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
 	}
 
-#if MAPLENSFLARES	// JUHOX: set player tracemask for lens flare editor
+    // JUHOX: set player tracemask for lens flare editor
 	if (cgs.editMode == EM_mlf) {
 		cg_pmove.tracemask = 0;
 	}
-#endif
+
 	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
 #if GRAPPLE_ROPE	// JUHOX: set hook mode
 	cg_pmove.hookMode = cgs.hookMode;
@@ -622,7 +610,7 @@ void CG_PredictPlayerState( void ) {
 		}
 
 
-#if MAPLENSFLARES	// JUHOX: lens flare editor movement
+        // JUHOX: lens flare editor movement
 		if (
 			cgs.editMode == EM_mlf &&
 			cg.lfEditor.cmdMode == LFECM_main
@@ -782,7 +770,6 @@ void CG_PredictPlayerState( void ) {
 			}
 			cg.lfEditor.oldButtons = cg_pmove.cmd.buttons;
 		}
-#endif
 
 		cg_pmove.gametype = cgs.gametype;	// JUHOX
 
