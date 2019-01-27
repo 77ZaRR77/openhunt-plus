@@ -486,7 +486,7 @@ static int CG_CalcFov( void ) {
 		if (cg.predictedPlayerState.weapon == WP_GAUNTLET) {
 			float wideFov;
 
-			wideFov = fov_x * 1.3;
+			wideFov = fov_x * 1.1;
 
 			switch (cg.predictedPlayerState.weaponstate) {
 			case WEAPON_DROPPING:
