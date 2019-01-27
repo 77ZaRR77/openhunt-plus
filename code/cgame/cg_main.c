@@ -1582,10 +1582,8 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.podSkullSkin = trap_R_RegisterSkin("models/players/bones/head_bones.skin");
 	}
 
-#if SPECIAL_VIEW_MODES
 	cgs.media.scannerShader = trap_R_RegisterShader("scannerFilter");		// JUHOX
 	cgs.media.amplifierShader = trap_R_RegisterShader("lightAmplifier");	// JUHOX
-#endif
 
 
 	if ( cgs.gametype == GT_CTF || cg_buildScript.integer ) {

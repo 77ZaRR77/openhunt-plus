@@ -677,7 +677,7 @@ static void CG_Missile( centity_t *cent ) {
 	}
 	weapon = &cg_weapons[s1->weapon];
 
-#if SPECIAL_VIEW_MODES	// JUHOX: check for strong lights
+	// JUHOX: check for strong lights
 	switch (s1->weapon) {
 	case WP_ROCKET_LAUNCHER:
 		CG_CheckStrongLight(cent->lerpOrigin, -200, colorWhite);
@@ -698,7 +698,6 @@ static void CG_Missile( centity_t *cent ) {
 #endif
 		break;
 	}
-#endif
 
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);
@@ -708,23 +707,7 @@ static void CG_Missile( centity_t *cent ) {
 	{
 		weapon->missileTrailFunc( cent, weapon );
 	}
-/*
-	if ( cent->currentState.modelindex == TEAM_RED ) {
-		col = 1;
-	}
-	else if ( cent->currentState.modelindex == TEAM_BLUE ) {
-		col = 2;
-	}
-	else {
-		col = 0;
-	}
 
-	// add dynamic light
-	if ( weapon->missileDlight ) {
-		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight,
-			weapon->missileDlightColor[col][0], weapon->missileDlightColor[col][1], weapon->missileDlightColor[col][2] );
-	}
-*/
 #if ESCAPE_MODE	// JUHOX FIXME: no dlights in EFH
 	if (cgs.gametype == GT_EFH) {
 		// do nothing
@@ -764,7 +747,7 @@ static void CG_Missile( centity_t *cent ) {
 		return;
 	}
 
-#if 1	// JUHOX: draw new BFG missile lens flare effects
+	// JUHOX: draw new BFG missile lens flare effects
 	if (cent->currentState.weapon == WP_BFG) {
 		trace_t trace;
 		vec3_t dir;
@@ -773,14 +756,6 @@ static void CG_Missile( centity_t *cent ) {
 		vec3_t virtualOrigin;
 		vec3_t center;
 		float alpha;
-
-		/*
-		ent.reType = RT_SPRITE;
-		ent.radius = 32;
-		ent.rotation = 0;
-		ent.customShader = cgs.media.plasmaBallShader;
-		trap_R_AddRefEntityToScene(&ent);
-		*/
 
 		ent.reType = RT_SPRITE;
 		ent.radius = 30.0;
@@ -833,18 +808,6 @@ static void CG_Missile( centity_t *cent ) {
 		VectorMA(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], center);
 		VectorSubtract(virtualOrigin, center, dir);
 
-		/*
-		CG_LensFlare(
-			center, dir, 1.0, cgs.media.bfgLFLineShader, 15.0,
-			255, 255, 220,
-			alpha, 0.5 * angles[YAW] + 25
-		);
-		CG_LensFlare(
-			center, dir, 1.0, cgs.media.bfgLFLineShader, 15.0,
-			255, 220, 255,
-			alpha, 0.333 * angles[YAW] - 7
-		);
-		*/
 		CG_LensFlare(
 			center, dir, 1.0, cgs.media.bfgLFLineShader, 30.0,
 			255, 255, 255,
@@ -868,7 +831,7 @@ static void CG_Missile( centity_t *cent ) {
 
 		return;
 	}
-#endif
+
 
 #if MONSTER_MODE	// JUHOX: fireball
 	if (

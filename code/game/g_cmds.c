@@ -1534,7 +1534,6 @@ void Cmd_Stats_f( gentity_t *ent ) {
 JUHOX: Cmd_ToggleView_f
 =================
 */
-#if SPECIAL_VIEW_MODES
 static void Cmd_ToggleView_f(gentity_t* ent) {
 	if (!ent->client) return;
 	if (level.intermissiontime) return;
@@ -1553,7 +1552,7 @@ static void Cmd_ToggleView_f(gentity_t* ent) {
 
 	trap_SendServerCommand(ent->s.clientNum, va("viewmode %d", ent->client->viewMode));
 }
-#endif
+
 
 /*
 =================
@@ -2044,10 +2043,9 @@ void ClientCommand( int clientNum ) {
 		Cmd_TeamTask_f (ent);
 	else if (Q_stricmp (cmd, "levelshot") == 0)
 		Cmd_LevelShot_f (ent);
-#if SPECIAL_VIEW_MODES	// JUHOX: add toggle view command
+	// JUHOX: add toggle view command
 	else if (Q_stricmp(cmd, "toggleview") == 0)
 		Cmd_ToggleView_f(ent);
-#endif
 	else if (Q_stricmp (cmd, "follow") == 0)
 		Cmd_Follow_f (ent);
 	else if (Q_stricmp (cmd, "follownext") == 0)
@@ -2058,50 +2056,33 @@ void ClientCommand( int clientNum ) {
 		Cmd_Team_f (ent);
 	else if (Q_stricmp (cmd, "where") == 0)
 		Cmd_Where_f (ent);
-#if 0	// JUHOX: vote commands now handled above
-	else if (Q_stricmp (cmd, "callvote") == 0)
-		Cmd_CallVote_f (ent);
-	else if (Q_stricmp (cmd, "vote") == 0)
-		Cmd_Vote_f (ent);
-	else if (Q_stricmp (cmd, "callteamvote") == 0)
-		Cmd_CallTeamVote_f (ent);
-	else if (Q_stricmp (cmd, "teamvote") == 0)
-		Cmd_TeamVote_f (ent);
-#endif
 	else if (Q_stricmp (cmd, "gc") == 0)
 		Cmd_GameCommand_f( ent );
 	else if (Q_stricmp (cmd, "setviewpos") == 0)
 		Cmd_SetViewpos_f( ent );
 	else if (Q_stricmp (cmd, "stats") == 0)
 		Cmd_Stats_f( ent );
-#if 1	// JUHOX: add drophealth command
+	// JUHOX: add drophealth command
 	else if (Q_stricmp (cmd, "drophealth") == 0)
 		Cmd_DropHealth_f( ent );
-#endif
-#if 1	// JUHOX: add droparmor command
+	// JUHOX: add droparmor command
 	else if (Q_stricmp (cmd, "droparmor") == 0)
 		Cmd_DropArmor_f( ent );
-#endif
-#if 1	// JUHOX: throw hook command
+	// JUHOX: throw hook command
 	else if (Q_stricmp(cmd, "throwhook") == 0)
 		Cmd_ThrowHook_f(ent);
-#endif
-#if 1	// JUHOX: add navaid command
+	// JUHOX: add navaid command
 	else if (Q_stricmp(cmd, "navaid") == 0)
 		Cmd_NavAid_f(ent);
-#endif
-#if 1	// JUHOX: add groupformation command
+	// JUHOX: add groupformation command
 	else if (Q_stricmp(cmd, "groupformation") == 0)
 		Cmd_GroupFormation_f(ent);
-#endif
-#if 1	// JUHOX: add tssinstructions command
+	// JUHOX: add tssinstructions command
 	else if (Q_stricmp(cmd, "tssinstructions") == 0)
 		Cmd_TSSInstructions_f(ent);
-#endif
-#if 1	// JUHOX: add tsssafetymode command
+	// JUHOX: add tsssafetymode command
 	else if (Q_stricmp(cmd, "tsssafetymode") == 0)
 		Cmd_TSSSafetyMode_f(ent);
-#endif
 #if ESCAPE_MODE	// JUHOX: add efhdebugseg command
 	else if (Q_stricmp(cmd, "efhdebugseg") == 0)
 		Cmd_EFHDebugSeg_f(ent);

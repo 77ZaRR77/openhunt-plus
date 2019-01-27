@@ -488,11 +488,11 @@ struct gclient_s {
 	qboolean ropeIsTaut;
 	int lastTimeWinded;
 #endif
-#if SPECIAL_VIEW_MODES
-	viewMode_t	viewMode;			// JUHOX
-	int			viewModeSwitchTime;	// JUHOX
+
+	viewMode_t	viewMode;			    // JUHOX
+	int			viewModeSwitchTime;	    // JUHOX
 	int			numPendingViewToggles;	// JUHOX
-#endif
+
 };
 
 

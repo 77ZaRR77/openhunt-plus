@@ -32,7 +32,7 @@ typedef struct
 {
 	char*	name;
 	float	defaultvalue;
-	float	value;	
+	float	value;
 } configcvar_t;
 
 #define SAVE_NOOP		0
@@ -60,31 +60,31 @@ typedef struct
 
 // bindable actions
 #define ID_SHOWSCORES	0
-#define ID_USEITEM		1	
-#define ID_SPEED		2	
-#define ID_FORWARD		3	
+#define ID_USEITEM		1
+#define ID_SPEED		2
+#define ID_FORWARD		3
 #define ID_BACKPEDAL	4
 #define ID_MOVELEFT		5
 #define ID_MOVERIGHT	6
-#define ID_MOVEUP		7	
+#define ID_MOVEUP		7
 #define ID_MOVEDOWN		8
-#define ID_LEFT			9	
-#define ID_RIGHT		10	
-#define ID_STRAFE		11	
-#define ID_LOOKUP		12	
+#define ID_LEFT			9
+#define ID_RIGHT		10
+#define ID_STRAFE		11
+#define ID_LOOKUP		12
 #define ID_LOOKDOWN		13
 #define ID_MOUSELOOK	14
 #define ID_CENTERVIEW	15
 #define ID_ZOOMVIEW		16
-#define ID_WEAPON1		17	
-#define ID_WEAPON2		18	
-#define ID_WEAPON3		19	
-#define ID_WEAPON4		20	
-#define ID_WEAPON5		21	
-#define ID_WEAPON6		22	
-#define ID_WEAPON7		23	
-#define ID_WEAPON8		24	
-#define ID_WEAPON9		25	
+#define ID_WEAPON1		17
+#define ID_WEAPON2		18
+#define ID_WEAPON3		19
+#define ID_WEAPON4		20
+#define ID_WEAPON5		21
+#define ID_WEAPON6		22
+#define ID_WEAPON7		23
+#define ID_WEAPON8		24
+#define ID_WEAPON9		25
 #define ID_ATTACK		26
 #define ID_WEAPPREV		27
 #define ID_WEAPNEXT		28
@@ -117,9 +117,7 @@ typedef struct
 #if MONSTER_MODE
 #define ID_WEAPON11		55	// JUHOX
 #endif
-#if SPECIAL_VIEW_MODES
 #define ID_TOGGLEVIEW	56	// JUHOX
-#endif
 
 // all others
 #define ID_FREELOOK		34
@@ -222,9 +220,7 @@ typedef struct
 	menuradiobutton_s	freelook;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
-#if SPECIAL_VIEW_MODES
 	menuaction_s		toggleview;	// JUHOX
-#endif
 	menuaction_s		gesture;
 	menuradiobutton_s	invertmouse;
 	menuslider_s		sensitivity;
@@ -270,13 +266,13 @@ typedef struct
 
 	menubitmap_s		back;
 	menutext_s			name;
-} controls_t; 	
+} controls_t;
 
 static controls_t s_controls;
 
 static vec4_t controls_binding_color  = {1.00f, 0.43f, 0.00f, 1.00f}; // bk: Win32 C4305
 
-static bind_t g_bindings[] = 
+static bind_t g_bindings[] =
 {
 	{"+scores",			"show scores",		ID_SHOWSCORES,	ANIM_IDLE,		K_TAB,			-1,		-1, -1},
 	{"+button2",		"use item",			ID_USEITEM,		ANIM_IDLE,		K_ENTER,		-1,		-1, -1},
@@ -336,9 +332,7 @@ static bind_t g_bindings[] =
 #if MONSTER_MODE
 	{"weapon 11",		"monster launcher",	ID_WEAPON11,	ANIM_WEAPON11,	-1,				-1,		-1,	-1},	// JUHOX
 #endif
-#if SPECIAL_VIEW_MODES
 	{"toggleview",		"toggle view",		ID_TOGGLEVIEW,	ANIM_IDLE,		-1,				-1,		-1,	-1},	// JUHOX
-#endif
 	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
 
@@ -366,35 +360,35 @@ static char defaultWeaponOrderName[NUM_WEAPONORDERS][20];
 
 static menucommon_s *g_movement_controls[] =
 {
-	(menucommon_s *)&s_controls.alwaysrun,     
-	(menucommon_s *)&s_controls.run,            
+	(menucommon_s *)&s_controls.alwaysrun,
+	(menucommon_s *)&s_controls.run,
 	(menucommon_s *)&s_controls.walkforward,
 	(menucommon_s *)&s_controls.backpedal,
-	(menucommon_s *)&s_controls.stepleft,      
-	(menucommon_s *)&s_controls.stepright,     
-	(menucommon_s *)&s_controls.moveup,        
-	(menucommon_s *)&s_controls.movedown,      
-	(menucommon_s *)&s_controls.turnleft,      
-	(menucommon_s *)&s_controls.turnright,     
+	(menucommon_s *)&s_controls.stepleft,
+	(menucommon_s *)&s_controls.stepright,
+	(menucommon_s *)&s_controls.moveup,
+	(menucommon_s *)&s_controls.movedown,
+	(menucommon_s *)&s_controls.turnleft,
+	(menucommon_s *)&s_controls.turnright,
 	(menucommon_s *)&s_controls.sidestep,
 	(menucommon_s *)&s_controls.holdBreath,	// JUHOX
 	NULL
 };
 
 static menucommon_s *g_weapons_controls[] = {
-	(menucommon_s *)&s_controls.attack,           
+	(menucommon_s *)&s_controls.attack,
 	(menucommon_s *)&s_controls.nextweapon,
 	(menucommon_s *)&s_controls.prevweapon,
-	(menucommon_s *)&s_controls.autoswitch,    
-	(menucommon_s *)&s_controls.chainsaw,         
+	(menucommon_s *)&s_controls.autoswitch,
+	(menucommon_s *)&s_controls.chainsaw,
 	(menucommon_s *)&s_controls.machinegun,
-	(menucommon_s *)&s_controls.shotgun,          
+	(menucommon_s *)&s_controls.shotgun,
 	(menucommon_s *)&s_controls.grenadelauncher,
-	(menucommon_s *)&s_controls.rocketlauncher,   
-	(menucommon_s *)&s_controls.lightning,   
-	(menucommon_s *)&s_controls.railgun,          
-	(menucommon_s *)&s_controls.plasma,           
-	(menucommon_s *)&s_controls.bfg,              
+	(menucommon_s *)&s_controls.rocketlauncher,
+	(menucommon_s *)&s_controls.lightning,
+	(menucommon_s *)&s_controls.railgun,
+	(menucommon_s *)&s_controls.plasma,
+	(menucommon_s *)&s_controls.bfg,
 	(menucommon_s *)&s_controls.grapple,	// JUHOX
 #if MONSTER_MODE
 	(menucommon_s *)&s_controls.monsterlauncher,	// JUHOX
@@ -415,16 +409,13 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.freelook,
 	(menucommon_s *)&s_controls.centerview,
 	(menucommon_s *)&s_controls.zoomview,
-#if SPECIAL_VIEW_MODES
 	(menucommon_s *)&s_controls.toggleview,	// JUHOX
-#endif
 	(menucommon_s *)&s_controls.joyenable,
 	(menucommon_s *)&s_controls.joythreshold,
 	NULL,
 };
 
 // JUHOX: controls for the prios menu
-#if 1
 static menucommon_s* g_prios_controls[] = {
 	(menucommon_s*)&s_controls.bestweapon,
 	(menucommon_s*)&s_controls.skipweapon,
@@ -448,10 +439,8 @@ static menucommon_s* g_prios_controls[] = {
 #endif
 	NULL,
 };
-#endif
 
 // JUHOX: names for the prios menu
-#if 1
 static const char* g_prios_names[] = {
 	"",					// WP_NONE
 	"gauntlet",
@@ -470,10 +459,9 @@ static const char* g_prios_names[] = {
 	"weapon 14",
 	"weapon 15"
 };
-#endif
 
 static menucommon_s *g_misc_controls[] = {
-	(menucommon_s *)&s_controls.showscores, 
+	(menucommon_s *)&s_controls.showscores,
 	(menucommon_s *)&s_controls.useitem,
 	(menucommon_s *)&s_controls.gesture,
 	(menucommon_s *)&s_controls.chat,
@@ -526,7 +514,6 @@ static void Controls_InitCvars( void )
 	}
 
 	// JUHOX: save current and default value of cg_weaponOrder
-#if 1
 	for (i = 0; i < NUM_WEAPONORDERS; i++) {
 		char* name;
 
@@ -542,7 +529,6 @@ static void Controls_InitCvars( void )
 		trap_Cvar_VariableStringBuffer(name, defaultWeaponOrderName[i], sizeof(defaultWeaponOrderName[i]));
 		trap_Cvar_Set(name, currentWeaponOrderName[i]);
 	}
-#endif
 }
 
 /*
@@ -608,23 +594,23 @@ static void Controls_UpdateModel( int anim ) {
 	s_controls.playerChat			 = qfalse;
 
 	switch( anim ) {
-	case ANIM_RUN:	
+	case ANIM_RUN:
 		s_controls.playerLegs = LEGS_RUN;
 		break;
 
-	case ANIM_WALK:	
+	case ANIM_WALK:
 		s_controls.playerLegs = LEGS_WALK;
 		break;
 
-	case ANIM_BACK:	
+	case ANIM_BACK:
 		s_controls.playerLegs = LEGS_BACK;
 		break;
 
-	case ANIM_JUMP:	
+	case ANIM_JUMP:
 		s_controls.playerLegs = LEGS_JUMP;
 		break;
 
-	case ANIM_CROUCH:	
+	case ANIM_CROUCH:
 		s_controls.playerLegs = LEGS_IDLECR;
 		break;
 
@@ -807,16 +793,16 @@ static void Controls_Update( void ) {
 		s_controls.movement.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.movement.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
-	
+
 	case C_LOOKING:
 		s_controls.looking.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.looking.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
-	
+
 	case C_WEAPONS:
 		s_controls.weapons.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.weapons.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;		
+		break;
 
 	case C_MISC:
 		s_controls.misc.generic.flags &= ~QMF_PULSEIFFOCUS;
@@ -824,12 +810,10 @@ static void Controls_Update( void ) {
 		break;
 
 	// JUHOX: set C_PRIOS buttons
-#if 1
 	case C_PRIOS:
 		s_controls.prios.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.prios.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
-#endif
 	}
 }
 
@@ -878,7 +862,7 @@ static void Controls_DrawKeyBinding( void *self )
 
 	if (c)
 	{
-		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color ); 
+		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color );
 
 		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
 		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight );
@@ -894,7 +878,6 @@ static void Controls_DrawKeyBinding( void *self )
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * /*0.78*/0.84, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );	// JUHOX
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * /*0.82*/0.88, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );	// JUHOX
 			// JUHOX: draw an explanation for some items
-#if 1
 			switch (a->generic.id) {
 			case ID_WEAPBEST:
 				UI_DrawString(
@@ -911,7 +894,6 @@ static void Controls_DrawKeyBinding( void *self )
 				);
 				break;
 			}
-#endif
 		}
 	}
 	else
@@ -1182,7 +1164,7 @@ static void Controls_SetConfig( void )
 			break;
 
 		if (bindptr->bind1 != -1)
-		{	
+		{
 			trap_Key_SetBinding( bindptr->bind1, bindptr->command );
 
 			if (bindptr->bind2 != -1)
@@ -1257,12 +1239,10 @@ static void Controls_SetDefaults( void )
 	Com_sprintf(s_controls.autoswitchAmmoLimit.field.buffer, 4, "%d", (int) Controls_GetCvarDefault("cg_autoswitchAmmoLimit"));	// JUHOX
 	s_controls.crouchingCutsRope.curvalue = Controls_GetCvarDefault("crouchCutsRope");	// JUHOX
 	// JUHOX: set weapon order defaults
-#if 1
 	memcpy(currentWeaponOrder, defaultWeaponOrder, sizeof(currentWeaponOrder));
 	s_controls.currentlyDrawnWeaponOrderName = -2;
 	memcpy(currentWeaponOrderName, defaultWeaponOrderName, sizeof(currentWeaponOrderName));
 	s_controls.currentlyDrawnWeaponOrderName = -1;
-#endif
 }
 
 /*
@@ -1287,13 +1267,13 @@ static sfxHandle_t Controls_MenuKey( int key )
 			case K_KP_DEL:
 				key = -1;
 				break;
-		
+
 			case K_MOUSE2:
 			case K_ESCAPE:
 				if (s_controls.changesmade)
 					Controls_SetConfig();
 				Controls_SetSimpleConfig();	// JUHOX
-				goto ignorekey;	
+				goto ignorekey;
 
 			default:
 				goto ignorekey;
@@ -1310,21 +1290,21 @@ static sfxHandle_t Controls_MenuKey( int key )
 				s_controls.waitingforkey = qfalse;
 				Controls_Update();
 				return (menu_out_sound);
-	
+
 			case '`':
 				goto ignorekey;
 		}
 	}
 
 	s_controls.changesmade = qtrue;
-	
+
 	if (key != -1)
 	{
 		// remove from any other bind
 		bindptr = g_bindings;
 		for (i=0; ;i++,bindptr++)
 		{
-			if (!bindptr->label)	
+			if (!bindptr->label)
 				break;
 
 			if (bindptr->bind2 == key)
@@ -1332,7 +1312,7 @@ static sfxHandle_t Controls_MenuKey( int key )
 
 			if (bindptr->bind1 == key)
 			{
-				bindptr->bind1 = bindptr->bind2;	
+				bindptr->bind1 = bindptr->bind2;
 				bindptr->bind2 = -1;
 			}
 		}
@@ -1343,9 +1323,9 @@ static sfxHandle_t Controls_MenuKey( int key )
 	bindptr = g_bindings;
 	for (i=0; ;i++,bindptr++)
 	{
-		if (!bindptr->label)	
+		if (!bindptr->label)
 			break;
-		
+
 		if (bindptr->id == id)
 		{
 			found = qtrue;
@@ -1372,15 +1352,15 @@ static sfxHandle_t Controls_MenuKey( int key )
 				trap_Key_SetBinding( bindptr->bind2, "" );
 				bindptr->bind1 = key;
 				bindptr->bind2 = -1;
-			}						
+			}
 			break;
 		}
-	}				
-		
+	}
+
 	s_controls.waitingforkey = qfalse;
 
 	if (found)
-	{	
+	{
 		Controls_Update();
 		return (menu_out_sound);
 	}
@@ -1426,7 +1406,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_MOVEMENT:
 			if (event == QM_ACTIVATED)
 			{
-				s_controls.section = C_MOVEMENT; 
+				s_controls.section = C_MOVEMENT;
 				Controls_Update();
 			}
 			break;
@@ -1434,7 +1414,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_LOOKING:
 			if (event == QM_ACTIVATED)
 			{
-				s_controls.section = C_LOOKING; 
+				s_controls.section = C_LOOKING;
 				Controls_Update();
 			}
 			break;
@@ -1442,7 +1422,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_WEAPONS:
 			if (event == QM_ACTIVATED)
 			{
-				s_controls.section = C_WEAPONS; 
+				s_controls.section = C_WEAPONS;
 				Controls_Update();
 			}
 			break;
@@ -1450,13 +1430,12 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_MISC:
 			if (event == QM_ACTIVATED)
 			{
-				s_controls.section = C_MISC; 
+				s_controls.section = C_MISC;
 				Controls_Update();
 			}
 			break;
 
 		// JUHOX: switch to weapon order menu
-#if 1
 		case ID_PRIOS:
 			if (event == QM_ACTIVATED)
 			{
@@ -1464,7 +1443,6 @@ static void Controls_MenuEvent( void* ptr, int event )
 				Controls_Update();
 			}
 			break;
-#endif
 
 		case ID_DEFAULTS:
 			if (event == QM_ACTIVATED)
@@ -1511,9 +1489,8 @@ static void Controls_MenuEvent( void* ptr, int event )
 			{
 				s_controls.changesmade = qtrue;
 			}
-			break;		
+			break;
 		// JUHOX: handle weapon order switch
-#if 1
 		case ID_WEAPONORDERSWITCH:
 			if (event == QM_ACTIVATED)
 			{
@@ -1528,7 +1505,6 @@ static void Controls_MenuEvent( void* ptr, int event )
 				s_controls.weaponOrderName.field.scroll = 0;
 			}
 			break;
-#endif
 	}
 }
 
@@ -1705,7 +1681,6 @@ static void Controls_MenuInit( void )
 	s_controls.weapons.color			= color_red;
 
 	// JUHOX: init weapon order menu title
-#if 1
 	s_controls.prios.generic.type		= MTYPE_PTEXT;
 	s_controls.prios.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.prios.generic.id			= ID_PRIOS;
@@ -1715,7 +1690,6 @@ static void Controls_MenuInit( void )
 	s_controls.prios.string				= "SWITCH";
 	s_controls.prios.style				= UI_RIGHT;
 	s_controls.prios.color				= color_red;
-#endif
 
 	s_controls.misc.generic.type	 = MTYPE_PTEXT;
 	s_controls.misc.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -1723,11 +1697,7 @@ static void Controls_MenuInit( void )
 	s_controls.misc.generic.callback = Controls_MenuEvent;
 	s_controls.misc.generic.x		 = 152;
 	// JUHOX: move the misc menu title down
-#if 0
-	s_controls.misc.generic.y		 = 240 + PROP_HEIGHT;
-#else
 	s_controls.misc.generic.y		 = 240 + 2 * PROP_HEIGHT;
-#endif
 	s_controls.misc.string			= "MISC";
 	s_controls.misc.style			= UI_RIGHT;
 	s_controls.misc.color			= color_red;
@@ -1812,13 +1782,11 @@ static void Controls_MenuInit( void )
 	s_controls.run.generic.id        = ID_SPEED;
 
 	// JUHOX: init hold breath key binding control
-#if 1
 	s_controls.holdBreath.generic.type		= MTYPE_ACTION;
 	s_controls.holdBreath.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.holdBreath.generic.callback	= Controls_ActionEvent;
 	s_controls.holdBreath.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.holdBreath.generic.id		= ID_HOLD_BREATH;
-#endif
 
 	s_controls.chainsaw.generic.type	  = MTYPE_ACTION;
 	s_controls.chainsaw.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1884,41 +1852,33 @@ static void Controls_MenuInit( void )
 #endif
 
 	// JUHOX: init grappling hook menu item
-#if 1
 	s_controls.grapple.generic.type	     = MTYPE_ACTION;
 	s_controls.grapple.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.grapple.generic.callback  = Controls_ActionEvent;
 	s_controls.grapple.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.grapple.generic.id        = ID_WEAPON10;
-#endif
 
 	// JUHOX: init toggle hook menu item
-#if 1
 	s_controls.toggleHook.generic.type		= MTYPE_ACTION;
 	s_controls.toggleHook.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.toggleHook.generic.callback	= Controls_ActionEvent;
 	s_controls.toggleHook.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.toggleHook.generic.id		= ID_TOGGLEHOOK;
-#endif
 
 	// JUHOX: init throw hook menu item
-#if 1
 	s_controls.throwHook.generic.type		= MTYPE_ACTION;
 	s_controls.throwHook.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.throwHook.generic.callback	= Controls_ActionEvent;
 	s_controls.throwHook.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.throwHook.generic.id			= ID_THROWHOOK;
-#endif
 
 	// JUHOX: init "crouching cuts rope" menu item
-#if 1
 	s_controls.crouchingCutsRope.generic.type		= MTYPE_RADIOBUTTON;
 	s_controls.crouchingCutsRope.generic.flags		= QMF_SMALLFONT;
 	s_controls.crouchingCutsRope.generic.x			= SCREEN_WIDTH/2;
 	s_controls.crouchingCutsRope.generic.name		= "crouching cuts grappling rope";
 	s_controls.crouchingCutsRope.generic.id			= -1;
 	s_controls.crouchingCutsRope.generic.callback	= Controls_MenuEvent;
-#endif
 
 	s_controls.attack.generic.type	    = MTYPE_ACTION;
 	s_controls.attack.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1976,13 +1936,12 @@ static void Controls_MenuInit( void )
 	s_controls.zoomview.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.zoomview.generic.id        = ID_ZOOMVIEW;
 
-#if SPECIAL_VIEW_MODES	// JUHOX: init toggleview key binding control
+	// JUHOX: init toggleview key binding control
 	s_controls.toggleview.generic.type	  = MTYPE_ACTION;
 	s_controls.toggleview.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.toggleview.generic.callback  = Controls_ActionEvent;
 	s_controls.toggleview.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.toggleview.generic.id        = ID_TOGGLEVIEW;
-#endif
 
 	s_controls.useitem.generic.type	     = MTYPE_ACTION;
 	s_controls.useitem.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -2069,67 +2028,53 @@ static void Controls_MenuInit( void )
 	s_controls.chat4.generic.id        = ID_CHAT4;
 
 	// JUHOX: init give health key binding control
-#if 1
 	s_controls.givehealth.generic.type		= MTYPE_ACTION;
 	s_controls.givehealth.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.givehealth.generic.callback	= Controls_ActionEvent;
 	s_controls.givehealth.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.givehealth.generic.id		= ID_GIVEHEALTH;
-#endif
 
 	// JUHOX: init give armor key binding control
-#if 1
 	s_controls.givearmor.generic.type		= MTYPE_ACTION;
 	s_controls.givearmor.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.givearmor.generic.callback	= Controls_ActionEvent;
 	s_controls.givearmor.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.givearmor.generic.id			= ID_GIVEARMOR;
-#endif
 
 	// JUHOX: init TSS interface key binding control
-#if 1
 	s_controls.tssInterface.generic.type		= MTYPE_ACTION;
 	s_controls.tssInterface.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.tssInterface.generic.callback	= Controls_ActionEvent;
 	s_controls.tssInterface.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.tssInterface.generic.id			= ID_TSSI;
-#endif
 
 	// JUHOX: init navigation aid key binding control
-#if 1
 	s_controls.navAid.generic.type		= MTYPE_ACTION;
 	s_controls.navAid.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.navAid.generic.callback	= Controls_ActionEvent;
 	s_controls.navAid.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.navAid.generic.id		= ID_NAVAID;
-#endif
 
 	// JUHOX: init tight group formation key binding control
-#if 1
 	s_controls.gfTight.generic.type			= MTYPE_ACTION;
 	s_controls.gfTight.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.gfTight.generic.callback		= Controls_ActionEvent;
 	s_controls.gfTight.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.gfTight.generic.id			= ID_GF_TIGHT;
-#endif
 
 	// JUHOX: init loose group formation key binding control
-#if 1
 	s_controls.gfLoose.generic.type			= MTYPE_ACTION;
 	s_controls.gfLoose.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.gfLoose.generic.callback		= Controls_ActionEvent;
 	s_controls.gfLoose.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.gfLoose.generic.id			= ID_GF_LOOSE;
-#endif
 
 	// JUHOX: init free group formation key binding control
-#if 1
 	s_controls.gfFree.generic.type		= MTYPE_ACTION;
 	s_controls.gfFree.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.gfFree.generic.callback	= Controls_ActionEvent;
 	s_controls.gfFree.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.gfFree.generic.id		= ID_GF_FREE;
-#endif
 
 	s_controls.joyenable.generic.type      = MTYPE_RADIOBUTTON;
 	s_controls.joyenable.generic.flags	   = QMF_SMALLFONT;
@@ -2150,24 +2095,19 @@ static void Controls_MenuInit( void )
 	s_controls.joythreshold.generic.statusbar = Controls_StatusBar;
 
 	// JUHOX: init best weapon key binding control
-#if 1
 	s_controls.bestweapon.generic.type		= MTYPE_ACTION;
 	s_controls.bestweapon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.bestweapon.generic.callback	= Controls_ActionEvent;
 	s_controls.bestweapon.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.bestweapon.generic.id		= ID_WEAPBEST;
-#endif
 	// JUHOX: init skip weapon key binding control
-#if 1
 	s_controls.skipweapon.generic.type		= MTYPE_ACTION;
 	s_controls.skipweapon.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.skipweapon.generic.callback	= Controls_ActionEvent;
 	s_controls.skipweapon.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.skipweapon.generic.id		= ID_WEAPSKIP;
-#endif
 
 	// JUHOX: init autoswitch ammo limit control
-#if 1
 	s_controls.autoswitchAmmoLimit.generic.type			= MTYPE_FIELD;
 	s_controls.autoswitchAmmoLimit.generic.flags		= QMF_NUMBERSONLY|QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_controls.autoswitchAmmoLimit.generic.name			= "ammo limit [%]";
@@ -2175,36 +2115,28 @@ static void Controls_MenuInit( void )
 	s_controls.autoswitchAmmoLimit.generic.statusbar	= Controls_AutoswitchAmmoLimitStatusbar;
 	s_controls.autoswitchAmmoLimit.field.widthInChars	= 4;
 	s_controls.autoswitchAmmoLimit.field.maxchars		= 3;
-#endif
 
 	// JUHOX: init next weapon order key binding control
-#if 1
 	s_controls.nextWeaponOrder.generic.type			= MTYPE_ACTION;
 	s_controls.nextWeaponOrder.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.nextWeaponOrder.generic.callback		= Controls_ActionEvent;
 	s_controls.nextWeaponOrder.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.nextWeaponOrder.generic.id			= ID_NEXTWPORD;
-#endif
 	// JUHOX: init prev weapon order key binding control
-#if 1
 	s_controls.prevWeaponOrder.generic.type			= MTYPE_ACTION;
 	s_controls.prevWeaponOrder.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.prevWeaponOrder.generic.callback		= Controls_ActionEvent;
 	s_controls.prevWeaponOrder.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.prevWeaponOrder.generic.id			= ID_PREVWPORD;
-#endif
 
 	// JUHOX: init weapon order switch control
-#if 1
 	s_controls.weaponOrderSwitch.generic.type		= MTYPE_ACTION;
 	s_controls.weaponOrderSwitch.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.weaponOrderSwitch.generic.callback	= Controls_MenuEvent;
 	s_controls.weaponOrderSwitch.generic.ownerdraw	= Controls_DrawWeaponOrderSwitch;
 	s_controls.weaponOrderSwitch.generic.id			= ID_WEAPONORDERSWITCH;
-#endif
 
 	// JUHOX: init add weapon order name control
-#if 1
 	s_controls.weaponOrderName.generic.type			= MTYPE_FIELD;
 	s_controls.weaponOrderName.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_controls.weaponOrderName.generic.name			= "category name";
@@ -2212,16 +2144,13 @@ static void Controls_MenuInit( void )
 	s_controls.weaponOrderName.field.widthInChars	= 16;
 	s_controls.weaponOrderName.field.maxchars		= 19;
 	s_controls.currentlyDrawnWeaponOrderName = -1;
-#endif
 
 	// JUHOX: init weapon category key binding control
-#if 1
 	s_controls.weaponCategory.generic.type		= MTYPE_ACTION;
 	s_controls.weaponCategory.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.weaponCategory.generic.callback	= Controls_ActionEvent;
 	s_controls.weaponCategory.generic.ownerdraw	= Controls_DrawKeyBinding;
 	s_controls.weaponCategory.generic.id		= ID_WEAPCAT0;
-#endif
 
 	s_controls.name.generic.type	= MTYPE_PTEXT;
 	s_controls.name.generic.flags	= QMF_CENTER_JUSTIFY|QMF_INACTIVE;
@@ -2252,9 +2181,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.freelook );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
-#if SPECIAL_VIEW_MODES
 	Menu_AddItem( &s_controls.menu, &s_controls.toggleview );	// JUHOX
-#endif
 	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );
 	Menu_AddItem( &s_controls.menu, &s_controls.joythreshold );
 
@@ -2318,7 +2245,6 @@ static void Controls_MenuInit( void )
 	Menu_AddItem(&s_controls.menu, &s_controls.weaponOrderName);	// JUHOX
 	Menu_AddItem(&s_controls.menu, &s_controls.weaponCategory);	// JUHOX
 	// JUHOX: init & add weapon list controls
-#if 1
 	{
 		int i;
 
@@ -2334,7 +2260,6 @@ static void Controls_MenuInit( void )
 		}
 	}
 	s_controls.weaponListSelection = -1;
-#endif
 
 	trap_Cvar_VariableStringBuffer( "name", s_controls.name.string, 16 );
 	Q_CleanStr( s_controls.name.string );

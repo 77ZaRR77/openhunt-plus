@@ -780,11 +780,10 @@ typedef struct {
 	int			countDown;
 #endif
 
-#if SPECIAL_VIEW_MODES	// JUHOX: variables
+	// JUHOX: variables
 	viewMode_t	viewMode;
 	int			viewModeSwitchingTime;	// start time
 	int			scannerActivationTime;
-#endif
 
 	float		frameInterpolation;	// (float)( cg.time - cg.frame->serverTime ) / (cg.nextFrame->serverTime - cg.frame->serverTime)
 
@@ -1219,10 +1218,9 @@ typedef struct {
 	qhandle_t	huntNameShader;	    // JUHOX
 	qhandle_t	deathBlurryShader;	// JUHOX
 	qhandle_t	podSkullSkin;		// JUHOX
-#if SPECIAL_VIEW_MODES
 	qhandle_t	scannerShader;		// JUHOX
 	qhandle_t	amplifierShader;	// JUHOX
-#endif
+
 
 	qhandle_t	friendShader;
 	qhandle_t	balloonShader;

@@ -2912,19 +2912,17 @@ void ClientIntermissionThink( gclient_t *client ) {
 	client->ps.eFlags &= ~EF_TALK;
 	client->ps.eFlags &= ~EF_FIRING;
 
-#if SPECIAL_VIEW_MODES	// JUHOX: switch to standard view mode during intermission
+	// JUHOX: switch to standard view mode during intermission
 	client->viewMode = VIEW_standard;
 	client->viewModeSwitchTime = 0;
-#endif
 
 	// the level will exit when everyone wants to or after timeouts
 
-#if 1	// JUHOX: don't accept ready signals during the first two seconds
+	// JUHOX: don't accept ready signals during the first two seconds
 	if (level.time < level.intermissiontime + 2000) {
 		client->buttons = 0;
 		return;
 	}
-#endif
 
 	// swap and latch button actions
 	client->oldbuttons = client->buttons;
@@ -2960,7 +2958,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		damage;
 	vec3_t	dir;
 	vec3_t	origin, angles;
-//	qboolean	fired;
 	gitem_t *item;
 	gentity_t *drop;
 
@@ -3050,9 +3047,7 @@ void ClientRefreshAmmo(gentity_t* ent, int msec) {
 
 	client = ent->client;
 	if (client->tssSafetyMode) return;
-#if SPECIAL_VIEW_MODES
 	if (client->viewMode == VIEW_scanner) return;
-#endif
 
 	for (i = WP_NONE+1; i < WP_NUM_WEAPONS; i++) {
 		int maxAmmo;
@@ -3193,47 +3188,6 @@ static void GetGauntletTarget(gentity_t* ent) {
 	}
 	SetTargetPos(ent);
 }
-
-/*
-================
-JUHOX DEBUG: SomeTests
-================
-*/
-#if 0
-#include "be_aas.h"	// for TFL_DEFAULT
-static void SomeTests(gentity_t* ent) {
-	trace_t tr;
-	vec3_t forward, right, up, muzzle, end, mins, maxs;
-	int startareanum, endareanum;
-	float directDist;
-	int walkDist;
-
-	AngleVectors(ent->client->ps.viewangles, forward, right, up);
-
-	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-
-	VectorMA(muzzle, 10000, forward, end);
-
-	VectorSet(mins, -25, -25, -25);
-	VectorSet(maxs, 25, 25, 25);
-
-	trap_Trace(&tr, muzzle, mins, maxs, end, ent->s.number, MASK_SHOT);
-	directDist = Distance(muzzle, tr.endpos);
-
-	VectorCopy(tr.endpos, end);
-	//VectorMA(end, -25, forward, end);
-	VectorCopy(end, muzzle);
-	end[2] -= 10000;
-	trap_Trace(&tr, muzzle, mins, maxs, end, ent->s.number, MASK_SHOT);
-	//tr.endpos[2] += 25;
-
-	startareanum = trap_AAS_PointAreaNum(ent->client->ps.origin);
-	endareanum = trap_AAS_PointAreaNum(tr.endpos);
-	walkDist = trap_AAS_AreaTravelTimeToGoalArea(startareanum, ent->client->ps.origin, endareanum, TFL_DEFAULT | TFL_FLIGHT);
-
-	G_Printf("dd=%f, sa=%d, ea=%d, wd=%d\n", directDist, startareanum, endareanum, walkDist);
-}
-#endif
 
 /*
 ================
@@ -5075,7 +5029,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 #endif
 
-#if SPECIAL_VIEW_MODES	// JUHOX: handle pending view toggles
+	// JUHOX: handle pending view toggles
 	if (client->viewMode < 0) {
 		// init viewmode
 		client->viewMode = 0;
@@ -5095,7 +5049,6 @@ void ClientThink_real( gentity_t *ent ) {
 		trap_SendServerCommand(ent->s.clientNum, va("viewmode %d", client->viewMode));
 		client->numPendingViewToggles--;
 	}
-#endif
 
 	// perform once-a-second actions
 	ClientTimerActions( ent, msec );

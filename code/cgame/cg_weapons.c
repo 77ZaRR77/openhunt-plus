@@ -1620,7 +1620,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		// add rail trail
 		CG_SpawnRailTrail( cent, flash.origin );
-#if SPECIAL_VIEW_MODES	// JUHOX: check for strong lights
+        // JUHOX: check for strong lights
 		switch (weaponNum) {
 		case WP_MACHINEGUN:
 		case WP_PLASMAGUN:
@@ -1634,7 +1634,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			CG_CheckStrongLight(flash.origin, 400, colorWhite);
 			break;
 		}
-#endif
+
 		// JUHOX FIXME: no dlights in EFH
 #if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH) {
@@ -2820,9 +2820,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		}
 		mark = cgs.media.holeMarkShader;
 		radius = 12;
-#if SPECIAL_VIEW_MODES
 		CG_CheckStrongLight(origin, 200, colorWhite);	// JUHOX
-#endif
 		break;
 
 	case WP_GRENADE_LAUNCHER:
@@ -2833,9 +2831,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		radius = 64;
 		light = 300;
 		isSprite = qtrue;
-#if SPECIAL_VIEW_MODES
 		CG_CheckStrongLight(origin, 600, colorWhite);	// JUHOX
-#endif
 #if EARTHQUAKE_SYSTEM	// JUHOX: grenade
 		CG_AddEarthquake(origin, 600, 0.5, 0, 0.5, 200);
 #endif
@@ -2852,7 +2848,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		lightColor[0] = 1;
 		lightColor[1] = 0.75;
 		lightColor[2] = 0.0;
-//		CG_BigExplode( origin );
 		if (cg_oldRocket.integer == 0) {
 			// explosion sprite animation
 			VectorMA( origin, 24, dir, sprOrg );
@@ -2860,9 +2855,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 
 			CG_ParticleExplosion( "explode1", sprOrg, sprVel, 1400, 20, 30 );
 		}
-#if SPECIAL_VIEW_MODES
 		CG_CheckStrongLight(origin, 600, colorWhite);	// JUHOX
-#endif
 #if EARTHQUAKE_SYSTEM	// JUHOX: rocket
 		CG_AddEarthquake(origin, 400, 0.4, 0, 0.4, 300);
 #endif
@@ -2873,9 +2866,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		sfx = cgs.media.sfx_plasmaexp;
 		mark = cgs.media.energyMarkShader;
 		radius = 24;
-#if SPECIAL_VIEW_MODES
 		CG_CheckStrongLight(origin, 150, colorWhite);	// JUHOX
-#endif
 #if EARTHQUAKE_SYSTEM	// JUHOX: railgun
 		CG_AddEarthquake(origin, 400, 0.2, 0, 0.2, 400);
 #endif
@@ -2886,9 +2877,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		sfx = cgs.media.sfx_plasmaexp;
 		mark = cgs.media.energyMarkShader;
 		radius = 16;
-#if SPECIAL_VIEW_MODES
 		CG_CheckStrongLight(origin, 200, colorWhite);	// JUHOX
-#endif
 		break;
 	case WP_BFG:
 		mod = cgs.media.dishFlashModel;
@@ -2898,17 +2887,14 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		radius = 32;
 		isSprite = qtrue;
 		// JUHOX: add light for the bfg explosion
-#if 1
 		if (cg_BFGsuperExpl.integer) {
 			light = 300;
 			lightColor[0] = 0.25;
 			lightColor[1] = 1;
 			lightColor[2] = 0.5;
 		}
-#endif
-#if SPECIAL_VIEW_MODES
+
 		CG_CheckStrongLight(origin, 800, colorWhite);	// JUHOX
-#endif
 #if EARTHQUAKE_SYSTEM	// JUHOX: bfg
 		CG_AddEarthquake(origin, 1000, 0.5, 0, 0.5, 400);
 #endif

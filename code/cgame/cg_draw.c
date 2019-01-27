@@ -84,9 +84,7 @@ void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, qhandle
 	refdef_t		refdef;
 	refEntity_t		ent;
 
-	if ( !cg_draw3dIcons.integer || !cg_drawIcons.integer ) {
-		return;
-	}
+	if ( !cg_draw3dIcons.integer || !cg_drawIcons.integer ) return;
 
 	CG_AdjustFrom640( &x, &y, &w, &h );
 
@@ -468,10 +466,7 @@ static void CG_DrawStatusBar( void ) {
 		else
 #endif
 		{
-			CG_Draw3DModel(
-				CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
-				cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, 0
-			);
+			CG_Draw3DModel(	CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, 0 );
 		}
 	}
 
@@ -511,9 +506,8 @@ static void CG_DrawStatusBar( void ) {
 				} else {
 					color = 1;	// red
 				}
-#if SPECIAL_VIEW_MODES
+
 				if (cg.viewMode == VIEW_scanner) color = 1;	// JUHOX: show that ammo is not recharging
-#endif
 			}
 			trap_R_SetColor( colors[color] );
 
@@ -892,9 +886,6 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				CG_DrawStringExt(xx, y, buf, color, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
 			}
 
-#if 0	// JUHOX: don't draw location for dead players or spectating mission leaders
-			if (lwidth) {
-#else
 #if ESCAPE_MODE
 			if (cgs.gametype == GT_EFH) {
 				p = va("%dm", ci->wayLength);
@@ -905,7 +896,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			else
 #endif
 			if (lwidth && ci->health > 0 && ci->location >= 0) {
-#endif
+
 				p = CG_ConfigString(CS_LOCATIONS + ci->location);
 				if (!p || !*p)
 					p = "unknown";
@@ -1484,13 +1475,12 @@ static float CG_DrawPowerups( float y ) {
 			continue;
 		}
 		// JUHOX: don't draw timer for misused powerups
-#if 1
 		if (i == PW_HASTE) continue;
 		if (i == PW_BATTLESUIT) continue;
 		//if (i == PW_QUAD) continue;
 		if (i == PW_INVIS) continue;
 		if (i == PW_BFG_RELOADING) continue;
-#endif
+
 		t = ps->powerups[ i ] - cg.time;
 		// ZOID--don't draw if the power up has unlimited time (999 seconds)
 		// This is true of the CTF flags
@@ -1529,11 +1519,9 @@ static float CG_DrawPowerups( float y ) {
 
 		  t = ps->powerups[ sorted[i] ];
 		  // JUHOX: don't let the charge powerup blink as it runs out
-#if 0
-		  if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
-#else
+
 		  if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME || sorted[i] == PW_CHARGE) {
-#endif
+
 			  trap_R_SetColor( NULL );
 		  } else {
 			  vec4_t	modulate;
@@ -1584,41 +1572,6 @@ static void CG_DrawLowerRight( void ) {
 	y = CG_DrawPowerups( y );
 }
 
-
-/*
-===================
-CG_DrawPickupItem
-===================
-*/
-// JUHOX: don't draw pickup item
-#if 0
-
-static int CG_DrawPickupItem( int y ) {
-	int		value;
-	float	*fadeColor;
-
-	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 ) {
-		return y;
-	}
-
-	y -= ICON_SIZE;
-
-	value = cg.itemPickup;
-	if ( value ) {
-		fadeColor = CG_FadeColor( cg.itemPickupTime, 3000 );
-		if ( fadeColor ) {
-			CG_RegisterItemVisuals( value );
-			trap_R_SetColor( fadeColor );
-			CG_DrawPic( 8, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
-			CG_DrawBigString( ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0] );
-			trap_R_SetColor( NULL );
-		}
-	}
-
-	return y;
-}
-
-#endif	// JUHOX
 
 /*
 ===================
@@ -3260,7 +3213,6 @@ static void CG_DrawWarmup( void ) {
 JUHOX: CG_StandardView
 =================
 */
-#if SPECIAL_VIEW_MODES
 #define SVM_SWITCHING_NUM_TILES 7
 static void CG_StandardView(void) {
 	float fraction;
@@ -3294,14 +3246,13 @@ static void CG_StandardView(void) {
 		);
 	}
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_ScannerView
 =================
 */
-#if SPECIAL_VIEW_MODES
 static void CG_ScannerView(void) {
 	float x, y, w, h;
 	static const vec4_t filterColor = {
@@ -3356,14 +3307,13 @@ static void CG_ScannerView(void) {
 	}
 	trap_R_SetColor(NULL);
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_AmplifierView
 =================
 */
-#if SPECIAL_VIEW_MODES
 static void CG_AmplifierView(void) {
 	float fraction;
 	int i;
@@ -3414,14 +3364,13 @@ static void CG_AmplifierView(void) {
 	}
 	trap_R_SetColor(NULL);
 }
-#endif
+
 
 /*
 =================
 JUHOX: CG_HandleViewMode
 =================
 */
-#if SPECIAL_VIEW_MODES
 static void CG_HandleViewMode(void) {
 	if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 		cg.viewMode = VIEW_standard;
@@ -3449,7 +3398,7 @@ static void CG_HandleViewMode(void) {
 		break;
 	}
 }
-#endif
+
 
 /*
 =================
@@ -3621,14 +3570,12 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		VectorCopy( baseOrg, cg.refdef.vieworg );
 	}
 
-#if SPECIAL_VIEW_MODES
 	CG_HandleViewMode();	// JUHOX
-#endif
 
 	// draw status bar and other floating elements
  	CG_Draw2D();
 
-#if 1	// JUHOX: auto group leader commands
+	// JUHOX: auto group leader commands
 	if (
 		cg_autoGLC.integer &&
 		cgs.gametype >= GT_TEAM &&
@@ -3661,9 +3608,9 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 			}
 		}
 	}
-#endif
 
-#if 1	// JUHOX: tss server update
+
+	// JUHOX: tss server update
 	if (
 		cgs.gametype >= GT_TEAM &&
 #if MONSTER_MODE	// JUHOX: no TSS with STU
@@ -3705,5 +3652,4 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 
 		trap_SendClientCommand(cmd);
 	}
-#endif
 }

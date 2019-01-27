@@ -14,7 +14,6 @@
 #define PLAYER_SCREENSHOTS	0	// JUHOX
 #define MONSTER_MODE		1	// JUHOX
 #define ESCAPE_MODE			1	// JUHOX: also requires MONSTER_MODE
-#define SPECIAL_VIEW_MODES	1	// JUHOX: also requires MONSTER_MODE
 #define GRAPPLE_ROPE		1	// JUHOX
 #define TSSINCVAR			1	// JUHOX
 #define PLAYLIST			1	// JUHOX
@@ -56,7 +55,7 @@ typedef enum {
 } hookMode_t;
 #endif
 
-#if SPECIAL_VIEW_MODES	// JUHOX: global definitions
+// JUHOX: global definitions
 typedef enum {
 	VIEW_standard,
 	VIEW_scanner,
@@ -65,7 +64,7 @@ typedef enum {
 	VIEW_num_modes
 } viewMode_t;
 #define VIEWMODE_SWITCHING_TIME 200	// msec
-#endif
+
 
 #if MONSTER_MODE	// JUHOX: STU defines
 #define EXTRA_CLIENTNUMS 5

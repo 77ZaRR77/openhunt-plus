@@ -1041,7 +1041,7 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-#if SPECIAL_VIEW_MODES	// JUHOX: viewmode command
+	// JUHOX: viewmode command
 	if (!strcmp(cmd, "viewmode")) {
 		viewMode_t vm;
 
@@ -1054,16 +1054,15 @@ static void CG_ServerCommand( void ) {
 		}
 		return;
 	}
-#endif
 
-#if 1	// JUHOX: hand over screenshot command from the server to the client console
+	// JUHOX: hand over screenshot command from the server to the client console
 	if (!strcmp(cmd, "screenshot")) {
 		trap_SendConsoleCommand("screenshot\n");
 		return;
 	}
-#endif
 
-#if 1	// JUHOX: hand over template list commands from the server to the client console (UI in this case)
+
+	// JUHOX: hand over template list commands from the server to the client console (UI in this case)
 	if (!strcmp(cmd, "sv_template_cg")) {
 		char argv1[16];
 		char argv2[64];
@@ -1088,14 +1087,13 @@ static void CG_ServerCommand( void ) {
 		trap_SendConsoleCommand(va("templatelist_complete_ui %s %s", argv1, argv2));
 		return;
 	}
-#endif
 
-#if 1	// JUHOX: tss update command from server
+
+	// JUHOX: tss update command from server
 	if (!strcmp(cmd, "tssupdate")) {
 		CG_TSS_ServerUpdate();
 		return;
 	}
-#endif
 
 	CG_Printf( "Unknown client game command: %s\n", cmd );
 }
