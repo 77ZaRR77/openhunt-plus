@@ -1,1 +1,31 @@
-Original Mod by Jurgen "Juhox" Hoffmann
+Original Mod by Jurgen Juhox Hoffmann
+
+created by Jurgen Juhox Hoffmann
+coding by Jurgen Hoffmann Craniul
+artwork & shader scripts by Jurgen Hoffmann
+technical assistance by Michael Padautz Hoffmann
+mapping by Michael Hoffmann Gonenc Giray WolfWings
+lens flare scripts by Gonenc GNC Giray www.planetquake.com/gnc
+hook model by Ia_Lanky from Ia Clan www.iaclan.com
+monster launcher skin by Major*Payne
+
+testing & inspiration by
+Michael Hoffmann
+Major*Payne
+Gonenc Giray
+Syabha
+Ia_Lanky
+Jurgen Mersmann
+Don ViPr Karam
+et al.
+
+special thanks to
+Michael Hoffmann
+Syabha
+
+headache caused by Major*Payne
+
+www.planetquake.com
+www.planetquake.com/code3arena
+www.shaderlab.com
+www.planetquake.com/modifia

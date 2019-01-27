@@ -1,0 +1,49 @@
+Some investigation about EFH mapping. 
+Sadly we don't have JUHOX q3map, so probably current way to map for the gamemode is simply edit efh_test.map blocks into own. This is just standart efh1 map.
+
+
+
+EFH NOTES:
+
+skybox brushes:
+_color 1 1 1
+ambient 10
+nearbox textures/efh01/nearbox
+
+Skybox shouldn't be much big and not very small to make possible compile the map and not have farclip glitch while in-game.
+
+
+some playersstarts has idnum, some not.
+
+
+efh_hull seems like better to simply copy, since they are containing basic settings for EFH map to be generated while in-game. All of thoose entities are in same place.
+
+
+efh_entrance:
+mostly all 4 entities in same place with idnum 1-4, some of them are just single entity.
+
+efh_exit:
+mostly all 4 entities in same place with idnum 1-4  attached to latest brush which has
+classname efh_null_brush
+some of efh_exit are not all 4 in same place, just single ent.
+Basicially latest brush with classname efh_null_brush is like outside of the map block.
+
+floor brush always has idnum 0 though it's other brushes with classname efh_brush
+idnum 0-4 (1-4) 
+
+efh_monster:
+classname efh_monster
+count 10 (15,30)
+idnum from 0 to 4 (1-4)
+some of them has type 2 (guard)
+and they are all 4 ents in same place
+
+efh_model is probably changing vertex shader on some object, such as flag
+classname efh_model
+idnum 0
+model models/flags/r_flag.md3
+
+
+There is also efh_waypoint which I didn't even seen in the map. 
+
+

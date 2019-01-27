@@ -1,18 +1,6 @@
-***            Hunt Mod           *** 
-***                               *** 
-***         by J. Hoffmann        *** 
-***  www.planetquake.com/modifia  *** 
-***     juhox@planetquake.com     *** 
-
-
-
-
 Welcome to the Hunt technical manual.
 
 This document assumes familiarity with Quake III Arena.
-
-
-
 
 =================================================================
 === Contents
@@ -20,7 +8,7 @@ This document assumes familiarity with Quake III Arena.
 
 Chapter
 -----------------------------------------------------------------
-1    Gamestamps
+1    Gamestamps (not in OpenHunt)
 2    Templates
 2.1  Using Templates
 2.2  Creating Templates

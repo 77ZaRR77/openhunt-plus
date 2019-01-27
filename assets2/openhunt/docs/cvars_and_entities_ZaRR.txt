@@ -1,15 +1,32 @@
-OpenHunt
-cvars
+OpenHunt cvars and entities
 
+This is a temp help file.
+
+
+Entities related:
+
+Entities:
+efh_entrance
+efh_hull
+efh_exit
+efh_brush
+efh_null_brush
+efh_model
+efh_monster
+efh_waypoint
+
+
+classes:
+idnum
 dmg
 speed
 health
 
+func_timer
+target_earthquake
 
 
-ui_local.h
-
-
+Cvars related:
 
 additional serverinfo cvars
 g_baseHealth
@@ -17,7 +34,6 @@ g_stamina
 g_weaponLimit
 g_tss
 g_tssSafetyMode
-
 
 
 serverinfo cvars used in STU
@@ -35,7 +51,6 @@ serverinfo cvars used for the hook
 g_hookMode
 
 
--------
 EFH cvars
 cg_drawSegment
 CG_DrawLineSegment not working
@@ -56,23 +71,6 @@ cg_autoGLC
 
 
 cg_music
-
----------------------------------------
-ENTITIES:
-efh_entrance
-efh_hull
-efh_exit
-efh_brush
-efh_null_brush
-efh_model
-efh_monster
-efh_waypoint
-
-func_timer
-target_earthquake
-
-variables:
-idnum
 
 -------------------------------
 G.SPAWN.C

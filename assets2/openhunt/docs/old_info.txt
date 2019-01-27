@@ -1,0 +1,113 @@
+***            Hunt Mod           *** 
+***                               *** 
+***         by J. Hoffmann        *** 
+***  www.planetquake.com/modifia  *** 
+***     juhox@planetquake.com     *** 
+
+
+
+Files:
+   hunt.pk3
+   readme.txt
+   history.txt
+   tutorial.txt
+   manual.txt
+   templates/default.tmpl
+   tss/ctf_juhox_maxforce.tss
+   tss/ctf_juhox_pliers.tss
+   tss/ctf_juhox_powerpliers.tss
+   tss/ctf_juhox_simple.tss
+   tss/tdm_juhox_crowd.tss
+   tss/tdm_juhox_maxforce.tss
+   tss/tdm_juhox_pliers.tss
+
+Requirements:
+   Quake III Arena 1.32
+
+Installation:
+   1. Create a directory named "Hunt" in your Quake3 directory (which is
+      the directory that contains the "baseq3" directory).
+
+   2. Just copy the files mentioned above into the new directory. Take
+      care to preserve the paths, e.g. "ctf_juhox_pliers.tss" should end
+      up as "Quake3/Hunt/tss/ctf_juhox_pliers.tss."
+
+   3. If there's a "hunt1.pk3" file in your Hunt installation directory,
+      make sure to delete it.
+
+   To run the Hunt mod start Quake3 and choose "Hunt" from the "Mods"
+   menu. You can immediately play a match. Thereafter, don't forget to
+   check at least the "manual.txt" to learn more about Hunt.
+
+--------------------------------------------------
+
+This Hunt Mod package contains all Downloads you can download from:
+http://modifia.planetquake.gamespy.com/hunt/index.htm
+
+
+- hunt_oct_28_2002 / version Oct 28 2002 / 3.31MB
+
+- efh02 / version Jul 30 2002 / 2.21MB 
+Optional map for Hunt's gametype "Escape from Hell." 	
+
+- hunt_music / version Jul 6 2001 / 13.6MB 
+Optional music package. Contains a title song (1:31) and a victory song (1:15), both created by me. They're exclusively dedicated to Hunt. The file's a bit large because Q3A does not support MP3.
+
+- hellmodels_nov_7_2002 / version Nov 7 2002 / 483KB 
+Optional skin pack by Daniel "Fusion" Schneider <http://www.planetquake.com/td>. Contains a "hellish" skin for Klesk, Sorlag, and Uriel, for use as Predator, Guard, and Titan. If you install the pk3 file in your Hunt installation directory (instead of baseq3), then you'll also get new "hellish" gibs and blood effects for monsters!
+
+
+--------------------------------------------------
+
+Hellmodels
+By Daniel "Fusion" Schneider
+fusion@planetquake.com
+For use with Q3A and Hunt ONLY.
+id's graphics were used as base, so mostly all credits goes to them.
+have fun now.
+-Fusion
+
+--------------------------------------------------
+
+***            Hunt Mod           *** 
+***                               *** 
+***     -= Music Supplement =-    ***
+
+
+
+
+Files:
+   hunt_music.pk3
+   readme.txt
+
+Requirements:
+   Hunt Mod version Sep 5 2001
+
+Description:
+   This supplement contains two songs: one that is played at the
+   title screen, and another that is played on victory.
+
+Installation:
+   Copy "hunt_music.pk3" into your Hunt installation directory.
+
+--------------------------------------------------
+
+*** EFH02 ***
+
+Author:
+   Michael Hoffmann
+
+Files:
+   map-efh02.pk3
+   readme.txt
+
+Requirements:
+   Hunt mod version Jul 11 2002 or later
+
+Installation:
+   Copy map-efh02.pk3 to the "baseq3" directory of your Quake
+   III Arena installation directory.
+
+--------------------------------------------------
+
+

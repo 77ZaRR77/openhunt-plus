@@ -1,12 +1,4 @@
-***            Hunt Mod           *** 
-***                               *** 
-***         by J. Hoffmann        *** 
-***  www.planetquake.com/modifia  *** 
-***     juhox@planetquake.com     *** 
-
-
-
-History: 
+Hunt Mod version history: 
 
 Version Oct 28 2002
    - new: PunkBuster support
