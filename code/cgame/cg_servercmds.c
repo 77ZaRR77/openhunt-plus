@@ -5,7 +5,8 @@
 // be a valid snapshot this frame
 
 #include "cg_local.h"
-#include "../../ui/menudef.h" // bk001205 - for Q3_ui as well
+#include "../../ui/menudef.h"   // bk001205 - for Q3_ui as well
+#include "../game/bg_promode.h" // SLK
 
 typedef struct {
 	const char *order;
@@ -13,15 +14,15 @@ typedef struct {
 } orderTask_t;
 
 static const orderTask_t validOrders[] = {
-	{ VOICECHAT_GETFLAG,						TEAMTASK_OFFENSE },
-	{ VOICECHAT_OFFENSE,						TEAMTASK_OFFENSE },
-	{ VOICECHAT_DEFEND,							TEAMTASK_DEFENSE },
-	{ VOICECHAT_DEFENDFLAG,					TEAMTASK_DEFENSE },
-	{ VOICECHAT_PATROL,							TEAMTASK_PATROL },
-	{ VOICECHAT_CAMP,								TEAMTASK_CAMP },
-	{ VOICECHAT_FOLLOWME,						TEAMTASK_FOLLOW },
-	{ VOICECHAT_RETURNFLAG,					TEAMTASK_RETRIEVE },
-	{ VOICECHAT_FOLLOWFLAGCARRIER,	TEAMTASK_ESCORT }
+	{ VOICECHAT_GETFLAG,				TEAMTASK_OFFENSE },
+	{ VOICECHAT_OFFENSE,				TEAMTASK_OFFENSE },
+	{ VOICECHAT_DEFEND,					TEAMTASK_DEFENSE },
+	{ VOICECHAT_DEFENDFLAG,				TEAMTASK_DEFENSE },
+	{ VOICECHAT_PATROL,					TEAMTASK_PATROL },
+	{ VOICECHAT_CAMP,					TEAMTASK_CAMP },
+	{ VOICECHAT_FOLLOWME,				TEAMTASK_FOLLOW },
+	{ VOICECHAT_RETURNFLAG,				TEAMTASK_RETRIEVE },
+	{ VOICECHAT_FOLLOWFLAGCARRIER,	    TEAMTASK_ESCORT }
 };
 
 static const int numValidOrders = sizeof(validOrders) / sizeof(orderTask_t);
@@ -363,7 +364,11 @@ static void CG_ConfigStringModified( void ) {
 	else if ( num == CS_SHADERSTATE ) {
 		CG_ShaderStateChanged();
 	}
-
+	// SLK
+    else if ( num == CS_PRO_MODE ) {
+        CPM_UpdateSettings( (atoi(str)) ? ((cgs.gametype == GT_TEAM) ? 2 : 1) : 0 );
+    }
+	// !SLK
 }
 
 

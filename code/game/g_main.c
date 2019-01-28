@@ -2,9 +2,9 @@
 //
 
 #include "g_local.h"
+#include "bg_promode.h" // SLK
 
 level_locals_t	level;
-
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -124,6 +124,8 @@ vmCvar_t	pmove_msec;
 vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
 vmCvar_t	g_mapName;	// JUHOX
+
+vmCvar_t    g_promode; // SLK
 
 // JUHOX: need gameCvarTable[] global accessible (not static)
 cvarTable_t		gameCvarTable[] = {
@@ -246,7 +248,9 @@ cvarTable_t		gameCvarTable[] = {
 	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
 	{ &pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
 
-	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse}
+	{ &g_rankings, "g_rankings", "0", 0, 0, qfalse},
+
+	{ &g_promode, "g_promode", "0", CVAR_SERVERINFO, 0, qtrue  } // SLK
 
 };
 
@@ -440,6 +444,31 @@ void G_UpdateCvars( void ) {
 			if ( cv->modificationCount != cv->vmCvar->modificationCount ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
+				// SLK: Detect if g_promode has been changed
+				if (!strcmp(cv->cvarName,"g_promode"))
+				{
+					// Update all settings
+					CPM_UpdateSettings((g_promode.integer) ?
+						((g_gametype.integer == GT_TEAM) ? 2 : 1) : 0);
+
+					// Set the config string (so clients will be updated)
+					trap_SetConfigstring(CS_PRO_MODE, va("%d", g_promode.integer));
+
+					// Update all pro mode-dependent server-side cvars
+
+					if (g_promode.integer)
+					{
+						// pro mode default
+
+					}
+					else
+					{
+						// q3 default
+
+					}
+				}
+				// !SLK
+
 				if ( cv->trackChange ) {
 					trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
 						cv->cvarName, cv->vmCvar->string ) );
@@ -536,6 +565,15 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_ProcessIPBans();
 
 	G_InitMemory();
+
+	// SLK:Initialize CPM
+        // Update all settings
+        CPM_UpdateSettings((g_promode.integer) ?
+		((g_gametype.integer == GT_TEAM) ? 2 : 1) : 0);
+
+        // Set the config string
+        trap_SetConfigstring(CS_PRO_MODE, va("%d", g_promode.integer));
+	// !SLK
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );

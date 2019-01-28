@@ -2,6 +2,7 @@
 //
 // cg_main.c -- initialization and primary entry point for cgame
 #include "cg_local.h"
+#include "../game/bg_promode.h" // SLK
 
 #define LFDEBUG 0	// JUHOX DEBUG
 
@@ -1923,6 +1924,11 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	Q_strncpyz(cgs.nearboxShaderName, CG_ConfigString(CS_NEARBOX), sizeof(cgs.nearboxShaderName));
 
 	CG_ParseServerinfo();
+
+	// SLK: Setup according to the pro mode settings
+	s = CG_ConfigString( CS_PRO_MODE );
+	CPM_UpdateSettings( (atoi(s)) ? ((cgs.gametype == GT_TEAM) ? 2 : 1) : 0 );
+	// !SLK
 
 	// load the new map
 	CG_LoadingString( "collision map" );

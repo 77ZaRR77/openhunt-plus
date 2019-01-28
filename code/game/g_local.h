@@ -1165,6 +1165,8 @@ extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	g_mapName;	// JUHOX
+extern  vmCvar_t    g_promode;  // SLK
+
 
 void	trap_Print( const char *fmt );
 void	trap_Error( const char *fmt );

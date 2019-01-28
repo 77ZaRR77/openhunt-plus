@@ -1122,11 +1122,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	trap_Argv( 4, arg4, sizeof( arg4 ) );	// JUHOX
 
 	// JUHOX: also check arg3 of the vote command
-#if 0
-	if( strchr( arg1, ';' ) || strchr( arg2, ';' ) ) {
-#else
 	if (strchr(arg1, ';') || strchr(arg2, ';') || strchr(arg3, ';') || strchr(arg4, ';')) {
-#endif
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		return;
 	}
@@ -1135,27 +1131,20 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 	} else if ( !Q_stricmp( arg1, "nextmap" ) ) {
 	} else if ( !Q_stricmp( arg1, "map" ) ) {
 	} else if ( !Q_stricmp( arg1, "g_gametype" ) ) {
+    } else if ( !Q_stricmp( arg1, "g_promode" ) ) {    // SLK
 	} else if ( !Q_stricmp( arg1, "kick" ) ) {
 	} else if ( !Q_stricmp( arg1, "clientkick" ) ) {
 	} else if ( !Q_stricmp( arg1, "g_doWarmup" ) ) {
 	} else if ( !Q_stricmp( arg1, "timelimit" ) ) {
 	} else if ( !Q_stricmp( arg1, "fraglimit" ) ) {
 	// JUHOX: add addbot vote command
-#if 1
 	} else if (!Q_stricmp(arg1, "addbot")) {
-#endif
 	// JUHOX: add template vote command
-#if 1
 	} else if (!Q_stricmp(arg1, "template")) {
-#endif
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		// JUHOX: add new commands help line
-#if 0
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>.\n\"" );
-#else
-		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, addbot <name> <skill 1-5> [team].\n\"" );
-#endif
+		trap_SendServerCommand( ent-g_entities, "print \"Vote commands are: map_restart, nextmap, map <mapname>, g_gametype <n>, g_promode <0|1>, kick <player>, clientkick <clientnum>, g_doWarmup, timelimit <time>, fraglimit <frags>, addbot <name> <skill 1-5> [team].\n\"" );
 		return;
 	}
 
@@ -1198,7 +1187,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "vstr nextmap");
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
 	// JUHOX: special case for addbot vote command: additional arguments
-#if 1
 	} else if (!Q_stricmp(arg1, "addbot")) {
 		static const char* const skillnames[] = {
 			"I can win",
@@ -1219,9 +1207,7 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		}
 		Com_sprintf(level.voteString, sizeof(level.voteString), "%s \"%s\" %s %s", arg1, arg2, arg3, arg4);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "%s (%s)", level.voteString, skillname);
-#endif
 	// JUHOX: special case for template vote command: different display string
-#if 1
 	} else if (!Q_stricmp(arg1, "template")) {
 		int n;
 
@@ -1229,7 +1215,6 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		if (n < 0 || n >= templateList.numEntries) return;
 		Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", arg1, arg2);
 		Com_sprintf(level.voteDisplayString, sizeof(level.voteDisplayString), "play %s", templateList.entries[n].name);
-#endif
 	} else {
 		Com_sprintf( level.voteString, sizeof( level.voteString ), "%s \"%s\"", arg1, arg2 );
 		Com_sprintf( level.voteDisplayString, sizeof( level.voteDisplayString ), "%s", level.voteString );
@@ -1389,10 +1374,8 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 		}
 		Com_sprintf(arg2, sizeof(arg2), "%d", i);
 	// JUHOX: support 'callteamvote surrender'
-#if 1
 	} else if (!Q_stricmp(arg1, "surrender")) {
 		strcpy(arg2, "this round");
-#endif
 	} else {
 		trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string.\n\"" );
 		trap_SendServerCommand( ent-g_entities, "print \"Team vote commands are: leader <player>.\n\"" );
@@ -1512,21 +1495,7 @@ void Cmd_SetViewpos_f( gentity_t *ent ) {
 Cmd_Stats_f
 =================
 */
-void Cmd_Stats_f( gentity_t *ent ) {
-/*
-	int max, n, i;
-
-	max = trap_AAS_PointReachabilityAreaIndex( NULL );
-
-	n = 0;
-	for ( i = 0; i < max; i++ ) {
-		if ( ent->client->areabits[i >> 3] & (1 << (i & 7)) )
-			n++;
-	}
-
-	//trap_SendServerCommand( ent-g_entities, va("print \"visited %d of %d areas\n\"", n, max));
-	trap_SendServerCommand( ent-g_entities, va("print \"%d%% level coverage\n\"", n * 100 / max));
-*/
+void Cmd_Stats_f( gentity_t *ent ) { // SLK: dead function
 }
 
 /*
