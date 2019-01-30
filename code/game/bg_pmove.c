@@ -6,6 +6,7 @@
 #include "q_shared.h"
 #include "bg_public.h"
 #include "bg_local.h"
+#include "bg_promode.h" // SLK
 
 pmove_t		*pm;
 pml_t		pml;
@@ -207,12 +208,12 @@ Handles user intended acceleration
 ==============
 */
 static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
+
 	// JUHOX: players loose speed if near total weariness
-#if 1
 	if (pm->ps->stats[STAT_STRENGTH] < LOW_STRENGTH_VALUE) {
 		wishspeed *= 0.55 + 0.45 * pm->ps->stats[STAT_STRENGTH] / LOW_STRENGTH_VALUE;
 	}
-#endif
+
 
 	// JUHOX: spectators have infinite acceleration
 	if (pm->ps->pm_type == PM_SPECTATOR) {
@@ -222,7 +223,7 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 
 	{	// JUHOX: so variable declaration works
 
-#if 1
+
 	// q2 style
 	int			i;
 	float		addspeed, accelspeed, currentspeed;
@@ -233,9 +234,8 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 		return;
 	}
 	accelspeed = accel*pml.frametime*wishspeed;
-#if 1	// JUHOX: scale acceleration by size to simulate inertia
+	// JUHOX: scale acceleration by size to simulate inertia
 	accelspeed /= pm->scale;
-#endif
 	if (accelspeed > addspeed) {
 		accelspeed = addspeed;
 	}
@@ -243,24 +243,6 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 	for (i=0 ; i<3 ; i++) {
 		pm->ps->velocity[i] += accelspeed*wishdir[i];
 	}
-#else
-	// proper way (avoids strafe jump maxspeed bug), but feels bad
-	vec3_t		wishVelocity;
-	vec3_t		pushDir;
-	float		pushLen;
-	float		canPush;
-
-	VectorScale( wishdir, wishspeed, wishVelocity );
-	VectorSubtract( wishVelocity, pm->ps->velocity, pushDir );
-	pushLen = VectorNormalize( pushDir );
-
-	canPush = accel*pml.frametime*wishspeed;
-	if (canPush > pushLen) {
-		canPush = pushLen;
-	}
-
-	VectorMA( pm->ps->velocity, canPush, pushDir, pm->ps->velocity );
-#endif
 
 	}	// JUHOX: see above
 }
@@ -358,7 +340,6 @@ static qboolean PM_CheckJump( void ) {
 	}
 
 	// JUHOX: calc jump weariness
-#if 1
 	if (pm->ps->stats[STAT_STRENGTH] > LOW_STRENGTH_VALUE) {
 		pm->ps->stats[STAT_STRENGTH] -= JUMP_STRENGTH_DECREASE;
 	}
@@ -367,7 +348,6 @@ static qboolean PM_CheckJump( void ) {
 		pm->ps->pm_flags |= PMF_JUMP_HELD;
 		return qfalse;
 	}
-#endif
 
 	pml.groundPlane = qfalse;		// jumping away
 	pml.walking = qfalse;
@@ -375,13 +355,25 @@ static qboolean PM_CheckJump( void ) {
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 	pm->ps->velocity[2] = JUMP_VELOCITY;
+
+	/*
+	 // SLK: check for double-jump
+		if (cpm_pm_jump_z) {
+			if (pm->ps->stats[STAT_JUMPTIME] > 0) {
+				pm->ps->velocity[2] += cpm_pm_jump_z;
+			}
+
+			pm->ps->stats[STAT_JUMPTIME] = 400;
+		}
+	// !SLK
+	*/
+
 	// JUHOX: check for super jump
-#if MONSTER_MODE
 	pm->ps->velocity[2] *= 1 + (0.25 * (pm->scale - 1));
 	if (pm->superJump) {
 		pm->ps->velocity[2] *= 2;
 	}
-#endif
+
 	PM_AddEvent( EV_JUMP );
 
 	if ( pm->cmd.forwardmove >= 0 ) {
@@ -446,8 +438,8 @@ Flying out of the water
 ===================
 */
 static void PM_WaterJumpMove( void ) {
-	// waterjump has no control, but falls
 
+	// waterjump has no control, but falls
 	PM_StepSlideMove( qtrue );
 
 	pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
@@ -476,20 +468,7 @@ static void PM_WaterMove( void ) {
 		PM_WaterJumpMove();
 		return;
 	}
-#if 0
-	// jump = head for surface
-	if ( pm->cmd.upmove >= 10 ) {
-		if (pm->ps->velocity[2] > -300) {
-			if ( pm->watertype == CONTENTS_WATER ) {
-				pm->ps->velocity[2] = 100;
-			} else if (pm->watertype == CONTENTS_SLIME) {
-				pm->ps->velocity[2] = 80;
-			} else {
-				pm->ps->velocity[2] = 50;
-			}
-		}
-	}
-#endif
+
 	PM_Friction ();
 
 	scale = PM_CmdScale( &pm->cmd );
@@ -588,6 +567,9 @@ static void PM_AirMove( void ) {
 	float		scale;
 	usercmd_t	cmd;
 
+    float		accel; // SLK
+	float		wishspeed2; // SLK
+
 	PM_Friction();
 
 	fmove = pm->cmd.forwardmove;
@@ -614,8 +596,28 @@ static void PM_AirMove( void ) {
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
 
+	// SLK: Air Control
+	wishspeed2 = wishspeed;
+	if (DotProduct(pm->ps->velocity, wishdir) < 0)
+		accel = cpm_pm_airstopaccelerate;
+	else
+		accel = pm_airaccelerate;
+	if (pm->ps->movementDir == 2 || pm->ps->movementDir == 6)
+	{
+		if (wishspeed > cpm_pm_wishspeed)
+			wishspeed = cpm_pm_wishspeed;
+		accel = cpm_pm_strafeaccelerate;
+	}
+	// !SLK
+
 	// not on ground, so little effect on velocity
-	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
+	/*PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);*/
+
+	// SLK: Air control
+	PM_Accelerate (wishdir, wishspeed, accel);
+	if (cpm_pm_aircontrol)
+		CPM_PM_Aircontrol (pm, wishdir, wishspeed2);
+	// !SLK
 
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
@@ -624,16 +626,6 @@ static void PM_AirMove( void ) {
 		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 	}
-
-#if 0
-	//ZOID:  If we are on the grapple, try stair-stepping
-	//this allows a player to use the grapple to pull himself
-	//over a ledge
-	if (pm->ps->pm_flags & PMF_GRAPPLE_PULL)
-		PM_StepSlideMove ( qtrue );
-	else
-		PM_SlideMove ( qtrue );
-#endif
 
 	PM_StepSlideMove ( qtrue );
 }
@@ -790,9 +782,8 @@ static void PM_WalkMove( void ) {
 	for ( i = 0 ; i < 3 ; i++ ) {
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	}
-	// when going up or down slopes the wish velocity should Not be zero
-//	wishvel[2] = 0;
 
+	// when going up or down slopes the wish velocity should Not be zero
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
 	wishspeed *= scale;
@@ -827,10 +818,6 @@ static void PM_WalkMove( void ) {
 
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) {
 		pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
-	} else {
-#if 0
-		pm->ps->velocity[2] = 0; 		// don't reset the z velocity for slopes
-#endif
 	}
 
 	vel = VectorLength(pm->ps->velocity);
@@ -891,7 +878,6 @@ static void PM_NoclipMove( void ) {
 	pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
 
 	// friction
-
 	speed = VectorLength (pm->ps->velocity);
 	if (speed < 1)
 	{
@@ -945,13 +931,8 @@ Returns an event number apropriate for the groundsurface
 */
 static int PM_FootstepForSurface( void ) {
 	// JUHOX BUGFIX: never generate footsteps if walking
-#if 1
-	if ( ( (pm->cmd.buttons & (BUTTON_WALKING)) || (pm->cmd.upmove < 0)	)
-#if MONSTER_MODE
-		&& pm->scale < 1.5
-#endif
-	) return 0;
-#endif
+	if ( ( (pm->cmd.buttons & (BUTTON_WALKING)) || (pm->cmd.upmove < 0)	) && pm->scale < 1.5 ) return 0;
+
 	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS ) return 0;
 	if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS ) return EV_FOOTSTEP_METAL;
     // SLK : add flesh sounds, or more?
@@ -974,12 +955,10 @@ static void PM_CrashLand( void ) {
 	float		a, b, c, den;
 
 	// JUHOX: hibernation seed landing
-#if MONSTER_MODE
 	if (pm->hibernation) {
 		PM_AddEvent(EV_COCOON_BOUNCE);
 		return;
 	}
-#endif
 
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP ) {
@@ -1041,22 +1020,6 @@ static void PM_CrashLand( void ) {
 	// start footstep cycle over
 	pm->ps->bobCycle = 0;
 }
-
-/*
-=============
-PM_CheckStuck
-=============
-*/
-#if 0
-void PM_CheckStuck(void) {
-	trace_t trace;
-
-	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask);
-	if (trace.allsolid) {
-		//int shit = qtrue;
-	}
-}
-#endif
 
 /*
 =============
@@ -1149,7 +1112,6 @@ static void PM_GroundTrace( void ) {
 	trace_t		trace;
 
 	// JUHOX: speed-up for waiting monsters
-#if 1
 	if (
 		pm->ps->groundEntityNum == ENTITYNUM_WORLD &&
 		pm->ps->velocity[0] == 0 &&
@@ -1165,7 +1127,6 @@ static void PM_GroundTrace( void ) {
 		pml.groundTrace.plane.normal[2] = 1;
 		return;
 	}
-#endif
 
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
@@ -1249,10 +1210,6 @@ static void PM_GroundTrace( void ) {
 
 	pm->ps->groundEntityNum = trace.entityNum;
 
-#if 0
-    pm->ps->velocity[2] = 0; // don't reset the z velocity for slopes
-#endif
-
 	PM_AddTouchEnt( trace.entityNum );
 
 }
@@ -1277,39 +1234,26 @@ static void PM_SetWaterLevel( void ) {
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
 	// JUHOX: let PM_SetWaterLevel() handle player scale
-#if !MONSTER_MODE
-	point[2] = pm->ps->origin[2] + MINS_Z + 1;
-#else
 	point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + 1;
-#endif
+
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
 	if ( cont & MASK_WATER ) {
 	// JUHOX: let PM_SetWaterLevel() handle player scale
-#if !MONSTER_MODE
-		sample2 = pm->ps->viewheight - MINS_Z;
-#else
 		sample2 = pm->ps->viewheight - MINS_Z * pm->scale;
-#endif
 		sample1 = sample2 / 2;
 
 		pm->watertype = cont;
 		pm->waterlevel = 1;
 	// JUHOX: let PM_SetWaterLevel() handle player scale
-#if !MONSTER_MODE
-		point[2] = pm->ps->origin[2] + MINS_Z + sample1;
-#else
 		point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + sample1;
-#endif
+
 		cont = pm->pointcontents (point, pm->ps->clientNum );
 		if ( cont & MASK_WATER ) {
 			pm->waterlevel = 2;
 	// JUHOX: let PM_SetWaterLevel() handle player scale
-#if !MONSTER_MODE
-			point[2] = pm->ps->origin[2] + MINS_Z + sample2;
-#else
 			point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + sample2;
-#endif
+
 			cont = pm->pointcontents (point, pm->ps->clientNum );
 			if ( cont & MASK_WATER ) pm->waterlevel = 3;
 
@@ -1329,32 +1273,15 @@ static void PM_CheckDuck (void)
 {
 	trace_t	trace;
 
-#if 0	// JUHOX: no invulnerability available
-	if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-		if ( pm->ps->pm_flags & PMF_INVULEXPAND ) {
-			// invulnerability sphere has a 42 units radius
-			VectorSet( pm->mins, -42, -42, -42 );
-			VectorSet( pm->maxs, 42, 42, 42 );
-		}
-		else {
-			VectorSet( pm->mins, -15, -15, MINS_Z );
-			VectorSet( pm->maxs, 15, 15, 16 );
-		}
-		pm->ps->pm_flags |= PMF_DUCKED;
-		pm->ps->viewheight = CROUCH_VIEWHEIGHT;
-		return;
-	}
-#endif
 	pm->ps->pm_flags &= ~PMF_INVULEXPAND;
 
-#if MONSTER_MODE	// JUHOX: hibernation mins & maxs
+	// JUHOX: hibernation mins & maxs
 	if (pm->hibernation) {
 		VectorSet(pm->mins, -4, -4, -4);
 		VectorSet(pm->maxs, +4, +4, +4);
 		pm->ps->viewheight = 0;
 		return;
 	}
-#endif
 
 	pm->mins[0] = -15;
 	pm->mins[1] = -15;
@@ -1365,19 +1292,16 @@ static void PM_CheckDuck (void)
 	pm->mins[2] = MINS_Z;
 
 	// JUHOX: apply player scale factor
-#if MONSTER_MODE
 	VectorScale(pm->mins, pm->scale, pm->mins);
 	pm->maxs[0] *= pm->scale;
 	pm->maxs[1] *= pm->scale;
-#endif
 
 	if (pm->ps->pm_type == PM_DEAD)
 	{
 		pm->maxs[2] = -8;
 		// JUHOX: apply player scale factor
-#if MONSTER_MODE
 		pm->maxs[2] *= pm->scale;
-#endif
+
 		// JUHOX FIXME: player viewheight should be adapted to player scale factor
 		pm->ps->viewheight = DEAD_VIEWHEIGHT;
 		return;
@@ -1394,9 +1318,7 @@ static void PM_CheckDuck (void)
 			// try to stand up
 			pm->maxs[2] = 32;
 			// JUHOX: apply player scale factor
-#if MONSTER_MODE
 			pm->maxs[2] *= pm->scale;
-#endif
 			pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
 			if (!trace.allsolid)
 				pm->ps->pm_flags &= ~PMF_DUCKED;
@@ -1414,10 +1336,9 @@ static void PM_CheckDuck (void)
 		pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
 	}
 	// JUHOX: apply player scale factor
-#if MONSTER_MODE
 	pm->maxs[2] *= pm->scale;
 	pm->ps->viewheight = pm->ps->viewheight * pm->scale;
-#endif
+
 }
 
 
@@ -1442,13 +1363,6 @@ static void PM_Footsteps( void ) {
 	pm->xyspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0] +  pm->ps->velocity[1] * pm->ps->velocity[1] );
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
-
-		// JUHOX: no invulnerability available
-#if 0
-		if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-			PM_ContinueLegsAnim( LEGS_IDLECR );
-		}
-#endif
 		// airborne leaves position in cycle intact, but doesn't advance
 		if ( pm->waterlevel > 1 ) {
 			PM_ContinueLegsAnim( LEGS_SWIM );
@@ -1458,9 +1372,7 @@ static void PM_Footsteps( void ) {
 
 	// if not trying to move
 	// JUHOX: always use idle animation for grapple move
-#if 0
-	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) {
-#else
+
 	if (
 		(
 			!pm->cmd.forwardmove &&
@@ -1468,7 +1380,7 @@ static void PM_Footsteps( void ) {
 		) ||
 		(pm->ps->pm_flags & PMF_GRAPPLE_PULL)
 	) {
-#endif
+
 		if (  pm->xyspeed < 5 ) {
 			pm->ps->bobCycle = 0;	// start at beginning of cycle again
 			if ( pm->ps->pm_flags & PMF_DUCKED ) {
@@ -1491,20 +1403,10 @@ static void PM_Footsteps( void ) {
 		else {
 			PM_ContinueLegsAnim( LEGS_WALKCR );
 		}
-		// ducked characters never play footsteps
-	/*
-	} else 	if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
-			bobmove = 0.4;	// faster speeds bob faster
-			footstep = qtrue;
-		} else {
-			bobmove = 0.3;
-		}
-		PM_ContinueLegsAnim( LEGS_BACK );
-	*/
-#if 1	// JUHOX: adapt bobbing to movement speed
+
+        // JUHOX: adapt bobbing to movement speed
 		bobmove *= VectorLength(pm->ps->velocity) / 160;
-#endif
+
 	} else {
 		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
 			bobmove = 0.4f;	// faster speeds bob faster
@@ -1515,9 +1417,9 @@ static void PM_Footsteps( void ) {
 				PM_ContinueLegsAnim( LEGS_RUN );
 			}
 			footstep = qtrue;
-#if 1	// JUHOX: adapt bobbing to movement speed
+        // JUHOX: adapt bobbing to movement speed
 			bobmove *= VectorLength(pm->ps->velocity) / 320;
-#endif
+
 		} else {
 			bobmove = 0.3f;	// walking bobs slow
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
@@ -1527,30 +1429,22 @@ static void PM_Footsteps( void ) {
 				PM_ContinueLegsAnim( LEGS_WALK );
 			}
 			// JUHOX: big players always generate footsteps
-#if MONSTER_MODE
+
 			if (pm->scale >= 1.5) footstep = qtrue;
-#endif
-#if 1	// JUHOX: adapt bobbing to movement speed
+
+            // JUHOX: adapt bobbing to movement speed
 			bobmove *= VectorLength(pm->ps->velocity) / 160;
-			//bobmove *= 2;
-#endif
+
 		}
 	}
 	// JUHOX: slow down bobbing for tired players
-#if 1
 	if (pm->ps->stats[STAT_STRENGTH] < LOW_STRENGTH_VALUE) {
 		bobmove *= 0.6 + 0.4 * pm->ps->stats[STAT_STRENGTH] / LOW_STRENGTH_VALUE;
 	}
-#endif
+
 	// JUHOX: slower bobbing for titan
-#if 1
-	/*
-	if (pm->scale == MONSTER_TITAN_SCALE) {	// ouch! evil hack!
-		bobmove *= 0.5;
-	}
-	*/
+
 	bobmove /= pm->scale;
-#endif
 
 	// check for footstep / splash sounds
 	old = pm->ps->bobCycle;
@@ -1559,9 +1453,7 @@ static void PM_Footsteps( void ) {
 	// if we just crossed a cycle boundary, play an apropriate footstep event
 	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 ) {
 		// JUHOX: no-sound lava/slime hack
-#if !ESCAPE_MODE
-		if ( pm->waterlevel == 0 ) {
-#else
+
 		if (
 			pm->waterlevel == 0 ||
 			(
@@ -1570,7 +1462,7 @@ static void PM_Footsteps( void ) {
 				(pm->watertype & (CONTENTS_LAVA|CONTENTS_SLIME))
 			)
 		) {
-#endif
+
 			// on ground will only play sounds if running
 			if ( footstep && !pm->noFootsteps ) {
 				PM_AddEvent( PM_FootstepForSurface() );
@@ -1597,7 +1489,7 @@ Generate sound events for entering and leaving water
 */
 static void PM_WaterEvents( void ) {		// FIXME?
 	// JUHOX: no-sound lava/slime hack
-#if ESCAPE_MODE
+
 	if (
 		pm->gametype == GT_EFH &&
 		(
@@ -1615,7 +1507,7 @@ static void PM_WaterEvents( void ) {		// FIXME?
 	) {
 		return;
 	}
-#endif
+
 	//
 	// if just entered a water volume, play a sound
 	//
@@ -1691,8 +1583,8 @@ PM_TorsoAnimation
 ==============
 */
 static void PM_TorsoAnimation( void ) {
+
 	// JUHOX: WEAPON_WIND_UP and WEAPON_WIND_OFF also use TORSO_STAND animation
-#if 1
 	if (
 		pm->ps->weaponstate == WEAPON_WIND_UP ||
 		pm->ps->weaponstate == WEAPON_WIND_OFF
@@ -1700,14 +1592,10 @@ static void PM_TorsoAnimation( void ) {
 		PM_ContinueTorsoAnim(TORSO_STAND);
 		return;
 	}
-#endif
+
 	if ( pm->ps->weaponstate == WEAPON_READY ) {
 		// JUHOX: use TORSO_STAND2 also for WP_NONE
-#if 0
-		if ( pm->ps->weapon == WP_GAUNTLET ) {
-#else
 		if (pm->ps->weapon <= WP_GAUNTLET) {
-#endif
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_ContinueTorsoAnim( TORSO_STAND );
@@ -1777,9 +1665,7 @@ static void PM_WeaponShake(playerState_t* ps) {
 		{0, 0, 0, 0, 0, 0},			// WP_PLASMAGUN
 		{0, 300, 200, 0, 50, 200},	// WP_BFG
 		{0, 0, 0, 0, 0, 0},				// WP_GRAPPLING_HOOK
-#if MONSTER_MODE
 		{0, 100, 100, 0, 0, 0},		// WP_MONSTER_LAUNCHER //SLK: might use this one as PORTAL GUN for self teleportation?
-#endif
 	};
 	float viewSpread;
 	float knockback;
@@ -1881,29 +1767,22 @@ static void PM_Weapon( void ) {
 		pm->ps->weaponTime -= pml.msec;
 	}
 
-#if 1	// JUHOX: no fire with shield
+	// JUHOX: no fire with shield
 	if (pm->ps->powerups[PW_SHIELD]) {
 		pm->cmd.buttons &= ~BUTTON_ATTACK;
 	}
-#endif
 
-#if 1	// JUHOX: can't fire lightning gun under water
+
+	// JUHOX: can't fire lightning gun under water
 	if (pm->ps->weapon == WP_LIGHTNING && pm->waterlevel > 1) {
 		pm->cmd.buttons &= ~BUTTON_ATTACK;
 		pm->ps->eFlags &= ~EF_FIRING;
 	}
-#endif
 
 	// check for weapon change
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
-#if 0	// JUHOX: can't change weapon during wind up or wind down
-	if ( pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING ) {
-		if ( pm->ps->weapon != pm->cmd.weapon ) {
-			PM_BeginWeaponChange( pm->cmd.weapon );
-		}
-	}
-#else
+
 	if (
 		pm->ps->weaponstate < WEAPON_FIRING ||
 		(
@@ -1916,11 +1795,8 @@ static void PM_Weapon( void ) {
 			PM_BeginWeaponChange(pm->cmd.weapon);
 		}
 	}
-#endif
 
-	if ( pm->ps->weaponTime > 0 ) {
-		return;
-	}
+	if ( pm->ps->weaponTime > 0 ) return;
 
 	// change weapon if time
 	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
@@ -1930,11 +1806,8 @@ static void PM_Weapon( void ) {
 
 	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
 		pm->ps->weaponstate = WEAPON_READY;
-#if 0	// JUHOX: use TORSO_STAND2 also for WP_NONE
-		if ( pm->ps->weapon == WP_GAUNTLET ) {
-#else
+
 		if (pm->ps->weapon <= WP_GAUNTLET) {
-#endif
 			PM_StartTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_StartTorsoAnim( TORSO_STAND );
@@ -1943,7 +1816,7 @@ static void PM_Weapon( void ) {
 	}
 
 
-#if 1	// JUHOX: check for new weapon state
+	// JUHOX: check for new weapon state
 	if (pm->ps->weapon == WP_MACHINEGUN) {
 		if (
 			pm->ps->weaponstate == WEAPON_WIND_UP ||
@@ -1980,7 +1853,6 @@ static void PM_Weapon( void ) {
 			}
 		}
 	}
-#endif
 
 	// check for fire
 	if ( ! (pm->cmd.buttons & BUTTON_ATTACK) ) {
@@ -1998,11 +1870,7 @@ static void PM_Weapon( void ) {
 #endif
 
 	// start the animation even if out of ammo
-#if !MONSTER_MODE	// JUHOX: WP_NONE works like WP_GAUNTLET
-	if ( pm->ps->weapon == WP_GAUNTLET ) {
-#else
 	if (pm->ps->weapon <= WP_GAUNTLET) {
-#endif
 		// the guantlet only "fires" when it actually hits something
 		if ( !pm->gauntletHit ) {
 			pm->ps->weaponTime = 0;
@@ -2029,7 +1897,7 @@ static void PM_Weapon( void ) {
 	}
 	else pm->ps->ammo[pm->ps->weapon] ^= 1;	// JUHOX: for weapon shaking
 
-#if 1	// JUHOX: bump seed for weapon shaking
+	// JUHOX: bump seed for weapon shaking
 	{
 		localseed_t seed;
 
@@ -2039,17 +1907,15 @@ static void PM_Weapon( void ) {
 		seed.seed3 = pm->ps->ammo[pm->ps->weapon];
 		pm->ps->generic1 = LocallySeededRandom(&seed) & 255;
 	}
-#endif
 
 	// fire weapon
 	PM_AddEvent( EV_FIRE_WEAPON );
 
 	switch( pm->ps->weapon ) {
 	default:
-#if 1	// JUHOX: weapon time for WP_NONE
+        // JUHOX: weapon time for WP_NONE
 		addTime = 400;
 		break;
-#endif
 	case WP_GAUNTLET:
 		addTime = 50;	// JUHOX: 400
 		break;
@@ -2068,11 +1934,9 @@ static void PM_Weapon( void ) {
 	case WP_ROCKET_LAUNCHER:
 		addTime = 600;	// JUHOX: 800
 		// JUHOX: monster's (guard's) rocket shoots faster
-#if MONSTER_MODE
 		if (pm->ps->clientNum >= MAX_CLIENTS) {
 			addTime = 200;
 		}
-#endif
 		break;
 	case WP_PLASMAGUN:
 		addTime = 80;
@@ -2086,18 +1950,12 @@ static void PM_Weapon( void ) {
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;
 		break;
-#if MONSTER_MODE	// JUHOX: reload time for monster launcher
+	// JUHOX: reload time for monster launcher
 	case WP_MONSTER_LAUNCHER:
 		addTime = 300;
 		break;
-#endif
-	}
 
-#if 0	// JUHOX: no normal haste
-	if ( pm->ps->powerups[PW_HASTE] ) {
-		addTime /= 1.3;
 	}
-#endif
 
 	pm->ps->weaponTime += addTime;
 
@@ -2172,7 +2030,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 	if (ps->pm_type == PM_MEETING) return;      // JUHOX: no view changes during meeting
 #endif
 
-#if 1	// JUHOX: gauntlet lock target mechanism
+	// JUHOX: gauntlet lock target mechanism
 	if (
 		ps->weapon == WP_GAUNTLET &&
 		ps->stats[STAT_HEALTH] > 0 &&
@@ -2195,7 +2053,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 			ps->delta_angles[i] = ANGLE2SHORT(angles[i]) - cmd->angles[i];
 		}
 	}
-#endif
 
 	// circularly clamp the angles with deltas
 	for (i=0 ; i<3 ; i++) {
@@ -2222,9 +2079,8 @@ JUHOX: CalcWeariness
 ================
 */
 void CalcWeariness(void) {
-#if MONSTER_MODE
+
 	if (pm->ps->clientNum >= MAX_CLIENTS) return;	// speed up
-#endif
 	if (pm->ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		qboolean weary;
 
@@ -2303,7 +2159,7 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->tracemask &= ~CONTENTS_BODY;	// corpses can fly through bodies
 	}
 
-#if 1	// JUHOX: gauntlet attack move
+	// JUHOX: gauntlet attack move
 	if (
 		pm->ps->persistant[PERS_TEAM] != TEAM_SPECTATOR &&
 		pm->ps->weapon == WP_GAUNTLET &&
@@ -2318,7 +2174,6 @@ void PmoveSingle (pmove_t *pmove) {
 			pm->cmd.rightmove = 0;
 		}
 	}
-#endif
 
 	// make sure walking button is clear if they are running, to avoid
 	// proxy no-footsteps cheats
@@ -2334,10 +2189,6 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// set the firing flag for continuous beam weapons
-#if 0	// JUHOX: don't set EF_FIRING with shield powerup
-	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION
-		&& ( pm->cmd.buttons & BUTTON_ATTACK ) && pm->ps->ammo[ pm->ps->weapon ] ) {
-#else
 	if ( !(pm->ps->pm_flags & PMF_RESPAWNED) && pm->ps->pm_type != PM_INTERMISSION
 #if MEETING
 		&& pm->ps->pm_type != PM_MEETING
@@ -2348,7 +2199,7 @@ void PmoveSingle (pmove_t *pmove) {
 		&& pm->ps->weaponstate != WEAPON_DROPPING
 		&& pm->ps->weaponstate != WEAPON_RAISING
 	) {
-#endif
+
 		pm->ps->eFlags |= EF_FIRING;
 	} else {
 		pm->ps->eFlags &= ~EF_FIRING;
@@ -2418,14 +2269,13 @@ void PmoveSingle (pmove_t *pmove) {
 	if ( pm->ps->pm_type == PM_SPECTATOR ) {
 		PM_CheckDuck ();
 		// JUHOX: is this a dead player spectating?
-#if 1
 		if (pm->ps->stats[STAT_HEALTH] <= 0) {
 			pm->ps->stats[STAT_STRENGTH] += REFRESH_ONE_SECOND * pml.frametime;
 			if (pm->ps->stats[STAT_STRENGTH] > MAX_STRENGTH_VALUE) {
 				pm->ps->stats[STAT_STRENGTH] = MAX_STRENGTH_VALUE;
 			}
 		}
-#endif
+
 		PM_FlyMove ();
 		PM_DropTimers ();
 		return;
@@ -2466,6 +2316,12 @@ void PmoveSingle (pmove_t *pmove) {
 
 	PM_DropTimers();
 
+	/*
+	// SLK: Double-jump timer
+		if (pm->ps->stats[STAT_JUMPTIME] > 0) pm->ps->stats[STAT_JUMPTIME] -= pml.msec;
+	// !SLK
+    */
+
 	CalcWeariness(); // JUHOX: weariness & refreshing
 
 	if ( pm->ps->powerups[PW_FLIGHT] ) {
@@ -2501,20 +2357,15 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_Animate();
 
 	// set groundentity, watertype, and waterlevel
-#if 0	// JUHOX: only re-calculate if moved
-	PM_GroundTrace();
-	PM_SetWaterLevel();
-#else
 	if (DistanceSquared(pm->ps->origin, oldOrigin) > 0) {
 		PM_GroundTrace();
 		PM_SetWaterLevel();
 	}
-#endif
 
 	// weapons
 	PM_Weapon();
 
-#if 1	// JUHOX: add weapon kick
+	// JUHOX: add weapon kick
 	if (
 		pm->ps->clientNum < MAX_CLIENTS &&
 		pm->ps->stats[STAT_WEAPON_KICK] != 0
@@ -2534,7 +2385,6 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->ps->delta_angles[YAW] += ANGLE2SHORT(move * local_crandom(&seed));
 		pm->ps->delta_angles[PITCH] += ANGLE2SHORT(move * local_crandom(&seed));
 	}
-#endif
 
 	// torso animation
 	PM_TorsoAnimation();
@@ -2545,11 +2395,10 @@ void PmoveSingle (pmove_t *pmove) {
 	// entering / leaving water splashes
 	PM_WaterEvents();
 
-#if 1	// JUHOX: generate pant events
+	// JUHOX: generate pant events
 	if (
-#if MONSTER_MODE
+
 		pm->ps->clientNum < MAX_CLIENTS &&	// speed up
-#endif
 		pm->ps->persistant[PERS_TEAM] != TEAM_SPECTATOR &&
 		pm->ps->stats[STAT_HEALTH] > 0 &&
 		pm->waterlevel < 3 &&
@@ -2583,7 +2432,6 @@ void PmoveSingle (pmove_t *pmove) {
 			PM_AddEvent(EV_PANT);
 		}
 	}
-#endif
 
 	// snap some parts of playerstate to save network bandwidth
 	trap_SnapVector( pm->ps->velocity );
@@ -2634,8 +2482,6 @@ void Pmove (pmove_t *pmove) {
 			pmove->cmd.upmove = 20;
 		}
 	}
-
-	//PM_CheckStuck();
 
 }
 

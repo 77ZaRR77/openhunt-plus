@@ -8,7 +8,7 @@
 #ifndef __BG_PUBLIC_H	// JUHOX
 #define __BG_PUBLIC_H	// JUHOX
 
-#define	GAME_VERSION		"openhunt"	// JUHOX: was "baseq3-1"
+#define	GAME_VERSION		"openhunt-1"	// JUHOX: was "baseq3-1"
 
 #define SCREENSHOT_TOOLS	0	// JUHOX
 #define PLAYER_SCREENSHOTS	0	// JUHOX
@@ -722,6 +722,7 @@ typedef enum {
 	,STAT_REFERENCE_Y
 	,STAT_REFERENCE_Z
 #endif
+    /*,STAT_JUMPTIME */                 // SLK
 } statIndex_t;
 #define STAT_RESPAWN_INFO STAT_ARMOR	// JUHOX: remaining seconds & respawnLocationType_t, valid only if dead
 #define WEAPON_KICK_FACTOR 50	// JUHOX: for STAT_WEAPON_KICK
