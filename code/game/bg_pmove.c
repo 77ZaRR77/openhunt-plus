@@ -1656,16 +1656,16 @@ static void PM_WeaponShake(playerState_t* ps) {
 	} weaponShakeCharacteristics[16] = {
 		{0, 0, 0, 0, 0, 0},				// WP_NONE
 		{0, 0, 0, 0, 0, 0},				// WP_GAUNTLET
-		{0, 40, 75, 0, 0, 0},			// WP_MACHINEGUN
-		{0, 200, 0, 0, 0, 0},		// WP_SHOTGUN
+		{0, 0, 0, 0, 0, 0},			// WP_MACHINEGUN
+		{0, 0, 0, 0, 0, 0},		// WP_SHOTGUN
 		{0, 0, 0, 0, 0, 0},		// WP_GRENADE_LAUNCHER
-		{0, 200, 200, 0, 0, 0},		// WP_ROCKET_LAUNCHER
+		{0, 0, 0, 0, 0, 0},		// WP_ROCKET_LAUNCHER
 		{0, 0, 0, 0, 0, 0},				// WP_LIGHTNING
-		{0, 600, 200, 0, 100, 200},	// WP_RAILGUN
+		{0, 600, 200, 0, 0, 0},	// WP_RAILGUN
 		{0, 0, 0, 0, 0, 0},			// WP_PLASMAGUN
-		{0, 300, 200, 0, 50, 200},	// WP_BFG
+		{0, 300, 200, 0, 0, 0},	// WP_BFG
 		{0, 0, 0, 0, 0, 0},				// WP_GRAPPLING_HOOK
-		{0, 100, 100, 0, 0, 0},		// WP_MONSTER_LAUNCHER //SLK: might use this one as PORTAL GUN for self teleportation?
+		{0, 0, 0, 0, 0, 0},		// WP_MONSTER_LAUNCHER //SLK: might use this one as PORTAL GUN for self teleportation?
 	};
 	float viewSpread;
 	float knockback;
