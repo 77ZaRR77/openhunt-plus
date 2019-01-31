@@ -1,5 +1,9 @@
 Original Mod by Jurgen Juhox Hoffmann
 
+Improved version of OpenHunt by
+SLK 
+ZaRR
+
 created by Jurgen Juhox Hoffmann
 coding by Jurgen Hoffmann Craniul
 artwork & shader scripts by Jurgen Hoffmann
