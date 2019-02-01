@@ -7,7 +7,7 @@ zturtleman (ZTM) -  preconfiguration for compile,programming advice
 
 SLK - bugfixes, code cleaning, cosmetica
 
-ZaRR - bugfixes, weapon fixes, balance, cosmetica
+ZaRR - bugfixes, weapon fixes, balance, cosmetica, efh mapping investigation
 
 Also big thanks for testers and small openhunt discord community
 
