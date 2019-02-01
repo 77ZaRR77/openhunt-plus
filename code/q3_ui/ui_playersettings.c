@@ -289,7 +289,7 @@ static void PlayerSettings_SetMenuItems( void ) {
 
 	// model/skin
 	memset( &s_playersettings.playerinfo, 0, sizeof(playerInfo_t) );
-	
+
 	viewangles[YAW]   = 180 - 30;
 	viewangles[PITCH] = 0;
 	viewangles[ROLL]  = 0;
@@ -322,9 +322,6 @@ static void PlayerSettings_MenuEvent( void* ptr, int event ) {
 	case ID_MODEL:
 		PlayerSettings_SaveChanges();
 		// JUHOX: call UI_PlayerModelMenu() with the new parameters
-#if !MONSTER_MODE
-		UI_PlayerModelMenu();
-#else
 		UI_PlayerModelMenu(
 			"PLAYER MODEL",
 			s_playersettings.name.field.buffer,
@@ -332,7 +329,6 @@ static void PlayerSettings_MenuEvent( void* ptr, int event ) {
 			NULL, 0,
 			WP_MACHINEGUN
 		);
-#endif
 		break;
 
 	case ID_BACK:

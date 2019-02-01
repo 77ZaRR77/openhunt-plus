@@ -720,7 +720,6 @@ Only in CTF games
 	},
 
 // JUHOX: artefact item definition
-#if MONSTER_MODE
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
@@ -737,10 +736,8 @@ Only in CTF games
 /* precache */ "",
 /* sounds */ ""
 	},
-#endif
 
 // JUHOX: monster launcher item definition
-#if MONSTER_MODE
 /*QUAKED weapon_monsterlauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
@@ -772,7 +769,6 @@ Only in CTF games
 /* precache */ "",
 /* sounds */ ""
 	},
-#endif
 
 	// end of list marker
 	{NULL}
@@ -781,7 +777,6 @@ Only in CTF games
 int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
 
 // JUHOX: ammo characteristics
-#if 1
 weaponAmmoCharacteristic_t weaponAmmoCharacteristics[] = {
 	{0, 0},		//
 	{WP_GAUNTLET_MAX_AMMO, WP_GAUNTLET_AMMO_REFRESH},
@@ -796,7 +791,6 @@ weaponAmmoCharacteristic_t weaponAmmoCharacteristics[] = {
 	{WP_GRAPPLING_HOOK_MAX_AMMO, WP_GRAPPLING_HOOK_AMMO_REFRESH},
 	{WP_MONSTER_LAUNCHER_MAX_AMMO, WP_MONSTER_LAUNCHER_AMMO_REFRESH}
 };
-#endif
 
 
 /*
@@ -919,7 +913,6 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
 	}
 
-	//if (ps->powerups[PW_SHIELD]) return qfalse;	// -JUHOX
 	if (ent->pos.trType != TR_STATIONARY) return qfalse;	// JUHOX
 
 	item = &bg_itemlist[ent->modelindex];
@@ -976,11 +969,11 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 					return qtrue;
 			}
 		}
-#if MONSTER_MODE	// JUHOX: pickup artefact in STU
+        // JUHOX: pickup artefact in STU
 		if (gametype == GT_STU) {
 			if (item->giTag == PW_QUAD && ps->persistant[PERS_TEAM] == TEAM_RED) return qtrue;
 		}
-#endif
+
 
 		return qfalse;
 
@@ -991,10 +984,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		}
 		return qtrue;
 
-#if 1	// JUHOX: POD markers can never be grabbed
+	// JUHOX: POD markers can never be grabbed
 	case IT_POD_MARKER:
 		return qfalse;
-#endif
+
         case IT_BAD:
             Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
         default:
@@ -1120,10 +1113,10 @@ char *eventnames[] = {
 	"EV_JUMP_PAD",			// boing sound at origin", jump sound on player
 
 	"EV_JUMP",
-	"EV_WATER_TOUCH",	// foot touches
-	"EV_WATER_LEAVE",	// foot leaves
-	"EV_WATER_UNDER",	// head touches
-	"EV_WATER_CLEAR",	// head leaves
+	"EV_WATER_TOUCH",	    // foot touches
+	"EV_WATER_LEAVE",	    // foot leaves
+	"EV_WATER_UNDER",	    // head touches
+	"EV_WATER_CLEAR",	    // head leaves
 
 	"EV_ITEM_PICKUP",			// normal item pickups are predictable
 	"EV_GLOBAL_ITEM_PICKUP",	// powerup / team sounds are broadcast to everyone
@@ -1155,9 +1148,9 @@ char *eventnames[] = {
 	"EV_PLAYER_TELEPORT_OUT",
 
 	"EV_GRENADE_BOUNCE",		// eventParm will be the soundindex
-#if MONSTER_MODE
+
 	"EV_COCOON_BOUNCE",	// JUHOX
-#endif
+
 
 	"EV_GENERAL_SOUND",
 	"EV_GLOBAL_SOUND",		// no attenuation
@@ -1317,11 +1310,11 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	} else {
 		s->eFlags &= ~EF_DEAD;
 	}
-#if 1	// JUHOX: add EF_DUCKED flag
+	// JUHOX: add EF_DUCKED flag
 	if (ps->pm_flags & PMF_DUCKED) {
 		s->eFlags |= EF_DUCKED;
 	}
-#endif
+
 
 	if ( ps->externalEvent ) {
 		s->event = ps->externalEvent;
@@ -1342,7 +1335,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;
-	for ( i = 0 ; i < /*MAX_POWERUPS*/PW_NUM_POWERUPS ; i++ ) {	// JUHOX
+	for ( i = 0 ; i < PW_NUM_POWERUPS ; i++ ) {	// JUHOX
 		if ( ps->powerups[ i ] ) {
 			s->powerups |= 1 << i;
 		}
@@ -1351,26 +1344,26 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 	s->time2 = ps->powerups[PW_CHARGE];	// JUHOX
-#if 1	// JUHOX: map standard players' playerState_t to entityState_t
-#if MONSTER_MODE
+	// JUHOX: map standard players' playerState_t to entityState_t
+
 	if (ps->clientNum < MAX_CLIENTS)
-#endif
 	{
 		s->otherEntityNum = ps->powerups[PW_TSSDATA1] & 255;
 		s->otherEntityNum2 = ps->stats[STAT_TARGET];
 	}
-#endif
+
 	// JUHOX NOTE: s->modelindex used for PFMI
-#if GRAPPLE_ROPE
-	s->modelindex2 = ps->stats[STAT_GRAPPLE_STATE];	// JUHOX
-#endif
-	s->frame = ps->stats[STAT_EFFECT];	// JUHOX
+	//s->modelindex2 = ps->stats[STAT_GRAPPLE_STATE];	// JUHOX
+	s->modelindex2 = GET_STAT_GRAPPLESTATE(ps);
+
+	//s->frame = ps->stats[STAT_EFFECT];	// JUHOX
+	s->frame = GET_STAT_EFFECT(ps);         // SLK
 	s->time = ps->powerups[PW_EFFECT_TIME];	// JUHOX
-#if ESCAPE_MODE	// JUHOX: set corrected lighting origin for EFH
+    // JUHOX: set corrected lighting origin for EFH
 	s->origin[0] = ps->persistant[PERS_LIGHT_X];
 	s->origin[1] = ps->persistant[PERS_LIGHT_Y];
 	s->origin[2] = ps->persistant[PERS_LIGHT_Z];
-#endif
+
 }
 
 /*
@@ -1452,26 +1445,24 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 	s->time2 = ps->powerups[PW_CHARGE];	// JUHOX
-#if 1	// JUHOX: map standard players' playerState_t to entityState_t
-#if MONSTER_MODE
+	// JUHOX: map standard players' playerState_t to entityState_t
 	if (ps->clientNum < MAX_CLIENTS)
-#endif
 	{
 		s->otherEntityNum = ps->powerups[PW_TSSDATA1] & 255;
 		s->otherEntityNum2 = ps->stats[STAT_TARGET];
 	}
-#endif
+
 	// JUHOX NOTE: s->modelindex used for PFMI
-#if GRAPPLE_ROPE
-	s->modelindex2 = ps->stats[STAT_GRAPPLE_STATE];	// JUHOX
-#endif
-	s->frame = ps->stats[STAT_EFFECT];	// JUHOX
+	//s->modelindex2 = ps->stats[STAT_GRAPPLE_STATE];	// JUHOX
+	s->modelindex2 = GET_STAT_GRAPPLESTATE (ps);
+	//s->frame = ps->stats[STAT_EFFECT];	// JUHOX
+	s->frame = GET_STAT_EFFECT(ps); // SLK
 	s->time = ps->powerups[PW_EFFECT_TIME];	// JUHOX
-#if ESCAPE_MODE	// JUHOX: set corrected lighting origin for EFH
+	// JUHOX: set corrected lighting origin for EFH
 	s->origin[0] = ps->persistant[PERS_LIGHT_X];
 	s->origin[1] = ps->persistant[PERS_LIGHT_Y];
 	s->origin[2] = ps->persistant[PERS_LIGHT_Z];
-#endif
+
 }
 
 /*
@@ -1509,45 +1500,6 @@ void BG_TSS_AssignPlayers(
 	int unassignedPlayers,				// percentage	(input)
 	int (*assignments)[MAX_GROUPS]		// quantity		(output)
 ) {
-#if 0
-	// floating point version
-	float remainingSize[MAX_GROUPS];
-	float remainingUnassigned;
-	float percentPerPlayer;
-	int i;
-
-	memset(assignments, 0, sizeof(*assignments));
-
-	if (playersToAssign <= 0) return;
-
-	for (i = 0; i < MAX_GROUPS; i++) remainingSize[i] = (*groupSizes)[i];
-	remainingUnassigned = unassignedPlayers;
-
-	percentPerPlayer = 100.0 / playersToAssign;
-
-	for (i = 0; i < playersToAssign; i++) {
-		int gr;
-		float highestRemainingSize;
-		int mostNeedingGroup;
-
-		highestRemainingSize = remainingUnassigned;
-		mostNeedingGroup = -1;
-		for (gr = 0; gr < MAX_GROUPS; gr++) {
-			if (remainingSize[gr] > highestRemainingSize) {
-				mostNeedingGroup = gr;
-				highestRemainingSize = remainingSize[gr];
-			}
-		}
-
-		if (mostNeedingGroup < 0) {
-			remainingUnassigned -= percentPerPlayer;
-		}
-		else {
-			(*assignments)[mostNeedingGroup]++;
-			remainingSize[mostNeedingGroup] -= percentPerPlayer;
-		}
-	}
-#else
 	// integer version (all floats have been multiplied by 'playersToAssign'
 	int remainingSize[MAX_GROUPS];
 	int remainingUnassigned;
@@ -1581,7 +1533,6 @@ void BG_TSS_AssignPlayers(
 			remainingSize[mostNeedingGroup] -= percentPerPlayer;
 		}
 	}
-#endif
 }
 
 
@@ -1736,7 +1687,6 @@ void BG_TSS_DecodeLeadership(
 }
 
 // JUHOX: tss player info bit field definitions
-#if 1
 #define TSSPI_isValid_size				1
 #define TSSPI_group_size				4
 #define TSSPI_groupMemberStatus_size	3
@@ -1763,8 +1713,6 @@ void BG_TSS_DecodeLeadership(
 #define TSSPI_membersReady_start		(TSSPI_membersAlive_start+TSSPI_membersAlive_size)
 #define TSSPI_hyperspace_start			(TSSPI_membersReady_start+TSSPI_membersReady_size)
 #define TSSPI_navAid_start				(TSSPI_hyperspace_start+TSSPI_hyperspace_size)
-
-
 #define TSSPI_FIELD2 TSSPI_groupLeader
 
 #define TSSPI_groupLeader_size			6
@@ -1811,7 +1759,6 @@ static const int tssPlayerInfoBitSize[] = {
 	TSSPI_taskGoal_size,
 	TSSPI_suggestedGF_size
 };
-#endif
 
 /*
 ========================
@@ -1865,9 +1812,7 @@ NOTE: this function also depends on code in
 int BG_TSS_GetPlayerEntityInfo(const entityState_t* es, tss_playerInfo_t pi) {
 	int mask;
 
-#if MONSTER_MODE
 	if (es->clientNum >= MAX_CLIENTS) return 0;	// no TSS for monsters
-#endif
 	mask = (1 << tssPlayerInfoBitSize[pi]) - 1;
 	return (es->otherEntityNum >> tssPlayerInfoBitStart[pi]) & mask;
 }
@@ -1919,12 +1864,8 @@ qboolean BG_ParseGameTemplate(const char* info, gametemplate_t* gt) {
 	case GT_TOURNAMENT:
 	case GT_TEAM:
 	case GT_CTF:
-#if MONSTER_MODE
 	case GT_STU:
-#if ESCAPE_MODE
 	case GT_EFH:
-#endif
-#endif
 		break;
 	default:
 		return qfalse;
@@ -1933,7 +1874,7 @@ qboolean BG_ParseGameTemplate(const char* info, gametemplate_t* gt) {
 	// parse the optional keys
 
 	v = Info_ValueForKey(info, "map");
-	//if (!v[0]) return qfalse;
+
 	Q_strncpyz(gt->mapName, v, sizeof(gt->mapName));
 
 	v = Info_ValueForKey(info, "mip");
@@ -2295,7 +2236,7 @@ float BG_PlayerTargetOffset(const entityState_t* state, float pos) {
 		offset = CROUCH_VIEWHEIGHT;
 	}
 	offset *= pos;
-#if MONSTER_MODE
+
 	switch (state->clientNum) {
 	case CLIENTNUM_MONSTER_PREDATOR:
 	case CLIENTNUM_MONSTER_PREDATOR_RED:
@@ -2311,6 +2252,6 @@ float BG_PlayerTargetOffset(const entityState_t* state, float pos) {
 		offset *= MONSTER_TITAN_SCALE;
 		break;
 	}
-#endif
+
 	return offset;
 }

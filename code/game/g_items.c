@@ -252,18 +252,15 @@ int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 JUHOX: Think_Artefact
 ===============
 */
-#if MONSTER_MODE
 static void Think_Artefact(gentity_t* ent) {
 	G_SpawnArtefact();
 }
-#endif
 
 /*
 ===============
 JUHOX: Pickup_Artefact
 ===============
 */
-#if MONSTER_MODE
 int Pickup_Artefact(gentity_t* ent, gentity_t* other) {
 	gentity_t* te;
 	int i;
@@ -301,7 +298,6 @@ int Pickup_Artefact(gentity_t* ent, gentity_t* other) {
 	te->s.modelindex = 0;
 	te->r.svFlags |= SVF_BROADCAST;
 
-	//G_SpawnArtefact();
 	if (level.teamScores[TEAM_RED] < g_artefacts.integer || g_artefacts.integer >= 999) {
 		ent->think = Think_Artefact;
 		ent->nextthink = level.time + 16000;
@@ -316,7 +312,7 @@ int Pickup_Artefact(gentity_t* ent, gentity_t* other) {
 
 	return 0;
 }
-#endif
+
 
 //======================================================================
 
@@ -433,16 +429,12 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		break;
 	case IT_TEAM:
 		// JUHOX: check for picking up an artefact
-#if !MONSTER_MODE
-		respawn = Pickup_Team(ent, other);
-#else
 		if (ent->item->giTag == PW_QUAD) {
 			respawn = Pickup_Artefact(ent, other);
 		}
 		else {
 			respawn = Pickup_Team(ent, other);
 		}
-#endif
 		break;
 	case IT_HOLDABLE:
 		respawn = Pickup_Holdable(ent, other);
@@ -464,11 +456,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 	// powerup pickups are global broadcasts
 	// JUHOX: don't play global sounds for powerups
-#if 0
-	if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
-#else
 	if (ent->item->giType == IT_TEAM) {
-#endif
 		// if we want the global sound to play
 		if (!ent->speed) {
 			gentity_t	*te;
@@ -548,7 +536,6 @@ JUHOX: G_SpawnArtefact
 derived in part from LaunchItem()
 ================
 */
-#if MONSTER_MODE
 void G_SpawnArtefact(void) {
 	int i;
 	int numItems1;
@@ -673,7 +660,6 @@ void G_SpawnArtefact(void) {
 	level.artefact->r.svFlags &= ~SVF_NOCLIENT;
 	trap_LinkEntity(level.artefact);
 }
-#endif
 
 /*
 ================
@@ -809,13 +795,8 @@ void FinishSpawningItem( gentity_t *ent ) {
 	}
 
 	// powerups don't spawn in for a while
-#if !ESCAPE_MODE	// JUHOX: in EFH powerups spawn immediately
-	if ( ent->item->giType == IT_POWERUP ) {
-#else
 	if (ent->item->giType == IT_POWERUP && g_gametype.integer != GT_EFH) {
-#endif
 		float	respawn;
-
 		respawn = 45 + crandom() * 15;
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
@@ -827,7 +808,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 	trap_LinkEntity (ent);
 }
-
 
 qboolean	itemRegistered[MAX_ITEMS];
 
@@ -884,29 +864,22 @@ void ClearRegisteredItems( void ) {
 	RegisterItem(BG_FindItemForWeapon(WP_RAILGUN));
 	RegisterItem(BG_FindItemForWeapon(WP_PLASMAGUN));
 	RegisterItem(BG_FindItemForWeapon(WP_BFG));
-#if GRAPPLE_ROPE
-	if (
-#if ESCAPE_MODE
-		g_gametype.integer != GT_EFH &&
-#endif
-		g_grapple.integer > HM_disabled &&
-		g_grapple.integer < HM_num_modes
-	) {
+
+	if ( g_gametype.integer != GT_EFH && g_grapple.integer > HM_disabled &&	g_grapple.integer < HM_num_modes ) {
 		RegisterItem(BG_FindItemForWeapon(WP_GRAPPLING_HOOK));
 	}
-#endif
+
 	if (g_respawnAtPOD.integer && g_gametype.integer == GT_CTF) {
 		RegisterItem(BG_FindItem("POD marker"));
 	}
 
-#if MONSTER_MODE	// JUHOX: register artefact item
+	// JUHOX: register artefact item
 	if (g_gametype.integer == GT_STU) {
 		RegisterItem(BG_FindItem("Artefact"));
 	}
 	else if (g_gametype.integer < GT_STU && g_monsterLauncher.integer) {
 		RegisterItem(BG_FindItemForWeapon(WP_MONSTER_LAUNCHER));
 	}
-#endif
 }
 
 /*
@@ -997,13 +970,11 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	}
 
 	// JUHOX: finish item spawning for EFH
-#if ESCAPE_MODE
 	if (g_gametype.integer == GT_EFH) {
 		FinishSpawningItem(ent);
 		G_SetOrigin(ent, ent->s.origin);
 	}
 	ent->entClass = GEC_item;
-#endif
 }
 
 
@@ -1084,7 +1055,6 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 	sqrspeed = VectorLengthSquared(ent->s.pos.trDelta);	// JUHOX
 
 	// JUHOX: bouncing armor fragment
-#if 1
 	if (armorFragment) {
 		G_BounceItemRotation(ent);
 		if (sqrspeed >= 160*160) {
@@ -1097,36 +1067,25 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 			G_AddEvent(ent, EV_BOUNCE_ARMOR, 2);
 		}
 	}
-#endif
 
 	// check for stop
 	// JUHOX BUGFIX: check like in G_BounceMissile() (the VectorLength() call is the important thing, I think)
-#if 0
-	if ( trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40 ) {
-#else
+
 	if (trace->plane.normal[2] > 0.2 && sqrspeed < 40*40) {
-#endif
+
 		// JUHOX: stop armor fragment rotation
-#if 1
 		if (armorFragment) {
 			vec3_t angles;
 			//float pitch;
 
 			ent->s.apos.trType = TR_STATIONARY;
-			/*
-			VectorClear(ent->s.apos.trDelta);
-			ent->s.apos.trTime = 0;
-			ent->s.apos.trDuration = 0;
-			pitch = AngleMod(ent->s.apos.trBase[PITCH]);
-			ent->s.apos.trBase[PITCH] = pitch < 180? 90 : -90;
-			ent->s.apos.trBase[ROLL] = 0;
-			*/
+
 			// JUHOX: the following depends on code in CG_Item() [cg_ents.c]
 			BG_EvaluateTrajectory(&ent->s.apos, level.time, angles);
 			ent->s.apos.trDelta[YAW] = angles[YAW];
 			VectorCopy(trace->plane.normal, ent->s.apos.trBase);
 		}
-#endif
+
 		trace->endpos[2] += 1.0;	// make sure it is off ground
 		SnapVector( trace->endpos );
 		G_SetOrigin( ent, trace->endpos );
@@ -1156,12 +1115,10 @@ void G_RunItem( gentity_t *ent ) {
 	static vec3_t maxs = {8,8,8};		// JUHOX
 
 	// JUHOX: POD markers do not much
-#if 1
 	if (ent->item && ent->item->giType == IT_POD_MARKER) {
 		G_PODMarkerRotation(ent);
 		return;
 	}
-#endif
 
 	// if groundentity has been set to -1, it may have been pushed off an edge
 	if ( ent->s.groundEntityNum == -1 ) {
@@ -1180,7 +1137,7 @@ void G_RunItem( gentity_t *ent ) {
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
-#if 1	// JUHOX: corpse sinking into ground
+	// JUHOX: corpse sinking into ground
 	if (ent->s.pos.trType == TR_LINEAR_STOP) {
 		if (level.time - ent->s.pos.trTime < 3000) {
 			VectorCopy(origin, ent->r.currentOrigin);
@@ -1193,7 +1150,7 @@ void G_RunItem( gentity_t *ent ) {
 		G_RunThink(ent);
 		return;
 	}
-#endif
+
 
 	// trace a line from the previous position to the current position
 	if ( ent->clipmask ) {
@@ -1202,35 +1159,22 @@ void G_RunItem( gentity_t *ent ) {
 		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;//MASK_SOLID;
 	}
 	// JUHOX: use smaller mins & maxs for fragment movement
-#if 0
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
-		ent->r.ownerNum, mask );
-#else
 	if (ent->item && ent->item->giType == IT_ARMOR && ent->item->giTag) {
 		trap_Trace(&tr, ent->r.currentOrigin, mins, maxs, origin, ent->r.ownerNum, mask);
 	}
 	else {
 		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->r.ownerNum, mask);
 	}
-#endif
+
 
 	// JUHOX: do item movement like missile movement [G_RunMissile()]
-#if 0
-	VectorCopy( tr.endpos, ent->r.currentOrigin );
-
-	if ( tr.startsolid ) {
-		tr.fraction = 0;
-	}
-#else
 	if ( tr.startsolid || tr.allsolid ) {
 		vec3_t normal;
 
 		VectorCopy(tr.plane.normal, normal);
 
 		// make sure the tr.entityNum is set to the entity we're stuck in
-		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin,
-			ent->r.ownerNum, mask );
-		//tr.fraction = 0;
+		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ent->r.ownerNum, mask );
 
 		tr.fraction = 1;
 		tr.endpos[2] += 1.0;	// make sure it is off ground
@@ -1239,18 +1183,10 @@ void G_RunItem( gentity_t *ent ) {
 		ent->s.groundEntityNum = tr.entityNum;
 		if (ent->item && ent->item->giType == IT_ARMOR && ent->item->giTag) {
 			vec3_t angles;
-			//float pitch;
 
 			// stop armor fragment rotation
 			ent->s.apos.trType = TR_STATIONARY;
-			/*
-			VectorClear(ent->s.apos.trDelta);
-			ent->s.apos.trTime = 0;
-			ent->s.apos.trDuration = 0;
-			pitch = AngleMod(ent->s.apos.trBase[PITCH]);
-			ent->s.apos.trBase[PITCH] = pitch < 180? 90 : -90;
-			ent->s.apos.trBase[ROLL] = 0;
-			*/
+
 			// JUHOX: the following depends on code in CG_Item() [cg_ents.c]
 			BG_EvaluateTrajectory(&ent->s.apos, level.time, angles);
 			ent->s.apos.trDelta[YAW] = angles[YAW];
@@ -1260,7 +1196,7 @@ void G_RunItem( gentity_t *ent ) {
 	else {
 		VectorCopy(tr.endpos, ent->r.currentOrigin);
 	}
-#endif
+
 
 	trap_LinkEntity( ent );	// FIXME: avoid this for stationary?
 

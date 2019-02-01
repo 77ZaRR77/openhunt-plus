@@ -35,12 +35,6 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName ) {
 	}
 
 	// JUHOX: accept EXTRA_CLIENTNUMS
-#if !MONSTER_MODE
-	if ( clientNum < 0 || clientNum >= MAX_CLIENTS ) {
-		clientNum = 0;
-	}
-	ci = &cgs.clientinfo[ clientNum ];
-#else
 	if (clientNum < 0 || clientNum >= ENTITYNUM_MAX_NORMAL) {
 		clientNum = 0;
 	}
@@ -52,7 +46,6 @@ sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName ) {
 	}
 	ci = &cgs.clientinfo[ clientNum ];
 	if (!ci->infoValid) ci = &cgs.clientinfo[0];
-#endif
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS && cg_customSoundNames[i] ; i++ ) {
 		if ( !strcmp( soundName, cg_customSoundNames[i] ) ) {
@@ -317,11 +310,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 	char *team, *charactersFolder;
 	int i;
 
-#if !MONSTER_MODE	// JUHOX: use default skin in STU
-	if ( cgs.gametype >= GT_TEAM ) {
-#else
 	if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 		switch ( ci->team ) {
 			case TEAM_BLUE: {
 				team = "blue";
@@ -350,11 +339,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 			if ( CG_FileExists( filename ) ) {
 				return qtrue;
 			}
-#if !MONSTER_MODE	// JUHOX: use default skin in STU
-			if ( cgs.gametype >= GT_TEAM ) {
-#else
 			if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 				if ( i == 0 && teamName && *teamName ) {
 					//								"models/players/characters/james/stroggs/lower_red.skin"
 					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", charactersFolder, modelName, teamName, base, team, ext );
@@ -400,11 +385,7 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 	char *team, *headsFolder;
 	int i;
 
-#if !MONSTER_MODE	// JUHOX: use default skin in STU
-	if ( cgs.gametype >= GT_TEAM ) {
-#else
 	if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 		switch ( ci->team ) {
 			case TEAM_BLUE: {
 				team = "blue";
@@ -438,11 +419,8 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 			if ( CG_FileExists( filename ) ) {
 				return qtrue;
 			}
-#if !MONSTER_MODE	// JUHOX: use default skin in STU
-			if ( cgs.gametype >= GT_TEAM ) {
-#else
 			if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
+
 				if ( i == 0 &&  teamName && *teamName ) {
 					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", headsFolder, headModelName, teamName, base, team, ext );
 				}
@@ -677,11 +655,7 @@ Load it now, taking the disk hits.
 This will usually be deferred to a safe time
 ===================
 */
-#if 0	// JUHOX: additional parameter for CG_LoadClientInfo()
-static void CG_LoadClientInfo( clientInfo_t *ci ) {
-#else
 static void CG_LoadClientInfo(clientInfo_t *ci, const char* defaultModel) {
-#endif
 	const char	*dir, *fallback;
 	int			i, modelloaded;
 	const char	*s;
@@ -697,7 +671,7 @@ static void CG_LoadClientInfo(clientInfo_t *ci, const char* defaultModel) {
 		}
 
 		// fall back
-#if MONSTER_MODE	// JUHOX: use default skin as fall back
+    	// JUHOX: use default skin as fall back
 		if (defaultModel) {
 			if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
 				if (!CG_RegisterClientModelname(ci, defaultModel, ci->skinName, defaultModel, ci->skinName, teamname)) {
@@ -711,12 +685,8 @@ static void CG_LoadClientInfo(clientInfo_t *ci, const char* defaultModel) {
 			}
 		}
 		else
-#endif
-#if !MONSTER_MODE	// JUHOX: use default skin in STU
-		if( cgs.gametype >= GT_TEAM) {
-#else
+
 		if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 			// keep skin name
 			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
 				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
@@ -740,14 +710,10 @@ static void CG_LoadClientInfo(clientInfo_t *ci, const char* defaultModel) {
 
 	// sounds
 	dir = ci->modelName;
-#if !MONSTER_MODE	// JUHOX: use DEFAULT_MODEL sounds as fall back in STU
-	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
-#else
 	fallback = defaultModel;
 	if (!fallback) {
 		fallback = (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 	}
-#endif
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS ; i++ ) {
 		s = cg_customSoundNames[i];
@@ -825,11 +791,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			&& !Q_stricmp( ci->redTeam, match->redTeam )
 			// JUHOX: in STU all teams use their normal skins
-#if !MONSTER_MODE
-			&& (cgs.gametype < GT_TEAM || ci->team == match->team) ) {
-#else
 			&& (cgs.gametype < GT_TEAM || cgs.gametype >= GT_STU || ci->team == match->team)) {
-#endif
 			// this clientinfo is identical, so use it's handles
 
 			ci->deferred = qfalse;
@@ -870,11 +832,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 			 Q_stricmp( ci->modelName, match->modelName ) ||
 
 			 // JUHOX: in STU all teams use their normal skins
-#if !MONSTER_MODE
-			 (cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
-#else
 			 (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU && ci->team != match->team) ) {
-#endif
 
 			continue;
 		}
@@ -886,11 +844,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci ) {
 
 	// if we are in teamplay, only grab a model if the skin is correct
 	// JUHOX: don't need to check skin in STU
-#if !MONSTER_MODE
-	if ( cgs.gametype >= GT_TEAM ) {
-#else
 	if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
 			match = &cgs.clientinfo[ i ];
 			if ( !match->infoValid || match->deferred ) {
@@ -1024,11 +978,7 @@ void CG_NewClientInfo( int clientNum ) {
 		char *skin;
 
 		// JUHOX: use default skin in STU
-#if !MONSTER_MODE
-		if( cgs.gametype >= GT_TEAM ) {
-#else
 		if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 			Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
 			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 		} else {
@@ -1044,11 +994,7 @@ void CG_NewClientInfo( int clientNum ) {
 		}
 
 		// JUHOX: use default skin in STU
-#if !MONSTER_MODE
-		if ( cgs.gametype >= GT_TEAM ) {
-#else
 		if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 			// keep skin name
 			slash = strchr( v, '/' );
 			if ( slash ) {
@@ -1078,11 +1024,7 @@ void CG_NewClientInfo( int clientNum ) {
 		char *skin;
 
 		// JUHOX: use default skin in STU
-#if !MONSTER_MODE
-		if( cgs.gametype >= GT_TEAM ) {
-#else
 		if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 			Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
 			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
 		} else {
@@ -1098,11 +1040,7 @@ void CG_NewClientInfo( int clientNum ) {
 		}
 
 		// JUHOX: use default skin in STU
-#if !MONSTER_MODE
-		if ( cgs.gametype >= GT_TEAM ) {
-#else
 		if (cgs.gametype >= GT_TEAM && cgs.gametype < GT_STU) {
-#endif
 			// keep skin name
 			slash = strchr( v, '/' );
 			if ( slash ) {
@@ -1161,7 +1099,6 @@ JUHOX: CG_InitMonsterClientInfo
 derived from 'CG_NewClientInfo()' (see above)
 ======================
 */
-#if MONSTER_MODE
 void CG_InitMonsterClientInfo(int clientNum) {
 	clientInfo_t* ci;
 	clientInfo_t newInfo;
@@ -1233,7 +1170,6 @@ void CG_InitMonsterClientInfo(int clientNum) {
 		Q_strncpyz(newInfo.modelName, Info_ValueForKey(configstring, modelCvar), sizeof(newInfo.modelName));
 	}
 
-	//CG_LoadingString(newInfo.modelName);
 	CG_LoadingClient(clientNum);
 
 	{
@@ -1253,22 +1189,6 @@ void CG_InitMonsterClientInfo(int clientNum) {
 	// head model
 	Q_strncpyz(newInfo.headModelName, newInfo.modelName, sizeof(newInfo.headModelName));
 	Q_strncpyz(newInfo.headSkinName, newInfo.skinName, sizeof(newInfo.headSkinName));
-	/*
-	v = Info_ValueForKey( configstring, "hmodel" );
-	{
-		Q_strncpyz( newInfo.headModelName, v, sizeof( newInfo.headModelName ) );
-
-		slash = strchr( newInfo.headModelName, '/' );
-		if ( !slash ) {
-			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
-		} else {
-			Q_strncpyz( newInfo.headSkinName, slash + 1, sizeof( newInfo.headSkinName ) );
-			// truncate modelName
-			*slash = 0;
-		}
-	}
-	*/
 
 	CG_LoadClientInfo(&newInfo, defaultModel);
 
@@ -1276,7 +1196,6 @@ void CG_InitMonsterClientInfo(int clientNum) {
 	newInfo.infoValid = qtrue;
 	*ci = newInfo;
 }
-#endif
 
 
 
@@ -1303,12 +1222,8 @@ void CG_LoadDeferredPlayers( void ) {
 				continue;
 			}
 			// JUHOX: additional parameter for CG_LoadClientInfo()
-#if 0
-			CG_LoadClientInfo( ci );
-#else
 			CG_LoadClientInfo(ci, NULL);
-#endif
-//			break;
+
 		}
 	}
 }
@@ -1367,13 +1282,8 @@ static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation
 		return;
 	}
 
-#if SCREENSHOT_TOOLS	// JUHOX
-	if (cg.stopTime) speedScale = 0;
-#endif
-
-#if 1	// JUHOX: update local animation clock
+	// JUHOX: update local animation clock
 	lf->clock += cg.frametime * speedScale;
-#endif
 
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation ) {
@@ -1396,12 +1306,8 @@ static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation
 		} else {
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
-#if 0	// JUHOX BUGFIX: improve precision
-		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
-		f *= speedScale;		// adjust for haste, etc
-#else
+
 		f = (lf->frameTime - lf->animationTime) / anim->frameLerp;
-#endif
 
 		numFrames = anim->numFrames;
 		if (anim->flipflop) {
@@ -1483,13 +1389,6 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	}
 
 	// JUHOX: adapt animation speed to player speed
-#if 0
-	if ( cent->currentState.powerups & ( 1 << PW_HASTE ) ) {
-		speedScale = 1.5;
-	} else {
-		speedScale = 1;
-	}
-#else
 	{
 		qboolean forceFullSpeed;
 
@@ -1501,16 +1400,6 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 		case LEGS_BACKWALK:
 		case LEGS_BACKCR:
 			speedScale *= 2;
-			/*
-			switch (clientNum) {
-			case CLIENTNUM_MONSTER_GUARD:
-				speedScale /= MONSTER_GUARD_SCALE;
-				break;
-			case CLIENTNUM_MONSTER_TITAN:
-				speedScale /= MONSTER_TITAN_SCALE;
-				break;
-			}
-			*/
 			break;
 		case BOTH_DEATH1:
 		case BOTH_DEAD1:
@@ -1530,7 +1419,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 			speedScale = 1;
 			break;
 		}
-#if MONSTER_MODE	// JUHOX: adapt animation speed to monster size
+        // JUHOX: adapt animation speed to monster size
 		if (!forceFullSpeed) switch (clientNum) {	// NOTE: death animation must not change speed or sound will be async
 		case CLIENTNUM_MONSTER_GUARD:
 			speedScale /= MONSTER_GUARD_SCALE;
@@ -1539,15 +1428,13 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 			speedScale /= MONSTER_TITAN_SCALE;
 			break;
 		}
-#endif
+
 		if (speedScale < 0.2) speedScale = 0.2;
 	}
-#endif
-
 
 	ci = &cgs.clientinfo[ clientNum ];
 
-#if MONSTER_MODE	// JUHOX: sleeping titan doesn't get animated
+	// JUHOX: sleeping titan doesn't get animated
 	if (
 		clientNum == CLIENTNUM_MONSTER_TITAN &&
 		cent->currentState.otherEntityNum2
@@ -1564,7 +1451,6 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 		*torsoBackLerp = cent->pe.torso.backlerp;
 		return;
 	}
-#endif
 
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE ) {
@@ -1724,15 +1610,12 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 
 	// allow yaw to drift a bit
 	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
-#if 0	// JUHOX BUGFIX: TORSO_STAND2 also means standing still
-		|| ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  ) {
-#else
 		|| (
 			(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND &&
 			(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND2
 		)
 	) {
-#endif
+
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue;	// always center
 		cent->pe.torso.pitching = qtrue;	// always center
@@ -1745,11 +1628,8 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		dir = 0;
 	} else {
 		// -JUHOX: get movementDir from entityState_t.angles[YAW]
-#if 1
 		dir = cent->currentState.angles2[YAW];
-#else
-		dir = cent->currentState.angles[YAW];
-#endif
+
 		if ( dir < 0 || dir > 7 ) {
 			CG_Error( "Bad player movement angle" );
 		}
@@ -1778,11 +1658,8 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	//
 	clientNum = cent->currentState.clientNum;
 	// JUHOX: handle monsters too
-#if !MONSTER_MODE
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS ) {
-#else
 	if (clientNum >= 0 && clientNum < MAX_CLIENTS+EXTRA_CLIENTNUMS) {
-#endif
+
 		ci = &cgs.clientinfo[ clientNum ];
 		if ( ci->fixedtorso ) {
 			torsoAngles[PITCH] = 0.0f;
@@ -1812,11 +1689,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	//
 	clientNum = cent->currentState.clientNum;
 	// JUHOX: handle monsters too
-#if !MONSTER_MODE
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS ) {
-#else
 	if (clientNum >= 0 && clientNum < MAX_CLIENTS+EXTRA_CLIENTNUMS) {
-#endif
 		ci = &cgs.clientinfo[ clientNum ];
 		if ( ci->fixedlegs ) {
 			legsAngles[YAW] = torsoAngles[YAW];
@@ -2030,9 +1903,7 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	clientInfo_t	*ci;
 
 	// JUHOX FIXME: no dlights in EFH
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) return;
-#endif
 
 	powerups = cent->currentState.powerups;
 	if ( !powerups ) {
@@ -2040,22 +1911,16 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	}
 
 	// JUHOX: moved to here from below
-#if 1
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-#endif
 	// quad gives a dlight
 	if ( powerups & ( 1 << PW_QUAD ) ) {
 		// JUHOX: consider team color for the quad light color
-#if 0
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1 );
-#else
 		if (ci->team == TEAM_RED) {
 			trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1, 0.2f, 0.2f );
 		}
 		else {
 			trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1 );
 		}
-#endif
 	}
 
 	// flight plays a looped sound
@@ -2063,10 +1928,6 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.flightSound );
 	}
 
-	// JUHOX: we need this earlier
-#if 0
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-#endif
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
 		if (ci->newAnims) {
@@ -2099,22 +1960,6 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 		}
 		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 1.0, 1.0, 1.0 );
 	}
-	// -JUHOX: PW_CHARGE lighting
-#if 0
-	if (powerups & (1 << PW_CHARGE)) {
-		float intensity;
-
-		intensity = cent->currentState.time2 - cg.time;
-		if (intensity > 0) {
-			if (intensity > 10000) intensity = 10000;
-			trap_R_AddLightToScene(
-				cent->lerpOrigin,
-				(intensity / 10000.0) * (200 + (rand()&63)),
-				1.0, 1.0, 1.0
-			);
-		}
-	}
-#endif
 
 	// haste leaves smoke trails
 	if ( powerups & ( 1 << PW_HASTE ) ) {
@@ -2232,8 +2077,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		CG_PlayerFloatSprite( cent, cgs.media.medalCapture );
 		return;
 	}
-
-#if MONSTER_MODE	// JUHOX: mark monsters created by our client
+	// JUHOX: mark monsters created by our client
 	if (
 		cgs.gametype < GT_STU &&
 		!(cent->currentState.eFlags & EF_DEAD) &&
@@ -2243,16 +2087,14 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		CG_PlayerFloatSprite(cent, cgs.media.friendShader);
 		return;
 	}
-#endif
+
 
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
 	if ( !(cent->currentState.eFlags & EF_DEAD) &&
 		cg.snap->ps.persistant[PERS_TEAM] == team &&
 		cgs.gametype >= GT_TEAM) {
 		if (cg_drawFriend.integer) {
-#if 0	// JUHOX: draw group mark sprites
-			CG_PlayerFloatSprite( cent, cgs.media.friendShader );
-#else
+
 			if (BG_TSS_GetPlayerEntityInfo(&cent->currentState, TSSPI_isValid)) {
 				tss_groupMemberStatus_t gms;
 				int group;
@@ -2300,7 +2142,6 @@ static void CG_PlayerSprites( centity_t *cent ) {
 					CG_PlayerGroupSprite(cent, cgs.media.groupMarks[group], frontColor);
 				}
 			}
-#endif
 		}
 		return;
 	}
@@ -2321,10 +2162,8 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	trace_t		trace;
 	float		alpha;
 	// JUHOX: vars needed to adapt player shadow to guard monsters
-#if MONSTER_MODE
 	float shadowDistance;
 	float radius;
-#endif
 
 	*shadowPlane = 0;
 
@@ -2333,11 +2172,9 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	}
 
 	// JUHOX FIXME: no shadows for monsters (might exceed internal limits of the Quake engine)
-#if MONSTER_MODE
 	if (cent->currentState.clientNum >= CLIENTNUM_MONSTERS) {
 		return qfalse;
 	}
-#endif
 
 	// no shadows when invisible
 	if ( cent->currentState.powerups & ( 1 << PW_INVIS ) ) {
@@ -2345,7 +2182,6 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	}
 
 	// JUHOX: compute vars needed to adapt player shadow to guard monsters
-#if MONSTER_MODE
 	shadowDistance = SHADOW_DISTANCE;
 	radius = 24;
 
@@ -2355,16 +2191,11 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 		radius *= MONSTER_GUARD_SCALE;
 		break;
 	}
-#endif
 
 	// send a trace down from the player to the ground
 	VectorCopy( cent->lerpOrigin, end );
 	// JUHOX: adapt shadow distance to guard monsters
-#if !MONSTER_MODE
-	end[2] -= SHADOW_DISTANCE;
-#else
 	end[2] -= shadowDistance;
-#endif
 
 	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID );
 
@@ -2388,15 +2219,10 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
 	// JUHOX: adapt shadow radius to guard monsters
-#if !MONSTER_MODE
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
-#else
 	CG_ImpactMark(
 		cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
 		cent->pe.legs.yawAngle, alpha,alpha,alpha, 1, qfalse, radius, qtrue
 	);
-#endif
 
 	return qtrue;
 }
@@ -2415,18 +2241,13 @@ static void CG_PlayerSplash( centity_t *cent ) {
 	int			contents;
 	polyVert_t	verts[4];
 	// JUHOX: vars needed to adapt player splash to guard monsters;
-#if MONSTER_MODE
 	float top_size;
 	float bottom_size;
 	float width;
-#endif
 
-	if ( !cg_shadows.integer ) {
-		return;
-	}
+	if ( !cg_shadows.integer ) return;
 
 	// JUHOX: compute vars needed to adapt player splash to guard monsters
-#if MONSTER_MODE
 	top_size = 32;
 	bottom_size = 24;
 	width = 32;
@@ -2437,15 +2258,10 @@ static void CG_PlayerSplash( centity_t *cent ) {
 		width *= MONSTER_GUARD_SCALE;
 		break;
 	}
-#endif
 
 	VectorCopy( cent->lerpOrigin, end );
 	// JUHOX: adapt player bottom size of guard monsters for player splash
-#if !MONSTER_MODE
-	end[2] -= 24;
-#else
 	end[2] -= bottom_size;
-#endif
 
 	// if the feet aren't in liquid, don't make a mark
 	// this won't handle moving water brushes, but they wouldn't draw right anyway...
@@ -2456,11 +2272,7 @@ static void CG_PlayerSplash( centity_t *cent ) {
 
 	VectorCopy( cent->lerpOrigin, start );
 	// JUHOX: adapt player top size of guard monsters for player splash
-#if !MONSTER_MODE
-	start[2] += 32;
-#else
 	start[2] += top_size;
-#endif
 
 	// if the head isn't out of liquid, don't make a mark
 	contents = trap_CM_PointContents( start, 0 );
@@ -2478,13 +2290,8 @@ static void CG_PlayerSplash( centity_t *cent ) {
 	// create a mark polygon
 	VectorCopy( trace.endpos, verts[0].xyz );
 	// JUHOX: adapt player width of guard monsters for player splash
-#if !MONSTER_MODE
-	verts[0].xyz[0] -= 32;
-	verts[0].xyz[1] -= 32;
-#else
 	verts[0].xyz[0] -= width;
 	verts[0].xyz[1] -= width;
-#endif
 	verts[0].st[0] = 0;
 	verts[0].st[1] = 0;
 	verts[0].modulate[0] = 255;
@@ -2494,13 +2301,8 @@ static void CG_PlayerSplash( centity_t *cent ) {
 
 	VectorCopy( trace.endpos, verts[1].xyz );
 	// JUHOX: adapt player width of guard monsters for player splash
-#if !MONSTER_MODE
-	verts[1].xyz[0] -= 32;
-	verts[1].xyz[1] += 32;
-#else
 	verts[1].xyz[0] -= width;
 	verts[1].xyz[1] += width;
-#endif
 	verts[1].st[0] = 0;
 	verts[1].st[1] = 1;
 	verts[1].modulate[0] = 255;
@@ -2510,13 +2312,8 @@ static void CG_PlayerSplash( centity_t *cent ) {
 
 	VectorCopy( trace.endpos, verts[2].xyz );
 	// JUHOX: adapt player width of guard monsters for player splash
-#if !MONSTER_MODE
-	verts[2].xyz[0] += 32;
-	verts[2].xyz[1] += 32;
-#else
 	verts[2].xyz[0] += width;
 	verts[2].xyz[1] += width;
-#endif
 	verts[2].st[0] = 1;
 	verts[2].st[1] = 1;
 	verts[2].modulate[0] = 255;
@@ -2526,13 +2323,8 @@ static void CG_PlayerSplash( centity_t *cent ) {
 
 	VectorCopy( trace.endpos, verts[3].xyz );
 	// JUHOX: adapt player width of guard monsters for player splash
-#if !MONSTER_MODE
-	verts[3].xyz[0] += 32;
-	verts[3].xyz[1] -= 32;
-#else
 	verts[3].xyz[0] += width;
 	verts[3].xyz[1] -= width;
-#endif
 	verts[3].st[0] = 1;
 	verts[3].st[1] = 0;
 	verts[3].modulate[0] = 255;
@@ -2643,17 +2435,13 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 	int powerups;	// JUHOX
 
 	// JUHOX: set corrected lighting origin for EFH
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
 		VectorCopy(state->origin, ent->lightingOrigin);
 	}
-#endif
 
 	// JUHOX: draw spawn hull
-#if 1
 	powerups = state->powerups;
-
 	{
 		float intensity;
 		qboolean skipOthers;
@@ -2684,10 +2472,8 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 			ent->customShader = 0;
 		}
 	}
-#endif
 
 	// JUHOX: draw monster glow
-#if MONSTER_MODE
 	if (
 		cg.viewMode == VIEW_scanner &&
 		cg.scannerActivationTime &&
@@ -2730,31 +2516,15 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 			ent->customShader = 0;
 		}
 	}
-#endif
+
 
 	// JUHOX: powerups may be redefined by CG_GetSpawnEffectParameters()
-#if 0
-	if ( state->powerups & ( 1 << PW_INVIS ) ) {
-#else
 	if (powerups & (1 << PW_INVIS)) {
-#endif
 		// JUHOX: draw the marks even if the entity is invisible
-#if 0
-		ent->customShader = cgs.media.invisShader;
-		trap_R_AddRefEntityToScene( ent );
-#else
 		qboolean drawInvisShader;
 
 		drawInvisShader = qtrue;
-		if (
-			cgs.gametype >= GT_TEAM &&
-			(
-#if MONSTER_MODE
-				cgs.gametype >= GT_STU ||
-#endif
-				cg.snap->ps.persistant[PERS_TEAM] == team
-			)
-		) {
+		if ( cgs.gametype >= GT_TEAM &&	( cgs.gametype >= GT_STU ||	cg.snap->ps.persistant[PERS_TEAM] == team )	) {
 			if (team == TEAM_RED)
 				ent->customShader = cgs.media.redInvis;
 			else
@@ -2791,52 +2561,20 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 				ent->customShader = cgs.media.glassCloakingShader;
 				trap_R_AddRefEntityToScene(ent);
 
-				/*
-				if (drawInvisShader) {
-					if (cg.clientNum == state->number) {
-						ent->customShader = cgs.media.glassCloakingSpecShader;
-						ent->shaderRGBA[3] = 255;
-						trap_R_AddRefEntityToScene(ent);
-					}
-					else {
-						float distance;
-
-						distance = Distance(cg.snap->ps.origin, state->pos.trBase);
-						if (distance < GLASSCLOAKINGSPECSHADER_MAXDISTANCE) {
-							ent->customShader = cgs.media.glassCloakingSpecShader;
-							ent->shaderRGBA[3] =
-								GLASSCLOAKINGSPECSHADER_MAXALPHA *
-								(1.0 - distance / GLASSCLOAKINGSPECSHADER_MAXDISTANCE);
-							trap_R_AddRefEntityToScene(ent);
-						}
-
-					}
-				}
-				*/
 			}
 			else {
 				ent->customShader = cgs.media.invisShader;
 				trap_R_AddRefEntityToScene(ent);
 			}
 		}
-#endif
+
 	} else {
-#if MONSTER_MODE	// JUHOX: titan's stone skin
+        // JUHOX: titan's stone skin
 		if (state->clientNum == CLIENTNUM_MONSTER_TITAN && state->otherEntityNum2) {
 			ent->customShader = trap_R_RegisterShader("stone");
 		}
-#endif
-		/*
-		if ( state->eFlags & EF_KAMIKAZE ) {
-			if (team == TEAM_BLUE)
-				ent->customShader = cgs.media.blueKamikazeShader;
-			else
-				ent->customShader = cgs.media.redKamikazeShader;
-			trap_R_AddRefEntityToScene( ent );
-		}
-		else {*/
-			trap_R_AddRefEntityToScene( ent );
-		//}
+
+        trap_R_AddRefEntityToScene( ent );
 
 		if ( state->powerups & ( 1 << PW_QUAD ) )
 		{
@@ -2857,53 +2595,26 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 			trap_R_AddRefEntityToScene( ent );
 		}
 		// JUHOX: draw the shield shader
-#if 1
 		if (state->powerups & (1 << PW_SHIELD)) {
 			ent->customShader = cgs.media.shieldShader;
 			trap_R_AddRefEntityToScene(ent);
 		}
-#endif
+
 		// JUHOX: draw the charge shader
-#if 1
 		if (state->powerups & (1 << PW_CHARGE)) {
 			ent->customShader = cgs.media.chargeShader;
 			ent->shaderRGBA[3] = 128;
 			trap_R_AddRefEntityToScene(ent);
 		}
-#endif
+
 	}
 	// JUHOX: users of the gauntlet get the target marked
-#if 1
-	if (
-		cg.snap->ps.weapon == WP_GAUNTLET &&
-		cg.snap->ps.stats[STAT_TARGET] == state->number
-	) {
+	if ( cg.snap->ps.weapon == WP_GAUNTLET && cg.snap->ps.stats[STAT_TARGET] == state->number ) {
 		ent->customShader = cgs.media.targetMarker;
 		trap_R_AddRefEntityToScene(ent);
 	}
-#endif
+
 }
-
-/*
-===============
-JUHOX: GetDischargeStartPoint
-===============
-*/
-/*
-static void GetDischargeStartPoint(const centity_t* cent, vec3_t pos, vec3_t dir) {
-	vec3_t angles;
-
-	VectorCopy(cent->lerpOrigin, pos);
-	pos[0] += 15 * crandom();
-	pos[1] += 15 * crandom();
-	pos[2] += 28 * crandom() + 4;
-
-	angles[0] = 360.0 * random();
-	angles[1] = 360.0 * random();
-	angles[2] = 360.0 * random();
-	AngleVectors(angles, dir, NULL, NULL);
-}
-*/
 
 /*
 ===============
@@ -2987,64 +2698,6 @@ JUHOX: CG_AddDischarges
 ===============
 */
 static void CG_AddDischarges(centity_t* cent) {
-#if 0
-	trace_t		trace;
-	vec3_t		angles;
-	vec3_t		dir;
-	vec3_t		startPoint, endPoint;
-	int i, n;
-	qboolean multiFlashes;
-	float charge;
-
-	GetDischargeStartPoint(cent, startPoint, dir);
-
-	if (cent->currentState.number == cg.snap->ps.clientNum) {
-		charge = (cg.snap->ps.powerups[PW_CHARGE] - cg.time) / 1000.0;
-	}
-	else {
-		charge = (cent->currentState.time2 - cg.time) / 1000.0;
-	}
-	if (charge <= 0) return;
-	if (charge > 20) charge = 20;
-	if (charge > 10) {
-		n = charge;
-		charge -= n;
-		if (random() < charge) n++;
-		multiFlashes = qtrue;
-	}
-	else {
-		if (10 * random() > charge) return;
-		n = 10;
-		multiFlashes = qfalse;
-	}
-	for (i = 0; i < n; i++) {
-		vec3_t angles;
-
-		vectoangles(dir, angles);
-		angles[0] += 30.0 * crandom();
-		angles[1] += 30.0 * crandom();
-		//angles[2] += 30.0 * crandom();
-		AngleVectors(angles, dir, NULL, NULL);
-
-		VectorMA(startPoint, /*15 + 50*random()*/25.0, dir, endPoint);
-
-		// see if it hit a wall
-		CG_Trace(&trace, startPoint, vec3_origin, vec3_origin, endPoint, cent->currentState.number, MASK_SHOT);
-
-		CG_Draw3DLine(startPoint, trace.endpos, cgs.media.dischargeFlashShader);
-
-		if (trace.fraction >= 1) {
-			// continue the flash
-			VectorCopy(trace.endpos, startPoint);
-		}
-		else {
-			// begin a new flash
-			if (!multiFlashes) return;
-			GetDischargeStartPoint(cent, startPoint, dir);
-		}
-	}
-#else
-
 	float charge;
 	int i;
 	int n;
@@ -3102,7 +2755,6 @@ static void CG_AddDischarges(centity_t* cent) {
 		);
 	}
 
-#endif
 }
 
 /*
@@ -3171,12 +2823,9 @@ void CG_Player( centity_t *cent ) {
 	// from the entity number, because a single client may have
 	// multiple corpses on the level using the same clientinfo
 	clientNum = cent->currentState.clientNum;
+
 	// JUHOX: accept EXTRA_CLIENTNUMS
-#if !MONSTER_MODE
-	if ( clientNum < 0 || clientNum >= MAX_CLIENTS ) {
-#else
 	if (clientNum < 0 || clientNum >= MAX_CLIENTS + EXTRA_CLIENTNUMS) {
-#endif
 		CG_Error( "Bad clientNum on player entity");
 	}
 	ci = &cgs.clientinfo[ clientNum ];
@@ -3189,7 +2838,6 @@ void CG_Player( centity_t *cent ) {
 	}
 
 	// JUHOX: note death time
-#if 1
 	if (cent->currentState.eFlags & EF_DEAD) {
 		if (!cent->deathTime) {
 			cent->deathTime = cg.time;
@@ -3199,9 +2847,8 @@ void CG_Player( centity_t *cent ) {
 	else {
 		cent->deathTime = 0;
 	}
-#endif
 
-#if ESCAPE_MODE	// JUHOX: check if this player is in a visible segment
+    // JUHOX: check if this player is in a visible segment
 	if (
 		cgs.gametype == GT_EFH &&
 		clientNum != cg.snap->ps.clientNum &&
@@ -3212,10 +2859,9 @@ void CG_Player( centity_t *cent ) {
 	) {
 		return;
 	}
-#endif
+
 
 	// JUHOX: extract tss player info
-#if 1
 	if (
 		cgs.gametype >= GT_TEAM &&
 		ci->team == cg.snap->ps.persistant[PERS_TEAM] &&
@@ -3228,12 +2874,9 @@ void CG_Player( centity_t *cent ) {
 		ci->group = -1;
 		ci->memberStatus = -1;
 	}
-#endif
 
 	// JUHOX: save the pfmi
-#if 1
 	ci->pfmi = cent->currentState.modelindex;
-#endif
 
 	if (cent->currentState.eFlags & EF_NODRAW) return;	// JUHOX: for dead spectators
 
@@ -3250,15 +2893,9 @@ void CG_Player( centity_t *cent ) {
 	}
 
 	// JUHOX: add discharge beams to charged players
-#if 1
-	if (
-		(cent->currentState.powerups & (1 << PW_CHARGE)) /*&&
-		cent->dischargeTime < cg.time - 100*/
-	) {
+	if ( (cent->currentState.powerups & (1 << PW_CHARGE)) ) {
 		CG_AddDischarges(cent);
 	}
-#endif
-
 
 	memset( &legs, 0, sizeof(legs) );
 	memset( &torso, 0, sizeof(torso) );
@@ -3268,7 +2905,6 @@ void CG_Player( centity_t *cent ) {
 	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
 
 	// JUHOX: make monster guard (visually) bigger
-#if MONSTER_MODE
 	switch (clientNum) {
 	case CLIENTNUM_MONSTER_GUARD:
 		VectorScale(legs.axis[0], MONSTER_GUARD_SCALE, legs.axis[0]);
@@ -3283,7 +2919,6 @@ void CG_Player( centity_t *cent ) {
 		legs.nonNormalizedAxes = qtrue;
 		break;
 	}
-#endif
 
 	// get the animation state (after rotation, to allow feet shuffle)
 	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
@@ -3293,11 +2928,8 @@ void CG_Player( centity_t *cent ) {
 	CG_PlayerSprites( cent );
 
 	// JUHOX FIXME: no dlights in EFH
-#if ESCAPE_MODE
-	if (cgs.gametype != GT_EFH)
-#endif
 	// JUHOX: add spawn effect light
-#if 1
+	if (cgs.gametype != GT_EFH)
 	{
 		float intensity;
 
@@ -3305,7 +2937,7 @@ void CG_Player( centity_t *cent ) {
 			trap_R_AddLightToScene(cent->lerpOrigin, 200, intensity, intensity, intensity);
 		}
 	}
-#endif
+
 
 	// add the shadow
 	shadow = CG_PlayerShadow( cent, &shadowPlane );
@@ -3326,7 +2958,7 @@ void CG_Player( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, legs.origin );
 
 	// JUHOX: draw hibernation items
-#if MONSTER_MODE
+
 	if (cent->currentState.modelindex & PFMI_HIBERNATION_MODE) {	// CAUTION: don't use ci->pfmi
 		if (cent->currentState.modelindex & PFMI_HIBERNATION_DRAW_SEED) {	// CAUTION: don't use ci->pfmi
 			const float radius = 4;
@@ -3336,7 +2968,6 @@ void CG_Player( centity_t *cent ) {
 
 			seed.hModel = trap_R_RegisterModel("models/powerups/health/small_sphere.md3");
 			seed.customShader = cgs.media.monsterSeedMetalShader;
-			//seed.renderfx |= RF_NOSHADOW;
 
 			VectorCopy(cent->lerpOrigin, seed.origin);
 			if (!(cent->currentState.modelindex & PFMI_HIBERNATION_MORPHED)) {	// CAUTION: don't use ci->pfmi
@@ -3367,19 +2998,17 @@ void CG_Player( centity_t *cent ) {
 
 		if (!cent->currentState.time || cent->currentState.time <= cg.time) return;
 	}
-#endif
 
 	VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
 	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
 
-#if 1	// JUHOX: correct origin for scaled models (hack)
+	// JUHOX: correct origin for scaled models (hack)
 	switch (clientNum) {
 	case CLIENTNUM_MONSTER_TITAN:
 		legs.origin[2] -= 5;
 		break;
 	}
-#endif
 
 	VectorCopy (legs.origin, legs.oldorigin);	// don't positionally lerp at all
 
@@ -3435,7 +3064,6 @@ void CG_Player( centity_t *cent ) {
 	CG_PlayerPowerups( cent, &torso );
 
 	// JUHOX: add grapple sounds
-#if GRAPPLE_ROPE
 	switch (cent->currentState.modelindex2) {
 	case GST_unused:
 	case GST_silent:
@@ -3454,7 +3082,6 @@ void CG_Player( centity_t *cent ) {
 		trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.grappleBlockingSound);
 		break;
 	}
-#endif
 }
 
 

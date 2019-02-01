@@ -174,9 +174,8 @@ OnSameTeam
 ==============
 */
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
-#if MONSTER_MODE
 	if (G_IsFriendlyMonster(ent1, ent2)) return qtrue;	// JUHOX
-#endif
+
 	if ( !ent1->client || !ent2->client ) {
 		return qfalse;
 	}
@@ -983,16 +982,8 @@ gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3
 	gentity_t	*spot;
 
 	// JUHOX: apply new spawn logic
-#if 0
-	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
-
-	if (!spot) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
-	}
-#else
 	spot = SelectAppropriateSpawnPoint(team, NULL, teamstate == TEAM_BEGIN);
 	if (!spot) return NULL;
-#endif
 
 	VectorCopy (spot->s.origin, origin);
 	origin[2] += 9;
@@ -1026,6 +1017,8 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	int			cnt;
 	int			h, a;
 	int			clients[TEAM_MAXOVERLAY];
+	int group;
+    tss_groupMemberStatus_t gms;
 
 	if ( ! ent->client->pers.teamInfo )
 		return;
@@ -1050,8 +1043,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 
 	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + i;
-		if (player->inuse && player->client->sess.sessionTeam ==
-			ent->client->sess.sessionTeam ) {
+		if (player->inuse && player->client->sess.sessionTeam == ent->client->sess.sessionTeam ) {
 
 			h = player->client->ps.stats[STAT_HEALTH];
 			a = player->client->ps.stats[STAT_ARMOR];
@@ -1061,42 +1053,27 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 			// JUHOX: also send the group and gms for the team overlay
 			// JUHOX: also send the pfmi (otherwise it wouldn't get updated for distant players)
 			// JUHOX: also send the way length
-#if 0
-			Com_sprintf (entry, sizeof(entry),
-				" %i %i %i %i %i %i",
-//				level.sortedClients[i], player->client->pers.teamState.location, h, a,
-				i, player->client->pers.teamState.location, h, a,
-				player->client->ps.weapon, player->s.powerups);
-#else
-			{
-				int group;
-				tss_groupMemberStatus_t gms;
 
-				if (BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_isValid)) {
-					group = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_group);
-					gms = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_groupMemberStatus);
-				}
-				else {
-					group = -1;
-					gms = -1;
-				}
+            if (BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_isValid)) {
+                group = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_group);
+                gms = BG_TSS_GetPlayerInfo(&player->client->ps, TSSPI_groupMemberStatus);
+            } else {
+                group = -1;
+                gms = -1;
+            }
 
-				Com_sprintf(
-					entry, sizeof(entry),
-					" %i %i %i %i %i %i %i %i %i %i",
-					i, group, gms,
-					player->client->tssSafetyMode? -1 : player->client->pers.teamState.location,
-					h, a,
-					player->client->ps.weapon, player->s.powerups,
-					player->s.modelindex,
-#if !ESCAPE_MODE
-					0
-#else
-					G_GetTotalWayLength(player) / 32
-#endif
-				);
-			}
-#endif
+            Com_sprintf(
+                entry, sizeof(entry),
+                " %i %i %i %i %i %i %i %i %i %i",
+                i, group, gms,
+                player->client->tssSafetyMode? -1 : player->client->pers.teamState.location,
+                h, a,
+                player->client->ps.weapon, player->s.powerups,
+                player->s.modelindex,
+                G_GetTotalWayLength(player) / 32
+            );
+
+
 			j = strlen(entry);
 			if (stringlength + j > sizeof(string))
 				break;
@@ -1153,9 +1130,7 @@ void CheckTeamStatus(void) {
 Only in CTF games.  Red players spawn here at game start.
 */
 void SP_team_CTF_redplayer( gentity_t *ent ) {
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_team_CTF_redplayer;
-#endif
 }
 
 
@@ -1163,9 +1138,7 @@ void SP_team_CTF_redplayer( gentity_t *ent ) {
 Only in CTF games.  Blue players spawn here at game start.
 */
 void SP_team_CTF_blueplayer( gentity_t *ent ) {
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_team_CTF_blueplayer;
-#endif
 }
 
 
@@ -1174,9 +1147,7 @@ potential spawning position for red team in CTF games.
 Targets will be fired when someone spawns in on them.
 */
 void SP_team_CTF_redspawn(gentity_t *ent) {
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_team_CTF_redspawn;
-#endif
 }
 
 /*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32)
@@ -1184,7 +1155,5 @@ potential spawning position for blue team in CTF games.
 Targets will be fired when someone spawns in on them.
 */
 void SP_team_CTF_bluespawn(gentity_t *ent) {
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_team_CTF_bluespawn;
-#endif
 }

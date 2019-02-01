@@ -238,11 +238,8 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		// JUHOX: consider reference
-#if !ESCAPE_MODE
-		out->origin[i] = prev->ps.origin[i] + f * (next->ps.origin[i] - prev->ps.origin[i] );
-#else
 		out->origin[i] = prev->ps.origin[i] + f * (next->ps.origin[i] + cg.referenceDelta[i] - prev->ps.origin[i]);
-#endif
+
 		if ( !grabAngles ) {
 			out->viewangles[i] = LerpAngle(
 				prev->ps.viewangles[i], next->ps.viewangles[i], f );
@@ -448,9 +445,7 @@ void CG_PredictPlayerState( void ) {
 	}
 
 	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
-#if GRAPPLE_ROPE	// JUHOX: set hook mode
 	cg_pmove.hookMode = cgs.hookMode;
-#endif
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;
@@ -480,10 +475,10 @@ void CG_PredictPlayerState( void ) {
 	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport ) {
 		cg.predictedPlayerState = cg.nextSnap->ps;
 		predictionSource = &cg.nextSnap->ps;	// JUHOX
-#if ESCAPE_MODE	// JUHOX: make predictedPlayerState compatible with cg.snap->ps
+        // JUHOX: make predictedPlayerState compatible with cg.snap->ps
 		VectorAdd(cg.predictedPlayerState.origin, cg.referenceDelta, cg.predictedPlayerState.origin);
 		VectorAdd(cg.predictedPlayerState.grapplePoint, cg.referenceDelta, cg.predictedPlayerState.grapplePoint);
-#endif
+
 		cg.physicsTime = cg.nextSnap->serverTime;
 	} else {
 		cg.predictedPlayerState = cg.snap->ps;
@@ -498,7 +493,7 @@ void CG_PredictPlayerState( void ) {
 		trap_Cvar_Set("pmove_msec", "33");
 	}
 
-	cg_pmove.pmove_fixed = pmove_fixed.integer;// | cg_pmove_fixed.integer;
+	cg_pmove.pmove_fixed = pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
 
 	// run cmds
@@ -583,9 +578,8 @@ void CG_PredictPlayerState( void ) {
 			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
 		}
 
-#if MONSTER_MODE	// JUHOX: set player scale factor for client
+        // JUHOX: set player scale factor for client
 		cg_pmove.scale = 1;
-#endif
 
         // JUHOX: set target
 		if ( cg.predictedPlayerState.stats[STAT_TARGET] >= 0 &&	cg.predictedPlayerState.stats[STAT_TARGET] < ENTITYNUM_MAX_NORMAL ) {
@@ -780,8 +774,6 @@ void CG_PredictPlayerState( void ) {
 		// add push trigger movement effects
 		CG_TouchTriggerPrediction();
 
-		// check for predictable events that changed from previous predictions
-		//CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
 	}
 
 	if ( cg_showmiss.integer > 1 ) {

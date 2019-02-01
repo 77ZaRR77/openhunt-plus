@@ -172,26 +172,6 @@ BotAI_GetClientState
 */
 int BotAI_GetClientState( int clientNum, playerState_t *state ) {
 	// JUHOX: let BotAI_GetClientState() accept monsters
-#if !MONSTER_MODE
-	gentity_t	*ent;
-
-	// JUHOX: a bit more safety
-#if 1
-	if (clientNum < 0 || clientNum >= level.maxclients) return qfalse;
-#endif
-
-	ent = &g_entities[clientNum];
-	if ( !ent->inuse ) {
-		return qfalse;
-	}
-	if ( !ent->client ) {
-		return qfalse;
-	}
-	if (ent->client->pers.connected != CON_CONNECTED) return qfalse;	// JUHOX: even more safety
-
-	memcpy( state, &ent->client->ps, sizeof(playerState_t) );
-	return qtrue;
-#else
 	gentity_t* ent;
 	playerState_t* ps;
 
@@ -206,7 +186,6 @@ int BotAI_GetClientState( int clientNum, playerState_t *state ) {
 
 	memcpy(state, ps, sizeof(playerState_t));
 	return qtrue;
-#endif
 }
 
 /*
@@ -1759,14 +1738,10 @@ int BotAIStartFrame(int time) {
 	static int botlib_residual;
 	static int lastbotthink_time;
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
-	if (
-		g_gametype.integer == GT_EFH ||
-		!trap_Cvar_VariableIntegerValue("bot_enable")
-	) {
+    // JUHOX: no bots in EFH
+	if ( g_gametype.integer == GT_EFH || !trap_Cvar_VariableIntegerValue("bot_enable") ) {
 		return qtrue;
 	}
-#endif
 
 	BotFindCTFBases();	// JUHOX
 

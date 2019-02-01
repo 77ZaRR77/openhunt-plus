@@ -13,7 +13,7 @@ ADD BOTS MENU
 
 
 #define ART_BACK0			"menu/art/back_0"
-#define ART_BACK1			"menu/art/back_1"	
+#define ART_BACK1			"menu/art/back_1"
 #define ART_FIGHT0			"menu/art/accept_0"
 #define ART_FIGHT1			"menu/art/accept_1"
 #define ART_BACKGROUND		"menu/art/addbotframe"
@@ -209,7 +209,7 @@ static void UI_AddBotsMenu_Draw( void ) {
 	Menu_Draw( &addBotsMenuInfo.menu );
 }
 
-	
+
 /*
 =================
 UI_AddBotsMenu_Init
@@ -235,12 +235,10 @@ static const char *teamNames2[] = {
 	0
 };
 
-#if MONSTER_MODE	// JUHOX: bot team names for STU
 static const char* teamNames3[] = {
 	"Hunters",
 	0
 };
-#endif
 
 static void UI_AddBotsMenu_Init( void ) {
 	int		n;
@@ -249,7 +247,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	int		count;
 	char	info[MAX_INFO_STRING];
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 
 	memset( &addBotsMenuInfo, 0 ,sizeof(addBotsMenuInfo) );
@@ -320,13 +318,12 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.team.generic.y			= y;
 	addBotsMenuInfo.team.generic.name		= "Team: ";
 	addBotsMenuInfo.team.generic.id			= ID_TEAM;
-#if MONSTER_MODE	// JUHOX: use other bot team names in STU
 	if (gametype >= GT_STU) {
 		addBotsMenuInfo.team.itemnames		= teamNames3;
 		addBotsMenuInfo.team.generic.flags	= QMF_GRAYED;
 	}
 	else
-#endif
+
 	if( gametype >= GT_TEAM ) {
 		addBotsMenuInfo.team.itemnames		= teamNames2;
 	}

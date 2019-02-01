@@ -1339,7 +1339,6 @@ static void UI_TSSData_f(void) {
 JUHOX: UI_AddTrack_f
 =================
 */
-#if PLAYLIST
 static void UI_AddTrack_f(void) {
 	char introPart[128];
 	char mainPart[128];
@@ -1364,18 +1363,16 @@ static void UI_AddTrack_f(void) {
 
 	uis.currentTrack++;
 }
-#endif
 
 /*
 =================
 JUHOX: UI_PlayListComplete_f
 =================
 */
-#if PLAYLIST
 static void UI_PlayListComplete_f(void) {
 	uis.loadPlayList = qfalse;
 }
-#endif
+
 
 /*
 =================
@@ -1476,7 +1473,7 @@ qboolean UI_ConsoleCommand( int realTime ) {
 	}
 #endif
 
-#if PLAYLIST	// JUHOX: playlist commands
+    // JUHOX: playlist commands
 	if (Q_stricmp(cmd, "addtrack") == 0) {
 		UI_AddTrack_f();
 		return qtrue;
@@ -1485,7 +1482,7 @@ qboolean UI_ConsoleCommand( int realTime ) {
 		UI_PlayListComplete_f();
 		return qtrue;
 	}
-#endif
+
 
 	return qfalse;
 }
@@ -1556,7 +1553,6 @@ void UI_Init( void ) {
 	UI_RegisterCvars();
 
 	// JUHOX: make sure cg_weaponOrderXXX cvars are up to date
-#if MONSTER_MODE
 	{
 		int i;
 
@@ -1572,7 +1568,6 @@ void UI_Init( void ) {
 			}
 		}
 	}
-#endif
 
 	UI_InitGameinfo();
 
@@ -1581,20 +1576,9 @@ void UI_Init( void ) {
 
 	// for 640x480 virtualized screen
 	// JUHOX: wide screen option not very helpful; instead scale X & Y independent from each other
-#if 0
-	uis.scale = uis.glconfig.vidHeight * (1.0/480.0);
-	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
-		// wide screen
-		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
-	}
-	else {
-		// no wide screen
-		uis.bias = 0;
-	}
-#else
+
 	uis.scaleX = uis.glconfig.vidWidth / 640.0;
 	uis.scaleY = uis.glconfig.vidHeight / 480.0;
-#endif
 
 	// initialize the menu system
 	Menu_Cache();
@@ -1605,11 +1589,9 @@ void UI_Init( void ) {
 	UI_LoadGameTemplates();	// JUHOX
 
 	// JUHOX: load playlist
-#if PLAYLIST
 	uis.loadPlayList = qtrue;
 	uis.currentTrack = 0;
 	trap_Cmd_ExecuteText(EXEC_INSERT, "exec playlist.cfg; playlistcomplete\n");
-#endif
 }
 
 /*

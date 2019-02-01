@@ -15,7 +15,6 @@
 
 // Where the status bar starts, so we don't overwrite it
 #define SB_STATUSBAR		420
-
 #define SB_NORMAL_HEIGHT	40
 #define SB_INTER_HEIGHT		16 // interleaved height
 
@@ -23,8 +22,6 @@
 #define SB_MAXCLIENTS_INTER   ((SB_STATUSBAR - SB_TOP) / SB_INTER_HEIGHT - 1)
 
 // Used when interleaved
-
-
 
 #define SB_LEFT_BOTICON_X	(SCOREBOARD_X+0)
 #define SB_LEFT_HEAD_X		(SCOREBOARD_X+32)
@@ -37,24 +34,16 @@
 #define SB_SCORELINE_X		112
 
 #define SB_RATING_WIDTH	    (6 * BIGCHAR_WIDTH) // width 6
-#if 0	// JUHOX: new header positions
-#define SB_SCORE_X			(SB_SCORELINE_X + BIGCHAR_WIDTH) // width 6
-#define SB_RATING_X			(SB_SCORELINE_X + 6 * BIGCHAR_WIDTH) // width 6
-#define SB_PING_X			(SB_SCORELINE_X + 12 * BIGCHAR_WIDTH + 8) // width 5
-#define SB_TIME_X			(SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8) // width 5
-#define SB_NAME_X			(SB_SCORELINE_X + 22 * BIGCHAR_WIDTH) // width 15
-#else
+
 #define SB_SCORE_X			(SB_SCORELINE_X + 1.5 * BIGCHAR_WIDTH) // width 6
 #define SB_PING_X			(SB_SCORELINE_X + 14.5 * BIGCHAR_WIDTH) // width 5
 #define SB_TIME_X			(SB_SCORELINE_X + 19.5 * BIGCHAR_WIDTH) // width 5
 #define SB_NAME_X			(SB_SCORELINE_X + 24 * BIGCHAR_WIDTH) // width 15
-#endif
 
 // The new and improved score board
 //
 // In cases where the number of clients is high, the score board heads are interleaved
 // here's the layout
-
 //
 //	0   32   80  112  144   240  320  400   <-- pixel position
 //  bot head bot head score ping time name
@@ -81,14 +70,12 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		return;
 	}
 
-#if 1	// JUHOX: STU scoreboard
+	// JUHOX: STU scoreboard
 	xx = 0;
-#if MONSTER_MODE
+
 	if (cgs.gametype >= GT_STU) {
 		xx = 4 * BIGCHAR_WIDTH;
 	}
-#endif
-#endif
 
 	ci = &cgs.clientinfo[score->client];
 	if (cg.intermissionMusicStarted) ci->powerups = 0;	// JUHOX: remove flags
@@ -163,18 +150,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	}
 
 	// draw the score line
-#if 0	// JUHOX: draw the new score line (extended by the 'killed'-count)
-	if ( score->ping == -1 ) {
-		Com_sprintf(string, sizeof(string),
-			" connecting    %s", ci->name);
-	} else if ( ci->team == TEAM_SPECTATOR ) {
-		Com_sprintf(string, sizeof(string),
-			" SPECT %3i %4i %s", score->ping, score->time, ci->name);
-	} else {
-		Com_sprintf(string, sizeof(string),
-			"%5i %4i %4i %s", score->score, score->ping, score->time, ci->name);
-	}
-#else
+
 	if (score->ping == -1) {
 		Com_sprintf(
 			string, sizeof(string), " connecting      %s", ci->name
@@ -185,7 +161,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 			string, sizeof(string), " SPECT  %4i %4i %s", score->ping, score->time, ci->name
 		);
 	}
-#if MONSTER_MODE
+
 	else if (cgs.gametype >= GT_STU) {
 		Com_sprintf(
 			string, sizeof(string), "%7i:%-3i %4i %4i %s",
@@ -193,7 +169,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 			score->ping, score->time, ci->name
 		);
 	}
-#endif
+
 	else {
 		Com_sprintf(
 			string, sizeof(string), "%3i%s%-3i %4i %4i %s",
@@ -201,7 +177,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 			score->ping, score->time, ci->name
 		);
 	}
-#endif
+
 
 	// highlight your position
 	if ( score->client == cg.snap->ps.clientNum ) {
@@ -235,18 +211,10 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		}
 
 		hcolor[3] = fade * 0.7;
-#if 0	// JUHOX: draw a longer bar
-		CG_FillRect( SB_SCORELINE_X + BIGCHAR_WIDTH + (SB_RATING_WIDTH / 2), y,
-			640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor );
-#else
 		CG_FillRect( SB_SCORELINE_X + (SB_RATING_WIDTH / 2) - xx, y,
 			640 - SB_SCORELINE_X - BIGCHAR_WIDTH, BIGCHAR_HEIGHT+1, hcolor );
-#endif
 	}
 
-#if 0	// JUHOX: use another color for dead players
-	CG_DrawBigString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2), y, string, fade );
-#else
 	if (score->time < 0) {
 		vec4_t dcolor;
 
@@ -259,14 +227,9 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	else {
 		CG_DrawBigString( SB_SCORELINE_X + (SB_RATING_WIDTH / 2) - xx, y, string, fade );
 	}
-#endif
 
 	// add the "ready" marker for intermission exiting
-#if 0	// JUHOX: STAT_CLIENTS_READY now done via configstring
-	if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) ) {
-		CG_DrawBigStringColor( iconx, y, "READY", color );
-	}
-#else
+
 	{
 		const char* cs;
 
@@ -281,12 +244,12 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 			}
 		}
 	}
-#endif
-#if 1	// JUHOX: draw the glass cloaking marker
-	/*else*/ if (ci->usesGlassCloaking) {
+
+	// JUHOX: draw the glass cloaking marker
+	if (ci->usesGlassCloaking) {
 		CG_DrawBigStringColor(iconx, y, "GC", color);
 	}
-#endif
+
 }
 
 /*
@@ -367,7 +330,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 					}
 				}
 			}
-#if MONSTER_MODE
+
 			else if (cgs.gametype == GT_STU) {
 				if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 					if (cgs.artefacts > 0 && cgs.artefacts < 999) {
@@ -379,8 +342,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 					}
 				}
 			}
-#endif
-#if ESCAPE_MODE
+
 			else if (cgs.gametype == GT_EFH) {
 				long limit;
 
@@ -403,7 +365,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 					winning = qtrue;
 				}
 			}
-#endif
+
 			else if (cgs.scores1 != cgs.scores2) {
 				int winningTeam;
 
@@ -416,9 +378,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 				}
 			}
 			if (winning) {
-#if PLAYLIST
+
 				CG_StopPlayList();
-#endif
+
 				{
 					int len;
 					fileHandle_t f;
@@ -435,9 +397,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 				}
 			}
 			else if (loosing) {
-#if PLAYLIST
 				CG_StopPlayList();
-#endif
 				trap_S_StartBackgroundTrack("music/loss.wav", "");
 			}
 			cg.intermissionMusicStarted = qtrue;
@@ -447,11 +407,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	}
 	else {
 		if (cg.intermissionMusicStarted) {
-#if !PLAYLIST
-			trap_S_StopBackgroundTrack();
-#else
 			CG_StartMusic();
-#endif
 			cg.intermissionMusicStarted = qfalse;
 		}
 	}
@@ -470,21 +426,9 @@ qboolean CG_DrawOldScoreboard( void ) {
 		fade = 1.0;
 		fadeColor = colorWhite;
 	} else {
-#if 0	// JUHOX: don't fade scoreboard
-		fadeColor = CG_FadeColor( cg.scoreFadeTime, FADE_TIME );
-
-		if ( !fadeColor ) {
-			// next time scoreboard comes up, don't print killer
-			cg.deferredPlayerLoading = 0;
-			cg.killerName[0] = 0;
-			return qfalse;
-		}
-		fade = *fadeColor;
-#else
 		cg.deferredPlayerLoading = 0;
 		cg.killerName[0] = 0;
 		return qfalse;
-#endif
 	}
 
 
@@ -517,7 +461,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 #endif
 
 	// current rank
-#if MONSTER_MODE	// JUHOX: team rank different in STU
+	// JUHOX: team rank different in STU
 	if (cgs.gametype == GT_STU) {
 		if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 			if (cgs.artefacts <= 0 || cgs.artefacts >= 999 || cgs.scores1 >= cgs.artefacts) {
@@ -565,8 +509,8 @@ qboolean CG_DrawOldScoreboard( void ) {
 		// NOTE: no team rank message if not in the intermission
 	}
 	else
-#endif
-#if ESCAPE_MODE	// JUHOX: team rank in EFH
+
+	// JUHOX: team rank in EFH
 	if (cgs.gametype == GT_EFH) {
 		if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 			char s1[256];
@@ -681,7 +625,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 		}
 	}
 	else
-#endif
+
 	if ( cgs.gametype < GT_TEAM) {
 		if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR ) {
 			s = va("%s place with %i",
@@ -693,10 +637,10 @@ qboolean CG_DrawOldScoreboard( void ) {
 			CG_DrawBigString( x, y, s, fade );
 		}
 	} else {
-#if 1	// JUHOX: cgs.scoresX is more up to date than cg.teamScores[]
+        // JUHOX: cgs.scoresX is more up to date than cg.teamScores[]
 		cg.teamScores[0] = cgs.scores1;
 		cg.teamScores[1] = cgs.scores2;
-#endif
+
 		if ( cg.teamScores[0] == cg.teamScores[1] ) {
 			s = va("Teams are tied at %i", cg.teamScores[0] );
 		} else if ( cg.teamScores[0] >= cg.teamScores[1] ) {
@@ -840,7 +784,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 
 	localClient = qfalse;
 
-#if MONSTER_MODE	// JUHOX: draw STU scoreboard
+	// JUHOX: draw STU scoreboard
 	if (cgs.gametype >= GT_STU) {
 		// draw similar to FFA (but use TEAM_RED)
 		n1 = CG_TeamScoreboard(y, TEAM_RED, fade, maxClients, lineHeight);
@@ -849,7 +793,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 		y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 	}
 	else
-#endif
+
 	if ( cgs.gametype >= GT_TEAM ) {
 		//
 		// teamplay scoreboard
@@ -899,7 +843,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	}
 
 	// JUHOX: draw highscore message
-#if 1
+
 	if (
 		cg.predictedPlayerState.pm_type == PM_INTERMISSION &&
 		cg.time % 1500 < 1000
@@ -910,14 +854,11 @@ qboolean CG_DrawOldScoreboard( void ) {
 		w = CG_DrawStrlen(s) * BIGCHAR_WIDTH;
 		x = (SCREEN_WIDTH - w) / 2;
 		y = 62 + 2*BIGCHAR_HEIGHT;
-#if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH) {
 			y = 480 - 1.5*BIGCHAR_HEIGHT;
 		}
-#endif
 		CG_DrawBigStringColor(x, y, s, color);
 	}
-#endif
 
 	// load any models that have been deferred
 	if ( ++cg.deferredPlayerLoading > 10 ) {
@@ -952,7 +893,7 @@ static void CG_CenterGiantLine( float y, const char *string ) {
 =================
 CG_DrawTourneyScoreboard
 
-Draw the oversize scoreboard for tournements
+Draw the oversize scoreboard for tournaments
 =================
 */
 void CG_DrawOldTourneyScoreboard( void ) {
@@ -998,9 +939,7 @@ void CG_DrawOldTourneyScoreboard( void ) {
 
 	CG_CenterGiantLine( 64, s );
 
-
 	// print the two scores
-
 	y = 160;
 	if ( cgs.gametype >= GT_TEAM ) {
 		//
@@ -1034,6 +973,4 @@ void CG_DrawOldTourneyScoreboard( void ) {
 			y += 64;
 		}
 	}
-
-
 }

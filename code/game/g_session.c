@@ -95,7 +95,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	}
 	else
 
-#if MONSTER_MODE	// JUHOX: in STU automatically join as TEAM_RED if not a willing spectator
+    // JUHOX: in STU automatically join as TEAM_RED if not a willing spectator
 	if (g_gametype.integer >= GT_STU) {
 		if (
 			Info_ValueForKey(userinfo, "team")[0] == 's' ||
@@ -111,7 +111,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 		}
 	}
 	else
-#endif
+
 	if ( g_gametype.integer >= GT_TEAM ) {
 		if ( g_teamAutoJoin.integer ) {
 			sess->sessionTeam = PickTeam( -1 );

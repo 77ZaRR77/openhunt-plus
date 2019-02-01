@@ -352,9 +352,6 @@ extern void UI_ModsMenu_Cache( void );
 //
 // ui_playermodel.c
 //
-#if !MONSTER_MODE	// JUHOX: new prototype for UI_PlayerModelMenu()
-extern void UI_PlayerModelMenu( void );
-#else
 extern void UI_PlayerModelMenu(
 	char* titleStr,
 	const char* subtitleStr,
@@ -366,7 +363,7 @@ extern void UI_PlayerModelMenu(
 	int modelBufferSize,
 	weapon_t weapon
 );
-#endif
+
 extern void PlayerModel_Cache( void );
 
 //
@@ -523,58 +520,39 @@ typedef struct {
 	qhandle_t			whiteShader;
 	qhandle_t			menuBackShader;
 	// JUHOX: need no "no-logo" shader, but a title shader
-#if 0
-	qhandle_t			menuBackNoLogoShader;
-#else
 	qhandle_t			menuBackTitleShader;
-#endif
 	// JUHOX: new charset
-#if 0
-	qhandle_t			charset;
-#else
 	qhandle_t			charsetShaders[8];
-#endif
 	qhandle_t			charsetProp;
 	qhandle_t			charsetPropGlow;
 	qhandle_t			charsetPropB;
 	qhandle_t			cursor;
 	qhandle_t			rb_on;
 	qhandle_t			rb_off;
-	/*
-	qhandle_t			cursorCore1;	// JUHOX
-	qhandle_t			cursorCore2;	// JUHOX
-	qhandle_t			cursorCore3;	// JUHOX
-	*/
+
 	qhandle_t			lfRing;		// JUHOX
 	qhandle_t			lfDisc;		// JUHOX
 	qhandle_t			lfGlare;	// JUHOX
 	qhandle_t			lfStar;		// JUHOX
 	// JUHOX: scale X & Y independent from each other (like in CG_drawTools.c)
-#if 0
-	float				scale;
-	float				bias;
-#else
 	float				scaleX;
 	float				scaleY;
-#endif
 	qboolean			demoversion;
 	qboolean			firstdraw;
 	qboolean			tssInterfaceOpen;	// JUHOX
 	qboolean			loadingTemplates;	// JUHOX
 	char				templateName[MAX_STRING_CHARS];	// JUHOX
 	int					templateCounter;	// JUHOX
-	char				templateFileList[/*8192*/MAX_STRING_CHARS];	// JUHOX
-	int					numTemplateFiles;		// JUHOX
-	gametemplatelist_t	templateList;			// JUHOX
+	char				templateFileList[MAX_STRING_CHARS];	// JUHOX
+	int					numTemplateFiles;	// JUHOX
+	gametemplatelist_t	templateList;		// JUHOX
 #if TSSINCVAR
 	int					numTssEntries;		// JUHOX
 #endif
-	int					precaching;		// JUHOX
+	int					precaching;	    	// JUHOX
 	qboolean			startTitleMusic;	// JUHOX
-#if PLAYLIST
-	qboolean			loadPlayList;	// JUHOX
-	int					currentTrack;	// JUHOX
-#endif
+	qboolean			loadPlayList;	    // JUHOX
+	int					currentTrack;	    // JUHOX
 } uiStatic_t;
 
 extern void			UI_Init( void );

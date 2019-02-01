@@ -105,10 +105,6 @@ void CG_BloodTrail( localEntity_t *le ) {
 	vec3_t	newOrigin;
 	localEntity_t	*blood;
 
-#if SCREENSHOT_TOOLS
-	if (cg.stopTime) return;	// JUHOX
-#endif
-
 	step = 150;
 	t = step * ( (cg.time - cg.frametime + step ) / step );
 	t2 = step * ( cg.time / step );
@@ -120,23 +116,17 @@ void CG_BloodTrail( localEntity_t *le ) {
 					  20,		// radius
 					  1, 1, 1, 1,	// color
 					  // JUHOX: decreased trail time for monster blood trail shader
-#if !MONSTER_MODE
-					  2000,		// trailTime
-#else
 					  le->leMarkType == LEMT_BLOOD? 2000 : 1000,
-#endif
 					  t,		// startTime
 					  0,		// fadeInTime
 					  0,		// flags
-		// JUHOX: use monster blood trail shader for monster gibs
-#if !MONSTER_MODE
-					  cgs.media.bloodTrailShader );
-#else
+
+                      // JUHOX: use monster blood trail shader for monster gibs
 					  le->leMarkType == LEMT_BLOOD?
 							cgs.media.bloodTrailShader :
 							(rand()&1? cgs.media.monsterBloodTrail1Shader : cgs.media.monsterBloodTrail2Shader)
 					);
-#endif
+
 		// use the optimized version
 		blood->leType = LE_FALL_SCALE_FADE;
 		// drop a total of 40 units over its lifetime
@@ -165,13 +155,11 @@ void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
 			1,1,1,1, qtrue, radius, qfalse );
 	}
 	// JUHOX: add monster blood mark
-#if MONSTER_MODE
 	else if (le->leMarkType == LEMT_MONSTER_BLOOD) {
 		radius = 16 + (rand()&31);
 		CG_ImpactMark(cgs.media.monsterBloodMarkShader, trace->endpos, trace->plane.normal, random()*360,
 			1,1,1,1, qtrue, radius, qfalse);
 	}
-#endif
 
 
 	// don't allow a fragment to make multiple marks, or they
@@ -262,9 +250,6 @@ void CG_AddFragment( localEntity_t *le ) {
 			// lighting would be lost as soon as the origin went
 			// into the ground
 			// JUHOX: correct lighting for EFH
-#if !ESCAPE_MODE
-			VectorCopy( le->refEntity.origin, le->refEntity.lightingOrigin );
-#else
 			if (le->lightingBase) {
 				VectorSubtract(
 					le->refEntity.origin,
@@ -275,7 +260,7 @@ void CG_AddFragment( localEntity_t *le ) {
 			else {
 				VectorCopy( le->refEntity.origin, le->refEntity.lightingOrigin );
 			}
-#endif
+
 			le->refEntity.renderfx |= RF_LIGHTING_ORIGIN;
 			oldZ = le->refEntity.origin[2];
 			le->refEntity.origin[2] -= 16 * ( 1.0 - (float)t / SINK_TIME );
@@ -283,7 +268,6 @@ void CG_AddFragment( localEntity_t *le ) {
 			le->refEntity.origin[2] = oldZ;
 		} else {
 			// JUHOX: correct lighting for EFH
-#if ESCAPE_MODE
 			if (le->lightingBase) {
 				le->refEntity.renderfx |= RF_LIGHTING_ORIGIN;
 				VectorSubtract(
@@ -292,7 +276,6 @@ void CG_AddFragment( localEntity_t *le ) {
 					le->refEntity.lightingOrigin
 				);
 			}
-#endif
 			trap_R_AddRefEntityToScene( &le->refEntity );
 		}
 
@@ -305,7 +288,6 @@ void CG_AddFragment( localEntity_t *le ) {
 	// trace a line from previous position to new position
 	CG_Trace( &trace, le->refEntity.origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID );
 	// JUHOX: correct lighting for EFH
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH && le->refEntity.hModel) {
 		if (le->lightingBase) {
 			// check if it's still valid
@@ -368,7 +350,7 @@ void CG_AddFragment( localEntity_t *le ) {
 			}
 		}
 	}
-#endif
+
 	if ( trace.fraction == 1.0 ) {
 		// still in free fall
 		VectorCopy( newOrigin, le->refEntity.origin );
@@ -394,12 +376,7 @@ void CG_AddFragment( localEntity_t *le ) {
 	// this keeps gibs from waiting at the bottom of pits of death
 	// and floating levels
 	// JUHOX: also check for no-impact surfaces
-#if 0
-	if ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP ) {
-		CG_FreeLocalEntity( le );
-		return;
-	}
-#else
+
 	if (
 		(trace.surfaceFlags & SURF_NOIMPACT) ||
 		(trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP)
@@ -407,7 +384,6 @@ void CG_AddFragment( localEntity_t *le ) {
 		CG_FreeLocalEntity( le );
 		return;
 	}
-#endif
 
 	// leave a mark
 	CG_FragmentBounceMark( le, &trace );
@@ -523,9 +499,6 @@ static void CG_AddScaleFade( localEntity_t *le ) {
 	VectorSubtract( re->origin, cg.refdef.vieworg, delta );
 	len = VectorLength( delta );
 	if ( len < le->radius ) {
-#if SCREENSHOT_TOOLS
-		if (cg.stopTime) return;	// JUHOX
-#endif
 		CG_FreeLocalEntity( le );
 		return;
 	}
@@ -672,19 +645,6 @@ void CG_AddScorePlum( localEntity_t *le ) {
 		re->shaderRGBA[0] = 0xff;
 		re->shaderRGBA[1] = 0xff;
 		re->shaderRGBA[2] = 0xff;
-		// JUHOX: positive score plum always in white
-#if 0
-		if (score >= 50) {
-			re->shaderRGBA[1] = 0;
-		} else if (score >= 20) {
-			re->shaderRGBA[0] = re->shaderRGBA[1] = 0;
-		} else if (score >= 10) {
-			re->shaderRGBA[2] = 0;
-		} else if (score >= 2) {
-			re->shaderRGBA[0] = re->shaderRGBA[2] = 0;
-		}
-#endif
-
 	}
 	if (c < 0.25)
 		re->shaderRGBA[3] = 0xff * 4 * c;
@@ -803,12 +763,9 @@ static void CG_AddFireballTrailParticle(localEntity_t* le) {
 JUHOX: CG_AddMoveScaleRGBFade
 ===================
 */
-#if MONSTER_MODE
 static void CG_AddMoveScaleRGBFade(localEntity_t* le) {
 	refEntity_t	*re;
 	float		c;
-	//vec3_t		delta;
-	//float		len;
 
 	re = &le->refEntity;
 
@@ -824,20 +781,8 @@ static void CG_AddMoveScaleRGBFade(localEntity_t* le) {
 
 	BG_EvaluateTrajectory(&le->pos, cg.time, re->origin);
 
-	// if the view would be "inside" the sprite, kill the sprite
-	// so it doesn't add too much overdraw
-	/*
-	VectorSubtract( re->origin, cg.refdef.vieworg, delta );
-	len = VectorLength( delta );
-	if ( len < le->radius ) {
-		CG_FreeLocalEntity( le );
-		return;
-	}
-	*/
-
 	trap_R_AddRefEntityToScene(re);
 }
-#endif
 
 
 
@@ -860,19 +805,6 @@ void CG_AddLocalEntities( void ) {
 		// grab next now, so if the local entity is freed we
 		// still have it
 		next = le->prev;
-
-#if SCREENSHOT_TOOLS	// JUHOX
-		if (cg.stopTime) {
-			le->startTime += cg.timeOffset;
-			le->endTime += cg.timeOffset;
-			le->fadeInTime += cg.timeOffset;
-
-			le->pos.trTime += cg.timeOffset;
-			le->angles.trTime += cg.timeOffset;
-
-			le->refEntity.shaderTime += 0.001 * cg.timeOffset;
-		}
-#endif
 
 		if ( cg.time >= le->endTime ) {
 			CG_FreeLocalEntity( le );
@@ -917,20 +849,15 @@ void CG_AddLocalEntities( void ) {
 		case LE_SCOREPLUM:
 			CG_AddScorePlum( le );
 			break;
-
-#if 1	// JUHOX: handle new BFG explosion local entity
+        // JUHOX: handle new BFG explosion local entity
 		case LE_BFGEXPL:
 			CG_AddBFGExpl(le);
 			break;
-#endif
-
-#if 1	// JUHOX: handle trail particle
+        // JUHOX: handle trail particle
 		case LE_TRAIL_PARTICLE:
 			CG_AddTrailParticle(le);
 			break;
-#endif
-
-#if MONSTER_MODE	// JUHOX: handle fireball trail
+        // JUHOX: handle fireball trail
 		case LE_FIREBALL_TRAIL_PARTICLE:
 			CG_AddFireballTrailParticle(le);
 			break;
@@ -938,7 +865,7 @@ void CG_AddLocalEntities( void ) {
 		case LE_MOVE_SCALE_RGBFADE:
 			CG_AddMoveScaleRGBFade(le);
 			break;
-#endif
+
 
 		}
 	}

@@ -48,40 +48,13 @@ static void CG_ParseScores( void ) {
 	for ( i = 0 ; i < cg.numScores ; i++ ) {
 		//
 		// JUHOX: also parse the 'killed' argument
-#if 0
-		cg.scores[i].client = atoi( CG_Argv( i * 14 + 4 ) );
-		cg.scores[i].score = atoi( CG_Argv( i * 14 + 5 ) );
-		cg.scores[i].ping = atoi( CG_Argv( i * 14 + 6 ) );
-		cg.scores[i].time = atoi( CG_Argv( i * 14 + 7 ) );
-		cg.scores[i].scoreFlags = atoi( CG_Argv( i * 14 + 8 ) );
-		powerups = atoi( CG_Argv( i * 14 + 9 ) );
-		cg.scores[i].accuracy = atoi(CG_Argv(i * 14 + 10));
-		cg.scores[i].impressiveCount = atoi(CG_Argv(i * 14 + 11));
-		cg.scores[i].excellentCount = atoi(CG_Argv(i * 14 + 12));
-		cg.scores[i].guantletCount = atoi(CG_Argv(i * 14 + 13));
-		cg.scores[i].defendCount = atoi(CG_Argv(i * 14 + 14));
-		cg.scores[i].assistCount = atoi(CG_Argv(i * 14 + 15));
-		cg.scores[i].perfect = atoi(CG_Argv(i * 14 + 16));
-		cg.scores[i].captures = atoi(CG_Argv(i * 14 + 17));
-#else
 		cg.scores[i].client = atoi( CG_Argv( i * 6 + 4 ) );
 		cg.scores[i].score = atoi( CG_Argv( i * 6 + 5 ) );
 		cg.scores[i].killed = atoi(CG_Argv(i * 6 + 6));
 		cg.scores[i].ping = atoi( CG_Argv( i * 6 + 7 ) );
 		cg.scores[i].time = atoi( CG_Argv( i * 6 + 8 ) );
-		//cg.scores[i].scoreFlags = atoi( CG_Argv( i * 7 + 9 ) );
+
 		powerups = atoi( CG_Argv( i * 6 + 9 ) );
-		/*
-		cg.scores[i].accuracy = atoi(CG_Argv(i * 15 + 11));
-		cg.scores[i].impressiveCount = atoi(CG_Argv(i * 15 + 12));
-		cg.scores[i].excellentCount = atoi(CG_Argv(i * 15 + 13));
-		cg.scores[i].guantletCount = atoi(CG_Argv(i * 15 + 14));
-		cg.scores[i].defendCount = atoi(CG_Argv(i * 15 + 15));
-		cg.scores[i].assistCount = atoi(CG_Argv(i * 15 + 16));
-		cg.scores[i].perfect = atoi(CG_Argv(i * 15 + 17));
-		cg.scores[i].captures = atoi(CG_Argv(i * 15 + 18));
-		*/
-#endif
 
 		if ( cg.scores[i].client < 0 || cg.scores[i].client >= MAX_CLIENTS ) {
 			cg.scores[i].client = 0;
@@ -107,17 +80,6 @@ static void CG_ParseTeamInfo( void ) {
 
 	for ( i = 0 ; i < numSortedTeamPlayers ; i++ ) {
 		// JUHOX: also parse the group for the team overlay
-#if 0
-		client = atoi( CG_Argv( i * 6 + 2 ) );
-
-		sortedTeamPlayers[i] = client;
-
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * 6 + 3 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * 6 + 4 ) );
-		cgs.clientinfo[ client ].armor = atoi( CG_Argv( i * 6 + 5 ) );
-		cgs.clientinfo[ client ].curWeapon = atoi( CG_Argv( i * 6 + 6 ) );
-		cgs.clientinfo[ client ].powerups = atoi( CG_Argv( i * 6 + 7 ) );
-#else
 		client = atoi( CG_Argv( i * 10 + 2 ) );
 
 		sortedTeamPlayers[i] = client;
@@ -130,10 +92,7 @@ static void CG_ParseTeamInfo( void ) {
 		cgs.clientinfo[ client ].curWeapon = atoi( CG_Argv( i * 10 + 8 ) );
 		cgs.clientinfo[ client ].powerups = atoi( CG_Argv( i * 10 + 9 ) );
 		cgs.clientinfo[ client ].pfmi = atoi( CG_Argv( i * 10 + 10 ) );
-#if ESCAPE_MODE
 		cgs.clientinfo[ client ].wayLength = atoi( CG_Argv( i * 10 + 11 ) );
-#endif
-#endif
 	}
 }
 
@@ -176,12 +135,12 @@ void CG_ParseServerinfo( void ) {
 	cgs.tss = atoi(Info_ValueForKey(info, "tss"));
 	cgs.tssSafetyMode = atoi(Info_ValueForKey(info, "tssSafetyModeAllowed"));
 
-#if MONSTER_MODE	// JUHOX: parse STU serverinfo cvars
+	// JUHOX: parse STU serverinfo cvars
 	cgs.artefacts = atoi(Info_ValueForKey(info, "g_artefacts"));
 	cgs.monsterLauncher = atoi(Info_ValueForKey(info, "g_monsterLauncher"));
 	cgs.maxMonsters = atoi(Info_ValueForKey(info, "g_maxMonsters"));
-#endif
-#if ESCAPE_MODE	// JUHOX: no artefacts in EFH
+
+	// JUHOX: no artefacts in EFH
 	if (cgs.gametype == GT_EFH) {
 		cgs.artefacts = 0;
 		cgs.monsterLauncher = qfalse;
@@ -194,10 +153,10 @@ void CG_ParseServerinfo( void ) {
 			cgs.timelimit = 0;
 		}
 	}
-#endif
-#if GRAPPLE_ROPE	// JUHOX: parse serverinfo cvars for hook
+
+	// JUHOX: parse serverinfo cvars for hook
 	cgs.hookMode = atoi(Info_ValueForKey(info, "g_grapple"));
-#endif
+
 #if MEETING
 	cgs.meeting = atoi(Info_ValueForKey(info, "g_meeting"));
 #endif
@@ -471,12 +430,12 @@ static void CG_MapRestart( void ) {
 	cg.fraglimitWarnings = 0;
 
 	cg.timelimitWarnings = 0;
-#if MONSTER_MODE	// JUHOX: prevent "sudden death" announcement in STU
+	// JUHOX: prevent "sudden death" announcement in STU
 	if (cgs.gametype >= GT_STU) {
 		cg.timelimitWarnings = 4;
 	}
-#endif
-#if 1	// JUHOX: get record
+
+	// JUHOX: get record
 	{
 		int recordType;
 
@@ -485,7 +444,6 @@ static void CG_MapRestart( void ) {
 		sscanf(CG_ConfigString(CS_RECORD), "%d,%d", &recordType, &cgs.record);
 		cgs.recordType = recordType;
 	}
-#endif
 
 	cg.intermissionStarted = qfalse;
 

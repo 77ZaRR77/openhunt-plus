@@ -169,11 +169,7 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES	32
 
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-gentity_t *G_PickTarget (char *targetname)
-#else
 gentity_t* G_PickTarget(char* targetname, int segment)
-#endif
 {
 	gentity_t	*ent = NULL;
 	int		num_choices = 0;
@@ -190,9 +186,9 @@ gentity_t* G_PickTarget(char* targetname, int segment)
 		ent = G_Find (ent, FOFS(targetname), targetname);
 		if (!ent)
 			break;
-#if ESCAPE_MODE
+
 		if (ent->worldSegment - 1 != segment) continue;	// JUHOX
-#endif
+
 		choice[num_choices++] = ent;
 		if (num_choices == MAXCHOICES)
 			break;
@@ -238,9 +234,8 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
-#if ESCAPE_MODE
 		if (t->worldSegment != ent->worldSegment) continue;	// JUHOX
-#endif
+
 		if ( t == ent ) {
 			G_Printf ("WARNING: Entity used itself.\n");
 		} else {
@@ -692,19 +687,13 @@ void G_KillBox (gentity_t *ent) {
 	for (i=0 ; i<num ; i++) {
 		hit = &g_entities[touch[i]];
 		// JUHOX: let G_KillBox kill monster, too
-#if !MONSTER_MODE
-		if ( !hit->client ) {
-			continue;
-		}
-#else
 		if (hit->s.eType != ET_PLAYER) continue;
-#endif
+
 		if (hit->health <= 0) continue;	// JUHOX
 
 		// JUHOX: don't let the entity kill itself
-#if 1
 		if (hit == ent) continue;	// why didn't they check this?
-#endif
+
 
 		// nail it
 		G_Damage ( hit, ent, ent, NULL, NULL,

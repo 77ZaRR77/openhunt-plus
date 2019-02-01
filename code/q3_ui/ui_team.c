@@ -86,7 +86,7 @@ void TeamMain_MenuInit( void ) {
 	TeamMain_Cache();
 
 #if 1	// JUHOX: moved from below
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 #endif
 
@@ -147,22 +147,13 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.spectate.color            = colorRed;
 	y += 20;
 
-#if 0	// JUHOX: moved to the beginning of this function
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
-	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
-#endif
-			      
 	// set initial states
 	switch( gametype ) {
 	case GT_SINGLE_PLAYER:
 	case GT_FFA:
 	case GT_TOURNAMENT:
-#if MONSTER_MODE	// JUHOX: don't allow "join red" & "join blue" for STU
 	case GT_STU:
-#endif
-#if ESCAPE_MODE	// JUHOX: don't allow "join red" & "join blue" for EFH
 	case GT_EFH:
-#endif
 		s_teammain.joinred.generic.flags  |= QMF_GRAYED;
 		s_teammain.joinblue.generic.flags |= QMF_GRAYED;
 		break;

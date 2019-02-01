@@ -5,7 +5,6 @@
 #include "inv.h"	// JUHOX: for MODELINDEX_INVISIBILITY
 
 // JUHOX: includes needed for AI access
-#if 1
 #include "botlib.h"
 #include "be_aas.h"
 #include "be_ea.h"
@@ -15,12 +14,9 @@
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 #include "be_ai_weap.h"
-//
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_team.h"
-#endif
-
 
 /*
 =================
@@ -35,7 +31,6 @@ qboolean IsPlayerInvolvedInFighting(int clientNum) {
 
 	if (g_entities[clientNum].health <= 0) return qfalse;
 	if (level.clients[clientNum].ps.powerups[PW_SHIELD]) return qfalse;
-
 	if (level.clients[clientNum].weaponUsageTime > level.time - 3000) return qtrue;
 	if (level.clients[clientNum].lasthurt_time > level.time - 3000) return qtrue;
 
@@ -49,9 +44,8 @@ JUHOX: NearHomeBase
 */
 qboolean NearHomeBase(int team, const vec3_t pos, float homeWeightSquared) {
 	if (g_gametype.integer < GT_CTF) return qfalse;
-#if MONSTER_MODE
 	if (g_gametype.integer >= GT_STU) return qfalse;
-#endif
+
 	switch (team) {
 	case TEAM_RED:
 		return homeWeightSquared * DistanceSquared(pos, ctf_redflag.origin) < DistanceSquared(pos, ctf_blueflag.origin);
@@ -70,30 +64,6 @@ static int TSS_Proportion_RoundToCeil(int portion, int total, int newTotal) {
 	if (total == 0) return 0;
 	return (portion * newTotal + total - 1) / total;
 }
-
-/*
-==================
-JUHOX: TSS_KillDamage
-
-returns the lowest damage that could kill the player
-==================
-*/
-/*
-int TSS_KillDamage(playerState_t* ps) {
-	int killDamage;
-	float pf;	// protection factor
-
-	pf = (1 - ARMOR_PROTECTION) / ARMOR_PROTECTION;	// currently 0.5
-	if (ps->stats[STAT_HEALTH] <= ps->stats[STAT_ARMOR] * pf) {
-		killDamage = ps->stats[STAT_HEALTH] / (1 - ARMOR_PROTECTION);
-	}
-	else {
-		//killDamage = ps->stats[STAT_ARMOR] / ARMOR_PROTECTION + (ps->stats[STAT_HEALTH] - ps->stats[STAT_ARMOR] * pf);
-		killDamage = ps->stats[STAT_HEALTH] + ps->stats[STAT_ARMOR];	// computes the same as the formula above!
-	}
-	return killDamage;
-}
-*/
 
 /*
 ==================
@@ -131,18 +101,13 @@ int TSS_DangerIndex(const playerState_t* ps) {
 	}
 	danger += 100 - 100 * maxDamage / ps->stats[STAT_MAX_HEALTH];
 
-	/*
-	if (ps->eFlags & EF_FIRING) {
-		danger += 10;
-	}
-	*/
 	if (ps->stats[STAT_STRENGTH] < 2*LOW_STRENGTH_VALUE) {
 		danger += 20.0F * (1.0F - ps->stats[STAT_STRENGTH] / (2.0F*LOW_STRENGTH_VALUE));
 	}
 	return (int) danger;
 }
 
-#if 1	// JUHOX: definitions for TSS group assignment
+// JUHOX: definitions for TSS group assignment
 typedef enum {
 	TSSGAR_unreserved,
 	TSSGAR_bestDistance,
@@ -199,25 +164,6 @@ typedef struct tss_groupInfo_s {
 static tss_groupInfo_t tssGroupInfo[MAX_GROUPS];
 static bot_goal_t* tssHomeBase;		// for CTF
 static bot_goal_t* tssEnemyBase;	// for CTF
-#endif
-
-/*
-===============
-JUHOX: TSS_MayBeGroupLeader
-===============
-*/
-/*
-static qboolean TSS_MayBeGroupLeader(const tss_groupAssignment_t* ga, const tss_groupInfo_t* gi) {
-	if (!ga || !gi) {
-		G_Error("BUG! TSS_MayBeGroupLeader: ga=%d, gi=%d", (int)ga, (int)gi);
-		return qfalse;
-	}
-	if (ga == tssFlagCarrier) return qfalse;
-	if (!ga->isAlive) return qfalse;
-	if (ga->danger > gi->maxDanger) return qfalse;
-	return qtrue;
-}
-*/
 
 /*
 ===============
@@ -259,15 +205,8 @@ static void TSS_PlayerAlivePrediction(const gclient_t* client, const tss_serverd
 
 		remainingTime = client->respawnTime + client->respawnDelay - level.time;
 		if (remainingTime < 0) remainingTime = 0;
-
-		if (remainingTime < tss->medium_term) {
-			//*amq += 1.0 - (float)remainingTime / tss->medium_term;
-			*amq += 1.0;
-		}
-		if (remainingTime < tss->long_term) {
-			//*alq += 1.0 - (float)remainingTime / tss->long_term;
-			*alq += 1.0;
-		}
+		if (remainingTime < tss->medium_term) *amq += 1.0;
+		if (remainingTime < tss->long_term) *alq += 1.0;
 	}
 }
 
@@ -548,9 +487,7 @@ static void TSS_CancelGroupAssignment(tss_groupAssignment_t* ga) {
 JUHOX: TSS_AssignToGroup
 ===============
 */
-static void TSS_AssignToGroup(
-	tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation
-) {
+static void TSS_AssignToGroup( tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation ) {
 	if (!ga || !gi) {
 		G_Error("BUG! TSS_AssignToGroup: ga=%d, gi=%d", (int)ga, (int)gi);
 		return;
@@ -575,9 +512,7 @@ static void TSS_AssignToGroup(
 JUHOX: TSS_CanReserveGroupAssignment
 ===============
 */
-static qboolean TSS_CanReserveGroupAssignment(
-	tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation
-) {
+static qboolean TSS_CanReserveGroupAssignment( tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation ) {
 	if (!ga || !gi) {
 		G_Error("BUG! TSS_CanReserveGroupAssignment: ga=%d, gi=%d", (int)ga, (int)gi);
 		return qfalse;
@@ -592,14 +527,10 @@ static qboolean TSS_CanReserveGroupAssignment(
 		if (ga->group->rank <= gi->rank) return qfalse;
 	}
 
-	if (
-		ga->group->rank <= gi->rank &&
-		reservation <= TSSGAR_constraint &&
-		(
-			ga->group->totalPlayers <= ga->group->minTotalPlayers ||
-			(ga->isAlive && ga->group->alivePlayers <= ga->group->minAlivePlayers) ||
-			(ga->danger <= ga->group->maxDanger && ga->group->readyPlayers <= ga->group->minReadyPlayers)
-		)
+	if ( ga->group->rank <= gi->rank &&	reservation <= TSSGAR_constraint &&
+		( ga->group->totalPlayers <= ga->group->minTotalPlayers ||
+        (ga->isAlive && ga->group->alivePlayers <= ga->group->minAlivePlayers) ||
+		(ga->danger <= ga->group->maxDanger && ga->group->readyPlayers <= ga->group->minReadyPlayers) )
 	) {
 		ga->reservation = TSSGAR_constraint;
 		return qfalse;
@@ -612,13 +543,12 @@ static qboolean TSS_CanReserveGroupAssignment(
 JUHOX: TSS_MoveToGroupIfPossible
 ===============
 */
-static qboolean TSS_MoveToGroupIfPossible(
-	tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation
-) {
+static qboolean TSS_MoveToGroupIfPossible( tss_groupAssignment_t* ga, tss_groupInfo_t* gi, tss_groupAssignmentReservation_t reservation ) {
 	if (!ga || !gi) {
 		G_Error("BUG! TSS_MoveToGroupIfPossible: ga=%d, gi=%d", (int)ga, (int)gi);
 		return qfalse;
 	}
+
 	if (ga->group == gi) {
 		if (ga->reservation < reservation) {
 			ga->reservation = reservation;
@@ -640,11 +570,11 @@ JUHOX: TSS_ApplyDistanceBonus
 */
 static vec_t TSS_ApplyDistanceBonus(vec_t dist, vec_t factor, vec_t offset) {
 	if (dist > 0) {
-		dist *= factor;
-	}
-	else {
-		dist /= factor;
-	}
+        dist *= factor;
+    } else {
+        dist /= factor;
+    }
+
 	dist -= offset;
 	return dist;
 }
@@ -817,10 +747,7 @@ static void TSS_DistanceBasedGroupAssignment(void) {
 JUHOX: TSS_ReserveBestPlayerForGroup
 ===============
 */
-static qboolean TSS_ReserveBestPlayerForGroup(
-	tss_groupInfo_t* gi, qboolean mustBeAlive, qboolean mustBeReady,
-	tss_groupAssignmentReservation_t reservation
-) {
+static qboolean TSS_ReserveBestPlayerForGroup( tss_groupInfo_t* gi, qboolean mustBeAlive, qboolean mustBeReady,	tss_groupAssignmentReservation_t reservation ) {
 	int as;
 	tss_groupAssignment_t* bestPlayer;
 	vec_t bestDistance;
@@ -1244,54 +1171,17 @@ static void TSS_DetermineMissionStatus(tss_serverdata_t* tss) {
 				gi->missionStatus = TSSMS_aborted;
 			}
 		}
-		/* NOTE: this adaption can and should be done by the TSS client
-		else if (
-			(
-				gi->mission == TSSMISSION_capture_enemy_flag ||
-				gi->mission == TSSMISSION_occupy_enemy_base
-			) &&
-			Team_GetFlagStatus(tss->team) != FLAG_ATBASE
-		) {
-			// case of emergency! do NOT abort this important mission!
+
+		else if ( !gi->currentLeader ||	gi->readyPlayers < TSS_Proportion_RoundToCeil(gi->minReadyForMission, 100, gi->alivePlayers) ||
+                ( gi->groupFormation == TSSGF_tight && groupSize < TSS_Proportion_RoundToCeil(gi->minGroupSize, 100, gi->alivePlayers) ) ) {
+                    gi->missionStatus = TSSMS_aborted;
 		}
-		*/
-		else if (
-			!gi->currentLeader ||
-			//gi->alivePlayers < gi->minAlivePlayers ||
-			//gi->readyPlayers < gi->minReadyPlayers ||
-			gi->readyPlayers < TSS_Proportion_RoundToCeil(gi->minReadyForMission, 100, gi->alivePlayers) ||
-			(
-				gi->groupFormation == TSSGF_tight &&
-				groupSize < TSS_Proportion_RoundToCeil(gi->minGroupSize, 100, gi->alivePlayers)
-			)
-		) {
-			gi->missionStatus = TSSMS_aborted;
-		}
-		else if (
-			tssFlagCarrier &&
-			tssFlagCarrier->group &&
-			gi->mission == TSSMISSION_occupy_enemy_base &&
-			(
-				!tssFlagCarrier->group->currentLeader ||
-				(
-					!TSS_PlayersCoOperate(
-						tssFlagCarrier, tssFlagCarrier->group->currentLeader,
-						oldPFC? -0.3f : 0.3f
-					) &&
-					(
-						TSS_PlayerDistanceSqr(tssFlagCarrier, gi->currentLeader) <
-						TSS_PlayerDistanceSqr(tssFlagCarrier, tssFlagCarrier->group->currentLeader)
-							+ (oldPFC? 300.0f : 0.0f)
-					)
-				)
-			) &&
-			NearHomeBase(
-				OtherTeam(tss->team), tssFlagCarrier->client->ps.origin,
-				oldPFC? 4.0f : 9.0f
-			)
-		) {
-			gi->missionStatus = TSSMS_aborted;
-			gi->protectFlagCarrier = qtrue;
+		else if ( tssFlagCarrier &&	tssFlagCarrier->group && gi->mission == TSSMISSION_occupy_enemy_base &&
+                ( !tssFlagCarrier->group->currentLeader || ( !TSS_PlayersCoOperate ( tssFlagCarrier, tssFlagCarrier->group->currentLeader, oldPFC? -0.3f : 0.3f ) &&
+                ( TSS_PlayerDistanceSqr(tssFlagCarrier, gi->currentLeader) < TSS_PlayerDistanceSqr(tssFlagCarrier, tssFlagCarrier->group->currentLeader) + (oldPFC? 300.0f : 0.0f) ) ) )
+                && NearHomeBase( OtherTeam(tss->team), tssFlagCarrier->client->ps.origin, oldPFC? 4.0f : 9.0f )	) {
+                    gi->missionStatus = TSSMS_aborted;
+                    gi->protectFlagCarrier = qtrue;
 		}
 
 		tss->missionStatus[gr] = gi->missionStatus;
@@ -1309,11 +1199,7 @@ static void TSS_DetermineMissionStatus(tss_serverdata_t* tss) {
 JUHOX: TSS_AssignTask
 ===============
 */
-static tss_missionTask_t TSS_AssignTask(
-	const tss_groupAssignment_t* ga, tss_groupMemberStatus_t gms, tss_groupFormation_t formation,
-	int leader,
-	int* taskGoal	// result
-) {
+static tss_missionTask_t TSS_AssignTask( const tss_groupAssignment_t* ga, tss_groupMemberStatus_t gms, tss_groupFormation_t formation, int leader, int* taskGoal ) {
 	tss_groupAssignment_t* teammate;
 
 	*taskGoal = -1;
@@ -1347,7 +1233,7 @@ static tss_missionTask_t TSS_AssignTask(
 					ga, ga->group->currentLeader,
 					oldTask == TSSMT_rushToBase? -0.3f : 0.3f
 				) &&
-				//!NearHomeBase(ga->client->sess.sessionTeam, ga->client->ps.origin, 9)
+
 				DistanceSquared(ga->client->ps.origin, tssHomeBase->origin) > Square(800.0f)
 			) {
 				*taskGoal = leader;
@@ -1631,63 +1517,14 @@ static void TSS_GroupAssignment(tss_serverdata_t* tss) {
 
 
 	if (g_gametype.integer == GT_CTF && tssFlagCarrier) {
-		if (
-			tssFlagCarrier->group &&
-			tssFlagCarrier->group->mission == TSSMISSION_capture_enemy_flag
-		) {
+		if ( tssFlagCarrier->group && tssFlagCarrier->group->mission == TSSMISSION_capture_enemy_flag) {
 			TSS_MoveToGroupIfPossible(tssFlagCarrier, tssFlagCarrier->group, TSSGAR_flagCarrier);
 		}
-		/*
-		else {
-			float bestDist;
-			float fcDistSqrToHomeBase;
-			tss_groupInfo_t* bestGroup;
-
-			bestDist = 1000000000.0;
-			bestGroup = NULL;
-			if (tssHomeBase) {
-				fcDistSqrToHomeBase = DistanceSquared(tssFlagCarrier->client->ps.origin, tssHomeBase->origin);
-			}
-			else {
-				// should not happen
-				fcDistSqrToHomeBase = 1000000000.0;
-			}
-
-			for (gr = 0; gr < MAX_GROUPS; gr++) {
-				float dist;
-
-				gi = &tssGroupInfo[gr];
-				if (gi->mission != TSSMISSION_capture_enemy_flag) continue;
-				if (!gi->oldLeader) continue;
-				dist = Distance(tssFlagCarrier->client->ps.origin, gi->oldLeader->client->ps.origin);
-				if (tssFlagCarrier->group == gi) dist *= 0.6;
-				if (tssHomeBase) {
-					if (DistanceSquared(gi->oldLeader->client->ps.origin, tssHomeBase->origin) > fcDistSqrToHomeBase) {
-						dist *= 1.4;
-					}
-				}
-				if (dist < bestDist) {
-					bestDist = dist;
-					bestGroup = gi;
-				}
-			}
-			TSS_MoveToGroupIfPossible(tssFlagCarrier, bestGroup, TSSGAR_flagCarrier);
-		}
-		*/
 	}
 
-
-
 	TSS_ConstraintBasedGroupAssignment(tss);
-
-
-
 	TSS_DetermineLeaders();
-
-
-
 	TSS_DetermineMissionStatus(tss);
-
 	TSS_CreateRescueSchedule();
 
 	for (as = 0; as < tssNumGroupAssignments; as++) {
@@ -1868,9 +1705,9 @@ void TSS_Run(void) {
 	tss_serverdata_t* tss;
 
 	if (g_gametype.integer < GT_TEAM) return;
-#if MONSTER_MODE	// JUHOX: no TSS with STU
+	// JUHOX: no TSS with STU
 	if (g_gametype.integer >= GT_STU) return;
-#endif
+
 	if (level.time < level.tssTime) return;
 	level.tssTime = level.time + 500;
 
@@ -1974,14 +1811,9 @@ void P_DamageFeedback( gentity_t *player ) {
 	if ( (level.time > player->pain_debounce_time) && !(player->flags & FL_GODMODE) ) {
 		player->pain_debounce_time = level.time + 700;
 		// JUHOX: scale health to 100 for pain event
-#if 0
-		G_AddEvent( player, EV_PAIN, player->health );
-#else
 		G_AddEvent(player, EV_PAIN, (100 * player->health) / client->ps.stats[STAT_MAX_HEALTH]);
-#endif
 		client->ps.damageEvent++;
 	}
-
 
 	client->ps.damageCount = count;
 
@@ -2014,19 +1846,13 @@ void P_WorldEffects( gentity_t *ent ) {
 	waterlevel = ent->waterlevel;
 
 	// JUHOX: battlesuit not used as protection
-#if 0
-	envirosuit = ent->client->ps.powerups[PW_BATTLESUIT] > level.time;
-#else
 	envirosuit = qfalse;
-#endif
 
 	//
 	// check for drowning
 	//
 	// JUHOX: also "drown" if holding breath
-#if 0
-	if ( waterlevel == 3 ) {
-#else
+
 	if (
 		waterlevel >= 3 ||
 		(
@@ -2035,21 +1861,15 @@ void P_WorldEffects( gentity_t *ent ) {
 		)
 	) {
 		ent->client->ps.stats[STAT_PANT_PHASE] = -1;
-#endif
+
 		// JUHOX: new air-out condition
-#if 0
-		// envirosuit give air
-		if ( envirosuit ) {
-			ent->client->airOutTime = level.time + 10000;
-		}
-#else
+
 		if (
 			g_stamina.integer &&
 			ent->client->ps.stats[STAT_STRENGTH] > 0
 		) {
 			ent->client->airOutTime = level.time + 10000;
 		}
-#endif
 
 		// if out of air, start drowning
 		if ( ent->client->airOutTime < level.time) {
@@ -2058,23 +1878,10 @@ void P_WorldEffects( gentity_t *ent ) {
 			if ( ent->health > 0 ) {
 				// take more damage the longer underwater
 				ent->damage += 2;
-				// JUHOX: no maximum drowning damage
-#if 0
-				if (ent->damage > 15)
-					ent->damage = 15;
-#endif
 
 				// play a gurp sound instead of a normal pain sound
 				// JUHOX: don't play gurp sound if not in water (i.e. just holding breath)
-#if 0
-				if (ent->health <= ent->damage) {
-					G_Sound(ent, CHAN_VOICE, G_SoundIndex("*drown.wav"));
-				} else if (rand()&1) {
-					G_Sound(ent, CHAN_VOICE, G_SoundIndex("sound/player/gurp1.wav"));
-				} else {
-					G_Sound(ent, CHAN_VOICE, G_SoundIndex("sound/player/gurp2.wav"));
-				}
-#else
+
 				if (waterlevel >= 3) {
 					if (ent->health <= ent->damage) {
 						G_Sound(ent, CHAN_VOICE, G_SoundIndex("*drown.wav"));
@@ -2084,7 +1891,6 @@ void P_WorldEffects( gentity_t *ent ) {
 						G_Sound(ent, CHAN_VOICE, G_SoundIndex("sound/player/gurp2.wav"));
 					}
 				}
-#endif
 
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
@@ -2176,9 +1982,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
 	}
 
 	// JUHOX: let monsters detect touching players
-#if MONSTER_MODE
 	CheckTouchedMonsters(pm);
-#endif
 }
 
 /*
@@ -2189,7 +1993,7 @@ Find all trigger entities that ent's current position touches.
 Spectators will only interact with teleporters.
 ============
 */
-void	G_TouchTriggers( gentity_t *ent ) {
+void G_TouchTriggers( gentity_t *ent ) {
 	int			i, num;
 	int			touch[MAX_GENTITIES];
 	gentity_t	*hit;
@@ -2201,16 +2005,10 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		return;
 	}
 
-#if PLAYER_SCREENSHOTS	// JUHOX: allow players to fall into void for player screenshots
-	return;
-#endif
-
 	// JUHOX: never touch triggers in lens flare editor
 	if (g_editmode.integer == EM_mlf) return;
 
-
 	// dead clients don't activate triggers!
-
 	if ( ent->client->ps.stats[STAT_HEALTH] <= 0 &&	ent->client->ps.pm_type != PM_SPECTATOR ) return;
 
 	VectorSubtract( ent->client->ps.origin, range, mins );
@@ -2227,7 +2025,6 @@ void	G_TouchTriggers( gentity_t *ent ) {
 
 		if ( !hit->touch && !ent->touch ) continue;
 		if ( !( hit->r.contents & CONTENTS_TRIGGER ) ) continue;
-
 
 		// ignore most entities if a spectator
 		if (ent->client->ps.pm_type == PM_SPECTATOR) {
@@ -2270,28 +2067,6 @@ void	G_TouchTriggers( gentity_t *ent ) {
 	}
 }
 
-// JUHOX: timescale values
-#if SCREENSHOT_TOOLS
-static const float timeScaleFromMode[16] = {
-	1,
-	1,		// 1
-	0.71,	// 2
-	0.5,	// 3
-	0.35,	// 4
-	0.25,	// 5
-	0.18,	// 6
-	0.1,	// 7
-	0.071,	// 8
-	0.05,	// 9
-	1,
-	1,
-	1,
-	1,
-	1,
-	1
-};
-#endif
-
 /*
 =================
 SpectatorThink
@@ -2306,9 +2081,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 		client->ps.pm_type = PM_SPECTATOR;
 		client->ps.speed = 400;	// faster than normal
-#if SCREENSHOT_TOOLS	// JUHOX: timescaled spectator speed
-		if (ent->s.number == 0) client->ps.speed /= timeScaleFromMode[level.timeFreezeMode];
-#endif
 
 		// set up for pmove
 		memset (&pm, 0, sizeof(pm));
@@ -2318,9 +2090,8 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 		pm.trace = trap_Trace;
 		pm.pointcontents = trap_PointContents;
 
-#if MONSTER_MODE	// JUHOX: set player scale factor for spectator
+        // JUHOX: set player scale factor for spectator
 		pm.scale = 1;
-#endif
 
 		pm.gametype = g_gametype.integer;	// JUHOX
 
@@ -2352,31 +2123,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	client->buttons = ucmd->buttons;
 
 	// attack button cycles through spectators
-#if !SCREENSHOT_TOOLS	// JUHOX: attack button toggles time freeze
 	if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
 		Cmd_FollowCycle_f( ent, 1 );
 	}
-#else
-	if ((client->buttons & BUTTON_ATTACK) && !(client->oldbuttons & BUTTON_ATTACK)) {
-		Cmd_Stop_f(ent);
-	}
-#endif
 
-#if SCREENSHOT_TOOLS	// JUHOX: spectator's use button creates a screenshot
-	if ((client->buttons & BUTTON_USE_HOLDABLE) && !(client->oldbuttons & BUTTON_USE_HOLDABLE)) {
-		trap_SendServerCommand(client->ps.clientNum, "screenshot\n");
-	}
-#endif
-#if SCREENSHOT_TOOLS	// JUHOX: spectator's weapon determines timeFreezeMode
-	if (ent->s.number == 0 && level.time > client->respawnTime + 2000) {
-		level.timeFreezeMode = ucmd->weapon;
-		if (level.timeFreezeMode < 0) level.timeFreezeMode = 0;
-		if (level.timeFreezeMode > 9) level.timeFreezeMode = 9;
-		trap_Cvar_Set("timescale", va("%f", timeScaleFromMode[level.timeFreezeMode]));
-	}
-#endif
 }
-
 
 
 /*
@@ -2595,7 +2346,7 @@ static void NavAid(gclient_t* client) {
 	if (destArea < 0) destArea = BotPointAreaNum(destination);
 	if (destArea <= 0) return;
 	if (!trap_AAS_AreaReachability(destArea)) return;
-	//startArea = BotPointAreaNum(client->ps.origin);
+
 	startArea = client->tssLastValidAreaNum;
 	if (startArea <= 0) return;
 	if (!trap_AAS_AreaReachability(startArea)) return;
@@ -2729,7 +2480,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	if (client->tssSafetyMode) return;	// JUHOX
 	client->timeResidual += msec;
 
-#if 1	// JUHOX: update nav aid
+	// JUHOX: update nav aid
 	if (!(ent->r.svFlags & SVF_BOT)) {
 		client->tssNavAidTimeResidual += msec;
 
@@ -2740,14 +2491,13 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			NavAid(client);
 		}
 	}
-#endif
 
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
 
 		if (!(ent->r.svFlags & SVF_BOT)) NavAid(client);	// JUHOX
 
-#if 1	// JUHOX: auto health regeneration
+    	// JUHOX: auto health regeneration
 		if (
 			!g_noHealthRegen.integer &&
 			ent->health < client->ps.stats[STAT_MAX_HEALTH] &&
@@ -2760,8 +2510,8 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 				ent->health = client->ps.stats[STAT_MAX_HEALTH];
 			}
 		}
-#endif
-#if 1	// JUHOX: auto armor regeneration
+
+        // JUHOX: auto armor regeneration
 		if (
 			!g_noHealthRegen.integer &&
 			client->ps.stats[STAT_ARMOR] < client->ps.stats[STAT_MAX_HEALTH] &&
@@ -2772,7 +2522,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH];
 			}
 		}
-#endif
+
 		// regenerate
 		if ( client->ps.powerups[PW_REGEN] ) {
 			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH]) {
@@ -2789,12 +2539,10 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 				G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
 			}
 			// JUHOX: also regenerate strength
-#if 1
 			client->ps.stats[STAT_STRENGTH] += 0.05 * MAX_STRENGTH_VALUE;
 			if (client->ps.stats[STAT_STRENGTH] > MAX_STRENGTH_VALUE) {
 				client->ps.stats[STAT_STRENGTH] = MAX_STRENGTH_VALUE;
 			}
-#endif
 
 		} else {
 			// count down health when over max
@@ -2897,7 +2645,6 @@ static void CauseChargeDamage(gentity_t* ent) {
 	}
 	else {
 		client->lastChargeAmount = 0.0;
-		//client->chargeDamageResidual = 0.0;
 		client->lastChargeTime = 0;
 	}
 }
@@ -3024,7 +2771,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			TeleportPlayer( ent, origin, angles );
 			break;
 
-		case EV_USE_ITEM2:		// medkit
+		case EV_USE_ITEM2: // medkit
 			ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
 
 			break;
@@ -3058,9 +2805,7 @@ void ClientRefreshAmmo(gentity_t* ent, int msec) {
 		if (!(client->ps.stats[STAT_WEAPONS] & (1 << i))) continue;
 		if (client->ps.ammo[i] < 0) continue;
 		maxAmmo = weaponAmmoCharacteristics[i].maxAmmo;
-#if MONSTER_MODE
 		if (i == WP_MONSTER_LAUNCHER) maxAmmo = client->monstersAvailable;
-#endif
 		if (client->ps.ammo[i] >= maxAmmo) continue;
 		if (client->ps.weapon == i && client->ps.weaponstate >= WEAPON_FIRING) continue;
 
@@ -3092,11 +2837,7 @@ void SetTargetPos(gentity_t* ent) {
 	vec3_t dest;
 
 	targetNum = ent->client->ps.stats[STAT_TARGET];
-	#if !MONSTER_MODE
-		if (targetNum < 0 || targetNum >= MAX_CLIENTS) return;
-	#else
-		if (targetNum < 0 || targetNum >= ENTITYNUM_MAX_NORMAL) return;
-	#endif
+	if (targetNum < 0 || targetNum >= ENTITYNUM_MAX_NORMAL) return;
 	target = &g_entities[targetNum];
 	if (!target->inuse) return;
 
@@ -3158,14 +2899,15 @@ static void GetGauntletTarget(gentity_t* ent) {
 			target->client->ps.stats[STAT_HEALTH] > 0 &&
 			target->client->ps.weapon != WP_GAUNTLET
 		)
-#if MONSTER_MODE	// accept monsters for gauntlet target
+
+        // accept monsters for gauntlet target
 		|| (
 			target->monster &&
 			target->health > 0 &&
 			!G_IsFriendlyMonster(ent, target) &&
 			G_CanBeDamaged(target)
 		)
-#endif
+
 	) {
 		ent->client->ps.stats[STAT_TARGET] = tr.entityNum;
 		SetTargetPos(ent);
@@ -3227,17 +2969,12 @@ void CheckPlayerDischarge(gentity_t* ent) {
 	vec3_t mins, maxs;
 	int maxCharge;
 
-#if !MONSTER_MODE
-	if (g_gametype.integer < GT_TEAM) return;
-#else
 	if (g_gametype.integer < GT_TEAM && !g_monsterLauncher.integer) return;
-#endif
+
 	if (ent->nextDischargeCheckTime > level.time) return;
 	ent->nextDischargeCheckTime = level.time + 100 + rand() % 50;
 
-#if MONSTER_MODE
 	if (ent->monster && level.endPhase >= 3) return;
-#endif
 
 	sourcePS = G_GetEntityPlayerState(ent);
 	if (!sourcePS) return;
@@ -3276,13 +3013,13 @@ void CheckPlayerDischarge(gentity_t* ent) {
 		if (!ps) continue;
 		if (ps->persistant[PERS_TEAM] != sourcePS->persistant[PERS_TEAM]) continue;
 		if (ps->pm_type == PM_SPECTATOR) continue;
-#if MONSTER_MODE
+
 		if (!G_CanBeDamaged(targ)) continue;
 		if (ps->persistant[PERS_TEAM] == TEAM_FREE && ps != sourcePS) {
 			if (!ent->monster && !targ->monster) continue;
 			if (!G_IsFriendlyMonster(ent, targ)) continue;
 		}
-#endif
+
 		if (ps->stats[STAT_HEALTH] <= 0) continue;
 #if !PLAYERDISCHARGE_SINGLE_TARGET
 		charge = PlayerCharge(ps);
@@ -3355,88 +3092,6 @@ void CheckPlayerDischarge(gentity_t* ent) {
 #endif
 }
 
-
-/*
-==============
--JUHOX: SetSpectatorPos
-
-originally from CG_OffsetThirdPersonView() [cg_view.c]
-==============
-*/
-#if 0
-#define	FOCUS_DISTANCE	512	// should match the definition in cg_view.c
-static void SetSpectatorPos(gentity_t* ent) {
-	playerState_t* ps;
-	vec3_t old_origin, old_angles;
-	vec3_t new_origin, new_angles;
-	vec3_t focusAngles;
-	vec3_t focusPoint;
-	vec3_t forward, right, up;
-	float thirdPersonAngle, thirdPersonRange;
-	trace_t trace;
-	static const vec3_t mins = { -15, -15, -15 };
-	static const vec3_t maxs = { 15, 15, 15 };
-	float focusDist;
-	float forwardScale, sideScale;
-
-	if (ent->r.svFlags & SVF_BOT) return;
-
-	ps = &ent->client->ps;
-	VectorCopy(ps->origin, old_origin);
-	VectorCopy(ps->viewangles, old_angles);
-
-	old_origin[2] += ps->viewheight;
-
-	VectorCopy(old_angles, focusAngles);
-	focusAngles[YAW] = ps->stats[STAT_DEAD_YAW];
-	old_angles[YAW] = ps->stats[STAT_DEAD_YAW];
-
-	if (focusAngles[PITCH] > 45) focusAngles[PITCH] = 45;
-	AngleVectors(focusAngles, forward, NULL, NULL);
-
-	VectorMA(old_origin, FOCUS_DISTANCE, forward, focusPoint);
-
-	VectorCopy(old_origin, new_origin);
-	new_origin[2] += 8;
-
-	old_angles[PITCH] *= 0.5;
-	AngleVectors(old_angles, forward, right, up);
-
-	thirdPersonAngle = 0;
-	thirdPersonRange = 40;
-	forwardScale = cos(thirdPersonAngle / 180 * M_PI);
-	sideScale = sin(thirdPersonAngle / 180 * M_PI);
-	VectorMA(new_origin, -thirdPersonRange * forwardScale, forward, new_origin);
-	VectorMA(new_origin, -thirdPersonRange * sideScale, right, new_origin);
-
-	trap_Trace(&trace, old_origin, mins, maxs, new_origin, ps->clientNum, MASK_PLAYERSOLID & ~CONTENTS_BODY);
-
-	if (trace.fraction != 1.0) {
-		VectorCopy(trace.endpos, new_origin);
-		new_origin[2] += (1.0 - trace.fraction) * 32;
-
-		trap_Trace(&trace, old_origin, mins, maxs, new_origin, ps->clientNum, MASK_PLAYERSOLID & ~CONTENTS_BODY);
-		VectorCopy(trace.endpos, new_origin);
-	}
-
-	VectorCopy(new_origin, old_origin);
-
-	VectorSubtract(focusPoint, old_origin, focusPoint);
-	focusDist = sqrt(focusPoint[0] * focusPoint[0] + focusPoint[1] * focusPoint[1]);
-	if (focusDist < 1) {
-		focusDist = 1;	// should never happen
-	}
-	new_angles[PITCH] = -180 / M_PI * atan2(focusPoint[2], focusDist);
-	new_angles[YAW] = old_angles[YAW] - thirdPersonAngle;
-	new_angles[ROLL] = 0;
-
-	G_SetOrigin(ent, new_origin);
-	VectorCopy(new_origin, ps->origin);
-	SetClientViewAngle(ent, new_angles);
-	ps->eFlags ^= EF_TELEPORT_BIT;
-}
-#endif
-
 /*
 ==============
 JUHOX: MoveRopeElement
@@ -3445,7 +3100,7 @@ derived from PM_SlideMove() [bg_slidemove.c]
 returns qfalse if element is in solid
 ==============
 */
-#if GRAPPLE_ROPE
+
 #define	MAX_CLIP_PLANES	5
 #include "bg_local.h"
 static qboolean MoveRopeElement(const vec3_t start, const vec3_t idealpos, vec3_t realpos, qboolean* touch) {
@@ -3464,7 +3119,6 @@ static qboolean MoveRopeElement(const vec3_t start, const vec3_t idealpos, vec3_
 	vec3_t		end;
 	float		time_left;
 	float		into;
-
 
 
 	VectorSubtract(idealpos, start, velocity);
@@ -3517,11 +3171,8 @@ static qboolean MoveRopeElement(const vec3_t start, const vec3_t idealpos, vec3_
 		*touch = qtrue;
 
 		time_left -= time_left * trace.fraction;
-
-		if (numplanes >= MAX_CLIP_PLANES) {
-			// this shouldn't really happen
-			return qtrue;
-		}
+		// this shouldn't really happen
+		if (numplanes >= MAX_CLIP_PLANES) return qtrue;
 
 		//
 		// if this is the same plane we hit before, nudge velocity
@@ -3550,13 +3201,6 @@ static qboolean MoveRopeElement(const vec3_t start, const vec3_t idealpos, vec3_
 			if (into >= 0.1) {
 				continue;		// move doesn't interact with the plane
 			}
-
-			// see how hard we are hitting things
-			/*
-			if ( -into > pml.impactSpeed ) {
-				pml.impactSpeed = -into;
-			}
-			*/
 
 			// slide along the plane
 			PM_ClipVelocity(velocity, planes[i], clipVelocity, OVERCLIP);
@@ -3606,7 +3250,7 @@ static qboolean MoveRopeElement(const vec3_t start, const vec3_t idealpos, vec3_
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
@@ -3615,7 +3259,7 @@ JUHOX: ThinkRopeElement
 returns qfalse if element is in solid
 ==============
 */
-#if GRAPPLE_ROPE
+
 static ropeElement_t tempRope[MAX_ROPE_ELEMENTS];
 static qboolean ThinkRopeElement(gclient_t* client, int ropeElement, int phase, float dt) {
 	const ropeElement_t* srcRope;
@@ -3715,14 +3359,7 @@ static qboolean ThinkRopeElement(gclient_t* client, int ropeElement, int phase, 
 		VectorSubtract(idealpos, predPos, w);
 		f = VectorNormalize(v);
 		d = DotProduct(v, w);
-		/*
-		if (d < 0) {
-			VectorMA(idealpos, -d, v, idealpos);
-		}
-		else if (d > f) {
-			VectorMA(idealpos, f - d, v, idealpos);
-		}
-		*/
+
 		if (d < 0) {
 			VectorCopy(predPos, idealpos);
 		}
@@ -3739,11 +3376,6 @@ static qboolean ThinkRopeElement(gclient_t* client, int ropeElement, int phase, 
 		}
 	}
 
-	/*
-	if (!MoveRopeElement(startPos, idealpos, realpos, &dstRE->touch)) {
-		return qfalse;
-	}
-	*/
 	switch (phase) {
 	case 0:
 		VectorCopy(idealpos, dstRE->pos);
@@ -3754,12 +3386,6 @@ static qboolean ThinkRopeElement(gclient_t* client, int ropeElement, int phase, 
 		}
 		break;
 	}
-
-	/*
-	if (re->touch) {
-		VectorScale(re->velocity, 0.7, re->velocity);
-	}
-	*/
 
 	errSqr = DistanceSquared(idealpos, realpos);
 	if (errSqr > 0.1) {
@@ -3778,57 +3404,8 @@ static qboolean ThinkRopeElement(gclient_t* client, int ropeElement, int phase, 
 	VectorCopy(realpos, dstRE->pos);
 	return qtrue;
 }
-#endif
 
-/*
-==============
-JUHOX: IsRopeSegmentTaut
-==============
-*/
-/*
-#if GRAPPLE_ROPE
-static qboolean IsRopeSegmentTaut(const vec3_t start, const vec3_t end, int numSections) {
-	return Distance(start, end) / numSections > ROPE_ELEMENT_SIZE;
-}
-#endif
-*/
 
-/*
-==============
-JUHOX: IsRopeTaut
-==============
-*/
-/*
-#if GRAPPLE_ROPE
-static qboolean IsRopeTaut(gentity_t* ent) {
-	gclient_t* client;
-	int i;
-	vec3_t start;
-	int n;
-
-	client = ent->client;
-	if (client->hook->s.eType != ET_GRAPPLE) return qfalse;
-
-	VectorCopy(client->hook->r.currentOrigin, start);
-	n = 0;
-	for (i = 0; i < client->numRopeElements; i++) {
-		ropeElement_t* re;
-
-		re = &client->ropeElements[i];
-		n++;
-		if (!re->touch) continue;
-
-		if (!IsRopeSegmentTaut(start, re->pos, n)) return qfalse;
-
-		VectorCopy(re->pos, start);
-		n = 0;
-	}
-	n++;
-	return IsRopeSegmentTaut(start, client->ps.origin, n);
-}
-#endif
-*/
-#if GRAPPLE_ROPE
 static qboolean IsRopeTaut(gentity_t* ent, qboolean wasTaut) {
 	gclient_t* client;
 	int i;
@@ -3841,28 +3418,6 @@ static qboolean IsRopeTaut(gentity_t* ent, qboolean wasTaut) {
 	client = ent->client;
 	if (client->hook->s.eType != ET_GRAPPLE) return qfalse;
 
-	/*
-	i = 0;
-	n = client->numRopeElements;
-	while (n > 0) {
-		int j;
-		int m;
-		trace_t trace;
-
-		m = n >> 1;
-		j = i + m;
-
-		trap_Trace(&trace, client->ps.origin, NULL, NULL, client->ropeElements[j].pos, -1, CONTENTS_SOLID);
-
-		if (trace.fraction < 1.0) {
-			i = j + 1;
-			n -= m + 1;
-		}
-		else {
-			n = m;
-		}
-	}
-	*/
 	for (i = client->numRopeElements-1; i >= 0; i--) {
 		trace_t trace;
 
@@ -3875,9 +3430,7 @@ static qboolean IsRopeTaut(gentity_t* ent, qboolean wasTaut) {
 	i++;
 
 	if (i >= client->numRopeElements) return qtrue;
-	/*
-	return IsRopeSegmentTaut(client->ropeElements[i].pos, client->ps.origin, client->numRopeElements - i);
-	*/
+
 	VectorSubtract(client->ropeElements[i].pos, client->ps.origin, dir);
 	dirLengthSqr = VectorLengthSquared(dir);
 	dirLength = sqrt(dirLengthSqr);
@@ -3898,14 +3451,13 @@ static qboolean IsRopeTaut(gentity_t* ent, qboolean wasTaut) {
 	}
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: NextTouchedRopeElement
 ==============
 */
-#if GRAPPLE_ROPE
 static int NextTouchedRopeElement(gclient_t* client, int index, vec3_t pos) {
 	if (index < 0) {
 		VectorCopy(client->ps.origin, pos);
@@ -3926,7 +3478,7 @@ static int NextTouchedRopeElement(gclient_t* client, int index, vec3_t pos) {
 	}
 	return index;
 }
-#endif
+
 
 /*
 ==============
@@ -3935,7 +3487,6 @@ JUHOX: TautRopePos
 called with index=-1 to init
 ==============
 */
-#if GRAPPLE_ROPE
 static void TautRopePos(gclient_t* client, int index, vec3_t pos) {
 	static float distCovered;
 	static float totalDist;
@@ -3976,14 +3527,13 @@ static void TautRopePos(gclient_t* client, int index, vec3_t pos) {
 	}
 	VectorMA(startPos, distCovered, dir, pos);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: CreateGrappleRope
 ==============
 */
-#if GRAPPLE_ROPE
 static void CreateGrappleRope(gentity_t* ent) {
 	gclient_t* client;
 	int i;
@@ -4054,7 +3604,6 @@ static void CreateGrappleRope(gentity_t* ent) {
 			client->ropeEntities[i]->s.otherEntityNum = client->hook->s.number;
 		}
 		else if (client->ropeEntities[i - 1]) {
-			//client->ropeEntities[i - 1]->s.otherEntityNum2 = client->ropeEntities[i]->s.number;
 			client->ropeEntities[i]->s.otherEntityNum = client->ropeEntities[i - 1]->s.number;
 		}
 		else {
@@ -4069,14 +3618,13 @@ static void CreateGrappleRope(gentity_t* ent) {
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: InsertRopeElement
 ==============
 */
-#if GRAPPLE_ROPE
 static qboolean InsertRopeElement(gclient_t* client, int index, const vec3_t pos) {
 	int i;
 	vec3_t predPos;
@@ -4118,14 +3666,13 @@ static qboolean InsertRopeElement(gclient_t* client, int index, const vec3_t pos
 	VectorCopy(predVel, re->velocity);
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ThinkGrapple
 ==============
 */
-#if GRAPPLE_ROPE
 static void ThinkGrapple(gentity_t* ent, int msec) {
 	float dt;
 	gclient_t* client;
@@ -4156,16 +3703,19 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 		if (!client->hook) return;
 
 		if (client->hook->s.eType != ET_GRAPPLE) {
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_windoff;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_windoff;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_windoff);
 		}
 		else if (
 			VectorLengthSquared(client->ps.velocity) > 160*160 &&
 			(client->ps.pm_flags & PMF_TIME_KNOCKBACK) == 0
 		) {
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_pulling );
 		}
 		else {
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_silent );
 		}
 		return;
 	}
@@ -4180,7 +3730,8 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 	}
 
 	client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
-	client->ps.stats[STAT_GRAPPLE_STATE] = GST_unused;
+	//client->ps.stats[STAT_GRAPPLE_STATE] = GST_unused;
+	SET_STAT_GRAPPLESTATE ( &client->ps, GST_unused);
 	if (!client->hook) return;
 
 	switch (g_grapple.integer) {
@@ -4215,10 +3766,12 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 			VectorLengthSquared(client->ps.velocity) > 160*160 &&
 			(client->ps.pm_flags & PMF_TIME_KNOCKBACK) == 0
 		) {
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_pulling);
 		}
 		else {
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_silent);
 		}
 		VectorCopy(client->hook->r.currentOrigin, client->ps.grapplePoint);
 		client->ps.pm_flags |= PMF_GRAPPLE_PULL;
@@ -4247,16 +3800,6 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 		}
 	}
 
-	/*
-	{
-		int m;
-
-		m = client->numRopeElements - 1;
-		if (m < n) m = n;
-		VectorCopy(client->ropeElements[m].pos, pullpoint);
-	}
-	*/
-
 	VectorCopy(client->ropeElements[client->numRopeElements-1].pos, start);
 	VectorSubtract(client->ps.origin, start, dir);
 	dist = VectorNormalize(dir);
@@ -4267,41 +3810,11 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 
 		isRopeTaut = IsRopeTaut(ent, client->ropeIsTaut);
 		client->ropeIsTaut = isRopeTaut;
-		/*
-		if (client->pers.cmd.buttons & BUTTON_GESTURE) {	// JUHOX DEBUG
-			// fixed
-			vec3_t v;
-			float s;
 
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_fixed;
-			if (client->numRopeElements > 0) {
-				VectorCopy(client->ropeElements[client->numRopeElements-1].pos, pullpoint);
-			}
-			VectorCopy(pullpoint, client->ps.grapplePoint);
-			client->ps.pm_flags |= PMF_GRAPPLE_PULL;
-
-			VectorCopy(client->ps.velocity, v);
-			s = VectorNormalize(v);
-			for (i = 1; i < client->numRopeElements; i++) {
-				ropeElement_t* re;
-				vec3_t vel;
-				float speed;
-				float oldspeed;
-				float totalspeed;
-
-				re = &client->ropeElements[i];
-				speed = (s * i) / client->numRopeElements;
-				oldspeed = VectorLength(re->velocity);
-				totalspeed = speed + oldspeed;
-				VectorScale(v, speed * speed / totalspeed, vel);
-				VectorMA(vel, oldspeed / totalspeed, re->velocity, re->velocity);
-			}
-			goto CreateRope;
-		}
-		else*/
 		if (client->lastTimeWinded < level.time - 250) {
 			// blocked
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_blocked;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_blocked;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_blocked);
 			VectorCopy(pullpoint, client->ps.grapplePoint);
 			client->ps.pm_flags |= PMF_GRAPPLE_PULL;
 
@@ -4319,13 +3832,15 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 		}
 		else if (isRopeTaut) {
 			// pulling
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_pulling);
 			VectorCopy(pullpoint, client->ps.grapplePoint);
 			client->ps.pm_flags |= PMF_GRAPPLE_PULL;
 		}
 		else {
 			// winding
-			client->ps.stats[STAT_GRAPPLE_STATE] = GST_rewind;
+			//client->ps.stats[STAT_GRAPPLE_STATE] = GST_rewind;
+			SET_STAT_GRAPPLESTATE ( &client->ps, GST_rewind);
 		}
 
 		{
@@ -4335,9 +3850,6 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 				vec3_t dest;
 				vec3_t v;
 				float f;
-				//float speed;
-				//float oldspeed;
-				//float totalspeed;
 
 				re = &client->ropeElements[i];
 				TautRopePos(client, i, dest);
@@ -4345,18 +3857,7 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 				VectorScale(v, 16, v);
 				f = (float)i / client->numRopeElements;
 				VectorMA(v, Square(f), client->ps.velocity, v);
-				//speed = VectorNormalize(v);
 
-				/*
-				oldspeed = VectorLength(re->velocity);
-				totalspeed = speed + oldspeed;
-				VectorScale(v, speed * speed / totalspeed, v);
-				VectorMA(v, oldspeed / totalspeed, re->velocity, re->velocity);
-				*/
-				/*
-				VectorAdd(re->velocity, v, v);
-				VectorScale(v, 0.5, re->velocity);
-				*/
 				VectorCopy(v, re->velocity);
 			}
 		}
@@ -4368,17 +3869,15 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 			if (trace.startsolid || trace.allsolid || trace.fraction < 1) {
 				VectorCopy(pullpoint, client->ps.grapplePoint);
 				client->ps.pm_flags |= PMF_GRAPPLE_PULL;
-				client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+				//client->ps.stats[STAT_GRAPPLE_STATE] = GST_pulling;
+				SET_STAT_GRAPPLESTATE ( &client->ps, GST_pulling);
 				goto CreateRope;
 			}
 
 			client->lastTimeWinded = level.time;
 			client->numRopeElements--;
 			if (client->numRopeElements <= 0) {
-				/*
-				Weapon_HookFree(client->hook);
-				return;
-				*/
+
 				goto CreateRope;
 			}
 
@@ -4388,33 +3887,11 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 	}
 	else {
 		// hook is flying
-
-		client->ps.stats[STAT_GRAPPLE_STATE] = GST_windoff;
+		//client->ps.stats[STAT_GRAPPLE_STATE] = GST_windoff;
+		SET_STAT_GRAPPLESTATE ( &client->ps, GST_windoff);
 		client->ropeIsTaut = qfalse;
 		client->lastTimeWinded = level.time;
-		/*
-		if (dist > 2 * ROPE_ELEMENT_SIZE) {
-			int n;
 
-			n = (int) ((dist - ROPE_ELEMENT_SIZE) / ROPE_ELEMENT_SIZE);
-			if (client->numRopeElements + n >= MAX_ROPE_ELEMENTS) {
-				Weapon_HookFree(client->hook);
-				return;
-			}
-
-			for (i = 0; i < n; i++) {
-				vec3_t pos;
-
-				VectorMA(start, (i+1) * ROPE_ELEMENT_SIZE, dir, pos);
-				VectorCopy(pos, client->ropeElements[client->numRopeElements].pos);
-				VectorCopy(
-					client->ropeElements[client->numRopeElements-1].velocity,
-					client->ropeElements[client->numRopeElements].velocity
-				);
-				client->numRopeElements++;
-			}
-		}
-		*/
 		{
 			vec3_t prevPos;
 
@@ -4453,7 +3930,6 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 				}
 				VectorCopy(destPos, prevPos);
 			}
-
 		}
 	}
 
@@ -4468,7 +3944,6 @@ static void ThinkGrapple(gentity_t* ent, int msec) {
 
 	CreateGrappleRope(ent);
 }
-#endif
 
 void BotTestSolid(vec3_t origin);
 
@@ -4538,11 +4013,9 @@ void ClientThink_real( gentity_t *ent ) {
 	// sanity check the command time to prevent speedup cheating
 	if ( ucmd->serverTime > level.time + 200 ) {
 		ucmd->serverTime = level.time + 200;
-//		G_Printf("serverTime <<<<<\n" );
 	}
 	if ( ucmd->serverTime < level.time - 1000 ) {
 		ucmd->serverTime = level.time - 1000;
-//		G_Printf("serverTime >>>>>\n" );
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -4564,8 +4037,6 @@ void ClientThink_real( gentity_t *ent ) {
 
 	if ( pmove_fixed.integer || client->pers.pmoveFixed ) {
 		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
-		//if (ucmd->serverTime - client->ps.commandTime <= 0)
-		//	return;
 	}
 
 	//
@@ -4605,37 +4076,35 @@ void ClientThink_real( gentity_t *ent ) {
 
 	if (level.time >= ent->s.time) ent->s.time = 0;	// JUHOX
 
-#if 1	// JUHOX: set "player is fighting" flag
+	// JUHOX: set "player is fighting" flag
 	ent->s.modelindex &= ~PFMI_FIGHTING;
 	if (IsPlayerInvolvedInFighting(ent->s.number)) {
 		ent->s.modelindex |= PFMI_FIGHTING;
 	}
-#endif
 
 	if ( client->noclip ) {
 		client->ps.pm_type = PM_NOCLIP;
 	} else if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		client->ps.pm_type = PM_DEAD;
-#if 1	// JUHOX: let dead players spectate
+        // JUHOX: let dead players spectate
 		if (
 			level.time >= client->respawnTime &&
-#if MONSTER_MODE
+
 			(
 				// don't spectate in STU when the respawn delay is over
 				level.time < client->respawnTime + client->respawnDelay ||
 				g_gametype.integer < GT_STU
 			) &&
-#endif
+
 			client->corpseProduced &&
 			!(ent->r.svFlags & SVF_BOT)
 		) {
 			client->ps.pm_type = PM_SPECTATOR;
 		}
-#endif
-#if 1	// JUHOX: let mission leaders in safety mode spectate
+
+	// JUHOX: let mission leaders in safety mode spectate
 	} else if (client->tssSafetyMode) {
 		client->ps.pm_type = PM_SPECTATOR;
-#endif
 	} else {
 		client->ps.pm_type = PM_NORMAL;
 	}
@@ -4645,19 +4114,12 @@ void ClientThink_real( gentity_t *ent ) {
 	// set speed
 	client->ps.speed = g_speed.value;
 
-#if 0	// JUHOX: no normal haste
-	if ( client->ps.powerups[PW_HASTE] ) {
-		client->ps.speed *= 1.3;
-	}
-#endif
-
-#if 1	// JUHOX: paralysation
+	// JUHOX: paralysation
 	if (level.time < client->paralysationTime) {
 		client->ps.speed = 0.25 * client->ps.speed;
 	}
-#endif
 
-#if 1	// JUHOX: gauntlet attack speed up
+	// JUHOX: gauntlet attack speed up
 	if (client->ps.stats[STAT_HEALTH] > 0 && client->ps.weapon == WP_GAUNTLET) {
 		if (
 			(ucmd->buttons & BUTTON_ATTACK) &&
@@ -4668,28 +4130,10 @@ void ClientThink_real( gentity_t *ent ) {
 			client->ps.speed = client->ps.speed * 1.2;
 		}
 	}
-#endif
+
 	CheckPlayerDischarge(ent);	// JUHOX
 
-	// Let go of the hook if we aren't firing
-#if 0	// JUHOX: grapple release bug fix
-	if ( client->ps.weapon == WP_GRAPPLING_HOOK &&
-		client->hook && !( ucmd->buttons & BUTTON_ATTACK ) ) {
-		Weapon_HookFree(client->hook);
-	}
-#else
-	/* -JUHOX: grapple release bug fix
-	if (
-		client->hook &&
-		(client->ps.weapon != WP_GRAPPLING_HOOK || !(ucmd->buttons & BUTTON_ATTACK))
-	) {
-		Weapon_HookFree(client->hook);
-	}
-	*/
-#endif
-#if GRAPPLE_ROPE
 	ThinkGrapple(ent, msec);
-#endif
 
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
@@ -4713,16 +4157,15 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( pm.ps->pm_type == PM_DEAD ) {
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
-#if 1	// JUHOX: let mission leaders in safety mode spectate
+	// JUHOX: let mission leaders in safety mode spectate
 	else if (client->tssSafetyMode) {
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
-#endif
-#if 1	// JUHOX: unspawned player don't touch other players
+
+	// JUHOX: unspawned player don't touch other players
 	else if (pm.ps->pm_type == PM_SPECTATOR) {
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
-#endif
 	else if ( ent->r.svFlags & SVF_BOT ) {
 		pm.tracemask = MASK_PLAYERSOLID | CONTENTS_BOTCLIP;
 	}
@@ -4733,36 +4176,28 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
 	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
-#if GRAPPLE_ROPE	// JUHOX: set grapple mode
 	pm.hookMode = g_grapple.integer;
-#endif
 
-#if 0	// JUHOX: always use fixed pmove
-	pm.pmove_fixed = pmove_fixed.integer | client->pers.pmoveFixed;
-	pm.pmove_msec = pmove_msec.integer;
-#else
 	pm.pmove_fixed = qtrue;
 	pm.pmove_msec = 10000;
-#endif
 
 	VectorCopy( client->ps.origin, client->oldOrigin );
 
 	VectorCopy(ent->s.origin2, pm.target);	// JUHOX: origin2 set in SetTargetPos()
 
-#if MONSTER_MODE	// JUHOX: set player scale factor for normal player
+	// JUHOX: set player scale factor for normal player
 	pm.scale = 1;
-#endif
 
 	pm.gametype = g_gametype.integer;	// JUHOX
 
 		Pmove (&pm);
 
-#if 1	// JUHOX: restore strength if stamina not used
+	// JUHOX: restore strength if stamina not used
 	if (!g_stamina.integer) {
 		client->ps.stats[STAT_STRENGTH] = MAX_STRENGTH_VALUE;
 	}
-#endif
-#if 1	// JUHOX: check weapon usage
+
+	// JUHOX: check weapon usage
 	if (client->ps.weaponstate >= WEAPON_FIRING) {
 		client->weaponUsageTime = level.time;
 
@@ -4801,25 +4236,23 @@ void ClientThink_real( gentity_t *ent ) {
 			}
 		}
 	}
-#endif
-#if	1	// JUHOX: check grapple usage
-	if (
-		client->hook
-#if GRAPPLE_ROPE
-		&& client->ps.stats[STAT_GRAPPLE_STATE] != GST_silent
-#endif
-	) {
+
+	// JUHOX: check grapple usage
+	//if (client->hook && client->ps.stats[STAT_GRAPPLE_STATE] != GST_silent ) {
+	if ( client->hook && GET_STAT_GRAPPLESTATE (&client->ps) != GST_silent ) {
 		client->grappleUsageTime = level.time;
 	}
-#endif
-#if 1	// JUHOX: switch cloaking
+
+	// JUHOX: switch cloaking
 	if (
 		g_cloakingDevice.integer &&
 		client->weaponUsageTime < level.time - 3000 &&
 		client->grappleUsageTime < level.time - 3000
 	) {
 		if (!client->ps.powerups[PW_INVIS]) {
-			client->ps.stats[STAT_EFFECT] = PE_fade_out;
+			//client->ps.stats[STAT_EFFECT] = PE_fade_out;
+			SET_STAT_EFFECT(&client->ps, PE_fade_out);
+
 			client->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 		}
 		client->ps.powerups[PW_INVIS] = level.time + 1000000000;
@@ -4828,7 +4261,8 @@ void ClientThink_real( gentity_t *ent ) {
 		if (client->ps.powerups[PW_INVIS]) {
 			int endTime;
 
-			client->ps.stats[STAT_EFFECT] = PE_fade_in;
+			//client->ps.stats[STAT_EFFECT] = PE_fade_in;
+			SET_STAT_EFFECT(&client->ps, PE_fade_in);
 			endTime = level.time + SPAWNHULL_TIME;
 			if (client->ps.powerups[PW_EFFECT_TIME] > level.time) {
 				int startTime;
@@ -4843,9 +4277,8 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.powerups[PW_INVIS] = 0;
 		client->ps.powerups[PW_BATTLESUIT] = 0;
 	}
-#endif
 
-#if 1	// JUHOX: set weapon target
+	// JUHOX: set weapon target
 	switch (client->ps.weapon) {
 	case WP_GAUNTLET:
 		GetGauntletTarget(ent);
@@ -4856,16 +4289,13 @@ void ClientThink_real( gentity_t *ent ) {
 			client->ps.stats[STAT_HEALTH] <= 0
 		) {
 			client->ps.stats[STAT_TARGET] = -1;
-			//ent->s.otherEntityNum2 = client->ps.stats[STAT_TARGET];
 		}
 		// target searching done when weapon fires in Weapon_LightningFire()
 		break;
 	default:
 		client->ps.stats[STAT_TARGET] = -1;
-		//ent->s.otherEntityNum2 = ENTITYNUM_NONE;
 		break;
 	}
-#endif
 
 	// save results of pmove
 	if ( ent->client->ps.eventSequence != oldEventSequence ) {
@@ -4880,7 +4310,7 @@ void ClientThink_real( gentity_t *ent ) {
 	SendPendingPredictableEvents( &ent->client->ps );
 
 	if ( !( ent->client->ps.eFlags & EF_FIRING ) ) {
-		client->fireHeld = qfalse;		// for grapple
+		client->fireHeld = qfalse; // for grapple
 	}
 
 	// use the snapped origin for linking so it matches client predicted versions
@@ -4897,16 +4327,14 @@ void ClientThink_real( gentity_t *ent ) {
 	CauseChargeDamage(ent);	// JUHOX
 
 	// link entity now, after any personal teleporters have been used
-#if 0	// JUHOX: spectators don't get linked
-	trap_LinkEntity (ent);
-#else
+	// JUHOX: spectators don't get linked
 	if (client->ps.pm_type != PM_SPECTATOR) {
 		trap_LinkEntity(ent);
 	}
 	else {
 		trap_UnlinkEntity(ent);
 	}
-#endif
+
 	if ( !ent->client->noclip ) {
 		G_TouchTriggers( ent );
 	}
@@ -4930,7 +4358,7 @@ void ClientThink_real( gentity_t *ent ) {
 	client->buttons = ucmd->buttons;
 	client->latched_buttons |= client->buttons & ~client->oldbuttons;
 
-#if MONSTER_MODE	// JUHOX: compute artefact detector value
+	// JUHOX: compute artefact detector value
 	if (
 		g_gametype.integer == GT_STU &&
 		client->ps.stats[STAT_HEALTH] > 0 &&
@@ -4949,13 +4377,12 @@ void ClientThink_real( gentity_t *ent ) {
 	else {
 		client->ps.stats[STAT_DETECTOR] = -1;
 	}
-#endif
 
 	// check for respawning
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-#if 1	// JUHOX: replace STAT_DEAD_YAW
+        // JUHOX: replace STAT_DEAD_YAW
 		client->ps.viewangles[YAW] = client->deadYaw;
-#endif
+
 #if !RESPAWN_DELAY	// JUHOX: check for automatic respawn
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime ) {
@@ -5023,11 +4450,10 @@ void ClientThink_real( gentity_t *ent ) {
 
 	ClientRefreshAmmo(ent, msec);	// JUHOX
 
-#if 1	// JUHOX: randomize pant phase, so players don't breathe in sync
+	// JUHOX: randomize pant phase, so players don't breathe in sync
 	if (client->ps.stats[STAT_STRENGTH] > 2.5*LOW_STRENGTH_VALUE) {
 		client->ps.stats[STAT_PANT_PHASE] = rand();
 	}
-#endif
 
 	// JUHOX: handle pending view toggles
 	if (client->viewMode < 0) {
@@ -5153,25 +4579,16 @@ void ClientEndFrame( gentity_t *ent ) {
 	pers = &ent->client->pers;
 
 	// turn off any expired powerups
-	for ( i = 0 ; i < /*MAX_POWERUPS*/PW_NUM_POWERUPS ; i++ ) {	// JUHOX
+	for ( i = 0 ; i < PW_NUM_POWERUPS ; i++ ) {	// JUHOX
 		if ( ent->client->ps.powerups[ i ] < level.time ) {
 			ent->client->ps.powerups[ i ] = 0;
 		}
 	}
-#if 1	// JUHOX: turn off expired PW_EFFECT_TIME
+	// JUHOX: turn off expired PW_EFFECT_TIME
 	if (ent->client->ps.powerups[PW_EFFECT_TIME] < level.time) {
 		ent->client->ps.powerups[PW_EFFECT_TIME] = 0;
 	}
-#endif
 
-
-	// save network bandwidth
-#if 0
-	if ( !g_synchronousClients->integer && ent->client->ps.pm_type == PM_NORMAL ) {
-		// FIXME: this must change eventually for non-sync demo recording
-		VectorClear( ent->client->ps.viewangles );
-	}
-#endif
 
 	//
 	// If the end of unit layout is displayed, don't give
@@ -5206,10 +4623,4 @@ void ClientEndFrame( gentity_t *ent ) {
 		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qtrue );
 	}
 	SendPendingPredictableEvents( &ent->client->ps );
-
-	// set the bit for the reachability area the client is currently in
-//	i = trap_AAS_PointReachabilityAreaIndex( ent->client->ps.origin );
-//	ent->client->areabits[i >> 3] |= 1 << (i & 7);
 }
-
-

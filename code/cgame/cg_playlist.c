@@ -4,9 +4,6 @@
 
 #include "cg_local.h"
 
-
-
-#if PLAYLIST
 typedef struct {
 	unsigned long id;
 	unsigned long size;
@@ -28,7 +25,6 @@ typedef struct {
 } playListEntry_t;
 
 
-
 #define BUFFER_SIZE 4096
 
 static fileHandle_t file;
@@ -43,7 +39,6 @@ static int numEntries;
 static int currentEntry;
 static int stopEntryTime;
 static int startEntryTime;
-#endif
 
 
 
@@ -54,7 +49,6 @@ ReadByte
 return -1 for EOF
 ===============
 */
-#if PLAYLIST
 static int ReadByte(void) {
 	if (bufPos >= bufLen) {
 		if (fileSize <= 0) return -1;
@@ -68,25 +62,22 @@ static int ReadByte(void) {
 
 	return buffer[bufPos++];
 }
-#endif
 
 /*
 ===============
 BytesLeft
 ===============
 */
-#if PLAYLIST
 static int BytesLeft(void) {
 	return fileSize + bufLen - bufPos;
 }
-#endif
+
 
 /*
 ===============
 ReadDWORD
 ===============
 */
-#if PLAYLIST
 static qboolean ReadDWORD(void* dataBuf) {
 	unsigned long dword;
 
@@ -100,14 +91,13 @@ static qboolean ReadDWORD(void* dataBuf) {
 	if (dataBuf) *((unsigned long*)dataBuf) = dword;
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 OpenWaveFile
 ===============
 */
-#if PLAYLIST
 static qboolean OpenWaveFile(const char* name) {
 	unsigned long id;
 
@@ -116,7 +106,7 @@ static qboolean OpenWaveFile(const char* name) {
 		CG_Printf("^3Couldn't open '%s'\n", name);
 		return qfalse;
 	}
-	
+
 	if (fileSize < 44) {
 		BadFile:
 		CG_Printf("^3Unknown file format: '%s'\n", name);
@@ -136,27 +126,25 @@ static qboolean OpenWaveFile(const char* name) {
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 SkipToEndOfFile
 ===============
 */
-#if PLAYLIST
 static void SkipToEndOfFile(void) {
 	fileSize = 0;
 	bufPos = 0;
 	bufLen = 0;
 }
-#endif
+
 
 /*
 ===============
 ReadChunkHeader
 ===============
 */
-#if PLAYLIST
 static qboolean ReadChunkHeader(chunkHeader_t* header) {
 	if (!ReadDWORD(&header->id)) {
 		UnexpectedEOF:
@@ -167,7 +155,7 @@ static qboolean ReadChunkHeader(chunkHeader_t* header) {
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
@@ -176,7 +164,6 @@ ReadChunkData
 returns the size of the data read into the buffer
 ===============
 */
-#if PLAYLIST
 static int ReadChunkData(int chunkSize, void* buffer, int bufferSize) {
 	unsigned char* bytes;
 	int count;
@@ -203,7 +190,7 @@ static int ReadChunkData(int chunkSize, void* buffer, int bufferSize) {
 	}
 	return count;
 }
-#endif
+
 
 /*
 ===============
@@ -213,7 +200,6 @@ returns the duration of the music file in milliseconds
 returns -1 in case of an error
 ===============
 */
-#if PLAYLIST
 static long MusicDuration(const char* fileName) {
 	long duration;
 	float bytesPerMillisecond;
@@ -225,10 +211,10 @@ static long MusicDuration(const char* fileName) {
 
 	bytesPerMillisecond = 0;
 	numBytes = 0;
-	
+
 	while (numBytes < 1 || bytesPerMillisecond < 1) {
 		chunkHeader_t header;
-		
+
 		if (!ReadChunkHeader(&header)) break;
 
 		switch (header.id) {
@@ -236,7 +222,7 @@ static long MusicDuration(const char* fileName) {
 			{
 				formatChunk_t format;
 				int size;
-				
+
 				size = ReadChunkData(header.size, &format, sizeof(format));
 				if (size < sizeof(format)) {
 					CG_Printf("^3Illegal format: '%s'\n", fileName);
@@ -263,14 +249,13 @@ static long MusicDuration(const char* fileName) {
 	if (file) trap_FS_FCloseFile(file);
 	return duration;
 }
-#endif
+
 
 /*
 ===============
 CG_InitPlayList
 ===============
 */
-#if PLAYLIST
 void CG_InitPlayList(void) {
 	memset(&playList, 0, sizeof(playList));
 	numEntries = 0;
@@ -279,14 +264,13 @@ void CG_InitPlayList(void) {
 	startEntryTime = -1;
 	running = qfalse;
 }
-#endif
+
 
 /*
 ===============
 CG_ParsePlayList
 ===============
 */
-#if PLAYLIST
 void CG_ParsePlayList(void) {
 	int i;
 
@@ -298,10 +282,10 @@ void CG_ParsePlayList(void) {
 		int repetition;
 		long introDuration;
 		long mainDuration;
-		
+
 		entry = &playList[i];
 		trap_Cvar_VariableStringBuffer(va("playlist%02d", i), info, sizeof(info));
-		
+
 		if (!info[0]) break;
 
 		Q_strncpyz(entry->introPart, Info_ValueForKey(info, "intro"), sizeof(entry->introPart));
@@ -348,28 +332,25 @@ void CG_ParsePlayList(void) {
 
 	CG_Printf("%d entries in playlist\n", numEntries);
 }
-#endif
+
 
 /*
 ===============
 CG_StopPlayList
 ===============
 */
-#if PLAYLIST
 void CG_StopPlayList(void) {
 	trap_S_StopBackgroundTrack();
 	stopEntryTime = -1;
 	startEntryTime = -1;
 	running = qfalse;
 }
-#endif
 
 /*
 ===============
 CG_ContinuePlayList
 ===============
 */
-#if PLAYLIST
 void CG_ContinuePlayList(void) {
 	if (running) return;
 
@@ -378,27 +359,23 @@ void CG_ContinuePlayList(void) {
 	startEntryTime = numEntries > 0? 0 : -1;
 	running = qtrue;
 }
-#endif
 
 /*
 ===============
 CG_ResetPlayList
 ===============
 */
-#if PLAYLIST
 void CG_ResetPlayList(void) {
 	running = qfalse;
 	currentEntry = 0;
 	CG_ContinuePlayList();
 }
-#endif
 
 /*
 ===============
 CG_RunPlayListFrame
 ===============
 */
-#if PLAYLIST
 void CG_RunPlayListFrame(void) {
 	static int oldMusicMode = -1;
 	int currentTime;
@@ -441,4 +418,3 @@ void CG_RunPlayListFrame(void) {
 		}
 	}
 }
-#endif

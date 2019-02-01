@@ -30,9 +30,8 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 		ent->classname = "info_player_initial";
 	}
 
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_info_player_deathmatch;
-#endif
 }
 
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
@@ -47,9 +46,8 @@ void SP_info_player_start(gentity_t *ent) {
 The intermission will be viewed from this point.  Target an info_notnull for the view direction.
 */
 void SP_info_player_intermission( gentity_t *ent ) {
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_info_player_intermission;
-#endif
 }
 
 
@@ -80,20 +78,11 @@ qboolean SpotWouldTelefrag( gentity_t *spot ) {
 
 	for (i=0 ; i<num ; i++) {
 		hit = &g_entities[touch[i]];
-		//if ( hit->client && hit->client->ps.stats[STAT_HEALTH] > 0 ) {
 		if ( hit->client) {
 			if (hit->client->ps.stats[STAT_HEALTH] <= 0) continue;	// JUHOX
 			if (hit->client->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) continue;	// JUHOX
 			return qtrue;
 		}
-		// -JUHOX: don't telefrag monsters
-#if 0//MONSTER_MODE
-		if (hit->s.eType == ET_PLAYER && hit->s.clientNum >= CLIENTNUM_MONSTERS) {
-			if (hit->health <= 0) continue;
-			return qtrue;
-		}
-#endif
-
 	}
 
 	return qfalse;
@@ -128,7 +117,6 @@ qboolean PositionWouldTelefrag(const vec3_t position, const vec3_t pmins, const 
 	}
 	return qfalse;
 }
-
 
 
 /*
@@ -312,7 +300,7 @@ gentity_t* SelectAppropriateSpawnPoint(team_t team, const vec3_t avoidPoint, qbo
 	gentity_t* spot;
 
 	spot = NULL;
-#if ESCAPE_MODE
+
 	if (g_gametype.integer == GT_EFH) {
 		int i;
 		vec3_t spaceMins;
@@ -386,7 +374,7 @@ gentity_t* SelectAppropriateSpawnPoint(team_t team, const vec3_t avoidPoint, qbo
 		avoidPoint = NULL;
 	}
 	else
-#endif
+
 	if (g_gametype.integer >= GT_TEAM && g_gametype.integer <= GT_CTF) {
 		// team games
 		switch (team) {
@@ -513,26 +501,7 @@ use normal spawn selection.
 ============
 */
 gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
-#if 0	// JUHOX: use new spawn logic
-	gentity_t	*spot;
-
-	spot = NULL;
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if ( spot->spawnflags & 1 ) {
-			break;
-		}
-	}
-
-	if ( !spot || SpotWouldTelefrag( spot ) ) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
-	}
-
-	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (spot->s.angles, angles);
-
-	return spot;
-#else
+    // JUHOX: use new spawn logic
 	gentity_t* spot;
 
 	spot = SelectAppropriateSpawnPoint(TEAM_FREE, NULL, qtrue);
@@ -542,7 +511,6 @@ gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
 		VectorCopy(spot->s.angles, angles);
 	}
 	return spot;
-#endif
 }
 
 /*
@@ -594,16 +562,7 @@ After sitting around for five seconds, fall into the ground and dissapear
 =============
 */
 void BodySink( gentity_t *ent ) {
-#if 0	// JUHOX: new, predictable method of body sinking
-	if ( level.time - ent->timestamp > 6500 ) {
-		// the body ques are never actually freed, they are just unlinked
-		trap_UnlinkEntity( ent );
-		ent->physicsObject = qfalse;
-		return;
-	}
-	ent->nextthink = level.time + 100;
-	ent->s.pos.trBase[2] -= 1;
-#else
+    // JUHOX: new, predictable method of body sinking
 	int sinktime;
 
 	if (ent->s.pos.trType == TR_LINEAR_STOP) {
@@ -613,7 +572,6 @@ void BodySink( gentity_t *ent ) {
 	}
 
 	sinktime = 3000;
-#if MONSTER_MODE
 	switch (ent->s.clientNum) {
 	case CLIENTNUM_MONSTER_GUARD:
 		sinktime *= MONSTER_GUARD_SCALE;
@@ -622,7 +580,7 @@ void BodySink( gentity_t *ent ) {
 		sinktime *= MONSTER_TITAN_SCALE;
 		break;
 	}
-#endif
+
 	ent->nextthink = level.time + sinktime;
 
 	ent->s.pos.trType = TR_LINEAR_STOP;
@@ -630,7 +588,6 @@ void BodySink( gentity_t *ent ) {
 	ent->s.pos.trDuration = sinktime;
 	VectorSet(ent->s.pos.trDelta, 0, 0, -10);
 	trap_LinkEntity(ent);
-#endif
 }
 
 /*
@@ -731,9 +688,7 @@ void CopyToBodyQue( gentity_t *ent ) {
 		body->takedamage = qtrue;
 	}
 
-#if ESCAPE_MODE
 	body->worldSegment = ent->worldSegment;	// JUHOX
-#endif
 
 	VectorCopy ( body->s.pos.trBase, body->r.currentOrigin );
 	trap_LinkEntity (body);
@@ -760,11 +715,11 @@ void ForceRespawn(gentity_t* ent) {
 			ent->client->respawnTime = level.time + 1700;
 		}
 	}
-#if MONSTER_MODE
+
 	else if (g_gametype.integer >= GT_STU) {
 		return;
 	}
-#endif
+
 	else if (ent->client->ps.stats[STAT_HEALTH] < ent->client->ps.stats[STAT_MAX_HEALTH] + 25) {
 		ent->client->ps.stats[STAT_HEALTH] = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
 		ent->health = ent->client->ps.stats[STAT_HEALTH];
@@ -790,13 +745,8 @@ void SetClientViewAngle( gentity_t *ent, vec3_t angle ) {
 	}
 	// JUHOX BUGFIX(?): view angles should be put into entityState_t.apos.trBase
 	// entityState_t.angles is now used to store movementDir (see BG_PlayerStateToEntityState())
-#if 0
-	VectorCopy( angle, ent->s.angles );
-	VectorCopy (ent->s.angles, ent->client->ps.viewangles);
-#else
 	VectorCopy(angle, ent->s.apos.trBase);
 	VectorCopy(angle, ent->client->ps.viewangles);
-#endif
 }
 
 /*
@@ -809,7 +759,7 @@ void respawn( gentity_t *ent ) {
 
 	ClientSpawn(ent);
 	if (ent->client->ps.stats[STAT_HEALTH] <= 0) return;	// JUHOX: spawning failed
-	if (level.meeting) return;	// JUHOX: no teleportation effect during meeting
+	if (level.meeting) return;	                            // JUHOX: no teleportation effect during meeting
 
 	// add a teleportation effect
 	tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
@@ -824,8 +774,8 @@ Returns number of players on a team
 ================
 */
 team_t TeamCount( int ignoreClientNum, int team ) {
-	int		i;
-	int		count = 0;
+	int	i;
+	int	count = 0;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( i == ignoreClientNum ) {
@@ -850,7 +800,7 @@ Returns the client number of the team leader
 ================
 */
 int TeamLeader( int team ) {
-	int		i;
+	int	i;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
@@ -873,11 +823,10 @@ PickTeam
 ================
 */
 team_t PickTeam( int ignoreClientNum ) {
-	int		counts[TEAM_NUM_TEAMS];
+	int	counts[TEAM_NUM_TEAMS];
 
-#if MONSTER_MODE	// JUHOX: in STU always pick the red team
+	// JUHOX: in STU always pick the red team
 	if (g_gametype.integer >= GT_STU) return TEAM_RED;
-#endif
 
 	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
 	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
@@ -894,26 +843,6 @@ team_t PickTeam( int ignoreClientNum ) {
 	}
 	return TEAM_BLUE;
 }
-
-/*
-===========
-ForceClientSkin
-
-Forces a client's skin (for teamplay)
-===========
-*/
-/*
-static void ForceClientSkin( gclient_t *client, char *model, const char *skin ) {
-	char *p;
-
-	if ((p = Q_strrchr(model, '/')) != 0) {
-		*p = 0;
-	}
-
-	Q_strcat(model, MAX_QPATH, "/");
-	Q_strcat(model, MAX_QPATH, skin);
-}
-*/
 
 
 /*
@@ -1073,12 +1002,8 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.maxHealth = 100;
 	}
 
-#if 0	// JUHOX: set max. health
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
-#else
 	client->ps.stats[STAT_MAX_HEALTH] = g_baseHealth.value * (client->pers.maxHealth / 100.0);
 	if (client->ps.stats[STAT_MAX_HEALTH] < 1) client->ps.stats[STAT_MAX_HEALTH] = 1;
-#endif
 
 	// set model
 	if( g_gametype.integer >= GT_TEAM ) {
@@ -1113,34 +1038,21 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.teamInfo = qfalse;
 	}
 
-	/* SLK: should use this?
-	s = Info_ValueForKey( userinfo, "cg_pmove_fixed" );
-	if ( !*s || atoi( s ) == 0 ) {
-		client->pers.pmoveFixed = qfalse;
-	}
-	else {
-		client->pers.pmoveFixed = qtrue;
-	}
-	*/
-
 	// team task (0 = none, 1 = offence, 2 = defence)
 	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
 	// team Leader (1 = leader, 0 is normal player)
 	teamLeader = client->sess.teamLeader;
 
-#if 1	// JUHOX: if a mission leader in safety mode looses his leadership, stop safety mode
+	// JUHOX: if a mission leader in safety mode looses his leadership, stop safety mode
 	if (!teamLeader && client->tssSafetyMode) {
 		client->tssSafetyMode = qfalse;
 	}
-#endif
 
-#if 1	// JUHOX: get class cloaking activation state
+	// JUHOX: get class cloaking activation state
 	client->pers.glassCloakingEnabled = atoi(Info_ValueForKey(userinfo, "cg_glassCloaking"))? qtrue : qfalse;
-#endif
 
-#if 1	// JUHOX: check whether crouching cuts the grapple rope
+	// JUHOX: check whether crouching cuts the grapple rope
 	client->pers.crouchingCutsRope = atoi(Info_ValueForKey(userinfo, "crouchCutsRope"))? qtrue : qfalse;
-#endif
 
 	// colors
 	strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
@@ -1151,18 +1063,6 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
-#if 0	// JUHOX: add some userinfo keys to be send to all clients
-	if ( ent->r.svFlags & SVF_BOT ) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, c1, c2,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses,
-			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
-	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->pers.netname, client->sess.sessionTeam, model, headModel, redTeam, blueTeam, c1, c2,
-			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
-	}
-#else
 	if ( ent->r.svFlags & SVF_BOT ) {
 		s = va(
 			"n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s"
@@ -1186,7 +1086,6 @@ void ClientUserinfoChanged( int clientNum ) {
 			client->pers.glassCloakingEnabled
 		);
 	}
-#endif
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
@@ -1217,7 +1116,6 @@ restarts.
 */
 char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		*value;
-//	char		*areabits;
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 	gentity_t	*ent;
@@ -1239,33 +1137,30 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		return "You are banned from this server.";
 	}
 
-  // we don't check password for bots and local client
-  // NOTE: local client <-> "ip" "localhost"
-  //   this means this client is not running in our current process
+    // we don't check password for bots and local client
+    // NOTE: local client <-> "ip" "localhost"
+    //       this means this client is not running in our current process
 	if ( !( ent->r.svFlags & SVF_BOT ) && (strcmp(value, "localhost") != 0)) {
-	// check for a password
-	value = Info_ValueForKey (userinfo, "password");
-	if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) &&
-		strcmp( g_password.string, value) != 0) {
-		return "Invalid password";
-	}
+        // check for a password
+        value = Info_ValueForKey (userinfo, "password");
+        if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) &&
+            strcmp( g_password.string, value) != 0) {
+            return "Invalid password";
+        }
 	}
 
 	// they can connect
 	ent->client = level.clients + clientNum;
 	client = ent->client;
 
-//	areabits = client->areabits;
-
 	memset( client, 0, sizeof(*client) );
 
 	client->pers.connected = CON_CONNECTING;
 
-#if ESCAPE_MODE	// JUHOX: set reference origin (has been cleared above)
+	// JUHOX: set reference origin (has been cleared above)
 	if (g_gametype.integer == GT_EFH) {
 		G_SetPlayerRefOrigin(&client->ps);
 	}
-#endif
 
 	// read or initialize the session data
 	if ( firstTime || level.newSession ) {
@@ -1298,11 +1193,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
-	// for statistics
-//	client->areabits = areabits;
-//	if ( !client->areabits )
-//		client->areabits = G_Alloc( (trap_AAS_PointReachabilityAreaIndex( NULL ) + 7) / 8 );
-
 	return NULL;
 }
 
@@ -1322,12 +1212,12 @@ void ClientBegin( int clientNum ) {
 	int			flags;
 
 	ent = g_entities + clientNum;
-
 	client = level.clients + clientNum;
 
 	if ( ent->r.linked ) {
 		trap_UnlinkEntity( ent );
 	}
+
 	G_InitGentity( ent );
 	ent->touch = 0;
 	ent->pain = 0;
@@ -1350,10 +1240,9 @@ void ClientBegin( int clientNum ) {
 	BG_TSS_SetPlayerInfo(&client->ps, TSSPI_navAid, qtrue);
 
 	// JUHOX: initialize first client position (JUHOX FIXME: still needed?)
-#if 1
 	VectorCopy(level.intermission_origin, client->ps.origin);
 	VectorCopy(level.intermission_angle, client->ps.viewangles);
-#endif
+
 
 	// locate ent at a spawn point
 	ClientSpawn( ent );
@@ -1361,41 +1250,27 @@ void ClientBegin( int clientNum ) {
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		// send event
 		// JUHOX: don't send teleport event for dead respawn
-#if 0
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-		tent->s.clientNum = ent->s.clientNum;
-#else
+
 		if (client->ps.stats[STAT_HEALTH] > 0 && !level.meeting) {
 			tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 			tent->s.clientNum = ent->s.clientNum;
 		}
-#endif
 
 		if ( g_gametype.integer != GT_TOURNAMENT  ) {
 			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " entered the game\n\"", client->pers.netname) );
 		}
+
 		// JUHOX FIXME: set team leader
-#if 1
-		if (
-			g_gametype.integer >= GT_TEAM
-#if ESCAPE_MODE
-			&& g_gametype.integer != GT_EFH	// no bots in EFH, so there's no need to set the teamleader
-#endif
-		) {
+        // no bots in EFH, so there's no need to set the teamleader
+		if ( g_gametype.integer >= GT_TEAM && g_gametype.integer != GT_EFH ) {
 			int teamleader;
 
 			teamleader = TeamLeader(client->sess.sessionTeam);
-			if (
-				teamleader < 0 ||
-				(
-					!(g_entities[clientNum].r.svFlags & SVF_BOT) &&
-					(g_entities[teamleader].r.svFlags & SVF_BOT)
-				)
-			) {
+			if ( teamleader < 0 || ( !(g_entities[clientNum].r.svFlags & SVF_BOT) && (g_entities[teamleader].r.svFlags & SVF_BOT) )	) {
 				SetLeader(client->sess.sessionTeam, clientNum);
 			}
 		}
-#endif
+
 	}
 	G_LogPrintf( "ClientBegin: %i\n", clientNum );
 
@@ -1416,9 +1291,7 @@ respawnLocationType_t GetRespawnLocationType(gentity_t* ent, int msec) {
 
 	if (!ent->client) return RLT_invalid;
 	if (ent->client->ps.stats[STAT_HEALTH] > 0) return RLT_invalid;
-#if MONSTER_MODE
 	if (g_gametype.integer >= GT_STU) return RLT_regular;
-#endif
 	if (g_gametype.integer < GT_TEAM) return RLT_regular;
 	if (g_respawnDelay.integer < 10) return RLT_regular;
 
@@ -1508,7 +1381,6 @@ void ClientSpawn(gentity_t *ent) {
 	gentity_t	*spawnPoint;
 	int		flags;
 	int		savedPing;
-//	char	*savedAreaBits;
 	int		accuracy_hits, accuracy_shots;
 	int		eventSequence;
 	char	userinfo[MAX_INFO_STRING];
@@ -1526,14 +1398,10 @@ void ClientSpawn(gentity_t *ent) {
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		spawnPoint = SelectSpectatorSpawnPoint (
-						spawn_origin, spawn_angles);
-#if !MONSTER_MODE	// JUHOX: don't respawn at CTF spawn points in STU
-	} else if (g_gametype.integer >= GT_CTF ) {
-#else
+		spawnPoint = SelectSpectatorSpawnPoint (spawn_origin, spawn_angles);
 	}
 	else if (g_gametype.integer >= GT_TEAM && g_gametype.integer < GT_STU) {
-#endif
+
         // JUHOX: check if a free spawn is possible
 		if (CheckFreeSpawn(ent)) {
 			spawnPoint = NULL;
@@ -1558,14 +1426,12 @@ void ClientSpawn(gentity_t *ent) {
 
 		do {
 			// the first spawn should be at a good looking spot
-#if MONSTER_MODE	// JUHOX: in STU use level.time to check for initial spawn
+            // JUHOX: in STU use level.time to check for initial spawn
 			if (g_gametype.integer >= GT_STU /*&& level.time < level.startTime + 5000*/) {
 				client->pers.initialSpawn = qtrue;
 				spawnPoint = SelectSpawnPoint(NULL, spawn_origin, spawn_angles);
 			}
-			else
-#endif
-			if ( !client->pers.initialSpawn && client->pers.localClient ) {
+			else if ( !client->pers.initialSpawn && client->pers.localClient ) {
 				client->pers.initialSpawn = qtrue;
 				spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
 			} else {
@@ -1591,7 +1457,7 @@ void ClientSpawn(gentity_t *ent) {
 
 		} while ( 1 );
 	}
-#if 1	// JUHOX: spawn at current position if spawn point would telefrag
+	// JUHOX: spawn at current position if spawn point would telefrag
 	if (client->sess.sessionTeam != TEAM_SPECTATOR && SpotWouldTelefrag(spawnPoint)) {
 		if (client->ps.persistant[PERS_SPAWN_COUNT] != 0) return;
 		// this is the first spawn. make it a dead spawn.
@@ -1599,7 +1465,7 @@ void ClientSpawn(gentity_t *ent) {
 		VectorCopy(level.intermission_angle, client->ps.viewangles);
 		deadSpawn = qtrue;
 	}
-#endif
+
 	SpawnPointChoosen:	// JUHOX
 	client->pers.teamState.state = TEAM_ACTIVE;
 
@@ -1612,23 +1478,23 @@ void ClientSpawn(gentity_t *ent) {
 	flags ^= EF_TELEPORT_BIT;
 
 	// clear everything but the persistant data
-
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
-//	savedAreaBits = client->areabits;
 	accuracy_hits = client->accuracy_hits;
 	accuracy_shots = client->accuracy_shots;
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
 		persistant[i] = client->ps.persistant[i];
 	}
+
 	eventSequence = client->ps.eventSequence;
-#if 1	// JUHOX: save ammo
+
+	// JUHOX: save ammo
 	for (i = 0; i < MAX_WEAPONS; i++) {
 		savedAmmo[i] = client->ps.ammo[i];
 		savedAmmoFraction[i] = client->ammoFraction[i];
 	}
-#endif
+
 	savedStrength = client->ps.stats[STAT_STRENGTH];	// JUHOX
 	memcpy(savedPowerups, &client->ps.powerups[PW_NUM_POWERUPS], (16-PW_NUM_POWERUPS) * sizeof(int));	// JUHOX
 
@@ -1645,34 +1511,34 @@ void ClientSpawn(gentity_t *ent) {
 	for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
 		client->ps.persistant[i] = persistant[i];
 	}
-#if 1	// JUHOX: restore ammo
+
+	// JUHOX: restore ammo
 	for (i = 0; i < MAX_WEAPONS; i++) {
 		client->ps.ammo[i] = savedAmmo[i];
 		client->ammoFraction[i] = savedAmmoFraction[i];
 	}
-#endif
+
 	client->ps.stats[STAT_STRENGTH] = savedStrength;	// JUHOX
 	memcpy(&client->ps.powerups[PW_NUM_POWERUPS], savedPowerups, (16-PW_NUM_POWERUPS) * sizeof(int));	// JUHOX
 
-#if 1	// JUHOX: add shield
+	// JUHOX: add shield
 	if (client->sess.sessionTeam != TEAM_SPECTATOR) {
 		client->ps.powerups[PW_SHIELD] = level.time + 400;	// JUHOX
-#if MONSTER_MODE	// JUHOX: activate shield in STU
+        // JUHOX: activate shield in STU
 		if (g_gametype.integer == GT_STU) {
 			client->ps.powerups[PW_SHIELD] = level.time + 5000;
 		}
-#endif
 	}
-#endif
+
 	client->ps.eventSequence = eventSequence;
 	// increment the spawncount so the client will detect the respawn
 	client->ps.persistant[PERS_SPAWN_COUNT]++;
 	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
-#if ESCAPE_MODE	// JUHOX: set reference origin
+	// JUHOX: set reference origin
 	if (g_gametype.integer == GT_EFH) {
 		G_SetPlayerRefOrigin(&client->ps);
 	}
-#endif
+
 
 	client->airOutTime = level.time + 12000;
 
@@ -1683,12 +1549,9 @@ void ClientSpawn(gentity_t *ent) {
 		client->pers.maxHealth = 100;
 	}
 	// clear entity values
-#if 0	// JUHOX: set max. health
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
-#else
 	client->ps.stats[STAT_MAX_HEALTH] = g_baseHealth.value * (client->pers.maxHealth / 100.0);
 	if (client->ps.stats[STAT_MAX_HEALTH] < 1) client->ps.stats[STAT_MAX_HEALTH] = 1;
-#endif
+
 	client->ps.eFlags = flags;
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
@@ -1761,18 +1624,16 @@ void ClientSpawn(gentity_t *ent) {
 		}
 	}
 
-#if 1	// JUHOX: new default equipment
+	// JUHOX: new default equipment
 	client->ps.stats[STAT_WEAPONS] =
 		(1<<WP_GAUNTLET) | (1<<WP_MACHINEGUN) | (1<<WP_SHOTGUN) |
 		(1<<WP_GRENADE_LAUNCHER) | (1<<WP_ROCKET_LAUNCHER) |
 		(1<<WP_LIGHTNING) | (1<<WP_RAILGUN) | (1<<WP_PLASMAGUN) |
 		(1<<WP_BFG);
 
-#if MONSTER_MODE
 	if (g_gametype.integer < GT_STU && g_monsterLauncher.integer) {
 		client->ps.stats[STAT_WEAPONS] |= (1<<WP_MONSTER_LAUNCHER);
 	}
-#endif
 
 	if (
 		g_weaponLimit.integer > 0 &&
@@ -1785,17 +1646,10 @@ void ClientSpawn(gentity_t *ent) {
 		}
 	}
 
-#if GRAPPLE_ROPE
-	if (
-#if ESCAPE_MODE
-		g_gametype.integer != GT_EFH &&
-#endif
-		g_grapple.integer > HM_disabled &&
-		g_grapple.integer < HM_num_modes
-	) {
+
+	if ( g_gametype.integer != GT_EFH &&g_grapple.integer > HM_disabled && g_grapple.integer < HM_num_modes ) {
 		client->ps.stats[STAT_WEAPONS] |= (1<<WP_GRAPPLING_HOOK);
 	}
-#endif
 
 	if (client->ps.persistant[PERS_SPAWN_COUNT] == 1) {
 		if (g_unlimitedAmmo.integer) {
@@ -1809,9 +1663,7 @@ void ClientSpawn(gentity_t *ent) {
 			client->ps.ammo[WP_PLASMAGUN] = -1;
 			client->ps.ammo[WP_BFG] = -1;
 			client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
-#if MONSTER_MODE
 			client->ps.ammo[WP_MONSTER_LAUNCHER] = WP_MONSTER_LAUNCHER_MAX_AMMO;
-#endif
 		}
 		else {
 			client->ps.ammo[WP_GAUNTLET] = WP_GAUNTLET_MAX_AMMO;
@@ -1824,9 +1676,7 @@ void ClientSpawn(gentity_t *ent) {
 			client->ps.ammo[WP_PLASMAGUN] = WP_PLASMAGUN_MAX_AMMO;
 			client->ps.ammo[WP_BFG] = WP_BFG_MAX_AMMO;
 			client->ps.ammo[WP_GRAPPLING_HOOK] = WP_GRAPPLING_HOOK_MAX_AMMO;
-#if MONSTER_MODE
 			client->ps.ammo[WP_MONSTER_LAUNCHER] = WP_MONSTER_LAUNCHER_MAX_AMMO;
-#endif
 		}
 
 		client->ps.stats[STAT_STRENGTH] = MAX_STRENGTH_VALUE;
@@ -1841,8 +1691,6 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->ps.weaponTime = 250;
 	client->ps.weaponstate = WEAPON_READY;
-#endif
-
 	client->ps.generic1 = rand() & 255;	// JUHOX: randomize weapon shaking
 
 	// run a client frame to drop exactly to the floor,
@@ -1851,19 +1699,20 @@ void ClientSpawn(gentity_t *ent) {
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink( ent-g_entities );
 
-#if 1	// JUHOX: make ClientThink() init viewmode next frame
+	// JUHOX: make ClientThink() init viewmode next frame
 	client->viewMode = -1;
-#endif
 
-#if 1	// JUHOX: spawn effect
-	client->ps.stats[STAT_EFFECT] = PE_spawn;
+
+	// JUHOX: spawn effect
+	//client->ps.stats[STAT_EFFECT] = PE_spawn;
+	SET_STAT_EFFECT(&client->ps, PE_spawn);
 	client->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 	client->weaponUsageTime = level.time - 5000;
 	client->grappleUsageTime = level.time - 5000;
 	if (g_cloakingDevice.integer) {
 		client->ps.powerups[PW_INVIS] = level.time + 1000000000;
 	}
-#endif
+
 
 #if 1	// JUHOX: spawn dead if the spawn point would telefrag someone
 	if (deadSpawn) {

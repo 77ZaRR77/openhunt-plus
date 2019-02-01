@@ -80,37 +80,33 @@ void CG_LoadingClient( int clientNum ) {
 	char			model[MAX_QPATH];
 	char			iconName[MAX_QPATH];
 
-#if !MONSTER_MODE	// JUHOX: handle monsters
-	info = CG_ConfigString( CS_PLAYERS + clientNum );
-#else
-	{
-		static char infoBuf[MAX_INFO_STRING];
 
-		infoBuf[0] = 0;
-		switch (clientNum) {
-		case CLIENTNUM_MONSTER_PREDATOR:
-		case CLIENTNUM_MONSTER_PREDATOR_RED:
-		case CLIENTNUM_MONSTER_PREDATOR_BLUE:
-			Info_SetValueForKey(infoBuf, "n", "Predator");
-			Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel1"));
-			info = infoBuf;
-			break;
-		case CLIENTNUM_MONSTER_GUARD:
-			Info_SetValueForKey(infoBuf, "n", "Guard");
-			Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel2"));
-			info = infoBuf;
-			break;
-		case CLIENTNUM_MONSTER_TITAN:
-			Info_SetValueForKey(infoBuf, "n", "Titan");
-			Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel3"));
-			info = infoBuf;
-			break;
-		default:
-			info = CG_ConfigString(CS_PLAYERS + clientNum);
-			break;
-		}
-	}
-#endif
+    static char infoBuf[MAX_INFO_STRING];
+
+    infoBuf[0] = 0;
+    switch (clientNum) {
+    case CLIENTNUM_MONSTER_PREDATOR:
+    case CLIENTNUM_MONSTER_PREDATOR_RED:
+    case CLIENTNUM_MONSTER_PREDATOR_BLUE:
+        Info_SetValueForKey(infoBuf, "n", "Predator");
+        Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel1"));
+        info = infoBuf;
+        break;
+    case CLIENTNUM_MONSTER_GUARD:
+        Info_SetValueForKey(infoBuf, "n", "Guard");
+        Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel2"));
+        info = infoBuf;
+        break;
+    case CLIENTNUM_MONSTER_TITAN:
+        Info_SetValueForKey(infoBuf, "n", "Titan");
+        Info_SetValueForKey(infoBuf, "model", Info_ValueForKey(CG_ConfigString(CS_SERVERINFO), "monsterModel3"));
+        info = infoBuf;
+        break;
+    default:
+        info = CG_ConfigString(CS_PLAYERS + clientNum);
+        break;
+    }
+
 
 	if ( loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS ) {
 		Q_strncpyz( model, Info_ValueForKey( info, "model" ), sizeof( model ) );
@@ -170,12 +166,9 @@ void CG_DrawInformation( void ) {
 
 	s = Info_ValueForKey( info, "mapname" );
 	// JUHOX: don't use va() in CG_DrawInformation()
-#if 0
-	levelshot = trap_R_RegisterShaderNoMip( va( "levelshots/%s.tga", s ) );
-#else
 	Com_sprintf(buf, sizeof(buf), "levelshots/%s.tga", s);
 	levelshot = trap_R_RegisterShaderNoMip(buf);
-#endif
+
 	if ( !levelshot ) {
 		levelshot = trap_R_RegisterShaderNoMip( "menu/art/unknownmap" );
 	}
@@ -193,16 +186,11 @@ void CG_DrawInformation( void ) {
 	// screen to write into
 	if ( cg.infoScreenText[0] ) {
 		// JUHOX: don't use va() in CG_DrawInformation()
-#if 0
-		UI_DrawProportionalString( 320, 128/*-32*/-5, va("Loading... %s", cg.infoScreenText),	// JUHOX
-			UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#else
-		Com_sprintf(buf, sizeof(buf), /*"Loading... %s"*/"%s", cg.infoScreenText);	// JUHOX
-		UI_DrawProportionalString( 320, 128-5, buf,
-			UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#endif
+
+		Com_sprintf(buf, sizeof(buf), "%s", cg.infoScreenText);	// JUHOX
+		UI_DrawProportionalString( 320, 128-5, buf,	UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
 	} else {
-		UI_DrawProportionalString( 320, 128/*-32*/-5, "Awaiting snapshot...",	// JUHOX
+		UI_DrawProportionalString( 320, 128-5, "Awaiting snapshot...",	// JUHOX
 			UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
 	}
 	CG_DrawPic(30, 53, 580, 36, trap_R_RegisterShaderNoMip("gfx/hunt_name.tga"));	// JUHOX: draw "H U N T"
@@ -280,79 +268,60 @@ void CG_DrawInformation( void ) {
 	case GT_CTF:
 		s = "Capture The Flag";
 		break;
-
-#if MONSTER_MODE	// JUHOX: STU name for info screen
+        // JUHOX: STU name for info screen
 	case GT_STU:
 		s = "Save the Universe";
 		break;
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH name for info screen
+        // JUHOX: EFH name for info screen
 	case GT_EFH:
 		s = "Escape from Hell";
 		break;
-#endif
+
 	default:
 		s = "Unknown Gametype";
 		break;
 	}
-	UI_DrawProportionalString( 320, y, s,
-		UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
+	UI_DrawProportionalString( 320, y, s, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
 	y += PROP_HEIGHT;
 
 	value = atoi( Info_ValueForKey( info, "timelimit" ) );
 	if ( value ) {
-#if 0	// JUHOX: don't use va() in CG_DrawInformation()
-		UI_DrawProportionalString( 320, y, va( "timelimit %i", value ),
-			UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#else
+
 		Com_sprintf(buf, sizeof(buf), "timelimit %i", value);
-		UI_DrawProportionalString( 320, y, buf,
-			UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#endif
+		UI_DrawProportionalString( 320, y, buf,	UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
+
 		y += PROP_HEIGHT;
 	}
 
-#if !MONSTER_MODE	// JUHOX: use fraglimit also for STU
-	if (cgs.gametype < GT_CTF ) {
-#else
 	if (cgs.gametype < GT_CTF || cgs.gametype >= GT_STU) {
-#endif
+
 		value = atoi( Info_ValueForKey( info, "fraglimit" ) );
 		if ( value ) {
 		// JUHOX: don't use va() in CG_DrawInformation()
-#if 0
-			UI_DrawProportionalString( 320, y, va( "fraglimit %i", value ),
-				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#else
+
 			Com_sprintf(buf, sizeof(buf), "fraglimit %i", value);
 			UI_DrawProportionalString( 320, y, buf,
 				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#endif
+
 			y += PROP_HEIGHT;
 		}
 	}
 
-#if !MONSTER_MODE	// JUHOX: don't use capturelimit for STU
-	if (cgs.gametype >= GT_CTF) {
-#else
 	if (cgs.gametype >= GT_CTF && cgs.gametype < GT_STU) {
-#endif
+
 		value = atoi( Info_ValueForKey( info, "capturelimit" ) );
 		if ( value ) {
 		// JUHOX: don't use va() in CG_DrawInformation()
-#if 0
-			UI_DrawProportionalString( 320, y, va( "capturelimit %i", value ),
-				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#else
+
 			Com_sprintf(buf, sizeof(buf), "capturelimit %i", value);
 			UI_DrawProportionalString( 320, y, buf,
 				UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite );
-#endif
+
 			y += PROP_HEIGHT;
 		}
 	}
 
-#if MONSTER_MODE	// JUHOX: draw artefacts limit
+	// JUHOX: draw artefacts limit
 	if (cgs.gametype == GT_STU) {
 		value = atoi(Info_ValueForKey(info, "g_artefacts"));
 		if (value == 999) {
@@ -367,6 +336,5 @@ void CG_DrawInformation( void ) {
 			y += PROP_HEIGHT;
 		}
 	}
-#endif
 }
 

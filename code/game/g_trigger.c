@@ -86,9 +86,8 @@ void SP_trigger_multiple( gentity_t *ent ) {
 	InitTrigger( ent );
 	trap_LinkEntity (ent);
 
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_trigger_multiple;
-#endif
+
 }
 
 
@@ -113,9 +112,9 @@ void SP_trigger_always (gentity_t *ent) {
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + 300;
 	ent->think = trigger_always_think;
-#if ESCAPE_MODE	// JUHOX: set entity class
+
 	ent->entClass = GEC_trigger_always;
-#endif
+
 }
 
 
@@ -130,20 +129,12 @@ trigger_push
 void trigger_push_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 
 	// JUHOX: accept monsters on jump pads
-#if !MONSTER_MODE
-	if ( !other->client ) {
-		return;
-	}
-
-	BG_TouchJumpPad( &other->client->ps, &self->s );
-#else
 	playerState_t* ps;
 
 	ps = G_GetEntityPlayerState(other);
 	if (ps) {
 		BG_TouchJumpPad(ps, &self->s);
 	}
-#endif
 }
 
 
@@ -163,11 +154,8 @@ void AimAtTarget( gentity_t *self ) {
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale ( origin, 0.5, origin );
 
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	ent = G_PickTarget( self->target );
-#else
 	ent = G_PickTarget(self->target, self->worldSegment - 1);
-#endif
+
 	if ( !ent ) {
 		G_FreeEntity( self );
 		return;
@@ -175,11 +163,9 @@ void AimAtTarget( gentity_t *self ) {
 
 	height = ent->s.origin[2] - origin[2];
 	// JUHOX: use g_gravity.integer instead of g_gravity.value
-#if 0
-	gravity = g_gravity.value;
-#else
+
 	gravity = g_gravity.integer;
-#endif
+
 	time = sqrt( height / ( .5 * gravity ) );
 	if ( !time ) {
 		G_FreeEntity( self );
@@ -217,9 +203,9 @@ void SP_trigger_push( gentity_t *self ) {
 	self->think = AimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
 	trap_LinkEntity (self);
-#if ESCAPE_MODE	// JUHOX: set entity class
+
 	self->entClass = GEC_trigger_push;
-#endif
+
 }
 
 
@@ -268,9 +254,7 @@ void SP_target_push( gentity_t *self ) {
 		self->nextthink = level.time + FRAMETIME;
 	}
 	self->use = Use_target_push;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_target_push;
-#endif
 }
 
 /*
@@ -284,39 +268,15 @@ trigger_teleport
 void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace ) {
 	gentity_t	*dest;
 
-#if !MONSTER_MODE	// JUHOX: let trigger_teleport_touch() accept monsters too
-	if ( !other->client ) {
-		return;
-	}
-	if ( other->client->ps.pm_type == PM_DEAD ) {
-		return;
-	}
-	// Spectators only?
-	if ( ( self->spawnflags & 1 ) && 
-#if 0	// JUHOX: also accept dead spectating players
-		other->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-#else
-		other->client->ps.pm_type != PM_SPECTATOR) {
-#endif
-		return;
-	}
-#else	// MONSTER_MODE
-	{
-		playerState_t* ps;
+    playerState_t* ps;
 
-		ps = G_GetEntityPlayerState(other);
-		if (!ps) return;
-		if (ps->pm_type == PM_DEAD) return;
-		if ((self->spawnflags & 1) && ps->pm_type != PM_SPECTATOR) return;
-	}
-#endif
+    ps = G_GetEntityPlayerState(other);
+    if (!ps) return;
+    if (ps->pm_type == PM_DEAD) return;
+    if ((self->spawnflags & 1) && ps->pm_type != PM_SPECTATOR) return;
 
-
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	dest = 	G_PickTarget( self->target );
-#else
 	dest = G_PickTarget(self->target, self->worldSegment - 1);
-#endif
+
 	if (!dest) {
 		G_Printf ("Couldn't find teleporter destination\n");
 		return;
@@ -353,9 +313,7 @@ void SP_trigger_teleport( gentity_t *self ) {
 	self->touch = trigger_teleporter_touch;
 
 	trap_LinkEntity (self);
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_trigger_teleport;
-#endif
 }
 
 
@@ -436,9 +394,8 @@ void SP_trigger_hurt( gentity_t *self ) {
 	if ( ! (self->spawnflags & 1) ) {
 		trap_LinkEntity (self);
 	}
-#if ESCAPE_MODE	// JUHOX: set entity class
+
 	self->entClass = GEC_trigger_hurt;
-#endif
 }
 
 
@@ -499,9 +456,7 @@ void SP_func_timer( gentity_t *self ) {
 	}
 
 	self->r.svFlags = SVF_NOCLIENT;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_func_timer;
-#endif
 }
 
 

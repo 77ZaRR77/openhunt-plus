@@ -97,7 +97,6 @@ static void CG_Obituary( entityState_t *ent ) {
 	// check for single client messages
 
 	switch( mod ) {
-#if MONSTER_MODE
 	case MOD_CLAW:
 		message = "was lacerated by a predator";
 		break;
@@ -107,7 +106,6 @@ static void CG_Obituary( entityState_t *ent ) {
 	case MOD_TITAN:
 		message = "was smashed by a titan";
 		break;
-#endif
 	case MOD_SUICIDE:
 		message = "suicides";
 		break;
@@ -141,7 +139,6 @@ static void CG_Obituary( entityState_t *ent ) {
 		gender = ci->gender;
 		switch (mod) {
 		// JUHOX: killed by one's own monster
-#if MONSTER_MODE
 		case MOD_MONSTER_LAUNCHER:
 			if (gender == GENDER_FEMALE)
 				message = "wasn't nice to her pets";
@@ -150,7 +147,6 @@ static void CG_Obituary( entityState_t *ent ) {
 			else
 				message = "wasn't nice to his pets";
 			break;
-#endif
 		case MOD_GRENADE_SPLASH:
 			if ( gender == GENDER_FEMALE )
 				message = "tripped on her own grenade";
@@ -233,17 +229,13 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "was pummeled by";
 			break;
 		// JUHOX: killed by monsters launched from the monster launcher
-#if MONSTER_MODE
 		case MOD_MONSTER_LAUNCHER:
 			message = "was hunted down by";
 			break;
-#endif
 		// JUHOX: new MODs
-#if 1
 		case MOD_CHARGE:
 			message = "was vaporized by";
 			break;
-#endif
 		case MOD_MACHINEGUN:
 			message = "was machinegunned by";
 			break;
@@ -445,11 +437,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	clientNum = es->clientNum;
 	// JUHOX: accept EXTRA_CLIENTNUMS
-#if !MONSTER_MODE
-	if ( clientNum < 0 || clientNum >= MAX_CLIENTS ) {
-#else
 	if (clientNum < 0 || clientNum >= MAX_CLIENTS + EXTRA_CLIENTNUMS) {
-#endif
 		clientNum = 0;
 	}
 	ci = &cgs.clientinfo[ clientNum ];
@@ -463,12 +451,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ ci->footsteps ][rand()&3] );
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+            // JUHOX: titan footstep
 			if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 				CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 500, 0.5, 0, 0.5, 200);
 				trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			}
-#endif
 		}
 		break;
 	case EV_FOOTSTEP_METAL:
@@ -476,12 +463,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_METAL ][rand()&3] );
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+                // JUHOX: titan footstep
 			if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 				CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 500, 0.5, 0, 0.5, 200);
 				trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			}
-#endif
 		}
 		break;
 	case EV_FOOTSPLASH:
@@ -489,12 +475,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
 				cgs.media.footsteps[ FOOTSTEP_SPLASH ][rand()&3] );
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+                // JUHOX: titan footstep
 			if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 				CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 500, 0.5, 0, 0.5, 200);
 				trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			}
-#endif
+
 		}
 		break;
 	case EV_FOOTWADE:
@@ -522,13 +508,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.landChange = -8;
 			cg.landTime = cg.time;
 		}
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+        // JUHOX: titan footstep
 		if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 			CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 700, 0.5, 0, 0.5, 300);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 		}
-#endif
+
 		break;
 	case EV_FALL_MEDIUM:
 		DEBUGNAME("EV_FALL_MEDIUM");
@@ -539,14 +525,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.landChange = -16;
 			cg.landTime = cg.time;
 		}
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+        // JUHOX: titan footstep
 		if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 			CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 800, 0.5, 0, 0.5, 350);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 		}
-#endif
+
 		break;
 	case EV_FALL_FAR:
 		DEBUGNAME("EV_FALL_FAR");
@@ -557,7 +543,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.landChange = -24;
 			cg.landTime = cg.time;
 		}
-#if EARTHQUAKE_SYSTEM	// JUHOX: titan footstep
+        // JUHOX: titan footstep
 		if (clientNum == CLIENTNUM_MONSTER_TITAN) {
 			CG_AddEarthquake(cg_entities[es->number].currentState.pos.trBase, 900, 0.5, 0, 0.5, 400);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
@@ -565,7 +551,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 			trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.titanFootstepSound);
 		}
-#endif
+
 		break;
 
 	case EV_STEP_4:
@@ -633,16 +619,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_TAUNT:
 		DEBUGNAME("EV_TAUNT");
 		// JUHOX: guards have special taunt
-#if !MONSTER_MODE
-		trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
-#else
 		if (es->clientNum == CLIENTNUM_MONSTER_GUARD) {
 			trap_S_StartSound(NULL, es->number, CHAN_VOICE, cgs.media.guardStartSound);
 		}
 		else {
 			trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
 		}
-#endif
 		break;
 
 	case EV_WATER_TOUCH:
@@ -705,7 +687,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 			item = &bg_itemlist[ index ];
 			// powerup pickups are global
-#if MONSTER_MODE	// JUHOX: artefact pickup
+            // JUHOX: artefact pickup
 			if (item->giType == IT_TEAM && item->giTag == PW_QUAD) {
 				if (es->modelindex) {
 					trap_S_StartLocalSound(cgs.media.lastArtefactSound, CHAN_AUTO);
@@ -718,7 +700,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				cg.lastEarhquakeSoundStartedTime = cg.time - 1000;
 			}
 			else
-#endif
+
 			if( item->pickup_sound ) {
 				trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( item->pickup_sound, qfalse ) );
 			}
@@ -849,12 +831,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_GRENADE_BOUNCE:
 		DEBUGNAME("EV_GRENADE_BOUNCE");
 		// JUHOX: monster launcher seed bounce sound
-#if MONSTER_MODE
 		if (es->weapon == WP_MONSTER_LAUNCHER) {
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.seedBounceSound[es->eventParm][rand() & 7]);
 		}
 		else
-#endif
+
 		if ( rand() & 1 ) {
 			trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.hgrenb1aSound );
 		} else {
@@ -863,7 +844,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
 
 	// JUHOX: cocoon bounce sound
-#if MONSTER_MODE
 	case EV_COCOON_BOUNCE:
 		{
 			int r;
@@ -877,7 +857,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			);
 		}
 		break;
-#endif
 
 	case EV_SCOREPLUM:
 		DEBUGNAME("EV_SCOREPLUM");
@@ -925,11 +904,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_BULLET_HIT_FLESH:
 		DEBUGNAME("EV_BULLET_HIT_FLESH");
 		// JUHOX: eventParm sometimes doesn't work, so we use otherEntityNum2
-#if !MONSTER_MODE
-		CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->eventParm );
-#else
 		CG_Bullet( es->pos.trBase, es->otherEntityNum, dir, qtrue, es->otherEntityNum2);
-#endif
 		break;
 
 	case EV_SHOTGUN:
@@ -938,7 +913,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
 
 	// JUHOX: play short circuit discharge flash sound
-#if 1
 	case EV_DISCHARGE_FLASH:
 		DEBUGNAME("EV_DISCHARGE_FLASH");
 		if (
@@ -957,19 +931,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else {
 			trap_S_StartLocalSound(cgs.media.dischargeFlashSound, CHAN_AUTO);
-#if MONSTER_MODE
 			if (cgs.gametype == GT_STU) {
 				// Maybe I should better create a new event. But I'm too lazy.
 				cg.endPhaseTime = cg.time;
 				cg.endPhaseLastDischargeSoundTime = cg.time;
 			}
-#endif
 		}
 		break;
-#endif
 
 	// JUHOX: display nav aid
-#if 1
 	case EV_NAVAID0:
 	case EV_NAVAID1:
 	case EV_NAVAID2:
@@ -1028,7 +998,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.navAidStopTime = cg.time + 3000;
 		}
 		break;
-#endif
 
 	case EV_GENERAL_SOUND:
 		DEBUGNAME("EV_GENERAL_SOUND");
@@ -1143,7 +1112,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 
 	// JUHOX: handle overkill event
-#if 1
 	case EV_OVERKILL:
 		DEBUGNAME("EV_OVERKILL");
 		if (cgs.gametype < GT_TEAM) {
@@ -1185,10 +1153,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 		}
 		break;
-#endif
 
 	// JUHOX: play pant sound
-#if 1
 	case EV_PANT:
 		DEBUGNAME("EV_PANT");
 		switch (ci->gender) {
@@ -1203,9 +1169,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;
 		}
 		break;
-#endif
 	// JUHOX: play armor bouncing sound
-#if 1
 	case EV_BOUNCE_ARMOR:
 		DEBUGNAME("EV_BOUNCE_ARMOR");
 		switch (es->eventParm) {
@@ -1235,8 +1199,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;
 		}
 		break;
-#endif
-#if EARTHQUAKE_SYSTEM	// JUHOX: earthquake event
+// JUHOX: earthquake event
 	case EV_EARTHQUAKE:
 		CG_AddEarthquake(
 			es->origin, es->angles2[1],
@@ -1248,8 +1211,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.lastEarhquakeSoundStartedTime = cg.time - 1000;
 		}
 		break;
-#endif
-#if GRAPPLE_ROPE	// JUHOX: throw hook sound
+// JUHOX: throw hook sound
 	case EV_THROW_HOOK:
 		DEBUGNAME("EV_THROW_HOOK");
 		switch (cgs.hookMode) {
@@ -1265,8 +1227,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;
 		}
 		break;
-#endif
-#if GRAPPLE_ROPE	// JUHOX: handle rope explosion event
+// JUHOX: handle rope explosion event
 	case EV_ROPE_EXPLOSION:
 		DEBUGNAME("EV_ROPE_EXPLOSION");
 		if (es->eventParm == 0) {
@@ -1276,7 +1237,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.useNothingSound);
 		}
 		break;
-#endif
+
 
 	case EV_PAIN:
 		// local player sounds are triggered in CG_CheckLocalSounds,
@@ -1338,11 +1299,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.gibSound );
 		}
 		// JUHOX: add new parameter for CG_GibPlayer
-#if !MONSTER_MODE
-		CG_GibPlayer( cent->lerpOrigin );
-#else
 		CG_GibPlayer(cent->lerpOrigin, cent);
-#endif
 		break;
 
 	case EV_STOPLOOPINGSOUND:

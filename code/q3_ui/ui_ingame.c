@@ -281,12 +281,11 @@ void InGame_MenuInit( void ) {
 		s_ingame.team.generic.flags |= QMF_GRAYED;
 	}
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+	// JUHOX: no bots in EFH
 	if (trap_Cvar_VariableValue("g_gametype") == GT_EFH) {
 		s_ingame.addbots.generic.flags |= QMF_GRAYED;
 		s_ingame.removebots.generic.flags |= QMF_GRAYED;
 	}
-#endif
 
 	Menu_AddItem( &s_ingame.menu, &s_ingame.frame );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.team );

@@ -269,12 +269,10 @@ char *BotWeaponNameForMeansOfDeath(int mod) {
 		case MOD_BFG:
 		case MOD_BFG_SPLASH: return "BFG10K";
 		case MOD_GRAPPLE: return "Grapple";
-#if MONSTER_MODE
 		case MOD_CLAW: return "claw";	// JUHOX
 		case MOD_GUARD: return "Fireball Launcher";	// JUHOX
 		case MOD_TITAN: return "fist";	// JUHOX
 		case MOD_MONSTER_LAUNCHER: return "Monster Launcher";	// JUHOX
-#endif
 		case MOD_CHARGE: return "Lightning Gun";	// JUHOX
 		default: return "[unknown weapon]";
 	}
@@ -314,9 +312,7 @@ int BotVisibleEnemies(bot_state_t *bs) {
 	aas_entityinfo_t entinfo;
 
 	// JUHOX: don't chat if the enemy is a monster
-#if MONSTER_MODE
 	if (bs->enemy >= MAX_CLIENTS) return qtrue;
-#endif
 	for (i = 0; i < MAX_CLIENTS; i++) {
 
 		if (i == bs->client) continue;
@@ -351,13 +347,9 @@ int BotValidChatPosition(bot_state_t *bs) {
 	//if the bot is dead all positions are valid
 	if (BotIsDead(bs)) return qtrue;
 	// JUHOX: don't chat if the enemy is a monster
-#if MONSTER_MODE
 	if (bs->enemy >= MAX_CLIENTS) return qfalse;
-#endif
 	// JUHOX: don't chat if recently hurt
-#if 1
 	if (level.clients[bs->client].lasthurt_time > level.time - 3000) return qfalse;
-#endif
 	//never start chatting with a powerup
 	if (bs->inventory[INVENTORY_QUAD] ||
 		bs->inventory[INVENTORY_HASTE] ||

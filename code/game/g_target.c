@@ -35,9 +35,7 @@ void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 void SP_target_give( gentity_t *ent ) {
 	ent->use = Use_Target_Give;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_give;
-#endif
 }
 
 
@@ -61,18 +59,12 @@ void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *ac
 	}
 
 	// JUHOX: only remove "real" powerups
-#if 0
-	memset( activator->client->ps.powerups, 0, sizeof( activator->client->ps.powerups ) );
-#else
 	memset(activator->client->ps.powerups, 0, PW_NUM_POWERUPS * sizeof(int));
-#endif
 }
 
 void SP_target_remove_powerups( gentity_t *ent ) {
 	ent->use = Use_target_remove_powerups;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_remove_powerups;
-#endif
 }
 
 
@@ -102,9 +94,7 @@ void SP_target_delay( gentity_t *ent ) {
 		ent->wait = 1;
 	}
 	ent->use = Use_Target_Delay;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_delay;
-#endif
 }
 
 
@@ -124,9 +114,7 @@ void SP_target_score( gentity_t *ent ) {
 		ent->count = 1;
 	}
 	ent->use = Use_Target_Score;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_score;
-#endif
 }
 
 
@@ -157,9 +145,7 @@ void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 void SP_target_print( gentity_t *ent ) {
 	ent->use = Use_Target_Print;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_print;
-#endif
 }
 
 
@@ -242,9 +228,8 @@ void SP_target_speaker( gentity_t *ent ) {
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
 	trap_LinkEntity( ent );
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_target_speaker;
-#endif
+
 }
 
 
@@ -256,7 +241,6 @@ void SP_target_speaker( gentity_t *ent ) {
 JUHOX: Use_target_earthquake
 ==============
 */
-#if MONSTER_MODE
 static void Use_target_earthquake(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 	gentity_t* event;
 
@@ -266,14 +250,12 @@ static void Use_target_earthquake(gentity_t* ent, gentity_t* other, gentity_t* a
 		VectorCopy(ent->s.angles2, event->s.angles2);
 	}
 }
-#endif
 
 /*
 ==============
 JUHOX: SP_target_earthquake
 ==============
 */
-#if MONSTER_MODE
 void SP_target_earthquake(gentity_t* ent) {
 	G_SpawnFloat("duration", "10", &ent->s.angles[0]);
 	G_SpawnFloat("fadein", "1", &ent->s.angles[1]);
@@ -286,12 +268,10 @@ void SP_target_earthquake(gentity_t* ent) {
 	}
 
 	ent->use = Use_target_earthquake;
-
-#if ESCAPE_MODE
 	ent->entClass = GEC_target_earthquake;
-#endif
+
 }
-#endif
+
 
 
 //==========================================================
@@ -319,7 +299,7 @@ void target_laser_think (gentity_t *self) {
 
 	if ( tr.entityNum ) {
 		// hurt it if we can
-		G_Damage ( &g_entities[tr.entityNum], self, self->activator, self->movedir, 
+		G_Damage ( &g_entities[tr.entityNum], self, self->activator, self->movedir,
 			tr.endpos, self->damage, DAMAGE_NO_KNOCKBACK, MOD_TARGET_LASER);
 	}
 
@@ -385,9 +365,9 @@ void SP_target_laser (gentity_t *self)
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
 	self->nextthink = level.time + FRAMETIME;
-#if ESCAPE_MODE	// JUHOX: set entity class
+
 	self->entClass = GEC_target_laser;
-#endif
+
 }
 
 
@@ -398,11 +378,9 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 
 	if (!activator->client)
 		return;
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	dest = 	G_PickTarget( self->target );
-#else
+
 	dest = G_PickTarget(self->target, self->worldSegment - 1);
-#endif
+
 	if (!dest) {
 		G_Printf ("Couldn't find teleporter destination\n");
 		return;
@@ -419,9 +397,8 @@ void SP_target_teleporter( gentity_t *self ) {
 		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
 
 	self->use = target_teleporter_use;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_target_teleporter;
-#endif
+
 }
 
 //==========================================================
@@ -433,22 +410,19 @@ The activator can be forced to be from a certain team.
 if RANDOM is checked, only one of the targets will be fired, not all of them
 */
 void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	if ( ( self->spawnflags & 1 ) && activator->client 
+	if ( ( self->spawnflags & 1 ) && activator->client
 		&& activator->client->sess.sessionTeam != TEAM_RED ) {
 		return;
 	}
-	if ( ( self->spawnflags & 2 ) && activator->client 
+	if ( ( self->spawnflags & 2 ) && activator->client
 		&& activator->client->sess.sessionTeam != TEAM_BLUE ) {
 		return;
 	}
 	if ( self->spawnflags & 4 ) {
 		gentity_t	*ent;
 
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-		ent = G_PickTarget( self->target );
-#else
 		ent = G_PickTarget(self->target, self->worldSegment - 1);
-#endif
+
 		if ( ent && ent->use ) {
 			ent->use( ent, self, activator );
 		}
@@ -459,9 +433,7 @@ void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 
 void SP_target_relay (gentity_t *self) {
 	self->use = target_relay_use;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_target_relay;
-#endif
 }
 
 
@@ -476,9 +448,8 @@ void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 
 void SP_target_kill( gentity_t *self ) {
 	self->use = target_kill_use;
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_target_kill;
-#endif
+
 }
 
 /*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -486,9 +457,9 @@ Used as a positional target for in-game calculation, like jumppad targets.
 */
 void SP_target_position( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
-#if ESCAPE_MODE	// JUHOX: set entity class
+
 	self->entClass = GEC_target_position;
-#endif
+
 }
 
 static void target_location_linkup(gentity_t *ent)
@@ -496,7 +467,7 @@ static void target_location_linkup(gentity_t *ent)
 	int i;
 	int n;
 
-	if (level.locationLinked) 
+	if (level.locationLinked)
 		return;
 
 	level.locationLinked = qtrue;
@@ -531,12 +502,12 @@ Closest target_location in sight used for the location, if none
 in site, closest in distance
 */
 void SP_target_location( gentity_t *self ){
-#if ESCAPE_MODE	// JUHOX: target_location not supported in EFH
+
 	if (g_gametype.integer == GT_EFH) {
 		G_FreeEntity(self);
 		return;
 	}
-#endif
+
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
 

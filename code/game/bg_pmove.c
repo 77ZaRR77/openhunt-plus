@@ -356,8 +356,13 @@ static qboolean PM_CheckJump( void ) {
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 	pm->ps->velocity[2] = JUMP_VELOCITY;
 
-	/*
-	 // SLK: check for double-jump
+	// JUHOX: check for super jump
+	pm->ps->velocity[2] *= 1 + (0.25 * (pm->scale - 1));
+	if (pm->superJump) {
+		pm->ps->velocity[2] *= 2;
+	}
+
+	// SLK: check for double-jump
 		if (cpm_pm_jump_z) {
 			if (pm->ps->stats[STAT_JUMPTIME] > 0) {
 				pm->ps->velocity[2] += cpm_pm_jump_z;
@@ -366,13 +371,6 @@ static qboolean PM_CheckJump( void ) {
 			pm->ps->stats[STAT_JUMPTIME] = 400;
 		}
 	// !SLK
-	*/
-
-	// JUHOX: check for super jump
-	pm->ps->velocity[2] *= 1 + (0.25 * (pm->scale - 1));
-	if (pm->superJump) {
-		pm->ps->velocity[2] *= 2;
-	}
 
 	PM_AddEvent( EV_JUMP );
 
@@ -606,12 +604,12 @@ static void PM_AirMove( void ) {
 	{
 		if (wishspeed > cpm_pm_wishspeed)
 			wishspeed = cpm_pm_wishspeed;
-		accel = cpm_pm_strafeaccelerate;
+            accel = cpm_pm_strafeaccelerate;
 	}
 	// !SLK
 
 	// not on ground, so little effect on velocity
-	/*PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);*/
+	PM_Accelerate (wishdir, wishspeed, pm_airaccelerate);
 
 	// SLK: Air control
 	PM_Accelerate (wishdir, wishspeed, accel);
@@ -637,25 +635,6 @@ PM_GrappleMove
 ===================
 */
 static void PM_GrappleMove( void ) {
-#if !GRAPPLE_ROPE	// JUHOX: new grapple move
-	vec3_t vel, v;
-	float vlen;
-
-	VectorScale(pml.forward, -16, v);
-	VectorAdd(pm->ps->grapplePoint, v, v);
-	VectorSubtract(v, pm->ps->origin, vel);
-	vlen = VectorLength(vel);
-	VectorNormalize( vel );
-
-	if (vlen <= 100)
-		VectorScale(vel, 10 * vlen, vel);
-	else
-		VectorScale(vel, 800, vel);
-
-	VectorCopy(vel, pm->ps->velocity);
-
-	pml.groundPlane = qfalse;
-#else
 	switch (pm->hookMode) {
 	case HM_classic:
 		{
@@ -690,7 +669,8 @@ static void PM_GrappleMove( void ) {
 			dist = VectorNormalize(v);
 
 			pullSpeed = DotProduct(pm->ps->velocity, v);
-			if (pm->ps->stats[STAT_GRAPPLE_STATE] == GST_fixed) {
+			//if (pm->ps->stats[STAT_GRAPPLE_STATE] == GST_fixed) {
+			if (GET_STAT_GRAPPLESTATE ( pm->ps ) == GST_fixed) {
 				if (dist > ROPE_ELEMENT_SIZE) {
 					if (pullSpeed < 0) {
 						VectorScale(pm->ps->velocity, -0.7f, pm->ps->velocity);
@@ -720,7 +700,6 @@ static void PM_GrappleMove( void ) {
 	default:
 		break;
 	}
-#endif
 }
 
 /*
@@ -849,7 +828,6 @@ static void PM_DeadMove( void ) {
 	if ( !pml.walking ) return;
 
 	// extra friction
-
 	forward = VectorLength (pm->ps->velocity);
 	forward -= 20;
 	if ( forward <= 0 ) {
@@ -1227,7 +1205,6 @@ static void PM_SetWaterLevel( void ) {
 	int			sample2;
 
 	// get waterlevel, accounting for ducking
-	//
 	pm->waterlevel = 0;
 	pm->watertype = 0;
 
@@ -1239,19 +1216,19 @@ static void PM_SetWaterLevel( void ) {
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
 	if ( cont & MASK_WATER ) {
-	// JUHOX: let PM_SetWaterLevel() handle player scale
+        // JUHOX: let PM_SetWaterLevel() handle player scale
 		sample2 = pm->ps->viewheight - MINS_Z * pm->scale;
 		sample1 = sample2 / 2;
 
 		pm->watertype = cont;
 		pm->waterlevel = 1;
-	// JUHOX: let PM_SetWaterLevel() handle player scale
+        // JUHOX: let PM_SetWaterLevel() handle player scale
 		point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + sample1;
 
 		cont = pm->pointcontents (point, pm->ps->clientNum );
 		if ( cont & MASK_WATER ) {
 			pm->waterlevel = 2;
-	// JUHOX: let PM_SetWaterLevel() handle player scale
+            // JUHOX: let PM_SetWaterLevel() handle player scale
 			point[2] = pm->ps->origin[2] + MINS_Z * pm->scale + sample2;
 
 			cont = pm->pointcontents (point, pm->ps->clientNum );
@@ -1373,14 +1350,7 @@ static void PM_Footsteps( void ) {
 	// if not trying to move
 	// JUHOX: always use idle animation for grapple move
 
-	if (
-		(
-			!pm->cmd.forwardmove &&
-			!pm->cmd.rightmove
-		) ||
-		(pm->ps->pm_flags & PMF_GRAPPLE_PULL)
-	) {
-
+	if (( !pm->cmd.forwardmove && !pm->cmd.rightmove ) || (pm->ps->pm_flags & PMF_GRAPPLE_PULL)	) {
 		if (  pm->xyspeed < 5 ) {
 			pm->ps->bobCycle = 0;	// start at beginning of cycle again
 			if ( pm->ps->pm_flags & PMF_DUCKED ) {
@@ -1417,7 +1387,7 @@ static void PM_Footsteps( void ) {
 				PM_ContinueLegsAnim( LEGS_RUN );
 			}
 			footstep = qtrue;
-        // JUHOX: adapt bobbing to movement speed
+            // JUHOX: adapt bobbing to movement speed
 			bobmove *= VectorLength(pm->ps->velocity) / 320;
 
 		} else {
@@ -1861,13 +1831,14 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
-#if GRAPPLE_ROPE	// JUHOX: the grapple can't shoot while used
-	if (pm->ps->weapon == WP_GRAPPLING_HOOK && pm->ps->stats[STAT_GRAPPLE_STATE] != GST_unused) {
+	// JUHOX: the grapple can't shoot while used
+	//if (pm->ps->weapon == WP_GRAPPLING_HOOK && pm->ps->stats[STAT_GRAPPLE_STATE] != GST_unused) {
+	if ( pm->ps->weapon == WP_GRAPPLING_HOOK && GET_STAT_GRAPPLESTATE ( pm->ps ) != GST_unused) {
 		pm->ps->weaponTime = 0;
 		pm->ps->weaponstate = WEAPON_READY;
 		return;
 	}
-#endif
+
 
 	// start the animation even if out of ammo
 	if (pm->ps->weapon <= WP_GAUNTLET) {
@@ -2316,11 +2287,11 @@ void PmoveSingle (pmove_t *pmove) {
 
 	PM_DropTimers();
 
-	/*
+
 	// SLK: Double-jump timer
-		if (pm->ps->stats[STAT_JUMPTIME] > 0) pm->ps->stats[STAT_JUMPTIME] -= pml.msec;
+    if (pm->ps->stats[STAT_JUMPTIME] > 0) pm->ps->stats[STAT_JUMPTIME] -= pml.msec;
 	// !SLK
-    */
+
 
 	CalcWeariness(); // JUHOX: weariness & refreshing
 
@@ -2330,17 +2301,14 @@ void PmoveSingle (pmove_t *pmove) {
 	} else if (pm->ps->pm_flags & PMF_GRAPPLE_PULL) {
 		PM_GrappleMove();
 		// JUHOX: with a fixed rope we may walk
-#if !GRAPPLE_ROPE
-		// We can wiggle a bit
-		PM_AirMove();
-#else
-		if (pm->ps->stats[STAT_GRAPPLE_STATE] == GST_fixed && pml.walking) {
+		//if (pm->ps->stats[STAT_GRAPPLE_STATE] == GST_fixed && pml.walking) {
+		if (GET_STAT_GRAPPLESTATE (pm->ps) == GST_fixed && pml.walking) {
 			PM_WalkMove();
 		}
 		else {
 			PM_AirMove();
 		}
-#endif
+
 	} else if (pm->ps->pm_flags & PMF_TIME_WATERJUMP) {
 		PM_WaterJumpMove();
 	} else if ( pm->waterlevel > 1 ) {

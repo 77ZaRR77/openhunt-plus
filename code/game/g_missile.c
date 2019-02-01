@@ -23,7 +23,6 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
 
 	// JUHOX: bounce event now done in G_BounceMissile() to add volume parameter for monster seeds
-#if MONSTER_MODE
 	if (ent->s.weapon == WP_MONSTER_LAUNCHER) {
 		float sqrspeed;
 
@@ -42,7 +41,6 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	else {
 		G_AddEvent(ent, EV_GRENADE_BOUNCE, 0);
 	}
-#endif
 
 	if ( ent->s.eFlags & EF_BOUNCE_HALF ) {
 		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
@@ -50,12 +48,10 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 		if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 ) {
 			G_SetOrigin( ent, trace->endpos );
 			ent->s.time = level.time / 4;	// JUHOX: set rotation on stop position (depends on original Q3 code in CG_Missile())
-		// JUHOX: monster seed impact code
-#if MONSTER_MODE
+            // JUHOX: monster seed impact code
 			if (ent->s.weapon == WP_MONSTER_LAUNCHER && ent->think) {
 				ent->think(ent);
 			}
-#endif
 			return;
 		}
 	}
@@ -65,8 +61,7 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	ent->s.pos.trTime = level.time;
 
 	// JUHOX: in certain cases the jump pad trigger may push the grenade against the jump pad, so re-trigger
-#if 1
-	if (ent->s.eType == ET_MISSILE /*&& ent->s.weapon == WP_GRENADE_LAUNCHER*/) {
+	if (ent->s.eType == ET_MISSILE ) {
 		if (ent->count >= 0) {
 			gentity_t* trigger;
 
@@ -80,7 +75,6 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 			}
 		}
 	}
-#endif
 }
 
 
@@ -116,14 +110,7 @@ static void CreateBFGCloud(gentity_t* seed) {
 		ent = G_TempEntity(tr.endpos, EV_MISSILE_MISS);
 		if (!ent) return;
 		ent->s.weapon = WP_BFG;
-		/*
-		if (tr.fraction < 1.0) {
-			ent->s.eventParm = DirToByte(tr.plane.normal);
-		}
-		else {
-			ent->s.eventParm = DirToByte(axisDefault[2]);
-		}
-		*/
+
 		ent->s.eventParm = -1;
 		cloud[cloudSize++] = ent;
 
@@ -179,10 +166,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	other = &g_entities[trace->entityNum];
 
 	// check for bounce
-#if !MONSTER_MODE	// JUHOX: monster seeds bounce on all dead things
-	if ( !other->takedamage &&
-		( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) ) {
-#else
 	if (
 		(
 			ent->s.eFlags & (EF_BOUNCE | EF_BOUNCE_HALF)
@@ -195,17 +178,15 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			)
 		)
 	) {
-#endif
+
 		G_BounceMissile( ent, trace );
-#if !MONSTER_MODE	// JUHOX: the EV_GRENADE_BOUNCE event is now done in G_BounceMissile()
-		G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
-#endif
+
 		return;
 	}
 
 	// impact damage
 	if (other->takedamage) {
-#if MONSTER_MODE	// JUHOX: seed impact
+    // JUHOX: seed impact
 		if (ent->s.weapon == WP_MONSTER_LAUNCHER) {
 			G_SetOrigin(ent, trace->endpos);
 
@@ -218,7 +199,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			if (ent->think) ent->think(ent);
 			return;
 		}
-#endif
+
 		// FIXME: wrong damage direction?
 		if ( ent->damage ) {
 			vec3_t	velocity;
@@ -243,7 +224,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		vec3_t v;
 
 		// JUHOX: new grapple hook impact code
-#if GRAPPLE_ROPE
 		if (
 			g_grapple.integer != HM_classic &&
 			trace->entityNum != ENTITYNUM_WORLD &&
@@ -252,7 +232,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			Weapon_HookFree(ent);
 			return;
 		}
-#endif
+
 		nent = G_Spawn();
 		if (!nent) return;	// JUHOX BUGFIX
 		nent->s.weapon = WP_GRAPPLING_HOOK;	// JUHOX BUGFIX
@@ -272,12 +252,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			G_AddEvent( nent, EV_MISSILE_MISS, DirToByte( trace->plane.normal ) );
 			ent->enemy = NULL;
 			// JUHOX: save some data when hook attaches to a mover
-#if 1
 			if (trace->entityNum != ENTITYNUM_WORLD) {
 				ent->enemy = other;
 				VectorSubtract(v, other->r.currentOrigin, ent->movedir);	// JUHOX FIXME: movedir abused
 			}
-#endif
 		}
 
 		SnapVectorTowards( v, ent->s.pos.trBase );	// save net bandwidth
@@ -290,18 +268,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		G_SetOrigin( ent, v );
 		G_SetOrigin( nent, v );
 
-#if !GRAPPLE_ROPE
-		ent->think = /*Weapon_HookThink*/Weapon_HookFree;	// JUHOX
-		ent->nextthink = level.time + /*FRAMETIME*/350;	// JUHOX
-
-		ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
-		VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
-#else
 		if (g_grapple.integer != HM_classic) {
-			/*
-			ent->think = 0;
-			ent->nextthink = 0;
-			*/
 			ent->think = Weapon_HookThink;
 			ent->nextthink = level.time + FRAMETIME;
 		}
@@ -312,7 +279,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
 			VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 		}
-#endif
 
 		trap_LinkEntity( ent );
 		trap_LinkEntity( nent );
@@ -324,11 +290,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
 
-#if 0	// JUHOX BUGFIX: let corpses bleed too (& monsters)
-	if ( other->takedamage && other->client ) {
-#else
 	if (other->takedamage && other->s.eType == ET_PLAYER) {
-#endif
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
 	} else if( trace->surfaceFlags & SURF_METALSTEPS ) {
@@ -390,19 +352,18 @@ void G_RunMissile( gentity_t *ent ) {
 		passent = ent->r.ownerNum;
 	}
 	// JUHOX: get clipmask
-#if 1
 	clipmask = ent->clipmask;
 	clipmask |= CONTENTS_TELEPORTER;	// this depends on new code in SP_trigger_teleport()
 	if (ent->s.weapon == WP_GRENADE_LAUNCHER && ent->count < 0) {
 		clipmask |= CONTENTS_JUMPPAD;	// this depends on new code in SP_trigger_push()
 	}
-#endif
+
 	// trace a line from the previous position to the current position
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, /*ent->*/clipmask );	// JUHOX
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, clipmask );	// JUHOX
 
 	if ( tr.startsolid || tr.allsolid ) {
 		// make sure the tr.entityNum is set to the entity we're stuck in
-		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, /*ent->*/clipmask );	// JUHOX
+		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, clipmask );	// JUHOX
 		tr.fraction = 0;
 	}
 	else {
@@ -412,30 +373,19 @@ void G_RunMissile( gentity_t *ent ) {
 	trap_LinkEntity( ent );
 
 	if ( tr.fraction != 1 ) {
-#if 1	// JUHOX: check if the missile hit a teleporter or jump pad (only grenades)
-		if (
-			tr.entityNum > 0 &&
-			tr.entityNum < ENTITYNUM_MAX_NORMAL
-		) {
+        // JUHOX: check if the missile hit a teleporter or jump pad (only grenades)
+		if ( tr.entityNum > 0 && tr.entityNum < ENTITYNUM_MAX_NORMAL ) {
 			gentity_t* trigger;
 
 			trigger = &g_entities[tr.entityNum];
-			if (
-				trigger->inuse &&
-				trigger->s.eType == ET_TELEPORT_TRIGGER &&
-				trigger->touch == trigger_teleporter_touch
-			) {
+			if ( trigger->inuse && trigger->s.eType == ET_TELEPORT_TRIGGER && trigger->touch == trigger_teleporter_touch ) {
 				gentity_t* dest;
 
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-				dest = G_PickTarget(trigger->target);
-#else
 				dest = G_PickTarget(trigger->target, trigger->worldSegment - 1);
-#endif
+
 				if (dest) {
 					vec3_t origin;
-					//vec3_t angles;
-					//float speed;
+
 					vec3_t dir;
 
 					if (ent->s.weapon == WP_GRAPPLING_HOOK) {
@@ -452,14 +402,6 @@ void G_RunMissile( gentity_t *ent ) {
 
 					ent->s.pos.trTime = level.time;
 
-					// set new velocity vector
-					/*
-					speed = VectorLength(ent->s.pos.trDelta);
-					vectoangles(ent->s.pos.trDelta, angles);
-					VectorAdd(angles, dest->s.angles, angles);
-					AngleVectors(angles, dir, NULL, NULL);
-					VectorScale(dir, speed, ent->s.pos.trDelta);
-					*/
 					AngleVectors(dest->s.angles, dir, NULL, NULL);
 					// CAUTION: we can't use the VectorScale() macro here (we would need to use a temp var for VectorLength(ent->s.pos.trDelta))
 					_VectorScale(dir, VectorLength(ent->s.pos.trDelta), ent->s.pos.trDelta);
@@ -476,42 +418,36 @@ void G_RunMissile( gentity_t *ent ) {
 				ent->count != tr.entityNum
 			) {
 				ent->count = tr.entityNum;
-				//G_BounceMissile(ent, &tr);
+
 				VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
 				ent->s.pos.trTime = level.time;
 				G_AddEvent(ent, EV_GRENADE_BOUNCE, 0);
-				//G_AddEvent(ent, EV_JUMP_PAD, 0);
 				VectorCopy(trigger->s.origin2, ent->s.pos.trDelta);
 				G_RunThink(ent);
 				return;
 			}
 
 		}
-#endif
-#if 1	// JUHOX: make monster seed bounce on playerclip
+
+        // JUHOX: make monster seed bounce on playerclip
 		if (
 			ent->s.weapon == WP_MONSTER_LAUNCHER &&
 			(tr.contents & CONTENTS_PLAYERCLIP)
 		) {
 			tr.surfaceFlags &= ~SURF_NOIMPACT;
 		}
-#endif
+
 		// never explode or bounce on sky
 		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
 			// If grapple, reset owner
-#if 0	// JUHOX: use Weapon_HookFree() when grapple hits sky
-			if (ent->parent && ent->parent->client && ent->parent->client->hook == ent) {
-				ent->parent->client->hook = NULL;
-			}
-			G_FreeEntity( ent );
-#else
+
 			if (ent->s.weapon == WP_GRAPPLING_HOOK) {
 				Weapon_HookFree(ent);
 			}
 			else {
 				G_FreeEntity(ent);
 			}
-#endif
+
 			return;
 		}
 		G_MissileImpact( ent, &tr );
@@ -555,13 +491,9 @@ gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->splashMethodOfDeath = MOD_PLASMA_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
-
 	bolt->s.pos.trType = TR_LINEAR;
-#if 0	// JUHOX: reduce missile prestep for plasma gun
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
-#else
 	bolt->s.pos.trTime = level.time - 20;
-#endif
+
 	VectorCopy( start, bolt->s.pos.trBase );
 	VectorScale( dir, 2000, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
@@ -615,11 +547,10 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
 	// JUHOX: make grenade damagable
-#if 1
 	bolt->takedamage = qtrue;
 	bolt->health = 1;
 	bolt->die = Grenade_Die;
-#endif
+
 	bolt->count = -1;	// JUHOX: grenade's last used jump pad
 
 	bolt->s.pos.trType = TR_GRAVITY;
@@ -640,11 +571,10 @@ JUHOX: G_TriggerMonsterSeed
 derived from G_ExplodeMissile()
 =================
 */
-#if MONSTER_MODE
+
 static void G_TriggerMonsterSeed(gentity_t* seed) {
 	vec3_t origin;
 
-	//seed->s.eType = ET_GENERAL;
 	seed->nextthink = 0;
 	seed->think = NULL;
 
@@ -655,7 +585,7 @@ static void G_TriggerMonsterSeed(gentity_t* seed) {
 		seed->freeAfterEvent = qtrue;
 	}
 }
-#endif
+
 
 /*
 =================
@@ -664,7 +594,6 @@ JUHOX: fire_monster_seed
 derived of fire_grenade()
 =================
 */
-#if MONSTER_MODE
 gentity_t* fire_monster_seed(gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* seed;
 
@@ -683,7 +612,7 @@ gentity_t* fire_monster_seed(gentity_t* self, vec3_t start, vec3_t dir) {
 	VectorSet(seed->r.mins, -4, -4, -4);
 	VectorSet(seed->r.maxs, 4, 4, 4);
 	seed->parent = self;
-	seed->clipmask = /*MASK_SHOT*/MASK_PLAYERSOLID;
+	seed->clipmask = MASK_PLAYERSOLID;
 	seed->target_ent = NULL;
 
 	seed->s.pos.trType = TR_GRAVITY;
@@ -696,7 +625,7 @@ gentity_t* fire_monster_seed(gentity_t* self, vec3_t start, vec3_t dir) {
 
 	return seed;
 }
-#endif
+
 
 //=============================================================================
 
@@ -732,7 +661,7 @@ gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, /*2000*/700, bolt->s.pos.trDelta );	// JUHOX
+	VectorScale( dir, 700, bolt->s.pos.trDelta );	// JUHOX
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 	VectorCopy (start, bolt->r.currentOrigin);
 
@@ -768,9 +697,7 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->splashMethodOfDeath = MOD_ROCKET_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
-#if MONSTER_MODE
 	bolt->s.otherEntityNum = self->s.clientNum;	// JUHOX: so client can ceck for fireball
-#endif
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -789,9 +716,7 @@ fire_grapple
 */
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*hook;
-#if GRAPPLE_ROPE
 	float speed;	// JUHOX
-#endif
 
 	Weapon_HookFree(self->client->hook);	// JUHOX
 	self->client->hook = NULL;				// JUHOX
@@ -801,7 +726,7 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 	hook = G_Spawn();
 	if (!hook) return NULL;	// JUHOX BUGFIX
 	hook->classname = "hook";
-	hook->nextthink = level.time + /*10000*/20000;	// JUHOX
+	hook->nextthink = level.time + 20000;	// JUHOX
 	hook->think = Weapon_HookFree;
 	hook->s.eType = ET_MISSILE;
 	hook->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -811,16 +736,11 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 	hook->clipmask = MASK_SHOT;
 	hook->parent = self;
 	hook->target_ent = NULL;
-	//hook->damage = 25;	// -JUHOX
-#if GRAPPLE_ROPE	// JUHOX: the hooks needs some extension
+	// JUHOX: the hooks needs some extension
 	VectorSet(hook->r.mins, -ROPE_ELEMENT_SIZE, -ROPE_ELEMENT_SIZE, -ROPE_ELEMENT_SIZE);
 	VectorSet(hook->r.maxs, ROPE_ELEMENT_SIZE, ROPE_ELEMENT_SIZE, ROPE_ELEMENT_SIZE);
-#endif
 
 	// JUHOX: let hook fly like a grenade
-#if !GRAPPLE_ROPE
-	hook->s.pos.trType = TR_LINEAR;
-#else
 	switch (g_grapple.integer) {
 	case HM_classic:
 		hook->s.pos.trType = TR_LINEAR;
@@ -840,23 +760,18 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 		speed = 2000;
 		break;
 	}
-#endif
+
 	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
 	hook->s.otherEntityNum = self->s.number; // use to match beam in client
 	VectorCopy( start, hook->s.pos.trBase );
 	// JUHOX: hook speed made variable
-#if !GRAPPLE_ROPE
-	VectorScale( dir, 800, hook->s.pos.trDelta );
-#else
 	VectorScale(dir, speed, hook->s.pos.trDelta);
-#endif
 	SnapVector( hook->s.pos.trDelta );			// save net bandwidth
 	VectorCopy (start, hook->r.currentOrigin);
 
 	self->client->hook = hook;
 
 	// JUHOX: insert first rope element
-#if GRAPPLE_ROPE
 	switch (g_grapple.integer) {
 	case HM_classic:
 		break;
@@ -866,11 +781,8 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 		VectorCopy(hook->s.pos.trDelta, self->client->ropeElements[0].velocity);
 		break;
 	}
-#endif
 
-#if GRAPPLE_ROPE
 	self->client->lastTimeWinded = level.time;	// JUHOX
-#endif
 
 	return hook;
 }

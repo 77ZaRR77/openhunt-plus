@@ -127,11 +127,9 @@ static void Main_MenuDraw( void ) {
             Menu_Draw( &s_main.menu );
 	}
 
-    UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
-    //color[0] = 0.4;
-    //color[1] = 0.4;
-    //color[2] = 0.4;
-    UI_DrawString(320, 430, "OpenHunt Mod - " __DATE__ "                                        ",  UI_CENTER|UI_SMALLFONT, color);
+    //UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
+
+    UI_DrawString(320, 430, "OpenHunt Plus Mod - " __DATE__ "                                     ",  UI_CENTER|UI_SMALLFONT, color);
 
 	if (uis.startTitleMusic) {
 		trap_S_StartBackgroundTrack("music/hunt.wav", "");

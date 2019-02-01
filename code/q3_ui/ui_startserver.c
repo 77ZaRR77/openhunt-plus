@@ -8,9 +8,7 @@ START SERVER MENU *****
 =============================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define GAMESERVER_BACK0		"menu/art/back_0"
 #define GAMESERVER_BACK1		"menu/art/back_1"
@@ -85,22 +83,15 @@ static const char* gametype_names[] = {
 	"",	// 1FCTF
 	"",	// Obelisk
 	"",	// Harvester
-#if MONSTER_MODE
 	"Save the Universe",
-#if ESCAPE_MODE
 	"Escape From Hell"
-#endif
-#endif
 };
-
-// use ui_servers2.c definition
-//extern const char* punkbuster_items[];
 
 static void UI_ServerOptionsMenu( qboolean multiplayer );
 
-#if 1	// JUHOX: template variables
+// JUHOX: template variables
 gametemplate_t gtmpl;
-#endif
+
 
 
 /*
@@ -133,25 +124,19 @@ static int GametypeBits( char *string ) {
 
 		if( Q_stricmp( token, "ffa" ) == 0 ) {
 			bits |= 1 << GT_FFA;
-#if 1	// JUHOX: accept ffa maps for other gametypes too
+            // JUHOX: accept ffa maps for other gametypes too
 			bits |= 1 << GT_TOURNAMENT;
 			bits |= 1 << GT_TEAM;
-#if MONSTER_MODE
 			bits |= 1 << GT_STU;
-#endif
-#endif
 			continue;
 		}
 
 		if( Q_stricmp( token, "tourney" ) == 0 ) {
 			bits |= 1 << GT_TOURNAMENT;
-#if 1	// JUHOX: accept tourney maps for other gametypes too
+            // JUHOX: accept tourney maps for other gametypes too
 			bits |= 1 << GT_FFA;
 			bits |= 1 << GT_TEAM;
-#if MONSTER_MODE
 			bits |= 1 << GT_STU;
-#endif
-#endif
 			continue;
 		}
 
@@ -162,40 +147,33 @@ static int GametypeBits( char *string ) {
 
 		if( Q_stricmp( token, "team" ) == 0 ) {
 			bits |= 1 << GT_TEAM;
-#if 1	// JUHOX: accept tdm maps for other gametypes too
+            // JUHOX: accept tdm maps for other gametypes too
 			bits |= 1 << GT_FFA;
 			bits |= 1 << GT_TOURNAMENT;
-#if MONSTER_MODE
 			bits |= 1 << GT_STU;
-#endif
-#endif
 			continue;
 		}
 
 		if( Q_stricmp( token, "ctf" ) == 0 ) {
 			bits |= 1 << GT_CTF;
-#if 1	// JUHOX: accept ctf maps for other gametypes too
+            // JUHOX: accept ctf maps for other gametypes too
 			bits |= 1 << GT_FFA;
 			bits |= 1 << GT_TOURNAMENT;
 			bits |= 1 << GT_TEAM;
-#if MONSTER_MODE
 			bits |= 1 << GT_STU;
-#endif
-#endif
 			continue;
 		}
-#if MONSTER_MODE	// JUHOX: check for STU map
+        // JUHOX: check for STU map
 		if (Q_stricmp(token, "stu") == 0) {
 			bits |= 1 << GT_STU;
 			continue;
 		}
-#endif
-#if ESCAPE_MODE	// JUHOX: check for EFH map
+
+        // JUHOX: check for EFH map
 		if (Q_stricmp(token, "efh") == 0) {
 			bits |= 1 << GT_EFH;
 			continue;
 		}
-#endif
 	}
 
 	return bits;
@@ -452,7 +430,7 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.banner.color         = color_white;
 	s_startserver.banner.style         = UI_CENTER;
 
-#if 1	// JUHOX: add game title
+	// JUHOX: add game title
 	Q_strncpyz(s_startserver.gamename, gametype_names[s_startserver.gametype], sizeof(s_startserver.gamename));
 	s_startserver.gametitle.generic.type	= MTYPE_PTEXT;
 	s_startserver.gametitle.generic.x		= 320;
@@ -461,18 +439,12 @@ static void StartServer_MenuInit( void ) {
 	s_startserver.gametitle.color			= colorWhite;
 	s_startserver.gametitle.style			= UI_CENTER;
 	Menu_AddItem(&s_startserver.menu, &s_startserver.gametitle);
-#endif
-
 
 	for (i=0; i<MAX_MAPSPERPAGE; i++)
 	{
-#if 0	// JUHOX: adapt map selector position
-		x =	(i % MAX_MAPCOLS) * (128+8) + 188;
-		y = (i / MAX_MAPROWS) * (128+8) + 96;
-#else
+
 		x = (i % MAX_MAPCOLS) * (128+8) + 320 - (64+4)*MAX_MAPCOLS + 4;
 		y = (i / MAX_MAPCOLS) * (128+8) + 96;	// JUHOX BUGFIX: MAX_MAPROWS is wrong!
-#endif
 
 		s_startserver.mappics[i].generic.type   = MTYPE_BITMAP;
 		s_startserver.mappics[i].generic.flags  = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
@@ -603,9 +575,8 @@ void StartServer_Cache( void )
 	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );
 
 	precache = trap_Cvar_VariableValue("com_buildscript");
-#if 1	// JUHOX: precaching
+	// JUHOX: precaching
 	precache |= (int) trap_Cvar_VariableValue("ui_precache");
-#endif
 
 	s_startserver.nummaps = UI_GetNumArenas();
 
@@ -669,13 +640,9 @@ typedef struct {
 	menufield_s			fraglimit;
 	menufield_s			flaglimit;
 	// JUHOX: artefacts menu field definition
-#if MONSTER_MODE
 	menufield_s			artefacts;
-#endif
 	// JUHOX: distanceLimit menu field definition
-#if ESCAPE_MODE
 	menufield_s			distanceLimit;
-#endif
 	menuradiobutton_s	friendlyfire;
 	menutext_s			advOptions;	// JUHOX
 	int					respawnDelay;	// JUHOX
@@ -686,15 +653,13 @@ typedef struct {
 	qboolean			stamina;	// JUHOX
 	int					baseHealth;	// JUHOX
 	int					lightningDamageLimit;	// JUHOX
-#if GRAPPLE_ROPE
 	qboolean			grapple;	// JUHOX
-#endif
 	qboolean			noItems;	// JUHOX
 	qboolean			noHealthRegen;	// JUHOX
 	qboolean			unlimitedAmmo;	// JUHOX
 	qboolean			cloakingDevice;	// JUHOX
 	int					weaponLimit;	// JUHOX
-#if MONSTER_MODE	// JUHOX: server variable definitions for STU
+	// JUHOX: server variable definitions for STU
 	qboolean			monsterLauncher;
 	int					minMonsters;
 	int					maxMonsters;
@@ -711,11 +676,11 @@ typedef struct {
 	char				monsterModel3[32];
 	qboolean			skipEndSequence;
 	int					scoreMode;
-#endif
-#if ESCAPE_MODE	// JUHOX: server variable definitions for EFH
+
+	// JUHOX: server variable definitions for EFH
 	int					monsterLoad;
 	qboolean			challengingEnv;
-#endif
+
 	menufield_s			hostname;
 	menuradiobutton_s	pure;
 	menulist_s			botSkill;
@@ -831,7 +796,7 @@ static void ServerOptions_Start( void ) {
 	int		unlimitedAmmo;		// JUHOX
 	int		cloakingDevice;		// JUHOX
 	int		weaponLimit;		// JUHOX
-#if MONSTER_MODE
+
 	qboolean monsterLauncher;	// JUHOX
 	int		maxMonsters;		// JUHOX
 	int		maxMonstersPP;		// JUHOX
@@ -840,7 +805,7 @@ static void ServerOptions_Start( void ) {
 	char*	monsterModel1;		// JUHOX
 	char*	monsterModel2;		// JUHOX
 	char*	monsterModel3;		// JUHOX
-#endif
+
 	int		n;
 	char	buf[64];
 
@@ -867,7 +832,6 @@ static void ServerOptions_Start( void ) {
 	unlimitedAmmo = s_serveroptions.unlimitedAmmo;	// JUHOX
 	cloakingDevice = s_serveroptions.cloakingDevice;	// JUHOX
 	weaponLimit = s_serveroptions.weaponLimit;	// JUHOX
-#if MONSTER_MODE
 	monsterLauncher = Com_Clamp(0, 1, s_serveroptions.monsterLauncher);	// JUHOX
 	maxMonstersPP = Com_Clamp(1, MAX_MONSTERS, s_serveroptions.maxMonstersPerPlayer);	// JUHOX
 	maxMonsters = Com_Clamp(1, MAX_MONSTERS, s_serveroptions.maxMonsters);	// JUHOX
@@ -876,7 +840,6 @@ static void ServerOptions_Start( void ) {
 	monsterModel1 = s_serveroptions.monsterModel1;	// JUHOX
 	monsterModel2 = s_serveroptions.monsterModel2;	// JUHOX
 	monsterModel3 = s_serveroptions.monsterModel3;	// JUHOX
-#endif
 
 	//set maxclients
 	for( n = 0, maxclients = 0; n < PLAYER_SLOTS; n++ ) {
@@ -903,12 +866,10 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_ffa_unlimitedAmmo", unlimitedAmmo);	// JUHOX
 		trap_Cvar_SetValue("ui_ffa_cloakingDevice", cloakingDevice);	// JUHOX
 		trap_Cvar_SetValue("ui_ffa_weaponLimit", weaponLimit);	// JUHOX
-#if MONSTER_MODE
 		trap_Cvar_SetValue("ui_ffa_monsterLauncher", monsterLauncher);	// JUHOX
 		trap_Cvar_SetValue("ui_ffa_maxMonsters", maxMonsters);	// JUHOX
 		trap_Cvar_SetValue("ui_ffa_maxMonstersPP", maxMonstersPP);	// JUHOX
 		trap_Cvar_SetValue("ui_ffa_monsterHealthScale", monsterHealth);	// JUHOX
-#endif
 #if MEETING
 		trap_Cvar_SetValue("ui_ffa_meeting", meeting);	// JUHOX
 #endif
@@ -925,12 +886,10 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_tourney_unlimitedAmmo", unlimitedAmmo);	// JUHOX
 		trap_Cvar_SetValue("ui_tourney_cloakingDevice", cloakingDevice);	// JUHOX
 		trap_Cvar_SetValue("ui_tourney_weaponLimit", weaponLimit);	// JUHOX
-#if MONSTER_MODE
 		trap_Cvar_SetValue("ui_tourney_monsterLauncher", monsterLauncher);	// JUHOX
 		trap_Cvar_SetValue("ui_tourney_maxMonsters", maxMonsters);	// JUHOX
 		trap_Cvar_SetValue("ui_tourney_maxMonstersPP", maxMonstersPP);	// JUHOX
 		trap_Cvar_SetValue("ui_tourney_monsterHealthScale", monsterHealth);	// JUHOX
-#endif
 #if MEETING
 		trap_Cvar_SetValue("ui_tourney_meeting", meeting);	// JUHOX
 #endif
@@ -948,12 +907,10 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_team_unlimitedAmmo", unlimitedAmmo);	// JUHOX
 		trap_Cvar_SetValue("ui_team_cloakingDevice", cloakingDevice);	// JUHOX
 		trap_Cvar_SetValue("ui_team_weaponLimit", weaponLimit);	// JUHOX
-#if MONSTER_MODE
 		trap_Cvar_SetValue("ui_team_monsterLauncher", monsterLauncher);	// JUHOX
 		trap_Cvar_SetValue("ui_team_maxMonsters", maxMonsters);	// JUHOX
 		trap_Cvar_SetValue("ui_team_maxMonstersPP", maxMonstersPP);	// JUHOX
 		trap_Cvar_SetValue("ui_team_monsterHealthScale", monsterHealth);	// JUHOX
-#endif
 #if MEETING
 		trap_Cvar_SetValue("ui_team_meeting", meeting);	// JUHOX
 #endif
@@ -971,18 +928,16 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_ctf_unlimitedAmmo", unlimitedAmmo);	// JUHOX
 		trap_Cvar_SetValue("ui_ctf_cloakingDevice", cloakingDevice);	// JUHOX
 		trap_Cvar_SetValue("ui_ctf_weaponLimit", weaponLimit);	// JUHOX
-#if MONSTER_MODE
 		trap_Cvar_SetValue("ui_ctf_monsterLauncher", monsterLauncher);	// JUHOX
 		trap_Cvar_SetValue("ui_ctf_maxMonsters", maxMonsters);	// JUHOX
 		trap_Cvar_SetValue("ui_ctf_maxMonstersPP", maxMonstersPP);	// JUHOX
 		trap_Cvar_SetValue("ui_ctf_monsterHealthScale", monsterHealth);	// JUHOX
-#endif
 #if MEETING
 		trap_Cvar_SetValue("ui_ctf_meeting", meeting);	// JUHOX
 #endif
 		break;
 
-#if MONSTER_MODE	// JUHOX: set STU ui cvars
+	// JUHOX: set STU ui cvars
 	case GT_STU:
 		trap_Cvar_SetValue("ui_stu_fraglimit", fraglimit);
 		trap_Cvar_SetValue("ui_stu_timelimit", timelimit);
@@ -1031,9 +986,8 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_stu_meeting", meeting);	// JUHOX
 #endif
 		break;
-#endif
 
-#if ESCAPE_MODE	// JUHOX: set EFH ui cvars
+	// JUHOX: set EFH ui cvars
 	case GT_EFH:
 		trap_Cvar_SetValue("ui_efh_fraglimit", fraglimit);
 		trap_Cvar_SetValue("ui_efh_timelimit", timelimit);
@@ -1069,10 +1023,9 @@ static void ServerOptions_Start( void ) {
 		trap_Cvar_SetValue("ui_efh_meeting", meeting);	// JUHOX
 #endif
 		break;
-#endif
 	}
 
-#if MONSTER_MODE	// JUHOX: cvars (also) needed for monster launcher/efh
+	// JUHOX: cvars (also) needed for monster launcher/efh
 	trap_Cvar_SetValue("g_monsterLauncher", monsterLauncher);
 	trap_Cvar_SetValue("g_maxMonsters", maxMonsters);
 	trap_Cvar_SetValue("g_maxMonstersPP", maxMonstersPP);
@@ -1081,7 +1034,6 @@ static void ServerOptions_Start( void ) {
 	trap_Cvar_Set("monsterModel2", monsterModel2);
 	trap_Cvar_Set("monsterModel3", monsterModel3);
 	trap_Cvar_SetValue("g_scoreMode", Com_Clamp(0, 1, s_serveroptions.scoreMode));	// JUHOX
-#endif
 
 	trap_Cvar_SetValue("g_armorFragments", Com_Clamp(0, 1, armorFragments));	// JUHOX
 	trap_Cvar_SetValue("ui_additionalSlots", Com_Clamp(0, MAX_CLIENTS, additionalSlots));	// JUHOX
@@ -1098,9 +1050,7 @@ static void ServerOptions_Start( void ) {
 	trap_Cvar_SetValue("g_stamina", s_serveroptions.stamina);	// JUHOX
 	trap_Cvar_SetValue("g_baseHealth", s_serveroptions.baseHealth);	// JUHOX
 	trap_Cvar_SetValue("g_lightningDamageLimit", s_serveroptions.lightningDamageLimit);	// JUHOX
-#if GRAPPLE_ROPE
 	trap_Cvar_SetValue("g_grapple", s_serveroptions.grapple);	// JUHOX
-#endif
 	trap_Cvar_SetValue("g_noItems", noItems);	// JUHOX
 	trap_Cvar_SetValue("g_noHealthRegen", noHealthRegen);	// JUHOX
 	trap_Cvar_SetValue("g_unlimitedAmmo", unlimitedAmmo);	// JUHOX
@@ -1169,11 +1119,10 @@ static void ServerOptions_InitPlayerItems( void ) {
 	else {
 		v = 1;	// bot
 	}
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+	// JUHOX: no bots in EFH
 	if (s_serveroptions.gametype == GT_EFH) {
 		v = 0;	// open
 	}
-#endif
 
 	for( n = 0; n < PLAYER_SLOTS; n++ ) {
 		s_serveroptions.playerType[n].curvalue = v;
@@ -1195,7 +1144,7 @@ static void ServerOptions_InitPlayerItems( void ) {
 	}
 
 	// init teams
-#if MONSTER_MODE	// JUHOX: hide team selector for STU & EFH
+	// JUHOX: hide team selector for STU & EFH
 	if (s_serveroptions.gametype >= GT_STU) {
 		for (n = 0; n < PLAYER_SLOTS; n++) {
 			s_serveroptions.playerTeam[n].curvalue = 1;	// 0=blue, 1=red
@@ -1203,7 +1152,7 @@ static void ServerOptions_InitPlayerItems( void ) {
 		}
 	}
 	else
-#endif
+
 	if( s_serveroptions.gametype >= GT_TEAM ) {
 		for( n = 0; n < (PLAYER_SLOTS / 2); n++ ) {
 			s_serveroptions.playerTeam[n].curvalue = 0;
@@ -1229,13 +1178,6 @@ static void ServerOptions_SetPlayerItems( void ) {
 	int		start;
 	int		n;
 
-	// types
-//	for( n = 0; n < PLAYER_SLOTS; n++ ) {
-//		if( (!s_serveroptions.multiplayer) && (n > 0) && (s_serveroptions.playerType[n].curvalue == 0) ) {
-//			s_serveroptions.playerType[n].curvalue = 1;
-//		}
-//	}
-
 	// names
 	if( s_serveroptions.dedicated.curvalue == 0 ) {
 		s_serveroptions.player0.string = "Human";
@@ -1248,14 +1190,14 @@ static void ServerOptions_SetPlayerItems( void ) {
 		start = 0;
 	}
 	for( n = start; n < PLAYER_SLOTS; n++ ) {
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+        // JUHOX: no bots in EFH
 		if (
 			s_serveroptions.gametype == GT_EFH &&
 			s_serveroptions.playerType[n].curvalue == 1
 		) {
 			s_serveroptions.playerType[n].curvalue = 2;	// closed
 		}
-#endif
+
 		if( s_serveroptions.playerType[n].curvalue == 1 ) {
 			s_serveroptions.playerName[n].generic.flags &= ~(QMF_INACTIVE|QMF_HIDDEN);
 		}
@@ -1268,11 +1210,11 @@ static void ServerOptions_SetPlayerItems( void ) {
 	if( s_serveroptions.gametype < GT_TEAM ) {
 		return;
 	}
-#if MONSTER_MODE	// JUHOX: don't change team selector's hidden status for STU & EFH
+	// JUHOX: don't change team selector's hidden status for STU & EFH
 	if (s_serveroptions.gametype >= GT_STU) {
 		return;
 	}
-#endif
+
 	for( n = start; n < PLAYER_SLOTS; n++ ) {
 		if( s_serveroptions.playerType[n].curvalue == 2 ) {
 			s_serveroptions.playerTeam[n].generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
@@ -1349,9 +1291,6 @@ static void ServerOptions_StatusBar( void* ptr ) {
 	switch( ((menucommon_s*)ptr)->id ) {
 	default:
 		// JUHOX: in STU & EFH move server options status bar a bit lower
-#if !MONSTER_MODE
-		UI_DrawString( /*320*/420, /*440*/400, /*"0 = NO LIMIT"*/"0 = no limit", UI_CENTER|UI_SMALLFONT, colorWhite );	// JUHOX
-#else
 		{
 			int y;
 
@@ -1361,7 +1300,6 @@ static void ServerOptions_StatusBar( void* ptr ) {
 			}
 			UI_DrawString(420, y, "0 = no limit", UI_CENTER|UI_SMALLFONT, colorWhite);
 		}
-#endif
 		break;
 	}
 }
@@ -1374,9 +1312,7 @@ JUHOX: ServerOptions_PureServerStatusBar
 static void ServerOptions_PureServerStatusBar(void* ptr) {
 	if (s_serveroptions.gametype < GT_TEAM) return;
 	// JUHOX: no TSS with STU & EFH
-#if MONSTER_MODE
 	if (s_serveroptions.gametype >= GT_STU) return;
-#endif
 
 #if !TSSINCVAR
 	if (s_serveroptions.pure.curvalue) {
@@ -1391,7 +1327,6 @@ static void ServerOptions_PureServerStatusBar(void* ptr) {
 JUHOX: ServerOptions_ArtefactsStatusBar
 =================
 */
-#if MONSTER_MODE
 static void ServerOptions_ArtefactsStatusBar(void* ptr) {
 	int y;
 
@@ -1401,7 +1336,6 @@ static void ServerOptions_ArtefactsStatusBar(void* ptr) {
 	}
 	UI_DrawString(420, y, "0 ... 998, 999 = unlimited", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
 
 /*
 ===============
@@ -1432,11 +1366,9 @@ static void ServerOptions_LevelshotDraw( void *self ) {
 	UI_DrawString( x, y, s_serveroptions.mapnamebuffer, UI_CENTER|UI_SMALLFONT, color_orange );
 
 	y += SMALLCHAR_HEIGHT;
-#if 0	// JUHOX: get game name without remapping
-	UI_DrawString( x, y, gametype_items[gametype_remap2[s_serveroptions.gametype]], UI_CENTER|UI_SMALLFONT, color_orange );
-#else
+
 	UI_DrawString(x, y, gametype_names[s_serveroptions.gametype], UI_CENTER|UI_SMALLFONT, color_orange);
-#endif
+
 }
 
 
@@ -1449,20 +1381,16 @@ static void ServerOptions_InitBotNames( void ) {
 	char		*bot;
 	char		bots[MAX_INFO_STRING];
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+	// JUHOX: no bots in EFH
 	if (s_serveroptions.gametype == GT_EFH) {
 		count = 1;
 		goto CloseSuperfluousSlots;
 	}
-#endif
 
-#if !MONSTER_MODE	// JUHOX: initialize bot name in STU like in FFA
-	if( s_serveroptions.gametype >= GT_TEAM ) {
-#else
 	count = 1;
 	if (s_serveroptions.gametype == GT_STU) goto Init;
 	if (s_serveroptions.gametype >= GT_TEAM) {
-#endif
+
 		Q_strncpyz( s_serveroptions.playerNameBuffers[1], "grunt", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[2], "major", 16 );
 		if( s_serveroptions.gametype == GT_TEAM ) {
@@ -1486,14 +1414,14 @@ static void ServerOptions_InitBotNames( void ) {
 		s_serveroptions.playerType[10].curvalue = 2;
 		s_serveroptions.playerType[11].curvalue = 2;
 
-#if	1	// JUHOX: add more bot names1
+        // JUHOX: add more bot names1
 		Q_strncpyz( s_serveroptions.playerNameBuffers[3], "visor", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[4], "anarki", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[5], "xaero", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[9], "visor", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[10], "anarki", 16 );
 		Q_strncpyz( s_serveroptions.playerNameBuffers[11], "xaero", 16 );
-#endif
+
 		return;
 	}
 
@@ -1533,12 +1461,6 @@ static void ServerOptions_InitBotNames( void ) {
 	}
 
 	// JUHOX: initialize bot slots with names
-#if 0
-	// set the rest of the bot slots to "---"
-	for( n = count; n < PLAYER_SLOTS; n++ ) {
-		strcpy( s_serveroptions.playerNameBuffers[n], "--------" );
-	}
-#else
 	Init:
 	for (n = count; n < PLAYER_SLOTS; n++) {
 		static const char* const names[PLAYER_SLOTS] = {
@@ -1549,15 +1471,8 @@ static void ServerOptions_InitBotNames( void ) {
 
 		strcpy(s_serveroptions.playerNameBuffers[n], names[n]);
 	}
-#endif
 
 	// JUHOX: check "maxplayers" for # of open slots
-#if 0
-	// pad up to #8 as open slots
-	for( ;count < 8; count++ ) {
-		s_serveroptions.playerType[count].curvalue = 0;
-	}
-#else
 	CloseSuperfluousSlots:
 	{
 		int openSlots;
@@ -1591,7 +1506,6 @@ static void ServerOptions_InitBotNames( void ) {
 			Com_sprintf(s_serveroptions.additionalSlots.field.buffer, 3, "%i", n);
 		}
 	}
-#endif
 
 	// close off the rest by default
 	for( ;count < PLAYER_SLOTS; count++ ) {
@@ -1622,12 +1536,11 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.unlimitedAmmo = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ffa_unlimitedAmmo"));	// JUHOX
 		s_serveroptions.cloakingDevice = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ffa_cloakingDevice"));	// JUHOX
 		s_serveroptions.weaponLimit = (int) Com_Clamp(0, MAX_WEAPONS, trap_Cvar_VariableValue("ui_ffa_weaponLimit"));	// JUHOX
-#if MONSTER_MODE
 		s_serveroptions.monsterLauncher = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ffa_monsterLauncher"));	// JUHOX
 		s_serveroptions.maxMonsters = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_ffa_maxMonsters"));	// JUHOX
 		s_serveroptions.maxMonstersPerPlayer = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_ffa_maxMonstersPP"));	// JUHOX
 		s_serveroptions.monsterHealthScale = (int) Com_Clamp(1, 1000, trap_Cvar_VariableValue("ui_ffa_monsterHealthScale"));	// JUHOX
-#endif
+
 #if MEETING
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ffa_meeting"));	// JUHOX
 #endif
@@ -1642,12 +1555,10 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.unlimitedAmmo = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_tourney_unlimitedAmmo"));	// JUHOX
 		s_serveroptions.cloakingDevice = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_tourney_cloakingDevice"));	// JUHOX
 		s_serveroptions.weaponLimit = (int) Com_Clamp(0, MAX_WEAPONS, trap_Cvar_VariableValue("ui_tourney_weaponLimit"));	// JUHOX
-#if MONSTER_MODE
 		s_serveroptions.monsterLauncher = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_tourney_monsterLauncher"));	// JUHOX
 		s_serveroptions.maxMonsters = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_tourney_maxMonsters"));	// JUHOX
 		s_serveroptions.maxMonstersPerPlayer = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_tourney_maxMonstersPP"));	// JUHOX
 		s_serveroptions.monsterHealthScale = (int) Com_Clamp(1, 1000, trap_Cvar_VariableValue("ui_tourney_monsterHealthScale"));	// JUHOX
-#endif
 #if MEETING
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_tourney_meeting"));	// JUHOX
 #endif
@@ -1665,12 +1576,10 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.unlimitedAmmo = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_unlimitedAmmo"));	// JUHOX
 		s_serveroptions.cloakingDevice = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_cloakingDevice"));	// JUHOX
 		s_serveroptions.weaponLimit = (int) Com_Clamp(0, MAX_WEAPONS, trap_Cvar_VariableValue("ui_team_weaponLimit"));	// JUHOX
-#if MONSTER_MODE
 		s_serveroptions.monsterLauncher = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_monsterLauncher"));	// JUHOX
 		s_serveroptions.maxMonsters = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_team_maxMonsters"));	// JUHOX
 		s_serveroptions.maxMonstersPerPlayer = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_team_maxMonstersPP"));	// JUHOX
 		s_serveroptions.monsterHealthScale = (int) Com_Clamp(1, 1000, trap_Cvar_VariableValue("ui_team_monsterHealthScale"));	// JUHOX
-#endif
 #if MEETING
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_meeting"));	// JUHOX
 #endif
@@ -1688,18 +1597,16 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.unlimitedAmmo = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_unlimitedAmmo"));	// JUHOX
 		s_serveroptions.cloakingDevice = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_cloakingDevice"));	// JUHOX
 		s_serveroptions.weaponLimit = (int) Com_Clamp(0, MAX_WEAPONS, trap_Cvar_VariableValue("ui_ctf_weaponLimit"));	// JUHOX
-#if MONSTER_MODE
 		s_serveroptions.monsterLauncher = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_monsterLauncher"));	// JUHOX
 		s_serveroptions.maxMonsters = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_ctf_maxMonsters"));	// JUHOX
 		s_serveroptions.maxMonstersPerPlayer = (int) Com_Clamp(1, MAX_MONSTERS, trap_Cvar_VariableValue("ui_ctf_maxMonstersPP"));	// JUHOX
 		s_serveroptions.monsterHealthScale = (int) Com_Clamp(1, 1000, trap_Cvar_VariableValue("ui_ctf_monsterHealthScale"));	// JUHOX
-#endif
 #if MEETING
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_meeting"));	// JUHOX
 #endif
 		break;
 
-#if MONSTER_MODE	// JUHOX: read STU ui cvars
+	// JUHOX: read STU ui cvars
 	case GT_STU:
 		Com_sprintf(s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_stu_fraglimit")));
 		Com_sprintf(s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_stu_timelimit")));
@@ -1730,9 +1637,9 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_stu_meeting"));	// JUHOX
 #endif
 		break;
-#endif
 
-#if ESCAPE_MODE	// JUHOX: read EFH ui cvars
+
+// JUHOX: read EFH ui cvars
 	case GT_EFH:
 		Com_sprintf(s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_efh_fraglimit")));
 		Com_sprintf(s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_efh_timelimit")));
@@ -1756,15 +1663,13 @@ static void ServerOptions_SetMenuItems( void ) {
 		s_serveroptions.meeting.curvalue = (int) Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_efh_meeting"));	// JUHOX
 #endif
 		break;
-#endif
 	}
 
-#if MONSTER_MODE	// JUHOX: cvars (also) needed for monster launcher & EFH
+	// JUHOX: cvars (also) needed for monster launcher & EFH
 	trap_Cvar_VariableStringBuffer("monsterModel1", s_serveroptions.monsterModel1, sizeof(s_serveroptions.monsterModel1));
 	trap_Cvar_VariableStringBuffer("monsterModel2", s_serveroptions.monsterModel2, sizeof(s_serveroptions.monsterModel2));
 	trap_Cvar_VariableStringBuffer("monsterModel3", s_serveroptions.monsterModel3, sizeof(s_serveroptions.monsterModel3));
 	s_serveroptions.scoreMode = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("g_scoreMode"));
-#endif
 
 	s_serveroptions.respawnAtPOD = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("respawnAtPOD"));	// JUHOX
 	s_serveroptions.tssSafetyMode = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("tssSafetyModeAllowed"));	// JUHOX
@@ -1772,9 +1677,8 @@ static void ServerOptions_SetMenuItems( void ) {
 	s_serveroptions.stamina = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("g_stamina"));	// JUHOX
 	s_serveroptions.baseHealth = (int)Com_Clamp(1, 1000, trap_Cvar_VariableValue("g_baseHealth"));	// JUHOX
 	s_serveroptions.lightningDamageLimit = (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("g_lightningDamageLimit"));	// JUHOX
-#if GRAPPLE_ROPE
 	s_serveroptions.grapple = (int)Com_Clamp(0, HM_num_modes-1, trap_Cvar_VariableValue("g_grapple"));	// JUHOX
-#endif
+
 	Com_sprintf(s_serveroptions.additionalSlots.field.buffer, 3, "%i", (int)Com_Clamp(0, MAX_CLIENTS, trap_Cvar_VariableValue("ui_additionalSlots")));	// JUHOX
 
 	Q_strncpyz( s_serveroptions.hostname.field.buffer, UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
@@ -1874,12 +1778,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 
 	memset( &s_serveroptions, 0 ,sizeof(serveroptions_t) );
 	s_serveroptions.multiplayer = multiplayer;
-
-#if !MONSTER_MODE	// JUHOX: also accept GT_STU
-	s_serveroptions.gametype = (int)Com_Clamp( 0, 5, trap_Cvar_VariableValue( "g_gameType" ) );
-#else
 	s_serveroptions.gametype = (int)Com_Clamp( 0, GT_MAX_GAME_TYPE-1, trap_Cvar_VariableValue( "g_gameType" ) );
-#endif
 
 	ServerOptions_Cache();
 
@@ -1942,7 +1841,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.timelimit.field.widthInChars = /*3*/4;	// JUHOX
 	s_serveroptions.timelimit.field.maxchars     = 3;
 
-#if MONSTER_MODE	// JUHOX: init the artefacts menu field
+	// JUHOX: init the artefacts menu field
 	if (s_serveroptions.gametype == GT_STU) {
 		y += BIGCHAR_HEIGHT+2;
 		s_serveroptions.artefacts.generic.type			= MTYPE_FIELD;
@@ -1954,9 +1853,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.artefacts.field.widthInChars	= 4;
 		s_serveroptions.artefacts.field.maxchars		= 3;
 	}
-#endif
 
-#if ESCAPE_MODE	// JUHOX: init the distanceLimit menu field
+	// JUHOX: init the distanceLimit menu field
 	if (s_serveroptions.gametype == GT_EFH) {
 		y += BIGCHAR_HEIGHT+2;
 		s_serveroptions.distanceLimit.generic.type			= MTYPE_FIELD;
@@ -1967,7 +1865,6 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.distanceLimit.field.widthInChars	= 10;
 		s_serveroptions.distanceLimit.field.maxchars		= 9;
 	}
-#endif
 
 	if( s_serveroptions.gametype >= GT_TEAM ) {
 		y += BIGCHAR_HEIGHT+2;
@@ -2008,35 +1905,23 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.hostname.field.widthInChars = 18;
 		s_serveroptions.hostname.field.maxchars     = 64;
 	}
-/*
-	y += BIGCHAR_HEIGHT+2;
-	s_serveroptions.punkbuster.generic.type			= MTYPE_SPINCONTROL;
-	s_serveroptions.punkbuster.generic.name			= "Punkbuster:";
-	s_serveroptions.punkbuster.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_serveroptions.punkbuster.generic.id			= 0;
-	s_serveroptions.punkbuster.generic.x				= OPTIONS_X;
-	s_serveroptions.punkbuster.generic.y				= y;
-	s_serveroptions.punkbuster.itemnames				= punkbuster_items;
-*/
+
 	y = 80;
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
-	if (s_serveroptions.gametype != GT_EFH) {
-#endif
-	s_serveroptions.botSkill.generic.type			= MTYPE_SPINCONTROL;
-	s_serveroptions.botSkill.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_serveroptions.botSkill.generic.name			= "Bot Skill:  ";
-	s_serveroptions.botSkill.generic.x				= 32 + (strlen(s_serveroptions.botSkill.generic.name) + 2 ) * SMALLCHAR_WIDTH;
-	s_serveroptions.botSkill.generic.y				= y;
-	s_serveroptions.botSkill.itemnames				= botSkill_list;
-	s_serveroptions.botSkill.curvalue				= 1;
-#if MONSTER_MODE	// JUHOX: in STU default bot skill is nightmare
-	if (s_serveroptions.gametype == GT_STU) {
-		s_serveroptions.botSkill.curvalue = 4;
+	// JUHOX: no bots in EFH
+	if (s_serveroptions.gametype != GT_EFH)
+    {
+        s_serveroptions.botSkill.generic.type			= MTYPE_SPINCONTROL;
+        s_serveroptions.botSkill.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+        s_serveroptions.botSkill.generic.name			= "Bot Skill:  ";
+        s_serveroptions.botSkill.generic.x				= 32 + (strlen(s_serveroptions.botSkill.generic.name) + 2 ) * SMALLCHAR_WIDTH;
+        s_serveroptions.botSkill.generic.y				= y;
+        s_serveroptions.botSkill.itemnames				= botSkill_list;
+        s_serveroptions.botSkill.curvalue				= 1;
+        // JUHOX: in STU default bot skill is nightmare
+        if (s_serveroptions.gametype == GT_STU) {
+            s_serveroptions.botSkill.curvalue = 4;
+        }
 	}
-#endif
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
-	}
-#endif
 
 	y += ( 2 * SMALLCHAR_HEIGHT );
 	s_serveroptions.player0.generic.type			= MTYPE_TEXT;
@@ -2079,29 +1964,26 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		y += ( SMALLCHAR_HEIGHT + 4 );
 	}
 
-#if 1	// JUHOX: init the additional slots menu field
+	// JUHOX: init the additional slots menu field
 	y += SMALLCHAR_HEIGHT + 4;
 	s_serveroptions.additionalSlots.generic.type		= MTYPE_FIELD;
 	s_serveroptions.additionalSlots.generic.name		= "Additional Open Slots:";
 	s_serveroptions.additionalSlots.generic.flags		= QMF_NUMBERSONLY|QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_serveroptions.additionalSlots.generic.x			= 240;
 	s_serveroptions.additionalSlots.generic.y			= y;
-	//s_serveroptions.additionalSlots.generic.statusbar	= ServerOptions_StatusBar;
 	s_serveroptions.additionalSlots.field.widthInChars	= 3;
 	s_serveroptions.additionalSlots.field.maxchars		= 2;
-#endif
 
-#if 1	// JUHOX: init the game seed menu field
+	// JUHOX: init the game seed menu field
 	y += SMALLCHAR_HEIGHT + 4;
 	s_serveroptions.gameseed.generic.type		= MTYPE_FIELD;
 	s_serveroptions.gameseed.generic.name		= "Game Seed:";
 	s_serveroptions.gameseed.generic.flags		= QMF_NUMBERSONLY|QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_serveroptions.gameseed.generic.x			= 240;
 	s_serveroptions.gameseed.generic.y			= y;
-	//s_serveroptions.gameseed.generic.statusbar	= ServerOptions_StatusBar;
 	s_serveroptions.gameseed.field.widthInChars	= 6;
 	s_serveroptions.gameseed.field.maxchars		= 5;
-#endif
+
 
 #if MEETING	// JUHOX: init the meeting menu field
 	y += SMALLCHAR_HEIGHT + 4;
@@ -2112,7 +1994,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.meeting.generic.name			= "Meeting:";
 #endif
 
-#if 1	// JUHOX: init the advanced options menu field
+	// JUHOX: init the advanced options menu field
 	s_serveroptions.advOptions.generic.type		= MTYPE_PTEXT;
 	s_serveroptions.advOptions.generic.flags	= QMF_SMALLFONT|QMF_PULSEIFFOCUS|QMF_CENTER_JUSTIFY;
 	s_serveroptions.advOptions.generic.x		= 320;
@@ -2121,7 +2003,6 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.advOptions.color			= color_red;
 	s_serveroptions.advOptions.style			= UI_SMALLFONT|UI_CENTER;
 	s_serveroptions.advOptions.string			= "Advanced Options";
-#endif
 
 	s_serveroptions.back.generic.type	  = MTYPE_BITMAP;
 	s_serveroptions.back.generic.name     = GAMESERVER_BACK0;
@@ -2157,31 +2038,25 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.go.height  		    = 64;
 	s_serveroptions.go.focuspic         = GAMESERVER_FIGHT1;
 
-#if 1	// JUHOX: gray out variables that are set by the template
+	// JUHOX: gray out variables that are set by the template
 	if (gtmpl.tksGameseed == TKS_fixedValue) s_serveroptions.gameseed.generic.flags |= QMF_GRAYED;
 	if (gtmpl.tksFraglimit == TKS_fixedValue) {
 		s_serveroptions.flaglimit.generic.flags |= QMF_GRAYED;
 		s_serveroptions.fraglimit.generic.flags |= QMF_GRAYED;
 	}
 	if (gtmpl.tksTimelimit == TKS_fixedValue) s_serveroptions.timelimit.generic.flags |= QMF_GRAYED;
-#if MONSTER_MODE
 	if (gtmpl.tksArtefacts == TKS_fixedValue) s_serveroptions.artefacts.generic.flags |= QMF_GRAYED;
-#endif
-#if ESCAPE_MODE
 	if (gtmpl.tksDistancelimit == TKS_fixedValue) s_serveroptions.distanceLimit.generic.flags |= QMF_GRAYED;
-#endif
 	if (gtmpl.tksFriendlyfire == TKS_fixedValue) s_serveroptions.friendlyfire.generic.flags |= QMF_GRAYED;
 	if (gtmpl.tksHighscoretype != TKS_missing) s_serveroptions.pure.generic.flags |= QMF_GRAYED;
-#endif
 
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.banner );
-
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.mappic );
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.picframe );
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+	// JUHOX: no bots in EFH
 	if (s_serveroptions.gametype != GT_EFH)
-#endif
+
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.botSkill );
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.player0 );
 	for( n = 0; n < PLAYER_SLOTS; n++ ) {
@@ -2189,12 +2064,9 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerType[n] );
 		}
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerName[n] );
+
 		// JUHOX: don't add team selector for STU
-#if !MONSTER_MODE
-		if( s_serveroptions.gametype >= GT_TEAM ) {
-#else
 		if (s_serveroptions.gametype >= GT_TEAM && s_serveroptions.gametype != GT_STU) {
-#endif
 			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerTeam[n] );
 		}
 	}
@@ -2206,16 +2078,16 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.flaglimit );
 	}
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.timelimit );
-#if MONSTER_MODE	// JUHOX: add the artefacts menu field
+	// JUHOX: add the artefacts menu field
 	if (s_serveroptions.gametype == GT_STU) {
 		Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.artefacts);
 	}
-#endif
-#if ESCAPE_MODE	// JUHOX add the distanceLimit menu field
+
+	// JUHOX add the distanceLimit menu field
 	if (s_serveroptions.gametype == GT_EFH) {
 		Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.distanceLimit);
 	}
-#endif
+
 	if( s_serveroptions.gametype >= GT_TEAM ) {
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.friendlyfire );
 	}
@@ -2769,20 +2641,15 @@ typedef struct {
 
 	menutext_s		game;
 	menutext_s		equipment;
-#if MONSTER_MODE
 	menutext_s		monsters;
-#endif
-
-#if MONSTER_MODE
-#endif
 
 	menubitmap_s	back;
 } advancedOptionsMainInfo_t;
 
 typedef struct {
-	menuframework_s	menu;
+	menuframework_s	    menu;
 
-	menutext_s		banner;
+	menutext_s		    banner;
 
 	menufield_s			respawnDelay;
 	menuradiobutton_s	respawnAtPOD;
@@ -2793,13 +2660,9 @@ typedef struct {
 	menuradiobutton_s	noItems;
 	menuradiobutton_s	noHealthRegen;
 	menuradiobutton_s	armorFragments;
-#if MONSTER_MODE
 	menuradiobutton_s	skipEndSequence;
 	menuradiobutton_s	scoreMode;
-#endif
-#if ESCAPE_MODE
 	menuradiobutton_s	challengingEnv;
-#endif
 
 	menubitmap_s	back;
 } advancedOptionsGameInfo_t;
@@ -2814,15 +2677,12 @@ typedef struct {
 	menuradiobutton_s	unlimitedAmmo;
 	menulist_s			grapple;
 	menufield_s			lightningDamageLimit;
-#if MONSTER_MODE
 	menuradiobutton_s	monsterLauncher;
 	menufield_s			maxMonstersPP;
-#endif
 
 	menubitmap_s	back;
 } advancedOptionsEquipmentInfo_t;
 
-#if MONSTER_MODE
 typedef struct {
 	menuframework_s	menu;
 
@@ -2840,31 +2700,26 @@ typedef struct {
 	menutext_s			monsterModel1;
 	menutext_s			monsterModel2;
 	menutext_s			monsterModel3;
-#if ESCAPE_MODE
 	menufield_s			monsterLoad;
-#endif
+
 
 	menubitmap_s	back;
 } advancedOptionsMonstersInfo_t;
-#endif
+
 
 static advancedOptionsMainInfo_t		advOptMainInfo;
 static advancedOptionsGameInfo_t		advOptGameInfo;
 static advancedOptionsEquipmentInfo_t	advOptEquipInfo;
 static advancedOptionsMonstersInfo_t	advOptMonInfo;
 
-
 static const char *hookMode_items[] = {
 	"disabled",
 	"classic",
-#if GRAPPLE_ROPE
 	"tool",
 	"anchor",
 	"combat",
-#endif
 	0
 };
-
 
 
 
@@ -2889,13 +2744,10 @@ static void UI_AdvOptGameMenu_SetMenuItems(void) {
 	advOptGameInfo.noItems.curvalue = s_serveroptions.noItems;
 	advOptGameInfo.noHealthRegen.curvalue = s_serveroptions.noHealthRegen;
 	advOptGameInfo.armorFragments.curvalue = s_serveroptions.armorFragments;
-#if MONSTER_MODE
 	advOptGameInfo.skipEndSequence.curvalue = s_serveroptions.skipEndSequence;
 	advOptGameInfo.scoreMode.curvalue = s_serveroptions.scoreMode;
-#endif
-#if ESCAPE_MODE
 	advOptGameInfo.challengingEnv.curvalue = s_serveroptions.challengingEnv;
-#endif
+
 }
 
 /*
@@ -2915,13 +2767,9 @@ static void UI_AdvOptGameMenu_BackEvent(void* ptr, int event) {
 	s_serveroptions.noItems = advOptGameInfo.noItems.curvalue;
 	s_serveroptions.noHealthRegen = advOptGameInfo.noHealthRegen.curvalue;
 	s_serveroptions.armorFragments = advOptGameInfo.armorFragments.curvalue;
-#if MONSTER_MODE
 	s_serveroptions.skipEndSequence = advOptGameInfo.skipEndSequence.curvalue;
 	s_serveroptions.scoreMode = advOptGameInfo.scoreMode.curvalue;
-#endif
-#if ESCAPE_MODE
 	s_serveroptions.challengingEnv = advOptGameInfo.challengingEnv.curvalue;
-#endif
 
 	UI_PopMenu();
 }
@@ -2954,14 +2802,13 @@ static void UI_AdvOptGameMenu_TSSStatusBar(void* ptr) {
 JUHOX: UI_AdvOptGameMenu_ChallEnvStatusBar
 =================
 */
-#if ESCAPE_MODE
 static void UI_AdvOptGameMenu_ChallEnvStatusBar(void* ptr) {
 	UI_DrawString(
 		320, 440, "Enable/disable parts that have been marked as \"possibly frustrating\"",
 		UI_CENTER|UI_SMALLFONT, colorWhite
 	);
 }
-#endif
+
 
 /*
 =================
@@ -2974,8 +2821,6 @@ static void UI_AdvOptGameMenu_Init(void) {
 	memset(&advOptGameInfo, 0, sizeof(advOptGameInfo));
 	advOptGameInfo.menu.wrapAround = qtrue;
 	advOptGameInfo.menu.fullscreen = qtrue;
-
-	//UI_AdvOptGameMenu_Cache();
 
 	advOptGameInfo.banner.generic.type	= MTYPE_BTEXT;
 	advOptGameInfo.banner.generic.x		= 320;
@@ -2998,7 +2843,6 @@ static void UI_AdvOptGameMenu_Init(void) {
 	Menu_AddItem(&advOptGameInfo.menu, &advOptGameInfo.baseHealth);
 	y += BIGCHAR_HEIGHT+2;
 
-#if ESCAPE_MODE
 	if (s_serveroptions.gametype == GT_EFH) {
 		advOptGameInfo.challengingEnv.generic.type			= MTYPE_RADIOBUTTON;
 		advOptGameInfo.challengingEnv.generic.name			= "Challenging Environment:";
@@ -3010,14 +2854,9 @@ static void UI_AdvOptGameMenu_Init(void) {
 		Menu_AddItem(&advOptGameInfo.menu, &advOptGameInfo.challengingEnv);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
 
-	if (
-		s_serveroptions.gametype != GT_TOURNAMENT
-#if ESCAPE_MODE
-		&& s_serveroptions.gametype != GT_EFH
-#endif
-	) {
+	if ( s_serveroptions.gametype != GT_TOURNAMENT && s_serveroptions.gametype != GT_EFH)
+    {
 		advOptGameInfo.respawnDelay.generic.type		= MTYPE_FIELD;
 		advOptGameInfo.respawnDelay.generic.name		= "Respawn Delay:";
 		advOptGameInfo.respawnDelay.generic.flags		= QMF_NUMBERSONLY|QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -3031,14 +2870,8 @@ static void UI_AdvOptGameMenu_Init(void) {
 		y += BIGCHAR_HEIGHT+2;
 	}
 
-#if !MONSTER_MODE	// JUHOX: no TSS with STU & EFH
-	if (s_serveroptions.gametype >= GT_TEAM) {
-#else
-	if (
-		s_serveroptions.gametype >= GT_TEAM &&
-		s_serveroptions.gametype < GT_STU
-	) {
-#endif
+	if ( s_serveroptions.gametype >= GT_TEAM &&	s_serveroptions.gametype < GT_STU )
+    {
 		advOptGameInfo.tss.generic.type			= MTYPE_RADIOBUTTON;
 		advOptGameInfo.tss.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 		advOptGameInfo.tss.generic.x			= ADVOPTIONS_X;
@@ -3059,7 +2892,6 @@ static void UI_AdvOptGameMenu_Init(void) {
 		y += BIGCHAR_HEIGHT+2;
 	}
 
-#if MONSTER_MODE
 	if (s_serveroptions.gametype >= GT_STU) {
 		advOptGameInfo.scoreMode.generic.type	= MTYPE_RADIOBUTTON;
 		advOptGameInfo.scoreMode.generic.name	= "Score Adapts To Monster Constitution:";
@@ -3070,7 +2902,7 @@ static void UI_AdvOptGameMenu_Init(void) {
 		Menu_AddItem(&advOptGameInfo.menu, &advOptGameInfo.scoreMode);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
+
 
 	advOptGameInfo.stamina.generic.type		= MTYPE_RADIOBUTTON;
 	advOptGameInfo.stamina.generic.name		= "Limited Stamina:";
@@ -3119,7 +2951,6 @@ static void UI_AdvOptGameMenu_Init(void) {
 		y += BIGCHAR_HEIGHT+2;
 	}
 
-#if MONSTER_MODE
 	if (s_serveroptions.gametype == GT_STU) {
 		advOptGameInfo.skipEndSequence.generic.type		= MTYPE_RADIOBUTTON;
 		advOptGameInfo.skipEndSequence.generic.name		= "Skip End Sequence";
@@ -3129,7 +2960,6 @@ static void UI_AdvOptGameMenu_Init(void) {
 		Menu_AddItem(&advOptGameInfo.menu, &advOptGameInfo.skipEndSequence);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
 
 	advOptGameInfo.back.generic.type		= MTYPE_BITMAP;
 	advOptGameInfo.back.generic.name		= ADVOPT_BACK0;
@@ -3180,10 +3010,8 @@ static void UI_AdvOptEquipMenu_SetMenuItems(void) {
 	advOptEquipInfo.unlimitedAmmo.curvalue = s_serveroptions.unlimitedAmmo;
 	Com_sprintf(advOptEquipInfo.lightningDamageLimit.field.buffer, 5, "%d", s_serveroptions.lightningDamageLimit);
 	advOptEquipInfo.grapple.curvalue = s_serveroptions.grapple;
-#if MONSTER_MODE
 	advOptEquipInfo.monsterLauncher.curvalue = s_serveroptions.monsterLauncher;
 	Com_sprintf(advOptEquipInfo.maxMonstersPP.field.buffer, 5, "%d", s_serveroptions.maxMonstersPerPlayer);
-#endif
 }
 
 /*
@@ -3198,13 +3026,9 @@ static void UI_AdvOptEquipMenu_BackEvent(void* ptr, int event) {
 	s_serveroptions.weaponLimit = (int) Com_Clamp(0, MAX_WEAPONS, atoi(advOptEquipInfo.weaponLimit.field.buffer));
 	s_serveroptions.unlimitedAmmo = advOptEquipInfo.unlimitedAmmo.curvalue;
 	s_serveroptions.lightningDamageLimit = (int)Com_Clamp(0, 999, atoi(advOptEquipInfo.lightningDamageLimit.field.buffer));
-#if GRAPPLE_ROPE
 	s_serveroptions.grapple = advOptEquipInfo.grapple.curvalue;
-#endif
-#if MONSTER_MODE
 	s_serveroptions.monsterLauncher = advOptEquipInfo.monsterLauncher.curvalue;
 	s_serveroptions.maxMonstersPerPlayer = (int) Com_Clamp(1, MAX_MONSTERS, atoi(advOptEquipInfo.maxMonstersPP.field.buffer));
-#endif
 
 	UI_PopMenu();
 }
@@ -3224,12 +3048,10 @@ static void UI_AdvOptEquipMenu_LDLStatusBar(void* ptr) {
 JUHOX: UI_AdvOptEquipMenu_MaxMonPPStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptEquipMenu_MaxMonPPStatusBar(void* ptr) {
 	UI_DrawString(320, 440, va("1 ... %d", MAX_MONSTERS), UI_CENTER|UI_SMALLFONT, colorWhite);
 	UI_DrawString(320, 460, "limits the capacity of the monster launcher", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
 
 /*
 =================
@@ -3251,8 +3073,6 @@ static void UI_AdvOptEquipMenu_Init(void) {
 	memset(&advOptEquipInfo, 0, sizeof(advOptEquipInfo));
 	advOptEquipInfo.menu.wrapAround = qtrue;
 	advOptEquipInfo.menu.fullscreen = qtrue;
-
-	//UI_AdvOptMenu_Cache();
 
 	advOptEquipInfo.banner.generic.type	= MTYPE_BTEXT;
 	advOptEquipInfo.banner.generic.x	= 320;
@@ -3293,7 +3113,6 @@ static void UI_AdvOptEquipMenu_Init(void) {
 	if (gtmpl.tksUnlimitedammo == TKS_fixedValue) advOptEquipInfo.unlimitedAmmo.generic.flags |= QMF_GRAYED;
 	y += BIGCHAR_HEIGHT+2;
 
-#if MONSTER_MODE
 	if (s_serveroptions.gametype < GT_STU) {
 		advOptEquipInfo.monsterLauncher.generic.type	= MTYPE_RADIOBUTTON;
 		advOptEquipInfo.monsterLauncher.generic.flags	= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -3315,11 +3134,9 @@ static void UI_AdvOptEquipMenu_Init(void) {
 		Menu_AddItem(&advOptEquipInfo.menu, &advOptEquipInfo.maxMonstersPP);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
 
-#if ESCAPE_MODE
+
 	if (s_serveroptions.gametype != GT_EFH)
-#endif
 	{
 		advOptEquipInfo.grapple.generic.type	= MTYPE_SPINCONTROL;
 		advOptEquipInfo.grapple.generic.name	= "Grappling Hook Mode:";
@@ -3386,7 +3203,7 @@ JUHOX: ADVANCED OPTIONS MENU ***** MONSTERS
 JUHOX: UI_AdvOptMonMenu_SetMenuItems
 =================
 */
-#if MONSTER_MODE
+
 static void UI_AdvOptMonMenu_SetMenuItems(void) {
 	Com_sprintf(advOptMonInfo.minMonsters.field.buffer, 5, "%d", s_serveroptions.minMonsters);
 	Com_sprintf(advOptMonInfo.maxMonsters.field.buffer, 5, "%d", s_serveroptions.maxMonsters);
@@ -3397,18 +3214,16 @@ static void UI_AdvOptMonMenu_SetMenuItems(void) {
 	Com_sprintf(advOptMonInfo.monsterHealthScale.field.buffer, 5, "%d", s_serveroptions.monsterHealthScale);
 	Com_sprintf(advOptMonInfo.monsterProgression.field.buffer, 5, "%d", s_serveroptions.monsterProgression);
 	advOptMonInfo.monsterBreeding.curvalue = s_serveroptions.monsterBreeding;
-#if ESCAPE_MODE
 	Com_sprintf(advOptMonInfo.monsterLoad.field.buffer, 5, "%d", s_serveroptions.monsterLoad);
-#endif
+
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_BackEvent
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_BackEvent(void* ptr, int event) {
 	if (event != QM_ACTIVATED) return;
 
@@ -3421,13 +3236,11 @@ static void UI_AdvOptMonMenu_BackEvent(void* ptr, int event) {
 	s_serveroptions.monsterHealthScale = (int) Com_Clamp(1, 1000, atoi(advOptMonInfo.monsterHealthScale.field.buffer));
 	s_serveroptions.monsterProgression = (int) Com_Clamp(0, 1000, atoi(advOptMonInfo.monsterProgression.field.buffer));
 	s_serveroptions.monsterBreeding = advOptMonInfo.monsterBreeding.curvalue;
-#if ESCAPE_MODE
 	s_serveroptions.monsterLoad = (int) Com_Clamp(0, 1000, atoi(advOptMonInfo.monsterLoad.field.buffer));
-#endif
 
 	UI_PopMenu();
 }
-#endif
+
 
 /*
 =================
@@ -3436,7 +3249,6 @@ JUHOX: UI_AdvOptMonMenu_MonsterModel_Draw
 derived from PlayerName_Draw()
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MonsterModel_Draw(void* item) {
 	menutext_s* s;
 	float* color;
@@ -3481,14 +3293,13 @@ static void UI_AdvOptMonMenu_MonsterModel_Draw(void* item) {
 	UI_DrawString(x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color);
 	UI_DrawString(x + SMALLCHAR_WIDTH, y, s->string, style|UI_LEFT, color);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_PredatorModel_Callback
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_PredatorModel_Callback(void* ptr, int event) {
 	if (event != QM_ACTIVATED) return;
 
@@ -3499,14 +3310,13 @@ static void UI_AdvOptMonMenu_PredatorModel_Callback(void* ptr, int event) {
 		WP_NONE
 	);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_GuardModel_Callback
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_GuardModel_Callback(void* ptr, int event) {
 	if (event != QM_ACTIVATED) return;
 
@@ -3517,14 +3327,13 @@ static void UI_AdvOptMonMenu_GuardModel_Callback(void* ptr, int event) {
 		WP_ROCKET_LAUNCHER
 	);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_TitansModel_Callback
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_TitansModel_Callback(void* ptr, int event) {
 	if (event != QM_ACTIVATED) return;
 
@@ -3535,43 +3344,40 @@ static void UI_AdvOptMonMenu_TitansModel_Callback(void* ptr, int event) {
 		WP_NONE
 	);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_MinMonStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MinMonStatusBar(void* ptr) {
 	UI_DrawString(320, 440, va("0 ... %d", MAX_MONSTERS), UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_MaxMonStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MaxMonStatusBar(void* ptr) {
 	UI_DrawString(320, 440, va("1 ... %d", MAX_MONSTERS), UI_CENTER|UI_SMALLFONT, colorWhite);
 	if (s_serveroptions.gametype < GT_STU) {
 		UI_DrawString(320, 460, "all players get an equal share of this", UI_CENTER|UI_SMALLFONT, colorWhite);
 	}
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_MonLoadStatusBar
 =================
 */
-#if ESCAPE_MODE
 static void UI_AdvOptMonMenu_MonLoadStatusBar(void* ptr) {
 	UI_DrawString(320, 440, "0% ... 1000%", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
@@ -3579,59 +3385,52 @@ JUHOX: UI_AdvOptMonMenu_MSDStatusBar
 MSD = Monster Spawn Delay
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MSDStatusBar(void* ptr) {
 	UI_DrawString(320, 440, "0.2 ... 999 seconds", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_GuardsStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_GuardsStatusBar(void* ptr) {
 	UI_DrawString(320, 440, "0 ... 100%", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_MonHealthStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MonHealthStatusBar(void* ptr) {
 	UI_DrawString(320, 440, "1% ... 1000% (\"very easy\" ... \"very hard\")", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_MonProgStatusBar
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_MonProgStatusBar(void* ptr) {
 	UI_DrawString(320, 440, "0 ... 1000 (\"very easy\" ... \"very hard\")", UI_CENTER|UI_SMALLFONT, colorWhite);
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu_Init
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu_Init(void) {
 	int y;
 
 	memset(&advOptMonInfo, 0, sizeof(advOptMonInfo));
 	advOptMonInfo.menu.wrapAround = qtrue;
 	advOptMonInfo.menu.fullscreen = qtrue;
-
-	//UI_AdvOptMenu_Cache();
 
 	advOptMonInfo.banner.generic.type	= MTYPE_BTEXT;
 	advOptMonInfo.banner.generic.x		= 320;
@@ -3643,7 +3442,6 @@ static void UI_AdvOptMonMenu_Init(void) {
 
 	y =	80;
 
-#if MONSTER_MODE
 	if (s_serveroptions.gametype == GT_STU) {
 		advOptMonInfo.minMonsters.generic.type			= MTYPE_FIELD;
 		advOptMonInfo.minMonsters.generic.name			= "Min. # of Monsters:";
@@ -3658,9 +3456,8 @@ static void UI_AdvOptMonMenu_Init(void) {
 		y += BIGCHAR_HEIGHT+2;
 	}
 
-#if ESCAPE_MODE
 	if (s_serveroptions.gametype != GT_EFH)
-#endif
+
 	{
 		advOptMonInfo.maxMonsters.generic.type			= MTYPE_FIELD;
 		advOptMonInfo.maxMonsters.generic.name			= "Max. # of Monsters:";
@@ -3675,7 +3472,6 @@ static void UI_AdvOptMonMenu_Init(void) {
 		y += BIGCHAR_HEIGHT+2;
 	}
 
-#if ESCAPE_MODE
 	if (s_serveroptions.gametype == GT_EFH) {
 		advOptMonInfo.monsterLoad.generic.type			= MTYPE_FIELD;
 		advOptMonInfo.monsterLoad.generic.name			= "Monster Load [%]:";
@@ -3689,7 +3485,6 @@ static void UI_AdvOptMonMenu_Init(void) {
 		Menu_AddItem(&advOptMonInfo.menu, &advOptMonInfo.monsterLoad);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
 
 	if (s_serveroptions.gametype == GT_STU) {
 		advOptMonInfo.monstersPerTrap.generic.type			= MTYPE_FIELD;
@@ -3729,12 +3524,7 @@ static void UI_AdvOptMonMenu_Init(void) {
 	Menu_AddItem(&advOptMonInfo.menu, &advOptMonInfo.monsterHealthScale);
 	y += BIGCHAR_HEIGHT+2;
 
-	if (
-		s_serveroptions.gametype == GT_STU
-#if ESCAPE_MODE
-		|| s_serveroptions.gametype == GT_EFH
-#endif
-	) {
+	if ( s_serveroptions.gametype == GT_STU	|| s_serveroptions.gametype == GT_EFH ) {
 		advOptMonInfo.monsterProgression.generic.type			= MTYPE_FIELD;
 		advOptMonInfo.monsterProgression.generic.name			= "Monster Constitution Progression [%/min]:";
 		advOptMonInfo.monsterProgression.generic.flags			= QMF_NUMBERSONLY|QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -3838,7 +3628,7 @@ static void UI_AdvOptMonMenu_Init(void) {
 		Menu_AddItem(&advOptMonInfo.menu, &advOptMonInfo.monsterTitans);
 		y += BIGCHAR_HEIGHT+2;
 	}
-#endif
+
 
 	advOptMonInfo.back.generic.type		= MTYPE_BITMAP;
 	advOptMonInfo.back.generic.name		= ADVOPT_BACK0;
@@ -3853,24 +3643,17 @@ static void UI_AdvOptMonMenu_Init(void) {
 
 	UI_AdvOptMonMenu_SetMenuItems();
 }
-#endif
+
 
 /*
 =================
 JUHOX: UI_AdvOptMonMenu
 =================
 */
-#if MONSTER_MODE
 static void UI_AdvOptMonMenu(void) {
 	UI_AdvOptMonMenu_Init();
 	UI_PushMenu(&advOptMonInfo.menu);
 }
-#endif
-
-
-
-
-
 
 
 
@@ -3916,12 +3699,10 @@ static void UI_AdvOptMainMenu_Event(void* ptr, int event) {
 	case ID_ADVOPT_EQUIPMENT:
 		UI_AdvOptEquipMenu();
 		break;
-#if MONSTER_MODE
 	case ID_ADVOPT_MONSTERS:
 		UI_AdvOptMonMenu();
 		break;
 	}
-#endif
 }
 /*
 =================
@@ -3971,7 +3752,6 @@ static void UI_AdvOptMainMenu_Init(void) {
 	Menu_AddItem(&advOptMainInfo.menu, &advOptMainInfo.equipment);
 	y += ADVOPTIONS_MAINMENU_SPACING;
 
-#if MONSTER_MODE
 	advOptMainInfo.monsters.generic.type		= MTYPE_PTEXT;
 	advOptMainInfo.monsters.generic.x			= 320;
 	advOptMainInfo.monsters.generic.y			= y;
@@ -3983,7 +3763,6 @@ static void UI_AdvOptMainMenu_Init(void) {
 	advOptMainInfo.monsters.string				= "MONSTERS";
 	Menu_AddItem(&advOptMainInfo.menu, &advOptMainInfo.monsters);
 	y += ADVOPTIONS_MAINMENU_SPACING;
-#endif
 
 	advOptMainInfo.back.generic.type		= MTYPE_BITMAP;
 	advOptMainInfo.back.generic.name		= ADVOPT_BACK0;
@@ -4006,9 +3785,6 @@ void UI_AdvOptMenu(void) {
 	UI_AdvOptMainMenu_Init();
 	UI_PushMenu(&advOptMainInfo.menu);
 }
-
-
-
 
 
 /*
@@ -4647,13 +4423,11 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 	if (gtmpl.tksSpeed) trap_Cvar_SetValue("g_speed", gtmpl.speed);
 	if (gtmpl.tksKnockback) trap_Cvar_SetValue("g_knockback", gtmpl.knockback);
 	if (gtmpl.tksGravity) trap_Cvar_SetValue("g_gravityLatch", gtmpl.gravity);
-	else trap_Cvar_Set("g_gravityLatch", "");
+        else trap_Cvar_Set("g_gravityLatch", "");
 	if (gtmpl.tksTsssafetymode) trap_Cvar_SetValue("tssSafetyModeAllowed", gtmpl.tsssafetymode);
 	if (gtmpl.tksHighscoretype) trap_Cvar_SetValue("sv_pure", 1);
 	if (gtmpl.tksGrapple) trap_Cvar_SetValue("g_grapple", gtmpl.grapple);
-#if MONSTER_MODE
 	if (gtmpl.tksScoremode) trap_Cvar_SetValue("g_scoreMode", gtmpl.scoremode);
-#endif
 
 	switch(gtmpl.gametype) {
 	case GT_FFA:
@@ -4666,9 +4440,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksNohealthregen) trap_Cvar_SetValue("ui_ffa_noHealthRegen", gtmpl.nohealthregen);
 		if (gtmpl.tksCloakingdevice) trap_Cvar_SetValue("ui_ffa_cloakingDevice", gtmpl.cloakingdevice);
 		if (gtmpl.tksUnlimitedammo) trap_Cvar_SetValue("ui_ffa_unlimitedAmmo", gtmpl.unlimitedammo);
-#if MONSTER_MODE
 		if (gtmpl.tksMonsterlauncher) trap_Cvar_SetValue("ui_ffa_monsterLauncher", gtmpl.monsterLauncher);
-#endif
 		break;
 
 	case GT_TOURNAMENT:
@@ -4679,9 +4451,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksNohealthregen) trap_Cvar_SetValue("ui_tourney_noHealthRegen", gtmpl.nohealthregen);
 		if (gtmpl.tksCloakingdevice) trap_Cvar_SetValue("ui_tourney_cloakingDevice", gtmpl.cloakingdevice);
 		if (gtmpl.tksUnlimitedammo) trap_Cvar_SetValue("ui_tourney_unlimitedAmmo", gtmpl.unlimitedammo);
-#if MONSTER_MODE
 		if (gtmpl.tksMonsterlauncher) trap_Cvar_SetValue("ui_tourney_monsterLauncher", gtmpl.monsterLauncher);
-#endif
 		break;
 
 	case GT_TEAM:
@@ -4695,9 +4465,7 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksNohealthregen) trap_Cvar_SetValue("ui_team_noHealthRegen", gtmpl.nohealthregen);
 		if (gtmpl.tksCloakingdevice) trap_Cvar_SetValue("ui_team_cloakingDevice", gtmpl.cloakingdevice);
 		if (gtmpl.tksUnlimitedammo) trap_Cvar_SetValue("ui_team_unlimitedAmmo", gtmpl.unlimitedammo);
-#if MONSTER_MODE
 		if (gtmpl.tksMonsterlauncher) trap_Cvar_SetValue("ui_team_monsterLauncher", gtmpl.monsterLauncher);
-#endif
 		break;
 
 	case GT_CTF:
@@ -4711,12 +4479,10 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksNohealthregen) trap_Cvar_SetValue("ui_ctf_noHealthRegen", gtmpl.nohealthregen);
 		if (gtmpl.tksCloakingdevice) trap_Cvar_SetValue("ui_ctf_cloakingDevice", gtmpl.cloakingdevice);
 		if (gtmpl.tksUnlimitedammo) trap_Cvar_SetValue("ui_ctf_unlimitedAmmo", gtmpl.unlimitedammo);
-#if MONSTER_MODE
 		if (gtmpl.tksMonsterlauncher) trap_Cvar_SetValue("ui_ctf_monsterLauncher", gtmpl.monsterLauncher);
-#endif
 		break;
 
-#if MONSTER_MODE	// JUHOX: set STU ui cvars
+	// JUHOX: set STU ui cvars
 	case GT_STU:
 		if (gtmpl.tksFraglimit) trap_Cvar_SetValue("ui_stu_fraglimit", gtmpl.fraglimit);
 		if (gtmpl.tksTimelimit) trap_Cvar_SetValue("ui_stu_timelimit", gtmpl.timelimit);
@@ -4739,9 +4505,9 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksTitans) trap_Cvar_SetValue("ui_stu_monsterTitans", gtmpl.titans);
 		if (gtmpl.tksMonsterbreeding) trap_Cvar_SetValue("ui_stu_monsterBreeding", gtmpl.monsterbreeding);
 		break;
-#endif
 
-#if ESCAPE_MODE	// JUHOX: set EFH ui cvars
+
+    // JUHOX: set EFH ui cvars
 	case GT_EFH:
 		if (gtmpl.tksFraglimit) trap_Cvar_SetValue("ui_efh_fraglimit", gtmpl.fraglimit);
 		if (gtmpl.tksTimelimit) trap_Cvar_SetValue("ui_efh_timelimit", gtmpl.timelimit);
@@ -4761,7 +4527,6 @@ static void UI_TemplateMenu_NextEvent(void* ptr, int event) {
 		if (gtmpl.tksGuards) trap_Cvar_SetValue("ui_efh_monsterGuards", gtmpl.guards);
 		if (gtmpl.tksTitans) trap_Cvar_SetValue("ui_efh_monsterTitans", gtmpl.titans);
 		break;
-#endif
 	}
 
 	if (gtmpl.mapName[0]) {
@@ -4978,7 +4743,6 @@ static void UI_TemplateMenu_Init(qboolean inGame, qboolean multiplayer) {
 	templateInfo.menu.draw = UI_TemplateMenu_Draw;
 
 	UI_TemplateMenu_InitTemplates();
-
 	UI_TemplateMenu_Cache();
 
 	templateInfo.banner.generic.type	= MTYPE_BTEXT;
@@ -5217,18 +4981,12 @@ typedef struct {
 	menutext_s		singleDescr;
 	menutext_s		ffa;
 	menutext_s		tourney;
-
 	menutext_s		teamDescr;
 	menutext_s		tdm;
 	menutext_s		ctf;
-
 	menutext_s		coopDescr;
-#if MONSTER_MODE
 	menutext_s		stu;
-#endif
-#if ESCAPE_MODE
 	menutext_s		efh;
-#endif
 
 	menubitmap_s	back;
 } gameTypeSelectionInfo_t;
@@ -5294,14 +5052,11 @@ JUHOX: UI_GTS_Init
 */
 static void UI_GTS_Init(qboolean multiplayer) {
 	int y;
-	static vec4_t descrColor = {
-		0.6, 0.6, 0.6, 1.0
-	};
+	static vec4_t descrColor = { 0.6, 0.6, 0.6, 1.0	};
 
 	memset(&gtsInfo, 0, sizeof(gtsInfo));
 	gtsInfo.menu.wrapAround = qtrue;
 	gtsInfo.menu.fullscreen = qtrue;
-	//gtsInfo.menu.draw = UI_TemplateMenu_Draw;
 	gtsInfo.multiplayer = multiplayer;
 
 	UI_GTS_Cache();
@@ -5345,9 +5100,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.templateMenu.color				= color_red;
 	gtsInfo.templateMenu.style				= UI_RIGHT|UI_DROPSHADOW;
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.templateMenu);
-	y += 34;
-
-	y += 24;
+	y += 58;
 
 	gtsInfo.singleDescr.generic.type	= MTYPE_TEXT;
 	gtsInfo.singleDescr.generic.flags	= QMF_LEFT_JUSTIFY|QMF_SMALLFONT;
@@ -5380,9 +5133,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.tourney.style				= UI_RIGHT|UI_DROPSHADOW;
 	gtsInfo.tourney.string				= "Tournament";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.tourney);
-	y += 34;
-
-	y += 24;
+	y += 58;
 
 	gtsInfo.teamDescr.generic.type	= MTYPE_TEXT;
 	gtsInfo.teamDescr.generic.flags	= QMF_LEFT_JUSTIFY|QMF_SMALLFONT;
@@ -5415,10 +5166,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.ctf.style				= UI_RIGHT|UI_DROPSHADOW;
 	gtsInfo.ctf.string				= "Capture the Flag";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.ctf);
-	y += 34;
-
-#if MONSTER_MODE
-	y += 24;
+	y += 58;
 
 	gtsInfo.coopDescr.generic.type	= MTYPE_TEXT;
 	gtsInfo.coopDescr.generic.flags	= QMF_LEFT_JUSTIFY|QMF_SMALLFONT;
@@ -5440,9 +5188,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.stu.string				= "Save the Universe";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.stu);
 	y += 34;
-#endif
 
-#if ESCAPE_MODE
 	gtsInfo.efh.generic.type		= MTYPE_PTEXT;
 	gtsInfo.efh.generic.flags		= QMF_PULSEIFFOCUS|QMF_RIGHT_JUSTIFY;
 	gtsInfo.efh.generic.x			= 590;
@@ -5454,7 +5200,7 @@ static void UI_GTS_Init(qboolean multiplayer) {
 	gtsInfo.efh.string				= "Escape from Hell";
 	Menu_AddItem(&gtsInfo.menu, &gtsInfo.efh);
 	y += 34;
-#endif
+
 }
 
 /*

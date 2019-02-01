@@ -1,1 +1,1 @@
-rd s/q/ vm
+rd /s/q vm

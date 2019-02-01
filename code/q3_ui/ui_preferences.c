@@ -11,7 +11,6 @@ GAME OPTIONS MENU
 
 #include "ui_local.h"
 
-
 #define ART_FRAMEL				"menu/art/frame2_l"
 #define ART_FRAMER				"menu/art/frame1_r"
 #define ART_BACK0				"menu/art/back_0"
@@ -29,16 +28,13 @@ GAME OPTIONS MENU
 #define ID_SYNCEVERYFRAME		134
 #define ID_FORCEMODEL			135
 #define ID_DRAWTEAMOVERLAY		136
-#define ID_ALLOWDOWNLOAD			137
+#define ID_ALLOWDOWNLOAD		137
 #define ID_BACK					138
 #define ID_GLASSCLOAKING		139	// JUHOX
 #define ID_LENSFLARE			140	// JUHOX
 #define ID_AUTOGLC				141	// JUHOX
 #define ID_BFGSUPEREXPL			142	// JUHOX
-#if PLAYLIST
 #define ID_MUSICMODE			143	// JUHOX
-#endif
-
 #define	NUM_CROSSHAIRS			10
 
 
@@ -62,9 +58,7 @@ typedef struct {
 	menuradiobutton_s	synceveryframe;
 	menuradiobutton_s	forcemodel;
 	menulist_s			drawteamoverlay;
-#if PLAYLIST
 	menulist_s			musicmode;			// JUHOX
-#endif
 	menuradiobutton_s	autoglc;	// JUHOX
 	menuradiobutton_s	allowdownload;
 	menubitmap_s		back;
@@ -74,25 +68,10 @@ typedef struct {
 
 static preferences_t s_preferences;
 
-static const char *teamoverlay_names[] =
-{
-	"off",
-	"upper right",
-	"lower right",
-	"lower left",
-	0
-};
+static const char *teamoverlay_names[] = { "off", "upper right", "lower right",	"lower left", 0 };
 
 // JUHOX: music mode names
-#if PLAYLIST
-static const char* musicmode_names[] =
-{
-	"none",
-	"default",
-	"playlist",
-	0
-};
-#endif
+static const char* musicmode_names[] = { "none", "default",	"playlist",	0 };
 
 static void Preferences_SetMenuItems( void ) {
 	s_preferences.crosshair.curvalue		= (int)trap_Cvar_VariableValue( "cg_drawCrosshair" ) % NUM_CROSSHAIRS;
@@ -105,9 +84,7 @@ static void Preferences_SetMenuItems( void ) {
 	s_preferences.synceveryframe.curvalue	= trap_Cvar_VariableValue( "r_finish" ) != 0;
 	s_preferences.forcemodel.curvalue		= trap_Cvar_VariableValue( "cg_forcemodel" ) != 0;
 	s_preferences.drawteamoverlay.curvalue	= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_drawTeamOverlay" ) );
-#if PLAYLIST
 	s_preferences.musicmode.curvalue		= Com_Clamp(0, 2, trap_Cvar_VariableValue("cg_music"));	// JUHOX
-#endif
 	s_preferences.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
 	s_preferences.glassCloaking.curvalue	= trap_Cvar_VariableValue("cg_glassCloaking") != 0;	// JUHOX
 	s_preferences.lensFlare.curvalue		= trap_Cvar_VariableValue("cg_lensFlare") != 0;	// JUHOX
@@ -151,7 +128,7 @@ static void Preferences_Event( void* ptr, int notification ) {
 
 	case ID_DYNAMICLIGHTS:
 		trap_Cvar_SetValue( "r_dynamiclight", s_preferences.dynamiclights.curvalue );
-		break;		
+		break;
 
 	case ID_IDENTIFYTARGET:
 		trap_Cvar_SetValue( "cg_drawCrosshairNames", s_preferences.identifytarget.curvalue );
@@ -169,11 +146,10 @@ static void Preferences_Event( void* ptr, int notification ) {
 		trap_Cvar_SetValue( "cg_drawTeamOverlay", s_preferences.drawteamoverlay.curvalue );
 		break;
 
-#if PLAYLIST	// JUHOX: handle musicmode menu item
+	// JUHOX: handle musicmode menu item
 	case ID_MUSICMODE:
 		trap_Cvar_SetValue("cg_music", s_preferences.musicmode.curvalue);
 		break;
-#endif
 
 	case ID_ALLOWDOWNLOAD:
 		trap_Cvar_SetValue( "cl_allowDownload", s_preferences.allowdownload.curvalue );
@@ -183,26 +159,26 @@ static void Preferences_Event( void* ptr, int notification ) {
 	case ID_BACK:
 		UI_PopMenu();
 		break;
-#if 1	// JUHOX: handle "glass cloaking" menu field
+	// JUHOX: handle "glass cloaking" menu field
 	case ID_GLASSCLOAKING:
 		trap_Cvar_SetValue("cg_glassCloaking", s_preferences.glassCloaking.curvalue);
 		break;
-#endif
-#if 1	// JUHOX: handle "lens flare" menu field
+
+	// JUHOX: handle "lens flare" menu field
 	case ID_LENSFLARE:
 		trap_Cvar_SetValue("cg_lensFlare", s_preferences.lensFlare.curvalue);
 		break;
-#endif
-#if 1	// JUHOX: handle "bfg super explosion" menu field
+
+	// JUHOX: handle "bfg super explosion" menu field
 	case ID_BFGSUPEREXPL:
 		trap_Cvar_SetValue("cg_bfgSuperExpl", s_preferences.bfgSuperExpl.curvalue);
 		break;
-#endif
-#if 1	// JUHOX: handle "auto group leader command" menu field
+
+	// JUHOX: handle "auto group leader command" menu field
 	case ID_AUTOGLC:
 		trap_Cvar_SetValue("cg_autoGLC", s_preferences.autoglc.curvalue);
 		break;
-#endif
+
 	}
 }
 
@@ -244,7 +220,7 @@ static void Crosshair_Draw( void *self ) {
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
+		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color );
 		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
@@ -427,7 +403,6 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.drawteamoverlay.itemnames			= teamoverlay_names;
 
 	// JUHOX: init musicmode menu item
-#if PLAYLIST
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.musicmode.generic.type		= MTYPE_SPINCONTROL;
 	s_preferences.musicmode.generic.name		= "In-Game Music:";
@@ -437,10 +412,8 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.musicmode.generic.x			= PREFERENCES_X_POS;
 	s_preferences.musicmode.generic.y			= y;
 	s_preferences.musicmode.itemnames			= musicmode_names;
-#endif
 
 	// JUHOX: init "auto group leader command" menu field
-#if 1
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.autoglc.generic.type		= MTYPE_RADIOBUTTON;
 	s_preferences.autoglc.generic.name		= "Auto Group Leader Command:";
@@ -449,7 +422,6 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.autoglc.generic.id		= ID_AUTOGLC;
 	s_preferences.autoglc.generic.x			= PREFERENCES_X_POS;
 	s_preferences.autoglc.generic.y			= y;
-#endif
 
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.allowdownload.generic.type     = MTYPE_RADIOBUTTON;
@@ -489,9 +461,7 @@ static void Preferences_MenuInit( void ) {
 	Menu_AddItem( &s_preferences.menu, &s_preferences.synceveryframe );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.forcemodel );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.drawteamoverlay );
-#if PLAYLIST
 	Menu_AddItem( &s_preferences.menu, &s_preferences.musicmode );	// JUHOX
-#endif
 	Menu_AddItem( &s_preferences.menu, &s_preferences.autoglc );	// JUHOX
 	Menu_AddItem( &s_preferences.menu, &s_preferences.allowdownload );
 

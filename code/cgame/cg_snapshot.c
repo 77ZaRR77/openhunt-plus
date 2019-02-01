@@ -5,8 +5,6 @@
 
 #include "cg_local.h"
 
-
-
 /*
 ==================
 CG_ResetEntity
@@ -103,7 +101,6 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 JUHOX: GetPlayerRefOrigin
 ===================
 */
-#if ESCAPE_MODE
 static void GetPlayerRefOrigin(const playerState_t* ps, int* x, int* y, int* z) {
 	int n;
 
@@ -125,7 +122,7 @@ static void GetPlayerRefOrigin(const playerState_t* ps, int* x, int* y, int* z) 
 	}
 	*z = n << REFERENCE_SHIFT;
 }
-#endif
+
 
 /*
 ===================
@@ -167,7 +164,6 @@ static void CG_TransitionSnapshot( void ) {
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qfalse;
 
 	// JUHOX: set reference origin
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
 		int newReferenceX;
 		int newReferenceY;
@@ -200,7 +196,6 @@ static void CG_TransitionSnapshot( void ) {
 			VectorAdd(cg.predictedPlayerState.origin, delta, cg.predictedPlayerState.origin);
 		}
 	}
-#endif
 
 	for ( i = 0 ; i < cg.snap->numEntities ; i++ ) {
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
@@ -263,14 +258,13 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = qtrue;
 
 	// JUHOX: set reference origin (delta) for new snapshot
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
 		GetPlayerRefOrigin(&snap->ps, &cg.nextReferenceX, &cg.nextReferenceY, &cg.nextReferenceZ);
 		cg.referenceDelta[0] = cg.nextReferenceX - cg.currentReferenceX;
 		cg.referenceDelta[1] = cg.nextReferenceY - cg.currentReferenceY;
 		cg.referenceDelta[2] = cg.nextReferenceZ - cg.currentReferenceZ;
 	}
-#endif
+
 
 	// check for extrapolation errors
 	for ( num = 0 ; num < snap->numEntities ; num++ ) {

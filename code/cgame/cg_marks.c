@@ -386,49 +386,10 @@ void CG_AddNearbox(void) {
 JUHOX: CG_AddLightningMarks
 ===============
 */
-#if MONSTER_MODE
 void CG_AddLightningMarks(int numMarks) {
 	int i;
 
 	for (i = 0; i < numMarks; i++) {
-		#if 0
-		trace_t trace;
-		vec3_t angles;
-		vec3_t dir;
-		vec3_t end;
-
-		/*
-		VectorCopy(cg.refdefViewAngles, angles);
-		angles[YAW] += 0.5 * cg.refdef.fov_x * crandom();
-		angles[PITCH] += 0.5 * cg.refdef.fov_y * crandom();
-		AngleVectors(angles, dir, NULL, NULL);
-		*/
-		/*
-		dir[0] = crandom();
-		dir[1] = crandom();
-		dir[2] = crandom();
-		VectorNormalize(dir);
-		*/
-		angles[YAW] = 360 * random();
-		angles[PITCH] = 360 * random();
-		angles[ROLL] = 360 * random();
-		AngleVectors(angles, dir, NULL, NULL);
-
-		VectorMA(cg.refdef.vieworg, 8000, dir, end);
-
-		CG_Trace(&trace, cg.refdef.vieworg, NULL, NULL, end, -1, CONTENTS_SOLID);
-		if (trace.fraction >= 1) continue;
-		//VectorMA(trace.endpos, -1, trace.plane.normal, trace.endpos);
-
-		CG_ImpactMark(
-			cgs.media.lightningShader, trace.endpos, trace.plane.normal, 360 * random(),
-			1, 1, 1, 1,
-			qfalse,
-			800 * trace.fraction,
-			qtrue	// only temporary
-		);
-		#endif
-
 		trace_t trace;
 		vec3_t angles;
 		vec3_t dir;
@@ -459,7 +420,6 @@ void CG_AddLightningMarks(int numMarks) {
 		CG_Draw3DLine(start, trace.endpos, cgs.media.dischargeFlashShader);
 	}
 }
-#endif
 
 // JUHOX: variables for light blobs
 #define MAX_LIGHT_BLOBS 256
@@ -1390,10 +1350,6 @@ void CG_AddParticles (void)
 	VectorCopy( cg.refdef.viewaxis[1], pvright );
 	VectorCopy( cg.refdef.viewaxis[2], pvup );
 
-#if SCREENSHOT_TOOLS	// JUHOX
-	oldtime += cg.timeOffset;
-#endif
-
 	vectoangles( cg.refdef.viewaxis[0], rotate_ang );
 	roll += ((cg.time - oldtime) * 0.1) ;
 	rotate_ang[ROLL] += (roll*0.9);
@@ -1408,14 +1364,6 @@ void CG_AddParticles (void)
 	{
 
 		next = p->next;
-
-#if SCREENSHOT_TOOLS	// JUHOX
-		if (cg.stopTime) {
-			p->time += cg.timeOffset;
-			p->endtime += cg.timeOffset;
-			p->startfade += cg.timeOffset;
-		}
-#endif
 
 		time = (cg.time - p->time)*0.001;
 
@@ -2580,7 +2528,6 @@ void CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 JUHOX: CG_AdjustParticles
 ==================
 */
-#if ESCAPE_MODE
 void CG_AdjustParticles(const vec3_t delta)
 {
 	cparticle_t	*p;
@@ -2590,4 +2537,3 @@ void CG_AdjustParticles(const vec3_t delta)
 		VectorAdd(p->org, delta, p->org);
 	}
 }
-#endif

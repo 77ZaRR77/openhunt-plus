@@ -44,7 +44,7 @@ vmCvar_t	g_dmflags;
 vmCvar_t	g_fraglimit;
 vmCvar_t	g_timelimit;
 vmCvar_t	g_capturelimit;
-#if MONSTER_MODE	// JUHOX: STU cvar definitions
+// JUHOX: STU cvar definitions
 vmCvar_t	g_artefacts;
 vmCvar_t	g_minMonsters;
 vmCvar_t	g_maxMonsters;
@@ -59,13 +59,11 @@ vmCvar_t	g_maxMonstersPP;
 vmCvar_t	g_monsterBreeding;
 vmCvar_t	g_monsterProgression;
 vmCvar_t	g_scoreMode;
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvar definitions
+// JUHOX: EFH cvar definitions
 vmCvar_t	g_monsterLoad;
 vmCvar_t	g_distanceLimit;
 vmCvar_t	g_challengingEnv;
 vmCvar_t	g_debugEFH;
-#endif
 vmCvar_t	g_template;				// JUHOX
 vmCvar_t	g_gameSeed;				// JUHOX
 vmCvar_t	g_respawnDelay;			// JUHOX
@@ -156,7 +154,7 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-#if MONSTER_MODE	// JUHOX: STU cvar definition
+	// JUHOX: STU cvar definition
 	{ &g_artefacts, "g_artefacts", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART | CVAR_LATCH, 0, qfalse },
 	{ &g_minMonsters, "g_minMonsters", "15", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_NORESTART, 0, qfalse },
 	{ &g_maxMonsters, "g_maxMonsters", "30", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_NORESTART, 0, qfalse },
@@ -174,13 +172,12 @@ cvarTable_t		gameCvarTable[] = {
 	{ &g_maxMonstersPP, "g_maxMonstersPP", "10", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_monsterBreeding, "g_monsterBreeding", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_scoreMode, "g_scoreMode", "0", CVAR_ARCHIVE, 0, qfalse },
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvar definitions
+
+	// JUHOX: EFH cvar definitions
 	{ &g_monsterLoad, "g_monsterLoad", "30", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_distanceLimit, "distancelimit", "3000", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_challengingEnv, "g_challengingEnv", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 	{ &g_debugEFH, "g_debugEFH", "0", CVAR_SYSTEMINFO | CVAR_INIT, 0, qfalse },
-#endif
 	{ &g_template, "g_template", "", 0, 0, qfalse },	// JUHOX
 	{ &g_gameSeed, "g_gameSeed", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },	// JUHOX
 	{ &g_respawnDelay, "respawnDelay", "10", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },	// JUHOX
@@ -522,7 +519,6 @@ static const char* HighscoreName(const gametemplate_t* gt, const char* templaten
 JUHOX: InitRecord
 ==================
 */
-#if ESCAPE_MODE
 static void InitRecord(void) {
 	char info[MAX_INFO_STRING];
 	gametemplate_t gt;
@@ -543,7 +539,6 @@ static void InitRecord(void) {
 
 	trap_SetConfigstring(CS_RECORD, va("%d,%d", gt.highscoretype, atoi(scoreVarContents)));
 }
-#endif
 
 /*
 ============
@@ -580,9 +575,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.time = levelTime;
 	level.startTime = levelTime;
 	G_InitGameTemplates();	// JUHOX
-#if ESCAPE_MODE
 	G_InitWorldSystem();	// JUHOX
-#endif
 
 #if MEETING	// JUHOX: check for meeting
 	level.meeting = g_meeting.integer;
@@ -653,9 +646,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	SaveRegisteredItems();
 
-#if ESCAPE_MODE
 	if (g_gametype.integer == GT_EFH) G_SpawnWorld();	// JUHOX
-#endif
 
 	G_Printf ("-----------------------------------\n");
 
@@ -665,28 +656,19 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		G_SoundIndex( "sound/player/gurp2.wav" );
 	}
 
-#if !ESCAPE_MODE	// JUHOX: no bots in EFH
-	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
-#else
-	if (
-		trap_Cvar_VariableIntegerValue("bot_enable") &&
-		g_gametype.integer != GT_EFH
-	) {
-#endif
+	if ( trap_Cvar_VariableIntegerValue("bot_enable") && g_gametype.integer != GT_EFH ) {
 		BotAISetup( restart );
 		BotAILoadMap( restart );
 		G_InitBots( restart );
 	}
-#if MONSTER_MODE	// JUHOX: init STU
+	// JUHOX: init STU
 	G_InitMonsters();
 	trap_SetConfigstring(CS_HIGHSCORETEXT, "");	// JUHOX
 	trap_SetConfigstring(CS_NUMMONSTERS, "000,0");	// JUHOX
 	trap_SetConfigstring(CS_STU_SCORE, "0");	// JUHOX
-#endif
-#if ESCAPE_MODE
 	trap_SetConfigstring(CS_EFH_COVERED_DISTANCE, "0,0");	// JUHOX
 	trap_SetConfigstring(CS_EFH_SPEED, "");	// JUHOX
-#endif
+
 	InitRecord();	// JUHOX
 	trap_SetConfigstring(CS_CLIENTS_READY, "");	// JUHOX
 #if MEETING
@@ -718,14 +700,7 @@ void G_ShutdownGame( int restart ) {
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 
-#if !ESCAPE_MODE	// JUHOX: no bots in EFH
-	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
-#else
-	if (
-		trap_Cvar_VariableIntegerValue("bot_enable") &&
-		g_gametype.integer != GT_EFH
-	) {
-#endif
+	if ( trap_Cvar_VariableIntegerValue("bot_enable") && g_gametype.integer != GT_EFH ) {
 		BotAIShutdown( restart );
 	}
 }
@@ -937,7 +912,6 @@ int QDECL SortRanks( const void *a, const void *b ) {
 	}
 
 	// JUHOX: take 'killed'-counter into account for team games
-#if 1
 	if (g_gametype.integer >= GT_TEAM) {
 		int sortScoreA, sortScoreB;
 
@@ -946,7 +920,7 @@ int QDECL SortRanks( const void *a, const void *b ) {
 		if (sortScoreA > sortScoreB) return -1;
 		if (sortScoreA < sortScoreB) return 1;
 	}
-#endif
+
 	// then sort by score
 	if ( ca->ps.persistant[PERS_SCORE]
 		> cb->ps.persistant[PERS_SCORE] ) {
@@ -958,7 +932,6 @@ int QDECL SortRanks( const void *a, const void *b ) {
 	}
 	// JUHOX: take 'killed'-counter into account for non-team games
 	// NOTE: 'ca' and 'cb' have equal score
-#if 1
 	if (g_gametype.integer < GT_TEAM) {
 		int sortScoreA, sortScoreB;
 
@@ -967,7 +940,7 @@ int QDECL SortRanks( const void *a, const void *b ) {
 		if (sortScoreA < sortScoreB) return -1;
 		if (sortScoreA > sortScoreB) return 1;
 	}
-#endif
+
 	return 0;
 }
 
@@ -1161,7 +1134,7 @@ void FindIntermissionPoint( void ) {
 
 	// find the intermission spot
 	ent = G_Find (NULL, FOFS(classname), "info_player_intermission");
-#if ESCAPE_MODE	// JUHOX: in EFH don't use intermission spot if we didn't reach the goal
+	// JUHOX: in EFH don't use intermission spot if we didn't reach the goal
 	if (
 		g_gametype.integer == GT_EFH &&
 		(
@@ -1171,7 +1144,7 @@ void FindIntermissionPoint( void ) {
 	) {
 		ent = NULL;
 	}
-#endif
+
 	if ( !ent ) {	// the map creator forgot to put in an intermission point...
 		SelectSpawnPoint ( vec3_origin, level.intermission_origin, level.intermission_angle );
 	} else {
@@ -1179,11 +1152,9 @@ void FindIntermissionPoint( void ) {
 		VectorCopy (ent->s.angles, level.intermission_angle);
 		// if it has a target, look towards it
 		if ( ent->target ) {
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-			target = G_PickTarget( ent->target );
-#else
+
 			target = G_PickTarget(ent->target, ent->worldSegment - 1);
-#endif
+
 			if ( target ) {
 				VectorSubtract( target->s.origin, level.intermission_origin, dir );
 				vectoangles( dir, level.intermission_angle );
@@ -1217,7 +1188,6 @@ static qboolean DoCvarSettingsMatchTemplate(const gametemplate_t* gt) {
 	hiscoreRejectionReason = "timelimit";
 	if (gt->tksTimelimit == TKS_fixedValue && g_timelimit.integer != gt->timelimit) return qfalse;
 
-#if MONSTER_MODE
 	hiscoreRejectionReason = "g_artefacts";
 	if (gt->tksArtefacts == TKS_fixedValue && g_artefacts.integer != gt->artefacts) return qfalse;
 
@@ -1247,9 +1217,7 @@ static qboolean DoCvarSettingsMatchTemplate(const gametemplate_t* gt) {
 
 	hiscoreRejectionReason = "g_monsterBreeding";
 	if (gt->tksMonsterbreeding == TKS_fixedValue && g_monsterBreeding.integer != gt->monsterbreeding) return qfalse;
-#endif
 
-#if ESCAPE_MODE
 	hiscoreRejectionReason = "g_monsterLoad";
 	if (gt->tksMonsterload == TKS_fixedValue && g_monsterLoad.integer != gt->monsterLoad) return qfalse;
 
@@ -1258,7 +1226,6 @@ static qboolean DoCvarSettingsMatchTemplate(const gametemplate_t* gt) {
 
 	hiscoreRejectionReason = "g_challengingEnv";
 	if (gt->tksChallengingEnv == TKS_fixedValue && g_challengingEnv.integer != gt->challengingEnv) return qfalse;
-#endif
 
 	hiscoreRejectionReason = "g_respawnDelay";
 	if (gt->tksRespawndelay == TKS_fixedValue && g_respawnDelay.integer != gt->respawndelay) return qfalse;
@@ -1299,10 +1266,8 @@ static qboolean DoCvarSettingsMatchTemplate(const gametemplate_t* gt) {
 	hiscoreRejectionReason = "g_lightningDamageLimit";
 	if (gt->tksLightningdamagelimit == TKS_fixedValue && gt->lightningdamagelimit != g_lightningDamageLimit.integer) return qfalse;
 
-#if GRAPPLE_ROPE
 	hiscoreRejectionReason = "g_grapple";
 	if (gt->tksGrapple == TKS_fixedValue && gt->grapple != g_grapple.integer) return qfalse;
-#endif
 
 	hiscoreRejectionReason = "dmflags";
 	if (gt->tksDmflags == TKS_fixedValue && gt->dmflags != g_dmflags.integer) return qfalse;
@@ -1408,7 +1373,7 @@ void BeginIntermission( void ) {
 		return;		// already active
 	}
 
-#if 1	// JUHOX: check for highscore
+	// JUHOX: check for highscore
 	trap_SetConfigstring(CS_HIGHSCORETEXT, "");
 	{
 		gametemplate_t gt;
@@ -1425,15 +1390,7 @@ void BeginIntermission( void ) {
 		}
 
 		hiscoreRejectionReason = NULL;
-		if (
-			templated &&
-			gt.tksHighscoretype > TKS_missing &&
-			/*
-			gt.tksHighscorename > TKS_missing &&
-			gt.highscorename[0] &&
-			*/
-			DoesGameMatchTemplate(&gt)
-		) {
+		if ( templated && gt.tksHighscoretype > TKS_missing && DoesGameMatchTemplate(&gt) ) {
 			const char* hsname;
 			char scoreVarName[64];
 			char scoreVarContents[64];
@@ -1444,7 +1401,7 @@ void BeginIntermission( void ) {
 			Com_sprintf(scoreVarName, sizeof(scoreVarName), "%s0", hsname);
 			trap_Cvar_VariableStringBuffer(scoreVarName, scoreVarContents, sizeof(scoreVarContents));
 			switch (gt.highscoretype) {
-#if MONSTER_MODE
+
 			case GC_score:
 				if (
 					g_gametype.integer >= GT_STU &&
@@ -1467,21 +1424,20 @@ void BeginIntermission( void ) {
 							g_artefacts.integer < 999 &&
 							level.teamScores[TEAM_RED] >= g_artefacts.integer
 						)
-#if ESCAPE_MODE
+
 						|| (
 							g_gametype.integer == GT_EFH &&
 							level.efhGoalDistance > 0 &&
 							level.efhCoveredDistance >= level.efhGoalDistance
 						)
-#endif
+
 					)
 				) {
 					newhighscore = qtrue;
 					trap_SetConfigstring(CS_HIGHSCORETEXT, "New record time on this server!");
 				}
 				break;
-#endif
-#if ESCAPE_MODE
+
 			case GC_distance:
 				if (
 					g_gametype.integer == GT_EFH &&
@@ -1502,7 +1458,7 @@ void BeginIntermission( void ) {
 					trap_SetConfigstring(CS_HIGHSCORETEXT, "New record speed on this server!");
 				}
 				break;
-#endif
+
 			default:
 				break;
 			}
@@ -1512,22 +1468,19 @@ void BeginIntermission( void ) {
 				char msgVarContents[1024];
 
 				switch (gt.highscoretype) {
-#if MONSTER_MODE
 				case GC_score:
 					Com_sprintf(scoreVarContents, sizeof(scoreVarContents), "%d", level.stuScore);
 					break;
-#endif
 				case GC_time:
 					Com_sprintf(scoreVarContents, sizeof(scoreVarContents), "%d", time);
 					break;
-#if ESCAPE_MODE
 				case GC_distance:
 					Com_sprintf(scoreVarContents, sizeof(scoreVarContents), "%d", level.efhCoveredDistance);
 					break;
 				case GC_speed:
 					Com_sprintf(scoreVarContents, sizeof(scoreVarContents), "%d", level.efhSpeed);
 					break;
-#endif
+
 				default:
 					scoreVarContents[0] = 0;
 					break;
@@ -1553,7 +1506,6 @@ void BeginIntermission( void ) {
 			}
 		}
 	}
-#endif
 
 	// if in tournement mode, change the wins / losses
 	if ( g_gametype.integer == GT_TOURNAMENT ) {
@@ -1606,18 +1558,18 @@ void ExitLevel (void) {
 		level.meeting = qfalse;
 		trap_SetConfigstring(CS_CLIENTS_READY, "");
 
-#if ESCAPE_MODE
+
 		level.intermissiontime = 0;	// effects spawn location in EFH
 		if (g_gametype.integer == GT_EFH) G_SpawnWorld();
-#endif
+
 
 		for (i = 0; i < level.maxclients; i++) {
 			if (level.clients[i].pers.connected != CON_CONNECTED) continue;
 
 			ClientBegin(i);
-#if ESCAPE_MODE
+
 			if (g_gametype.integer == GT_EFH) G_UpdateWorld();
-#endif
+
 		}
 
 		level.startTime = level.time;
@@ -1757,7 +1709,6 @@ void LogExit( const char *string ) {
 
 
 	// JUHOX: in STU set the CS_TIME_PLAYED config string
-#if	MONSTER_MODE
 	if (g_gametype.integer >= GT_STU) {
 		int minutes, seconds, mseconds;
 		char* s;
@@ -1769,9 +1720,9 @@ void LogExit( const char *string ) {
 		trap_SetConfigstring(CS_TIME_PLAYED, s);
 		G_LogPrintf("time played: %s\n", s);
 	}
-#endif
 
-#if ESCAPE_MODE	// JUHOX: set CS_EFH_SPEED config string
+
+	// JUHOX: set CS_EFH_SPEED config string
 	if (g_gametype.integer == GT_EFH) {
 		float minutes;
 		int metres;
@@ -1796,7 +1747,6 @@ void LogExit( const char *string ) {
 
 		trap_SetConfigstring(CS_EFH_SPEED, va("%d.%03d", level.efhSpeed / 1000, level.efhSpeed % 1000));
 	}
-#endif
 }
 
 
@@ -1936,11 +1886,9 @@ qboolean ScoreIsTied( void ) {
 	int		a, b;
 
 	// JUHOX: score is never tied in STU
-#if MONSTER_MODE
 	if (g_gametype.integer >= GT_STU) {
 		return qfalse;
 	}
-#endif
 
 	if ( level.numPlayingClients < 2 ) {
 		return qfalse;
@@ -1990,7 +1938,7 @@ void CheckExitRules( void ) {
 		return;
 	}
 
-#if MONSTER_MODE	// JUHOX: check STU exit rules
+	// JUHOX: check STU exit rules
 	if (g_gametype.integer == GT_STU) {
 		if (
 			g_artefacts.integer > 0 &&
@@ -2076,8 +2024,8 @@ void CheckExitRules( void ) {
 		// do not apply other game types's exit rules
 		return;
 	}
-#endif
-#if ESCAPE_MODE	// JUHOX: check EFH exit rules
+
+    // JUHOX: check EFH exit rules
 	if (g_gametype.integer == GT_EFH) {
 		if (
 			level.efhGoalDistance > 0 &&
@@ -2121,7 +2069,7 @@ void CheckExitRules( void ) {
 		// do not apply other game types's exit rules
 		return;
 	}
-#endif
+
 
 	// check for sudden death
 	if ( ScoreIsTied() ) {
@@ -2136,12 +2084,6 @@ void CheckExitRules( void ) {
 			return;
 		}
 	}
-
-#if 0	// JUHOX: always check exit rules, even if there's just one player
-	if ( level.numPlayingClients < 2 ) {
-		return;
-	}
-#endif
 
 	if ( g_gametype.integer < GT_CTF && g_fraglimit.integer ) {
 		if ( level.teamScores[TEAM_RED] >= g_fraglimit.integer ) {
@@ -2276,11 +2218,9 @@ void CheckTournament( void ) {
 		}
 
 		// JUHOX: warmup waiting condition for STU
-#if MONSTER_MODE
 		if (g_gametype.integer >= GT_STU) {
 			notEnough = (level.numPlayingClients < 1);
 		}
-#endif
 
 		if ( notEnough ) {
 			if ( level.warmupTime != -1 ) {
@@ -2461,13 +2401,13 @@ void CheckTeamVote( int team ) {
 				//set the team leader
 				SetLeader(team, atoi(level.teamVoteString[cs_offset] + 7));
 			}
-#if 1	// JUHOX: execute surrendering
+            // JUHOX: execute surrendering
 			else if (!Q_strncmp("surrender", level.teamVoteString[cs_offset], 9)) {
 				level.teamScores[team==TEAM_RED? TEAM_BLUE : TEAM_RED] += g_gametype.integer == GT_CTF? 2 : 5;
 				CalculateRanks();
 				DoOverkill(NULL, team, ENTITYNUM_NONE);
 			}
-#endif
+
 			else {
 				trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset] ) );
 			}
@@ -2491,7 +2431,6 @@ JUHOX: CheckGamesettings
 ==================
 */
 static void CheckGamesettings(void) {
-#if MONSTER_MODE
 	static int lastGametypeMod = -1;
 	static int lastMapnameMod = -1;
 	static int lastBasehealthMod = -1;
@@ -2519,11 +2458,9 @@ static void CheckGamesettings(void) {
 	static int lastMonsterGuardsMod = -1;
 	static int lastMonsterTitansMod = -1;
 	static int lastMonstersPerTrapMod = -1;
-#if ESCAPE_MODE
 	static int lastMonsterLoadMod = -1;
 	static int lastDistanceLimitMod = -1;
 	static int lastChallengingEnvMod = -1;
-#endif
 	char info[MAX_INFO_STRING];
 
 	if (
@@ -2534,11 +2471,9 @@ static void CheckGamesettings(void) {
 		lastFraglimitMod != g_fraglimit.modificationCount ||
 		lastCapturelimitMod != g_capturelimit.modificationCount ||
 		lastTimelimitMod != g_timelimit.modificationCount ||
-#if ESCAPE_MODE
 		lastDistanceLimitMod != g_distanceLimit.modificationCount ||
 		lastMonsterLoadMod != g_monsterLoad.modificationCount ||
 		lastChallengingEnvMod != g_challengingEnv.modificationCount ||
-#endif
 		lastArtefactsMod != g_artefacts.modificationCount ||
 		lastRespawndelayMod != g_respawnDelay.modificationCount ||
 		lastGameseedMod != g_gameSeed.modificationCount ||
@@ -2569,11 +2504,9 @@ static void CheckGamesettings(void) {
 		lastFraglimitMod = g_fraglimit.modificationCount;
 		lastCapturelimitMod = g_capturelimit.modificationCount;
 		lastTimelimitMod = g_timelimit.modificationCount;
-#if ESCAPE_MODE
 		lastDistanceLimitMod = g_distanceLimit.modificationCount;
 		lastMonsterLoadMod = g_monsterLoad.modificationCount;
 		lastChallengingEnvMod = g_challengingEnv.modificationCount;
-#endif
 		lastArtefactsMod = g_artefacts.modificationCount;
 		lastRespawndelayMod = g_respawnDelay.modificationCount;
 		lastGameseedMod = g_gameSeed.modificationCount;
@@ -2607,7 +2540,7 @@ static void CheckGamesettings(void) {
 				highscoreType = GC_score;
 			}
 			break;
-#if ESCAPE_MODE
+
 		case GT_EFH:
 			if (g_distanceLimit.integer <= 0) {
 				highscoreType = GC_distance;
@@ -2616,7 +2549,7 @@ static void CheckGamesettings(void) {
 				highscoreType = GC_speed;
 			}
 			break;
-#endif
+
 		default:
 			highscoreType = GC_none;
 			break;
@@ -2630,9 +2563,7 @@ static void CheckGamesettings(void) {
 			"\\dmf\\d%d"
 			"\\fl\\d%d"
 			"\\tl\\d%d"
-#if ESCAPE_MODE
 			"\\dl\\d%d"
-#endif
 			"\\art\\d%d"
 			"\\rd\\d%d"
 			"\\gs\\d%d"
@@ -2645,13 +2576,9 @@ static void CheckGamesettings(void) {
 			"\\af\\d%d"
 			"\\ldl\\d%d"
 			"\\gh\\d%d"
-#if ESCAPE_MODE
 			"\\che\\d%d"
-#endif
 			"\\ml\\d%d"
-#if ESCAPE_MODE
 			"\\mlo\\d%d"
-#endif
 			"\\mim\\d%d"
 			"\\mam\\d%d"
 			"\\msd\\d%d"
@@ -2666,9 +2593,7 @@ static void CheckGamesettings(void) {
 			g_dmflags.integer,
 			g_gametype.integer == GT_CTF? g_capturelimit.integer : g_fraglimit.integer,
 			g_timelimit.integer,
-#if ESCAPE_MODE
 			g_distanceLimit.integer,
-#endif
 			g_artefacts.integer,
 			g_respawnDelay.integer,
 			g_gameSeed.integer,
@@ -2681,13 +2606,9 @@ static void CheckGamesettings(void) {
 			g_armorFragments.integer,
 			g_lightningDamageLimit.integer,
 			g_grapple.integer,
-#if ESCAPE_MODE
 			g_challengingEnv.integer,
-#endif
 			g_monsterLauncher.integer,
-#if ESCAPE_MODE
 			g_monsterLoad.integer,
-#endif
 			g_minMonsters.integer,
 			g_maxMonsters.integer,
 			g_monsterSpawnDelay.integer,
@@ -2699,7 +2620,6 @@ static void CheckGamesettings(void) {
 		);
 		trap_SetConfigstring(CS_GAMESETTINGS, info);
 	}
-#endif
 }
 
 /*
@@ -2741,11 +2661,7 @@ void G_RunThink (gentity_t *ent) {
 
 	ent->nextthink = 0;
 	if (!ent->think) {
-#if 0	// JUHOX: more detailed error message for NULL ent->think
-		G_Error ( "NULL ent->think");
-#else
 		G_Error("NULL ent->think (%s)\n", ent->classname);
-#endif
 	}
 	ent->think (ent);
 }
@@ -2755,20 +2671,18 @@ void G_RunThink (gentity_t *ent) {
 JUHOX: G_SetPlayerRefOrigin
 =============
 */
-#if ESCAPE_MODE
 void G_SetPlayerRefOrigin(playerState_t* ps) {
 	ps->stats[STAT_REFERENCE_X] = (level.referenceOrigin.x >> REFERENCE_SHIFT) & 0xffff;
 	ps->stats[STAT_REFERENCE_Y] = (level.referenceOrigin.y >> REFERENCE_SHIFT) & 0xffff;
 	ps->stats[STAT_REFERENCE_Z] = (level.referenceOrigin.z >> REFERENCE_SHIFT) & 0xffff;
 }
-#endif
+
 
 /*
 =============
 JUHOX: UpdateReferenceOrigin
 =============
 */
-#if ESCAPE_MODE
 static void UpdateReferenceOrigin(void) {
 	vec3_t middle;
 	int i;
@@ -2848,12 +2762,6 @@ static void UpdateReferenceOrigin(void) {
 		if (ps) {
 			G_SetPlayerRefOrigin(ps);
 			VectorAdd(ps->origin, delta, ps->origin);
-
-			/*
-			if (ent->client) {
-				VectorAdd(ent->client->oldOrigin, delta, ent->client->oldOrigin);
-			}
-			*/
 		}
 		else {
 			switch (ent->entClass) {
@@ -2871,22 +2779,17 @@ static void UpdateReferenceOrigin(void) {
 		}
 
 		if (linked) {
-			/*
-			VectorAdd(ent->r.absmin, delta, ent->r.absmin);
-			VectorAdd(ent->r.absmax, delta, ent->r.absmax);
-			*/
 			trap_LinkEntity(ent);
 		}
 	}
 }
-#endif
+
 
 /*
 =============
 JUHOX: ComputeCoveredDistance
 =============
 */
-#if ESCAPE_MODE
 static void ComputeCoveredDistance(void) {
 	int i;
 	long minDistance;
@@ -2939,29 +2842,6 @@ static void ComputeCoveredDistance(void) {
 
 	trap_SetConfigstring(CS_EFH_COVERED_DISTANCE, va("%d,%d", minDistance, playersMissing));
 }
-#endif
-
-/*
-================
-JUHOX: G_FreezePlayerState
-================
-*/
-#if SCREENSHOT_TOOLS
-void G_FreezePlayerState(playerState_t* ps, int msec) {
-	int i;
-
-	if (ps->weaponTime) ps->weaponTime += msec;
-	if (ps->legsTimer) ps->legsTimer += msec;
-	if (ps->torsoTimer) ps->torsoTimer += msec;
-	if (ps->externalEvent) ps->externalEventTime += msec;
-
-	for (i = 0; i < PW_NUM_POWERUPS; i++) {
-		if (!ps->powerups[i]) continue;
-		ps->powerups[i] += msec;
-	}
-	if (ps->powerups[PW_EFFECT_TIME]) ps->powerups[PW_EFFECT_TIME] += msec;
-}
-#endif
 
 
 /*
@@ -3015,50 +2895,18 @@ int start, end;
 	}
 #endif
 
-#if SCREENSHOT_TOOLS	// JUHOX
-	if (level.stopTime) {
-		for (i = 0; i < level.maxclients; i++) {
-			gclient_t* client;
-
-			client = &level.clients[i];
-			if (client->pers.connected != CON_CONNECTED) continue;
-
-			G_FreezePlayerState(&client->ps, msec);
-			if (client->lastChargeTime) client->lastChargeTime += msec;
-		}
-		for (i = MAX_CLIENTS; i < level.num_entities; i++) {
-			ent = &g_entities[i];
-			if (!ent->inuse) continue;
-
-			ent->timestamp += msec;
-			if (ent->nextthink) ent->nextthink += msec;
-
-			if (ent->s.pos.trType >= TR_LINEAR) {
-				ent->s.pos.trTime += msec;
-			}
-			if (ent->s.apos.trType >= TR_LINEAR) {
-				ent->s.apos.trTime += msec;
-			}
-
-			if (ent->monster) G_FreezeMonster(ent, msec);
-		}
-	}
-#endif
-
-#if MONSTER_MODE	// JUHOX: send STU score to clients
+    // JUHOX: send STU score to clients
 	if (level.stuScore != level.stuScoreTransmitted) {
 		trap_SetConfigstring(CS_STU_SCORE, va("%d", level.stuScore));
 		level.stuScoreTransmitted = level.stuScore;
 	}
-#endif
 
-#if ESCAPE_MODE	// JUHOX: update world for EFH
+    // JUHOX: update world for EFH
 	if (g_gametype.integer == GT_EFH) {
 		UpdateReferenceOrigin();
 		G_UpdateWorld();
 		ComputeCoveredDistance();
 	}
-#endif
 
 	// get any cvar changes
 	G_UpdateCvars();
@@ -3068,7 +2916,6 @@ int start, end;
 	G_SendGameTemplate();	// JUHOX
 
 	// JUHOX: spawn monsters & artefacts
-#if MONSTER_MODE
 	G_MonsterScanForNoises();
 	G_MonsterSpawning();
 	if (g_gametype.integer == GT_STU) {
@@ -3082,17 +2929,13 @@ int start, end;
 		}
 	}
 	G_UpdateMonsterCounters();
-#endif
 
 	//
 	// go through all allocated objects
 	//
 	start = trap_Milliseconds();
 	// JUHOX: advance level objects in random order
-#if 0
-	ent = &g_entities[0];
-	for (i=0 ; i<level.num_entities ; i++, ent++) {
-#else
+
 	m = level.num_entities;
 	for (i = 0; i < m; i++) {
 		entityBag[i] = i;
@@ -3106,7 +2949,7 @@ int start, end;
 			entityBag[b] = entityBag[--m];
 			ent = &g_entities[i];
 		}
-#endif
+
 		if ( !ent->inuse ) {
 			continue;
 		}
@@ -3114,20 +2957,10 @@ int start, end;
 		// clear events that are too old
 		if ( level.time - ent->eventTime > EVENT_VALID_MSEC ) {
 			// JUHOX: new event clearing
-#if 0
-			if ( ent->s.event ) {
-				ent->s.event = 0;	// &= EV_EVENT_BITS;
-				if ( ent->client ) {
-					ent->client->ps.externalEvent = 0;
-					// predicted events should never be set to zero
-					//ent->client->ps.events[0] = 0;
-					//ent->client->ps.events[1] = 0;
-				}
-			}
-#else
+
 			ent->s.event = 0;
 			if (ent->client) ent->client->ps.externalEvent = 0;
-#endif
+
 			if ( ent->freeAfterEvent ) {
 				// tempEntities or dropped items completely go away after their event
 				G_FreeEntity( ent );
@@ -3164,9 +2997,6 @@ int start, end;
 		}
 
 		if ( i < MAX_CLIENTS ) {
-#if SCREENSHOT_TOOLS
-			if (level.stopTime && i > 0) continue;	// JUHOX
-#endif
 			G_RunClient( ent );
 			continue;
 		}
@@ -3185,15 +3015,13 @@ start = trap_Milliseconds();
 	}
 end = trap_Milliseconds();
 
-#if ESCAPE_MODE	// JUHOX: update lighting origins
+	// JUHOX: update lighting origins
 	if (g_gametype.integer == GT_EFH) {
 		G_UpdateLightingOrigins();
 	}
-#endif
 
-#if MONSTER_MODE	// JUHOX: update monster config strings
+	// JUHOX: update monster config strings
 	G_UpdateMonsterCS();
-#endif
 
 	// see if it is time to do a tournement restart
 	CheckTournament();
@@ -3729,10 +3557,8 @@ void G_PlayTemplate(int index) {
 	if (gtmpl.tksNohealthregen) SetValue("g_noHealthRegen", gtmpl.nohealthregen);
 	if (gtmpl.tksCloakingdevice) SetValue("g_cloakingDevice", gtmpl.cloakingdevice);
 	if (gtmpl.tksUnlimitedammo) SetValue("g_unlimitedAmmo", gtmpl.unlimitedammo);
-#if MONSTER_MODE
 	if (gtmpl.tksMonsterlauncher) SetValue("g_monsterLauncher", gtmpl.monsterLauncher);
 	if (gtmpl.tksScoremode) SetValue("g_scoreMode", gtmpl.scoremode);
-#endif
 	if (gtmpl.tksTimelimit) SetValue("timelimit", gtmpl.timelimit);
 
 	switch(gtmpl.gametype) {
@@ -3764,7 +3590,7 @@ void G_PlayTemplate(int index) {
 		if (gtmpl.tksTss) SetValue("tss", gtmpl.tss);
 		break;
 
-#if MONSTER_MODE	// JUHOX: set STU cvars
+	// JUHOX: set STU cvars
 	case GT_STU:
 		if (gtmpl.tksFraglimit) SetValue("fraglimit", gtmpl.fraglimit);
 		if (gtmpl.tksArtefacts) SetValue("g_artefacts", gtmpl.artefacts);
@@ -3782,9 +3608,9 @@ void G_PlayTemplate(int index) {
 		if (gtmpl.tksTitans) SetValue("g_monsterTitans", gtmpl.titans);
 		if (gtmpl.tksMonsterbreeding) SetValue("g_monsterBreeding", gtmpl.monsterbreeding);
 		break;
-#endif
 
-#if ESCAPE_MODE	// JUHOX: set EFH cvars
+
+	// JUHOX: set EFH cvars
 	case GT_EFH:
 		if (gtmpl.tksFraglimit) SetValue("fraglimit", gtmpl.fraglimit);
 		if (gtmpl.tksDistancelimit) SetValue("distancelimit", gtmpl.distancelimit);
@@ -3799,7 +3625,6 @@ void G_PlayTemplate(int index) {
 		if (gtmpl.tksGuards) SetValue("g_monsterGuards", gtmpl.guards);
 		if (gtmpl.tksTitans) SetValue("g_monsterTitans", gtmpl.titans);
 		break;
-#endif
 	}
 
 	SetValue("g_gameType", gtmpl.gametype);

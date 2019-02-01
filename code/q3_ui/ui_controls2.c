@@ -114,9 +114,7 @@ typedef struct
 #define ID_WEAPON10		52	// JUHOX
 #define ID_TOGGLEHOOK	53	// JUHOX
 #define ID_THROWHOOK	54	// JUHOX
-#if MONSTER_MODE
 #define ID_WEAPON11		55	// JUHOX
-#endif
 #define ID_TOGGLEVIEW	56	// JUHOX
 
 // all others
@@ -157,15 +155,9 @@ typedef struct
 #define ANIM_GESTURE	23
 #define ANIM_DIE		24
 #define ANIM_CHAT		25
-#if MONSTER_MODE
 #define ANIM_WEAPON11	26	// JUHOX
-#endif
-
-#if !MONSTER_MODE
-#define WEAPONLIST_SIZE 9	// JUHOX
-#else
 #define WEAPONLIST_SIZE 10	// JUHOX
-#endif
+
 
 typedef struct
 {
@@ -202,9 +194,7 @@ typedef struct
 	menuaction_s		railgun;
 	menuaction_s		plasma;
 	menuaction_s		bfg;
-#if MONSTER_MODE
 	menuaction_s		monsterlauncher;	// JUHOX
-#endif
 	menuaction_s		grapple;	// JUHOX
 	menuaction_s		toggleHook;	// JUHOX
 	menuaction_s		throwHook;	// JUHOX
@@ -329,9 +319,7 @@ static bind_t g_bindings[] =
 	{"weapon 10",		"grappling hook",	ID_WEAPON10,	ANIM_WEAPON10,	'0',			-1,		-1,	-1},	// JUHOX
 	{"throwhook",		"use grapple (toggle)", ID_TOGGLEHOOK, ANIM_IDLE,	-1,				-1,		-1,	-1},	// JUHOX
 	{"+throwhook",		"use grapple (hold)  ", ID_THROWHOOK, ANIM_IDLE,	-1,				-1,		-1,	-1},	// JUHOX
-#if MONSTER_MODE
 	{"weapon 11",		"monster launcher",	ID_WEAPON11,	ANIM_WEAPON11,	-1,				-1,		-1,	-1},	// JUHOX
-#endif
 	{"toggleview",		"toggle view",		ID_TOGGLEVIEW,	ANIM_IDLE,		-1,				-1,		-1,	-1},	// JUHOX
 	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
@@ -389,12 +377,10 @@ static menucommon_s *g_weapons_controls[] = {
 	(menucommon_s *)&s_controls.railgun,
 	(menucommon_s *)&s_controls.plasma,
 	(menucommon_s *)&s_controls.bfg,
-	(menucommon_s *)&s_controls.grapple,	// JUHOX
-#if MONSTER_MODE
+	(menucommon_s *)&s_controls.grapple,	        // JUHOX
 	(menucommon_s *)&s_controls.monsterlauncher,	// JUHOX
-#endif
-	(menucommon_s *)&s_controls.toggleHook,	// JUHOX
-	(menucommon_s *)&s_controls.throwHook,	// JUHOX
+	(menucommon_s *)&s_controls.toggleHook,	        // JUHOX
+	(menucommon_s *)&s_controls.throwHook,	        // JUHOX
 	(menucommon_s *)&s_controls.crouchingCutsRope,	// JUHOX
 	NULL,
 };
@@ -434,9 +420,7 @@ static menucommon_s* g_prios_controls[] = {
 	(menucommon_s*)&s_controls.weaponList[6],
 	(menucommon_s*)&s_controls.weaponList[7],
 	(menucommon_s*)&s_controls.weaponList[8],
-#if MONSTER_MODE
 	(menucommon_s*)&s_controls.weaponList[9],
-#endif
 	NULL,
 };
 
@@ -468,13 +452,13 @@ static menucommon_s *g_misc_controls[] = {
 	(menucommon_s *)&s_controls.chat2,
 	(menucommon_s *)&s_controls.chat3,
 	(menucommon_s *)&s_controls.chat4,
-	(menucommon_s *)&s_controls.givehealth,	// JUHOX
-	(menucommon_s *)&s_controls.givearmor,	// JUHOX
+	(menucommon_s *)&s_controls.givehealth,	    // JUHOX
+	(menucommon_s *)&s_controls.givearmor,	    // JUHOX
 	(menucommon_s *)&s_controls.tssInterface,	// JUHOX
-	(menucommon_s *)&s_controls.navAid,	// JUHOX
-	(menucommon_s *)&s_controls.gfTight,	// JUHOX
-	(menucommon_s *)&s_controls.gfLoose,	// JUHOX
-	(menucommon_s *)&s_controls.gfFree,		// JUHOX
+	(menucommon_s *)&s_controls.navAid,	        // JUHOX
+	(menucommon_s *)&s_controls.gfTight,	    // JUHOX
+	(menucommon_s *)&s_controls.gfLoose,	    // JUHOX
+	(menucommon_s *)&s_controls.gfFree,		    // JUHOX
 	NULL,
 };
 
@@ -699,11 +683,9 @@ static void Controls_UpdateModel( int anim ) {
 		break;
 
 	// JUHOX: anim for weapon 11 (monster launcher)
-#if MONSTER_MODE
 	case ANIM_WEAPON11:
 		s_controls.playerWeapon = WP_MONSTER_LAUNCHER;
 		break;
-#endif
 
 	default:
 		break;
@@ -1843,13 +1825,11 @@ static void Controls_MenuInit( void )
 	s_controls.bfg.generic.id        = ID_WEAPON9;
 
 	// JUHOX: init monster launcher menu item
-#if MONSTER_MODE
 	s_controls.monsterlauncher.generic.type	     = MTYPE_ACTION;
 	s_controls.monsterlauncher.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.monsterlauncher.generic.callback  = Controls_ActionEvent;
 	s_controls.monsterlauncher.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.monsterlauncher.generic.id        = ID_WEAPON11;
-#endif
 
 	// JUHOX: init grappling hook menu item
 	s_controls.grapple.generic.type	     = MTYPE_ACTION;
@@ -2212,9 +2192,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.plasma );
 	Menu_AddItem( &s_controls.menu, &s_controls.bfg );
 	Menu_AddItem(&s_controls.menu, &s_controls.grapple);	// JUHOX
-#if MONSTER_MODE
 	Menu_AddItem(&s_controls.menu, &s_controls.monsterlauncher);	// JUHOX
-#endif
 	Menu_AddItem(&s_controls.menu, &s_controls.toggleHook);	// JUHOX
 	Menu_AddItem(&s_controls.menu, &s_controls.throwHook);	// JUHOX
 	Menu_AddItem(&s_controls.menu, &s_controls.crouchingCutsRope);	// JUHOX

@@ -4,7 +4,6 @@
 // for a 3D rendering
 #include "cg_local.h"
 
-
 /*
 =============================================================================
 
@@ -52,9 +51,7 @@ void CG_TestModel_f (void) {
 	vec3_t		angles;
 
 	memset( &cg.testModelEntity, 0, sizeof(cg.testModelEntity) );
-	if ( trap_Argc() < 2 ) {
-		return;
-	}
+	if ( trap_Argc() < 2 ) return;
 
 	Q_strncpyz (cg.testModelName, CG_Argv( 1 ), MAX_QPATH );
 	cg.testModelEntity.hModel = trap_R_RegisterModel( cg.testModelName );
@@ -76,14 +73,6 @@ void CG_TestModel_f (void) {
 	angles[ROLL] = 0;
 
 	AnglesToAxis( angles, cg.testModelEntity.axis );
-
-	// -JUHOX DEBUG: enlarge testmodel
-#if 0
-	VectorScale(cg.testModelEntity.axis[0], 10, cg.testModelEntity.axis[0]);
-	VectorScale(cg.testModelEntity.axis[1], 10, cg.testModelEntity.axis[1]);
-	VectorScale(cg.testModelEntity.axis[2], 10, cg.testModelEntity.axis[2]);
-	cg.testModelEntity.nonNormalizedAxes = qtrue;
-#endif
 
 	cg.testGun = qfalse;
 }
@@ -222,9 +211,8 @@ static void CG_OffsetThirdPersonView( void ) {
 
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
-	if ( focusAngles[PITCH] > 45 ) {
-		focusAngles[PITCH] = 45;		// don't go too far overhead
-	}
+	if ( focusAngles[PITCH] > 45 ) focusAngles[PITCH] = 45;		// don't go too far overhead
+
 	AngleVectors( focusAngles, forward, NULL, NULL );
 
 	VectorMA( cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint );
@@ -346,8 +334,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	delta = DotProduct ( predictedVelocity, cg.refdef.viewaxis[1]);
 	angles[ROLL] -= delta * cg_runroll.value;
 
-	// add angles based on bob
-
 	// make sure the bob is visible even at low speeds
 	speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
 
@@ -380,12 +366,9 @@ static void CG_OffsetFirstPersonView( void ) {
 
 	// add bob height
 	bob = cg.bobfracsin * cg.xyspeed * cg_bobup.value;
-	if (bob > 6) {
-		bob = 6;
-	}
+	if (bob > 6) bob = 6;
 
 	origin[2] += bob;
-
 
 	// add fall height
 	delta = cg.time - cg.landTime;
@@ -402,7 +385,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	CG_StepOffset();
 
 	// add kick offset
-
 	VectorAdd (origin, cg.kick_origin, origin);
 }
 
@@ -524,7 +506,6 @@ static int CG_CalcFov( void ) {
 		inwater = qfalse;
 	}
 
-
 	// set it
 	cg.refdef.fov_x = fov_x;
 	cg.refdef.fov_y = fov_y;
@@ -551,20 +532,14 @@ static void CG_DamageBlendBlob( void ) {
 	int			maxTime;
 	refEntity_t		ent;
 
-	if ( !cg.damageValue ) {
-		return;
-	}
+	if ( !cg.damageValue ) return;
 
 	// ragePro systems can't fade blends, so don't obscure the screen
-	if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO ) {
-		return;
-	}
+	if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO ) return;
 
 	maxTime = DAMAGE_TIME;
 	t = cg.time - cg.damageTime;
-	if ( t <= 0 || t >= maxTime ) {
-		return;
-	}
+	if ( t <= 0 || t >= maxTime ) return;
 
 	memset( &ent, 0, sizeof( ent ) );
 	ent.reType = RT_SPRITE;
@@ -588,7 +563,6 @@ static void CG_DamageBlendBlob( void ) {
 JUHOX: CG_AddEarthquake
 ===============
 */
-#if EARTHQUAKE_SYSTEM
 void CG_AddEarthquake(
 	const vec3_t origin, float radius,
 	float duration, float fadeIn, float fadeOut,	// in seconds
@@ -630,14 +604,13 @@ void CG_AddEarthquake(
 		break;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CG_AdjustEarthquakes
 ===============
 */
-#if EARTHQUAKE_SYSTEM
 void CG_AdjustEarthquakes(const vec3_t delta) {
 	int i;
 
@@ -651,14 +624,12 @@ void CG_AdjustEarthquakes(const vec3_t delta) {
 		VectorAdd(quake->origin, delta, quake->origin);
 	}
 }
-#endif
 
 /*
 ===============
 JUHOX: AddEarthquakeTremble
 ===============
 */
-#if EARTHQUAKE_SYSTEM
 static void AddEarthquakeTremble(earthquake_t* quake) {
 	int time;
 	float a;
@@ -703,7 +674,6 @@ static void AddEarthquakeTremble(earthquake_t* quake) {
 	cg.refdefViewAngles[PITCH] += angleAmplitude * a * crandom();
 	cg.refdefViewAngles[ROLL] += angleAmplitude * a * crandom();
 }
-#endif
 
 /*
 ===============
@@ -716,10 +686,6 @@ static int CG_CalcViewValues( void ) {
 	playerState_t	*ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
-
-	// strings for in game rendering
-	// Q_strncpyz( cg.refdef.text[0], "Park Ranger", sizeof(cg.refdef.text[0]) );
-	// Q_strncpyz( cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]) );
 
 	// calculate size of 3D view
 	CG_CalcVrect();
@@ -749,6 +715,7 @@ static int CG_CalcViewValues( void ) {
 			cg_thirdPersonAngle.value += cg_cameraOrbit.value;
 		}
 	}
+
 	// add error decay
 	if ( cg_errorDecay.value > 0 ) {
 		int		t;
@@ -772,7 +739,6 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	// JUHOX: do earthquake
-#if MONSTER_MODE
 	if (
 		cg.earthquakeStartedTime &&
 		cg.time < cg.earthquakeEndTime
@@ -781,18 +747,6 @@ static int CG_CalcViewValues( void ) {
 			int time;
 			float amplitude;
 		} envelope[] = {
-			/*
-			{    0, 0.0},
-			{ 1400, 0.7},
-			{ 2500, 1.0},
-			{ 3300, 0.8},
-			{ 4300, 1.0},
-			{ 6400, 0.5},
-			{ 8050, 0.7},
-			{ 9500, 0.5},
-			{14500, 0.0},
-			{99999, 0.0}
-			*/
 			{    0, 0.0},
 			{ 1554, 0.7},
 			{ 2775, 1.0},
@@ -835,9 +789,8 @@ static int CG_CalcViewValues( void ) {
 		cg.refdefViewAngles[PITCH] += angleAmplitude * a * crandom();
 		cg.refdefViewAngles[ROLL] += angleAmplitude * a * crandom();
 	}
-#endif
 
-#if EARTHQUAKE_SYSTEM	// JUHOX: add earthquakes
+// JUHOX: add earthquakes
 	{
 		int i;
 
@@ -851,7 +804,6 @@ static int CG_CalcViewValues( void ) {
 		}
 		AddEarthquakeTremble(NULL);	// additional tremble
 	}
-#endif
 
 	// position eye reletive to origin
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
@@ -888,26 +840,15 @@ static void CG_PowerupTimerSounds( void ) {
 	int		t;
 
 	// powerup timers going away
-	for ( i = 0 ; i < /*MAX_POWERUPS*/PW_NUM_POWERUPS ; i++ ) {	// JUHOX
+	for ( i = 0 ; i < PW_NUM_POWERUPS ; i++ ) {	// JUHOX
 		t = cg.snap->ps.powerups[i];
-		if ( t <= cg.time ) {
-			continue;
-		}
+		if ( t <= cg.time ) continue;
 
 		// JUHOX: don't play timer sounds for misused powerups
-		if (
-			i == PW_HASTE ||
-			i == PW_BATTLESUIT ||
-			//i == PW_QUAD ||
-			i == PW_CHARGE ||
-			i == PW_BFG_RELOADING
-		) {
-			continue;
-		}
+		if ( i == PW_HASTE || i == PW_BATTLESUIT ||	i == PW_CHARGE || i == PW_BFG_RELOADING	) continue;
 
-		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
-			continue;
-		}
+		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) continue;
+
 		if ( ( t - cg.time ) / POWERUP_BLINK_TIME != ( t - cg.oldTime ) / POWERUP_BLINK_TIME ) {
 			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound );
 		}
@@ -968,7 +909,7 @@ static void CG_DrawMapLensFlare(
 		alpha *= 0.2 * lf->rgba[3];
 
 		radius *= cg.refdef.fov_x / 90;	// lens flares do not change size through zooming
-		//alpha /= radius;
+
 		break;
 	case LFM_glare:
 		alpha *= 0.14 * lf->rgba[3];
@@ -1157,13 +1098,12 @@ static float CG_ComputeVisibleLightSample(
 		VectorNormalize(vz);
 		CrossProduct(vz, axisDefault[2], vx);
 		VectorNormalize(vx);
-		CrossProduct(vz, vx, vy);
-		// NOTE: the handedness of (vx, vy, vz) is not important
+		CrossProduct(vz, vx, vy);	// NOTE: the handedness of (vx, vy, vz) is not important
 	}
 
 	visCount = 0;
 	VectorClear(visOrigin);
-	//offset = 45 * random();
+
 	for (i = 0; i < NUMVISSAMPLES; i++) {
 		vec3_t end;
 
@@ -1207,13 +1147,13 @@ static void CG_SetVisibleLightSample(lensFlareEntity_t* lfent, float visibleLigh
 
 	lfent->lib[lfent->libPos].light = visibleLight;
 	VectorCopy(visibleOrigin, vorg);
-#if ESCAPE_MODE
+
 	if (cgs.gametype == GT_EFH) {
 		vorg[0] += cg.currentReferenceX;
 		vorg[1] += cg.currentReferenceY;
 		vorg[2] += cg.currentReferenceZ;
 	}
-#endif
+
 	VectorCopy(vorg, lfent->lib[lfent->libPos].origin);
 	lfent->libPos++;
 	if (lfent->libPos >= LIGHT_INTEGRATION_BUFFER_SIZE) {
@@ -1261,13 +1201,13 @@ static float CG_GetVisibleLight(lensFlareEntity_t* lfent, vec3_t visibleOrigin) 
 
 			visLight += sample->light;
 			VectorCopy(sample->origin, sorg);
-#if ESCAPE_MODE
+
 			if (cgs.gametype == GT_EFH) {
 				sorg[0] -= cg.currentReferenceX;
 				sorg[1] -= cg.currentReferenceY;
 				sorg[2] -= cg.currentReferenceZ;
 			}
-#endif
+
 			VectorAdd(visOrigin, sorg, visOrigin);
 			numVisPoints++;
 		}
@@ -1369,14 +1309,7 @@ static void CG_AddMapLensFlares(void) {
 			lfeff = lfent->lfeff;
 			if (!lfeff) continue;
 
-			/*
-			if (cgs.editMode == EM_mlf && !cg.lfEditor.selectedLFEnt && cg.lfEditor.markedLFEnt == i) {
-				CG_AddLensFlareMarker(i);
-			}
-			*/
-
 			CG_LFEntOrigin(lfent, origin);
-
 			quality = cg_mapFlare.integer;
 		}
 
@@ -1523,11 +1456,6 @@ void CG_AddLFEditorCursor(void) {
 			weight = alpha * distance;
 			if (weight >= lowestWeight) continue;
 
-			/* NOTE: with this trace enabled one would not be able to select entities within solids
-			CG_SmoothTrace(&trace, cg.refdef.vieworg, NULL, NULL, origin, -1, MASK_SOLID);
-			if (trace.fraction < 1.0) continue;
-			*/
-
 			lowestWeight = weight;
 			cg.lfEditor.markedLFEnt = i;
 		}
@@ -1638,15 +1566,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		return;
 	}
 
-#if SCREENSHOT_TOOLS	// JUHOX
-	if (cg.stopTime && cg.snap) {
-		cg.serverOffset = serverTime - cg.snap->serverTime;
-	}
-	else {
-		cg.serverOffset = 0;
-	}
-#endif
-
 	// let the client system know what our weapon and zoom settings are
 	CG_AutoSwitchToBestWeapon();
 	if (cg.weaponSelect == WP_NONE) cg.weaponSelect = cg.snap->ps.weapon;
@@ -1698,9 +1617,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// build cg.refdef
 	inwater = CG_CalcViewValues();
 
-#if EARTHQUAKE_SYSTEM
 	cg.additionalTremble = 0;	// JUHOX
-#endif
 
 	// JUHOX: fill framebuffer with the picture to show on cloaked players
 	if (cg_glassCloaking.integer) {
@@ -1766,7 +1683,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_AddNearbox();	// JUHOX
 		CG_AddPacketEntities();			// adter calcViewValues, so predicted player state is correct
 		CG_AddMarks();
-#if MONSTER_MODE	// JUHOX: add the end sequence lightning marks
+
+        // JUHOX: add the end sequence lightning marks
 		if (cgs.gametype == GT_STU && cg.endPhaseTime > 0 && cg.time - cg.endPhaseTime < 20000) {
 			int time;
 
@@ -1780,7 +1698,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 				trap_S_StartLocalSound(cgs.media.dischargeFlashSound, CHAN_AUTO);
 			}
 		}
-#endif
+
 		CG_AddParticles ();
 		CG_AddLocalEntities();
 		CG_AddMapLensFlares();
@@ -1804,18 +1722,12 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_PowerupTimerSounds();
 
 	// update audio positions
-#if !ESCAPE_MODE	// JUHOX: sound fix for EFH
-	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
-#else
-	{
-		vec3_t worldOrigin;
-
-		VectorAdd(cg.refdef.vieworg, currentReference, worldOrigin);
-		trap_S_Respatialize(cg.snap->ps.clientNum, worldOrigin, cg.refdef.viewaxis, inwater);
-	}
-#endif
-
-#if MONSTER_MODE	// JUHOX: start the earthquake sound
+	/*
+    vec3_t worldOrigin;
+    VectorAdd(cg.refdef.vieworg, currentReference, worldOrigin);
+    trap_S_Respatialize(cg.snap->ps.clientNum, worldOrigin, cg.refdef.viewaxis, inwater);
+    */
+	// JUHOX: start the earthquake sound
 	if (cg.earthquakeSoundCounter > 0) {
 		if (cg.lastEarhquakeSoundStartedTime < cg.time - 200) {
 			cg.earthquakeSoundCounter--;
@@ -1823,9 +1735,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 			cg.lastEarhquakeSoundStartedTime = cg.time + rand() % 20 - 10;
 		}
 	}
-#endif
 
-#if MONSTER_MODE	// JUHOX: check artefact detector
+	// JUHOX: check artefact detector
 	if (!cg.lastDetectorCheckTime) {
 		// initializing
 		cg.lastDetectorCheckTime = cg.time;
@@ -1850,7 +1761,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 			}
 		}
 	}
-#endif
+
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
 	if ( stereoView != STEREO_RIGHT ) {
@@ -1880,9 +1791,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// actually issue the rendering calls
 	CG_DrawActive( stereoView );
 
-#if PLAYLIST
 	CG_RunPlayListFrame();	// JUHOX
-#endif
 
 	if ( cg_stats.integer ) {
 		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );

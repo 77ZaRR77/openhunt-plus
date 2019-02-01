@@ -54,7 +54,7 @@ typedef enum {
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-#if MONSTER_MODE	// JUHOX: definitions for monsters
+// JUHOX: definitions for monsters
 typedef enum {
 	MSM_random,
 	MSM_nearOrigin,
@@ -64,14 +64,13 @@ typedef enum {
 	MA_waiting,
 	MA_avoiding,
 	MA_attacking,
-	//MA_escaping,
 	MA_panic,
 	MA_hibernation,
 	MA_sleeping
 } monsterAction_t;
-#endif
 
-#if ESCAPE_MODE	// JUHOX: definitions for EFH
+
+// JUHOX: definitions for EFH
 typedef struct {
 	long x;
 	long y;
@@ -130,7 +129,7 @@ typedef enum {
 	GEC_efh_monster,
 	GEC_efh_waypoint
 } gentityClass_t;
-#endif
+
 
 // JUHOX: definitions used by the TSS server part
 typedef struct tss_serverdata_s {
@@ -189,9 +188,8 @@ struct gentity_s {
 	//================================
 
 	struct gclient_s	*client;			// NULL if not a client
-#if MONSTER_MODE	// JUHOX: info needed by monster entities
+	// JUHOX: info needed by monster entities
 	struct gmonster_s	*monster;			// NULL if not a monster
-#endif
 
 	qboolean	inuse;
 
@@ -289,12 +287,12 @@ struct gentity_s {
 
 	int			nextDischargeCheckTime;	// JUHOX: for players & monsters
 	int			chargeInflictor;		// JUHOX: for players & monsters
-#if ESCAPE_MODE
+
 	int			worldSegment;	// JUHOX: segment number + 1, 0 if not part of a segment
 	gentityClass_t entClass;	// JUHOX
 	vec3_t		sourceLocation;	// JUHOX
 	int			idnum;			// JUHOX
-#endif
+
 };
 
 
@@ -352,7 +350,6 @@ typedef struct {
 	qboolean	teamLeader;			// true when this client is a team leader
 } clientSession_t;
 
-//
 #define MAX_NETNAME			36
 #define	MAX_VOTE_COUNT		3
 
@@ -382,13 +379,11 @@ typedef struct {
 
 
 // JUHOX: definitions for rope element
-#if GRAPPLE_ROPE
 typedef struct {
 	vec3_t pos;
 	vec3_t velocity;
 	qboolean touch;
 } ropeElement_t;
-#endif
 
 
 // this structure is cleared on each ClientSpawn(),
@@ -433,7 +428,7 @@ struct gclient_s {
 	int			accuracy_shots;		// total number of shots
 	int			accuracy_hits;		// total number of hits
 
-	//
+
 	int			lastkilled_client;	// last client that this client killed
 	int			lasthurt_client;	// last client that damaged this client
 	int			lasthurt_mod;		// type of damage the client did
@@ -466,9 +461,8 @@ struct gclient_s {
 	int			tssNavAidTimeResidual;	// JUHOX
 
 	float		ammoFraction[MAX_WEAPONS];	// JUHOX
-#if MONSTER_MODE
+
 	int			monstersAvailable;			// JUHOX
-#endif
 
 	float		lastChargeAmount;			// JUHOX
 	float		chargeDamageResidual;		// JUHOX
@@ -481,21 +475,18 @@ struct gclient_s {
 	gentity_t*	podMarker;					// JUHOX
 
 	char		*areabits;
-#if GRAPPLE_ROPE	// JUHOX: rope elements for grappling hook
+	// JUHOX: rope elements for grappling hook
 	int	numRopeElements;
 	ropeElement_t ropeElements[MAX_ROPE_ELEMENTS];
 	gentity_t* ropeEntities[MAX_ROPE_ELEMENTS/8];
 	qboolean ropeIsTaut;
 	int lastTimeWinded;
-#endif
 
 	viewMode_t	viewMode;			    // JUHOX
 	int			viewModeSwitchTime;	    // JUHOX
 	int			numPendingViewToggles;	// JUHOX
 
 };
-
-
 
 
 //
@@ -522,12 +513,6 @@ typedef struct {
 	int			framenum;
 	int			time;					// in msec
 	int			previousTime;			// so movers can back up when blocked
-
-
-#if SCREENSHOT_TOOLS	// JUHOX: tool for making screenshots
-	int			timeFreezeMode;
-	int			stopTime;
-#endif
 
 	int			startTime;				// level.time the map was started
 
@@ -603,11 +588,11 @@ typedef struct {
 	int			numEmergencySpawnPoints;	// JUHOX
 	vec3_t		emergencySpawnPoints[MAX_GENTITIES];	// JUHOX
 
-#if MONSTER_MODE	// JUHOX: level locals for monsters
+	// JUHOX: level locals for monsters
 	int			maxMonstersPerPlayer;	// for monster launcher
-#endif
 
-#if MONSTER_MODE	// JUHOX: level locals for STU
+
+	// JUHOX: level locals for STU
 	qboolean	overkilled;		// loosing condition in STU
 	gentity_t*	artefact;		// item entity
 	gentity_t*	artefactPlaceholder;
@@ -616,15 +601,14 @@ typedef struct {
 	int			endPhaseEnteredTime;
 	int			stuScore;
 	int			stuScoreTransmitted;
-#endif
 	int			endTime;			// JUHOX
 
-#if ESCAPE_MODE	// JUHOX: level locals for EFH
+	// JUHOX: level locals for EFH
 	efhVector_t	referenceOrigin;
 	int			efhCoveredDistance;
 	int			efhGoalDistance;
 	int			efhSpeed;
-#endif
+
 
 	// JUHOX: level locals for the lens flare editor
 	qboolean	lfeFMM;	// FMM = fine move mode
@@ -647,17 +631,15 @@ typedef enum {
 	GST_playerSpawning,
 	GST_redPlayerSpawning,
 	GST_bluePlayerSpawning,
-#if ESCAPE_MODE
 	GST_worldCreation,
-#endif
 
 	GST_num_types
 } gameseed_type_t;
+
 // g_main.c
 void SetGameSeed(void);
 unsigned long SeededRandom(gameseed_type_t type);
 void InitLocalSeed(gameseed_type_t type, localseed_t* seed);
-
 
 // JUHOX: definitions used by the server for game templates
 #define TEMPLATE_FILE_LIST_SIZE 1024
@@ -665,7 +647,6 @@ extern char templateFileList[TEMPLATE_FILE_LIST_SIZE];
 extern int numTemplateFiles;
 extern gametemplatelist_t templateList;
 extern long sv_mapChecksum;
-// g_main.c
 void G_InitGameTemplates(void);
 void G_LoadGameTemplates(void);
 void G_SetTemplateName(const char* name);
@@ -688,7 +669,7 @@ qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out );
 void		G_SpawnEntitiesFromString( void );
 char *G_NewString( const char *string );
-#if ESCAPE_MODE	// JUHOX: prototypes for world system
+// JUHOX: prototypes for world system
 void G_InitWorldSystem(void);
 void G_SpawnWorld(void);
 void G_UpdateWorld(void);
@@ -698,7 +679,7 @@ long G_GetTotalWayLength(gentity_t* ent);
 void G_UpdateLightingOrigins(void);
 void G_EFH_SpaceExtent(vec3_t mins, vec3_t maxs);
 void G_EFH_NextDebugSegment(int dir);
-#endif
+
 
 //
 // g_cmds.c
@@ -733,9 +714,7 @@ void	Add_Ammo (gentity_t *ent, int weapon, int count);
 void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace);
 gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity );	// JUHOX
 void G_BounceItemRotation(gentity_t* ent);	// JUHOX
-#if MONSTER_MODE	// JUHOX: STU prototypes for g_items.c
 void G_SpawnArtefact(void);
-#endif
 
 void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
@@ -749,14 +728,9 @@ int		G_SoundIndex( char *name );
 void	G_TeamCommand( team_t team, char *cmd );
 void	G_KillBox (gentity_t *ent);
 gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match);
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-gentity_t *G_PickTarget (char *targetname);
-#else
 gentity_t* G_PickTarget(char *targetname, int segment);
-#endif
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
-
 void	G_InitGentity( gentity_t *e );
 gentity_t	*G_Spawn (void);
 int G_NumEntitiesFree(void);	// JUHOX
@@ -764,16 +738,12 @@ gentity_t *G_TempEntity(const vec3_t origin, int event);
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
 void	G_FreeEntity( gentity_t *e );
 qboolean	G_EntitiesFree( void );
-
 void	G_TouchTriggers (gentity_t *ent);
 void	G_TouchSolids (gentity_t *ent);
-
 float G_acos(float x);	// JUHOX
 float	*tv (float x, float y, float z);
 char	*vtos( const vec3_t v );
-
 float vectoyaw( const vec3_t vec );
-
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void G_AddEvent( gentity_t *ent, int event, int eventParm );
 void G_SetOrigin(gentity_t *ent, const vec3_t origin);
@@ -813,9 +783,7 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
-#if MONSTER_MODE
 gentity_t* fire_monster_seed(gentity_t* self, vec3_t start, vec3_t dir);
-#endif
 
 
 //
@@ -844,9 +812,7 @@ qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void SnapVectorTowards(vec3_t v, const vec3_t to);
 qboolean CheckGauntletAttack( gentity_t *ent );
-#if MONSTER_MODE
 qboolean CheckTitanAttack(gentity_t *ent);	// JUHOX
-#endif
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
 
@@ -908,12 +874,7 @@ void DeathmatchScoreboardMessage (gentity_t *client);
 void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
-#if ESCAPE_MODE	// prototypes for EFH
 void G_SetPlayerRefOrigin(playerState_t* ps);
-#endif
-#if SCREENSHOT_TOOLS	// prototypes
-void G_FreezePlayerState(playerState_t* ps, int msec);
-#endif
 void G_RunThink (gentity_t *ent);
 void QDECL G_LogPrintf( const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
@@ -991,8 +952,7 @@ qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
 void Svcmd_BotList_f( void );
 void BotInterbreedEndMatch( void );
-// JUHOX: monster prototypes
-#if MONSTER_MODE
+
 void G_InitMonsters(void);
 void G_UpdateMonsterCS(void);
 int G_NumMonsters(void);
@@ -1035,17 +995,13 @@ qboolean G_IsMovable(gentity_t* ent);
 int G_GetMonsterGeneric1(gentity_t* monster);
 void G_CheckMonsterDamage(gentity_t* monster, gentity_t* target, int mod);
 monsterAction_t G_MonsterAction(gentity_t* monster);
-#if SCREENSHOT_TOOLS
-void G_FreezeMonster(gentity_t* monster, int msec);
-#endif
-#endif
 qboolean EntityAudible(const gentity_t* ent);	// JUHOX
 playerState_t* G_GetEntityPlayerState(const gentity_t* ent);	// JUHOX
 int G_Constitution(const gentity_t* ent);	// JUHOX
 qboolean IsPlayerFighting(int clientNum);	// JUHOX
 
 // ai_main.c
-#define MAX_FILEPATH			144
+#define MAX_FILEPATH 144
 
 //bot settings
 typedef struct bot_settings_s
@@ -1066,7 +1022,6 @@ void BotTestAAS(vec3_t origin);
 
 #include "g_team.h" // teamplay specific stuff
 
-
 extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
 
@@ -1084,7 +1039,7 @@ extern	vmCvar_t	g_dmflags;
 extern	vmCvar_t	g_fraglimit;
 extern	vmCvar_t	g_timelimit;
 extern	vmCvar_t	g_capturelimit;
-#if MONSTER_MODE	// JUHOX: STU cvar definition
+
 extern	vmCvar_t	g_artefacts;
 extern	vmCvar_t	g_minMonsters;
 extern	vmCvar_t	g_maxMonsters;
@@ -1099,13 +1054,12 @@ extern	vmCvar_t	g_maxMonstersPP;
 extern	vmCvar_t	g_monsterBreeding;
 extern	vmCvar_t	g_monsterProgression;
 extern	vmCvar_t	g_scoreMode;
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvar definitions
+
 extern	vmCvar_t	g_monsterLoad;
 extern	vmCvar_t	g_distanceLimit;
 extern	vmCvar_t	g_challengingEnv;
 extern	vmCvar_t	g_debugEFH;
-#endif
+
 extern	vmCvar_t	g_template;	// JUHOX
 extern	vmCvar_t	g_gameSeed;	// JUHOX
 extern	vmCvar_t	g_respawnDelay;	// JUHOX
@@ -1371,4 +1325,3 @@ void	trap_BotResetWeaponState(int weaponstate);
 int		trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child);
 
 void	trap_SnapVector( float *v );
-

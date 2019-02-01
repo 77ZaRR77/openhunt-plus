@@ -34,9 +34,7 @@ gentity_t	*G_TestEntityPosition( gentity_t *ent ) {
 	trace_t	tr;
 	int		mask;
 	// JUHOX: accept monsters too
-#if MONSTER_MODE
 	playerState_t* ps;
-#endif
 
 	if ( ent->clipmask ) {
 		mask = ent->clipmask;
@@ -44,23 +42,17 @@ gentity_t	*G_TestEntityPosition( gentity_t *ent ) {
 		mask = MASK_SOLID;
 	}
 	// JUHOX: accept monsters too
-#if !MONSTER_MODE
-	if ( ent->client ) {
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin, ent->s.number, mask );
-#else
 	ps = G_GetEntityPlayerState(ent);
 	if (ps) {
 		trap_Trace(&tr, ps->origin, ent->r.mins, ent->r.maxs, ps->origin, ent->s.number, mask);
-#endif
+
 	// JUHOX: armor fragments are smaller than noted in ent->r.mins & ent->r.maxs
-#if 1
 	}
 	else if (ent->item && ent->item->giType == IT_ARMOR && ent->item->giTag) {
 		static vec3_t mins = {-8,-8,-8};
 		static vec3_t maxs = {8,8,8};
 
 		trap_Trace(&tr, ent->s.pos.trBase, mins, maxs, ent->s.pos.trBase, ent->s.number, mask);
-#endif
 	} else {
 		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase, ent->s.number, mask );
 	}
@@ -832,11 +824,7 @@ Blocked_Door
 void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	// remove anything other than a client
 	// JUHOX: don't remove monsters too
-#if !MONSTER_MODE
-	if ( !other->client ) {
-#else
 	if (!other->client && !other->monster) {
-#endif
 		// except CTF flags!!!!
 		if( other->s.eType == ET_ITEM && other->item->giType == IT_TEAM ) {
 			Team_DroppedFlagThink( other );
@@ -865,28 +853,6 @@ Touch_DoorTriggerSpectator
 */
 static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	// JUHOX: more comfortable spectator door trigger: easier to prevent, less irritating
-#if 0
-	int i, axis;
-	vec3_t origin, dir, angles;
-
-	axis = ent->count;
-	VectorClear(dir);
-	if (fabs(other->s.origin[axis] - ent->r.absmax[axis]) <
-		fabs(other->s.origin[axis] - ent->r.absmin[axis])) {
-		origin[axis] = ent->r.absmin[axis] - 10;
-		dir[axis] = -1;
-	}
-	else {
-		origin[axis] = ent->r.absmax[axis] + 10;
-		dir[axis] = 1;
-	}
-	for (i = 0; i < 3; i++) {
-		if (i == axis) continue;
-		origin[i] = (ent->r.absmin[i] + ent->r.absmax[i]) * 0.5;
-	}
-	vectoangles(dir, angles);
-	TeleportPlayer(other, origin, angles );
-#else
 	int axis;
 	float doorMin, doorMax;
 	vec3_t origin;
@@ -910,7 +876,6 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 	}
 
 	TeleportPlayer(other, origin, tv(10000000.0, 0, 0));	// the modified version of TeleportPlayer() will recognoize this
-#endif
 }
 
 /*
@@ -920,11 +885,7 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	// JUHOX: determine spectators by 'pm_type'
-#if 0
-	if ( other->client && other->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-#else
 	if (other->client && other->client->ps.pm_type == PM_SPECTATOR) {
-#endif
 		// if the door is not open and not opening
 		if ( ent->parent->moverState != MOVER_1TO2 &&
 			ent->parent->moverState != MOVER_POS2) {
@@ -1077,11 +1038,7 @@ void SP_func_door (gentity_t *ent) {
 		}
 	}
 
-
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_func_door;
-#endif
-
 }
 
 /*
@@ -1240,9 +1197,8 @@ void SP_func_plat (gentity_t *ent) {
 		SpawnPlatTrigger(ent);
 	}
 
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_func_plat;
-#endif
+
 }
 
 
@@ -1327,9 +1283,8 @@ void SP_func_button( gentity_t *ent ) {
 
 	InitMover( ent );
 
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_func_button;
-#endif
+
 }
 
 
@@ -1480,9 +1435,7 @@ void SP_path_corner( gentity_t *self ) {
 		return;
 	}
 	// path corners don't need to be linked in
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_path_corner;
-#endif
 }
 
 
@@ -1529,10 +1482,7 @@ void SP_func_train (gentity_t *self) {
 	// a chance to spawn
 	self->nextthink = level.time + FRAMETIME;
 	self->think = Think_SetupTrainTargets;
-
-#if ESCAPE_MODE	// JUHOX: set entity class
 	self->entClass = GEC_func_train;
-#endif
 }
 
 /*
@@ -1555,10 +1505,7 @@ void SP_func_static( gentity_t *ent ) {
 	InitMover( ent );
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
-
-#if ESCAPE_MODE	// JUHOX: set entity class
 	ent->entClass = GEC_func_static;
-#endif
 }
 
 
@@ -1610,9 +1557,9 @@ void SP_func_rotating (gentity_t *ent) {
 
 	trap_LinkEntity( ent );
 
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_func_rotating;
-#endif
+
 }
 
 
@@ -1663,9 +1610,9 @@ void SP_func_bobbing (gentity_t *ent) {
 		ent->s.pos.trDelta[2] = height;
 	}
 
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_func_bobbing;
-#endif
+
 }
 
 /*
@@ -1707,11 +1654,7 @@ void SP_func_pendulum(gentity_t *ent) {
 	}
 
 	// JUHOX: use g_gravity.integer instead of g_gravity.value
-#if 0
-	freq = 1 / ( M_PI * 2 ) * sqrt( g_gravity.value / ( 3 * length ) );
-#else
 	freq = 1 / ( M_PI * 2 ) * sqrt( g_gravity.integer / ( 3 * length ) );
-#endif
 
 	ent->s.pos.trDuration = ( 1000 / freq );
 
@@ -1727,7 +1670,7 @@ void SP_func_pendulum(gentity_t *ent) {
 	ent->s.apos.trType = TR_SINE;
 	ent->s.apos.trDelta[2] = speed;
 
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_func_pendulum;
-#endif
+
 }

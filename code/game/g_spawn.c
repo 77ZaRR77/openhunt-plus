@@ -3,7 +3,7 @@
 
 #include "g_local.h"
 
-#if ESCAPE_MODE	// JUHOX: variables & definitions for EFH
+// JUHOX: variables & definitions for EFH
 #define MAX_ENTITY_TEMPLATES		4096
 #define MAX_SEGMENTTYPES			256
 #define MAX_ENTITIES_PER_SEGMENT	64
@@ -91,7 +91,6 @@ static gentity_t entityTemplates[MAX_ENTITY_TEMPLATES];
 
 static int numSegmentTypes;
 static efhSegmentType_t segmentTypes[MAX_SEGMENTTYPES+1];
-//static efhSegmentType_t* initialSegmentType;
 
 static int debugModeChoosenSegmentType;
 static int debugSegment;
@@ -119,14 +118,13 @@ static int worldEnd;
 static localseed_t worldCreationSeed;
 
 static unsigned long monsterSpawnSeed;
-#endif
+
 
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;
 
 	if ( !level.spawning ) {
 		*out = (char *)defaultString;
-//		G_Error( "G_SpawnString() called while not spawning" );
 	}
 
 	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
@@ -214,9 +212,7 @@ field_t fields[] = {
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"targetShaderName", FOFS(targetShaderName), F_LSTRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_LSTRING},
-#if ESCAPE_MODE
 	{"idnum", FOFS(idnum), F_INT},	// JUHOX
-#endif
 
 	{NULL}
 };
@@ -265,9 +261,7 @@ void SP_target_kill (gentity_t *ent);
 void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_push (gentity_t *ent);
-#if MONSTER_MODE
 void SP_target_earthquake(gentity_t* ent);	// JUHOX
-#endif
 
 void SP_light (gentity_t *self);
 void SP_info_null (gentity_t *self);
@@ -290,18 +284,15 @@ void SP_team_CTF_blueplayer( gentity_t *ent );
 void SP_team_CTF_redspawn( gentity_t *ent );
 void SP_team_CTF_bluespawn( gentity_t *ent );
 
-#if !ESCAPE_MODE	// JUHOX: don't spawn item_botroam in EFH
-void SP_item_botroam( gentity_t *ent ) {}/*;*/	// JUHOX BUGFIX: removed ';'
-#else
 void SP_item_botroam(gentity_t* ent) {
 	if (g_gametype.integer == GT_EFH) {
 		G_FreeEntity(ent);
 		return;
 	}
 }
-#endif
 
-#if ESCAPE_MODE	// JUHOX: prototypes for EFH spawn functions
+
+// JUHOX: prototypes for EFH spawn functions
 static void SP_efh_hull(gentity_t* ent);
 static void SP_efh_model(gentity_t* ent);
 static void SP_efh_brush(gentity_t* ent);
@@ -310,7 +301,7 @@ static void SP_efh_entrance(gentity_t* ent);
 static void SP_efh_exit(gentity_t* ent);
 static void SP_efh_monster(gentity_t* ent);
 static void SP_efh_waypoint(gentity_t* ent);
-#endif
+
 
 spawn_t	spawns[] = {
 	// info entities don't do anything at all, but provide positional
@@ -359,9 +350,7 @@ spawn_t	spawns[] = {
 	{"target_position", SP_target_position},
 	{"target_location", SP_target_location},
 	{"target_push", SP_target_push},
-#if MONSTER_MODE
 	{"target_earthquake", SP_target_earthquake},
-#endif
 
 	{"light", SP_light},
 	{"path_corner", SP_path_corner},
@@ -383,7 +372,7 @@ spawn_t	spawns[] = {
 
 	{"item_botroam", SP_item_botroam},
 
-#if ESCAPE_MODE	// JUHOX: EFH spawn functions
+	// JUHOX: EFH spawn functions
 	{"efh_hull", SP_efh_hull},
 	{"efh_model", SP_efh_model},
 	{"efh_brush", SP_efh_brush},
@@ -392,7 +381,6 @@ spawn_t	spawns[] = {
 	{"efh_exit", SP_efh_exit},
 	{"efh_monster", SP_efh_monster},
 	{"efh_waypoint", SP_efh_waypoint},
-#endif
 
 	{0, 0}
 };
@@ -405,13 +393,10 @@ JUHOX: AddEmergencySpawnPoint
 static void AddEmergencySpawnPoint(const vec3_t origin) {
 	vec3_t pos;
 
-#if ESCAPE_MODE
 	if (g_gametype.integer == GT_EFH) return;	// JUHOX
-#endif
 	if (level.numEmergencySpawnPoints >= MAX_GENTITIES) return;
 
 	VectorCopy(origin, pos);
-	//pos[2] += 9;
 	VectorCopy(pos, level.emergencySpawnPoints[level.numEmergencySpawnPoints]);
 	level.numEmergencySpawnPoints++;
 }
@@ -437,22 +422,10 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	for ( item=bg_itemlist+1 ; item->classname ; item++ ) {
 		if ( !strcmp(item->classname, ent->classname) ) {
 			AddEmergencySpawnPoint(ent->s.origin);	// JUHOX
-#if 1	// JUHOX: no flags in non-ctf games (we're able to load all maps now!)
-			if (
-				item->giType == IT_TEAM &&
-				NOT (
-					g_gametype.integer == GT_CTF
-#if ESCAPE_MODE
-					|| (
-						g_gametype.integer == GT_EFH &&
-						item->giTag == PW_BLUEFLAG
-					)
-#endif
-				)
-			) {
+            // JUHOX: no flags in non-ctf games (we're able to load all maps now!)
+			if ( item->giType == IT_TEAM &&	NOT ( g_gametype.integer == GT_CTF || (	g_gametype.integer == GT_EFH &&	item->giTag == PW_BLUEFLAG ) ) ) {
 				return qfalse;
 			}
-#endif
 
 			if (g_editmode.integer == EM_mlf) {
 				// don't remove, otherwise movers could change their entity number
@@ -464,13 +437,10 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 			if (g_noItems.integer && item->giType != IT_TEAM) return qfalse;
 
             // JUHOX: item replacement
-#if ESCAPE_MODE
 			if (g_gametype.integer == GT_EFH) {
 				// no replacement
 			}
-			else
-#endif
-			if (item->giType == IT_POWERUP) {
+			else if (item->giType == IT_POWERUP) {
 				item = BG_FindItemForPowerup(PW_REGEN);
 				if (!item) return qfalse;	// should not happen
 			}
@@ -645,16 +615,8 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
 	char		*s, *value, *gametypeName;
-#if !MONSTER_MODE	// JUHOX: include new gametype names
-	static char *gametypeNames[] = {"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "teamtournament"};
-#else
-	static char *gametypeNames[] = {
-		"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "stu"
-#if ESCAPE_MODE
-		, "efh"
-#endif
-	};
-#endif
+
+	static char *gametypeNames[] = { "ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "stu", "efh" };
 
 	// get the next free entity
 	ent = G_Spawn();
@@ -663,12 +625,11 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		G_ParseField( level.spawnVars[i][0], level.spawnVars[i][1], ent );
 	}
 
-#if 1	// JUHOX: introducing non-solid movers
+	// JUHOX: introducing non-solid movers
 	G_SpawnInt("nonsolid", "0", &i);
 	if (i) {
 		ent->flags |= FL_NON_SOLID;
 	}
-#endif
 
 	// check for "notsingle" flag
 	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {
@@ -720,7 +681,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		G_FreeEntity( ent );
 	}
 
-#if ESCAPE_MODE	// JUHOX: in EFH, add the entity to the list of templates
+	// JUHOX: in EFH, add the entity to the list of templates
 	if (ent->inuse && g_gametype.integer == GT_EFH) {
 		if (numEntityTemplates < MAX_ENTITY_TEMPLATES) {
 			qboolean linked;
@@ -746,9 +707,7 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 		}
 		G_FreeEntity(ent);
 	}
-#endif
 }
-
 
 
 
@@ -902,7 +861,6 @@ void SP_worldspawn( void ) {
 JUHOX: SegmentName
 ==============
 */
-#if ESCAPE_MODE
 static char* SegmentName(const efhSegmentType_t* segType) {
 	static char buf[256];
 
@@ -915,40 +873,37 @@ static char* SegmentName(const efhSegmentType_t* segType) {
 	);
 	return buf;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: MapOriginToWorldOrigin
 ==============
 */
-#if ESCAPE_MODE
 static void MapOriginToWorldOrigin(const vec3_t mapOrigin, efhVector_t* worldOrigin) {
 	worldOrigin->x = (long) (level.referenceOrigin.x + mapOrigin[0]);
 	worldOrigin->y = (long) (level.referenceOrigin.y + mapOrigin[1]);
 	worldOrigin->z = (long) (level.referenceOrigin.z + mapOrigin[2]);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: WorldOriginToMapOrigin
 ==============
 */
-#if ESCAPE_MODE
 static void WorldOriginToMapOrigin(const efhVector_t* worldOrigin, vec3_t mapOrigin) {
 	mapOrigin[0] = worldOrigin->x - level.referenceOrigin.x;
 	mapOrigin[1] = worldOrigin->y - level.referenceOrigin.y;
 	mapOrigin[2] = worldOrigin->z - level.referenceOrigin.z;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: IsStyleEntryValid
 ==============
 */
-#if ESCAPE_MODE
 static qboolean IsStyleEntryValid(const efhSegmentType_t* seg, const efhStyleEntry_t* styleEntry) {
 	if (styleEntry->frequency <= 0) return qfalse;
 	if (!styleEntry->entrance && !seg->initial) return qfalse;
@@ -956,14 +911,13 @@ static qboolean IsStyleEntryValid(const efhSegmentType_t* seg, const efhStyleEnt
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: AddWaypoint
 ==============
 */
-#if ESCAPE_MODE
 static void AddWaypoint(const gentity_t* ent, efhSegmentType_t* seg) {
 	int i;
 	int k;
@@ -994,14 +948,13 @@ static void AddWaypoint(const gentity_t* ent, efhSegmentType_t* seg) {
 	VectorCopy(ent->s.origin, seg->wayPoints[i].origin);
 	seg->numWayPoints++;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ComputeWayLength
 ==============
 */
-#if ESCAPE_MODE
 static void ComputeWayLength(efhSegmentType_t* seg) {
 	int i;
 	vec3_t origin;
@@ -1048,14 +1001,13 @@ static void ComputeWayLength(efhSegmentType_t* seg) {
 
 	seg->wayLength = (unsigned long) len;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: WayPoint
 ==============
 */
-#if ESCAPE_MODE
 static void WayPoint(const efhSegmentType_t* seg, int n, vec3_t org) {
 	if (n < 0) {
 		VectorClear(org);
@@ -1067,14 +1019,13 @@ static void WayPoint(const efhSegmentType_t* seg, int n, vec3_t org) {
 		VectorSubtract(seg->exitOrigin, seg->entranceOrigin, org);
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SegmentWayLength
 ==============
 */
-#if ESCAPE_MODE
 static unsigned long SegmentWayLength(
 	const vec3_t origin, const efhSegmentType_t* seg, const efhVector_t* segOrg
 ) {
@@ -1156,14 +1107,13 @@ static unsigned long SegmentWayLength(
 
 	return (unsigned long) wayLength;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: CheckForDeadStyles
 ==============
 */
-#if ESCAPE_MODE
 static void CheckForDeadStyles(void) {
 	char styleUsedAsEntrance[MAX_STYLES];
 	char styleUsedAsExit[MAX_STYLES];
@@ -1183,7 +1133,6 @@ static void CheckForDeadStyles(void) {
 			const efhStyleEntry_t* styleEntry;
 
 			styleEntry = &segType->styles[styleEntryNum];
-			//if (!IsStyleEntryValid(segType, styleEntry)) continue;
 
 			if (styleEntry->entrance) {
 				styleUsedAsEntrance[styleEntry->entrance - transitionStyles] = qtrue;
@@ -1207,14 +1156,13 @@ static void CheckForDeadStyles(void) {
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: CheckForUnterminatedStyles
 ==============
 */
-#if ESCAPE_MODE
 static void CheckForUnterminatedStyles(void) {
 	int numRemainingStyles;
 	int segnum;
@@ -1291,14 +1239,14 @@ static void CheckForUnterminatedStyles(void) {
 		G_Error("(see above)");
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ReachStyle
 ==============
 */
-#if ESCAPE_MODE
+
 static void ReachSegment(efhTransitionStyle_t* style, const efhSegmentType_t* segType);
 
 static void ReachStyle(efhTransitionStyle_t* style) {
@@ -1322,14 +1270,13 @@ static void ReachStyle(efhTransitionStyle_t* style) {
 	}
 	style->visited = qfalse;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ReachSegment
 ==============
 */
-#if ESCAPE_MODE
 static void ReachSegment(efhTransitionStyle_t* style, const efhSegmentType_t* segType) {
 	int styleEntryNum;
 
@@ -1347,14 +1294,13 @@ static void ReachSegment(efhTransitionStyle_t* style, const efhSegmentType_t* se
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: CheckReachabilityAndLoops
 ==============
 */
-#if ESCAPE_MODE
 static void CheckReachabilityAndLoops(void) {
 	int segNum;
 	int styleNum;
@@ -1389,14 +1335,13 @@ static void CheckReachabilityAndLoops(void) {
 	}
 	G_Printf("%d/%d styles are loopable.\n", numLoopableStyles, numTransitionStyles);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: BuildSegments
 ==============
 */
-#if ESCAPE_MODE
 static void BuildSegments(void) {
 	int t;
 	int s;
@@ -1427,7 +1372,7 @@ static void BuildSegments(void) {
 			if (ent->idnum != seg->idnum) continue;
 
 			if (ent->s.eType == ET_MOVER && ent->r.linked && ent->s.solid) {
-			//if (ent->entClass == GEC_efh_brush) {
+
 				if (ent->r.absmin[0] < seg->boundingMin[0]) {
 					seg->boundingMin[0] = ent->r.absmin[0];
 				}
@@ -1516,33 +1461,10 @@ static void BuildSegments(void) {
 		if (!seg->entranceSet) {
 			G_Error("^1BuildSegments: no entrance for segment %s", SegmentName(seg));
 		}
-		/*
-		if (
-			seg->entranceOrigin[0] > seg->boundingMin[0] + 11 &&
-			seg->entranceOrigin[0] < seg->boundingMax[0] - 11 &&
-			seg->entranceOrigin[1] > seg->boundingMin[1] + 11 &&
-			seg->entranceOrigin[1] < seg->boundingMax[1] - 11 &&
-			seg->entranceOrigin[2] > seg->boundingMin[2] + 11 &&
-			seg->entranceOrigin[2] < seg->boundingMax[2] - 11
-		) {
-			G_Error("^1BuildSegment: efh_entrance inside segment %s", SegmentName(seg));
-		}
-		*/
+
 		if (!seg->exitSet) {
 			G_Error("^1BuildSegments: no exit for segment %s", SegmentName(seg));
 		}
-		/*
-		if (
-			seg->exitOrigin[0] > seg->boundingMin[0] + 11 &&
-			seg->exitOrigin[0] < seg->boundingMax[0] - 11 &&
-			seg->exitOrigin[1] > seg->boundingMin[1] + 11 &&
-			seg->exitOrigin[1] < seg->boundingMax[1] - 11 &&
-			seg->exitOrigin[2] > seg->boundingMin[2] + 11 &&
-			seg->exitOrigin[2] < seg->boundingMax[2] - 11
-		) {
-			G_Error("^1BuildSegment: efh_exit inside segment %s", SegmentName(seg));
-		}
-		*/
 
 		// make bounding box relative to segment entrance
 		VectorSubtract(seg->boundingMin, seg->entranceOrigin, seg->boundingMin);
@@ -1573,7 +1495,6 @@ static void BuildSegments(void) {
 
 	G_Printf("BuildSegments: %d entities in %d segments\n", numEntityTemplates, numSegmentTypes);
 }
-#endif
 
 
 /*
@@ -1581,21 +1502,19 @@ static void BuildSegments(void) {
 JUHOX: ClearMonsterCache
 ==============
 */
-#if ESCAPE_MODE
 static void ClearMonsterCache(efhCachedMonster_t* cache) {
 	cache->currentSegment = -1;
 	cache->sourceSegment = -1;
 	cache->sourceEntity = -1;
 	cache->index = -1;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: AllocMonsterCache
 ==============
 */
-#if ESCAPE_MODE
 static efhCachedMonster_t* AllocMonsterCache(int sourceSegment, int sourceEntity, int index) {
 	int i;
 	efhCachedMonster_t* freeCache;
@@ -1631,14 +1550,13 @@ static efhCachedMonster_t* AllocMonsterCache(int sourceSegment, int sourceEntity
 	if (freeCache) return freeCache;
 	return oldestCache;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: FreeMonsterCache
 ==============
 */
-#if ESCAPE_MODE
 static void FreeMonsterCache(efhCachedMonster_t* cache) {
 	int sourceSegment;
 	int sourceEntity;
@@ -1669,14 +1587,13 @@ static void FreeMonsterCache(efhCachedMonster_t* cache) {
 	entTemplate->worldSegment = sourceSegment + 1;
 	G_UseTargets(entTemplate, &g_entities[ENTITYNUM_WORLD]);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SpawnMonster
 ==============
 */
-#if ESCAPE_MODE
 static void SpawnMonster(
 	int count, int sourceSegment, int sourceEntity, const efhVector_t* segOrg,
 	int type, int health, qboolean forceSpawn
@@ -1774,14 +1691,13 @@ static void SpawnMonster(
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SpawnCachedMonsters
 ==============
 */
-#if ESCAPE_MODE
 static void SpawnCachedMonsters(void) {
 	int i;
 
@@ -1830,14 +1746,13 @@ static void SpawnCachedMonsters(void) {
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SpawnSegment
 ==============
 */
-#if ESCAPE_MODE
 static void SpawnSegment(
 	const efhSegmentType_t* seg, const vec3_t origin,
 	int worldSegment, const efhVector_t* segOrg,
@@ -1951,8 +1866,6 @@ static void SpawnSegment(
 
 	if (cmd == ESC_spawnSolidOnly) return;
 
-	//SpawnCachedMonsters(worldSegment);
-
 	for (i = 0; i < numBossEntities; i++) {
 		gentity_t* bossSpawn;
 		int n;
@@ -1975,14 +1888,13 @@ static void SpawnSegment(
 
 	visitedSegments[worldSegment>>3] |= 1 << (worldSegment & 7);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: GetExcludedSegmentTypes
 ==============
 */
-#if ESCAPE_MODE
 static int GetExcludedSegmentTypes(int segment, efhSegmentType_t** exclude) {
 	efhVector_t segOrg;
 	int numExcluded;
@@ -2027,14 +1939,13 @@ static int GetExcludedSegmentTypes(int segment, efhSegmentType_t** exclude) {
 	}
 	return numExcluded;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: IsBoundingBoxOverlappingSegment
 ==============
 */
-#if ESCAPE_MODE
 static qboolean IsBoundingBoxOverlappingSegment(
 	const efhVector_t* mins, const efhVector_t* maxs,
 	const efhSegmentType_t* segType, const efhVector_t* segOrg
@@ -2047,14 +1958,13 @@ static qboolean IsBoundingBoxOverlappingSegment(
 	if (maxs->z - segOrg->z < segType->boundingMin[2] - 1) return qfalse;
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: DoesSegmentTypeFit
 ==============
 */
-#if ESCAPE_MODE
 static qboolean DoesSegmentTypeFit(const efhSegmentType_t* segType, int segment) {
 	efhVector_t segOrg;
 	efhVector_t mins;
@@ -2103,14 +2013,13 @@ static qboolean DoesSegmentTypeFit(const efhSegmentType_t* segType, int segment)
 	}
 	return qtrue;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: GetAvailableSegmentTypes
 ==============
 */
-#if ESCAPE_MODE
 static int GetAvailableSegmentTypes(
 	int segment,
 	const efhTransitionStyle_t* style,
@@ -2196,14 +2105,13 @@ static int GetAvailableSegmentTypes(
 
 	return numAvailable;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: FilterBestSegmentsForFinalization
 ==============
 */
-#if ESCAPE_MODE
 static void FilterBestSegmentsForFinalization(
 	const efhTransitionStyle_t* style,
 	efhSegmentType_t** available, int numAvailable
@@ -2257,14 +2165,14 @@ static void FilterBestSegmentsForFinalization(
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: RemoveSegment
 ==============
 */
-#if ESCAPE_MODE
+
 static void DeleteUnusedEntities(void);
 
 static void RemoveSegment(int segment) {
@@ -2275,25 +2183,23 @@ static void RemoveSegment(int segment) {
 
 	memcpy(&segmentState, &newSegmentState, sizeof(segmentState));
 }
-#endif
+
 
 /*
 ==============
 JUHOX: PredictWayLength
 ==============
 */
-#if ESCAPE_MODE
 static int PredictWayLength(const vec3_t origin, int segment) {
 	return (int) (totalWayLength[segment] + SegmentWayLength(origin, efhWorld[segment], NULL));
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ExtendWorld
 ==============
 */
-#if ESCAPE_MODE
 static void ExtendWorld(void) {
 	int numExcluded;
 	efhSegmentType_t* excluded[MAX_SEGMENTTYPES];
@@ -2395,7 +2301,6 @@ static void ExtendWorld(void) {
 
 			se = &type->styles[s];
 			if (se->frequency <= 0) continue;
-			//if (!IsStyleEntryValid(type, se)) continue;
 
 			if (worldStyle && se->entrance != worldStyle) continue;
 			if (!finalization) {
@@ -2446,27 +2351,19 @@ static void ExtendWorld(void) {
 		worldEnd = MAX_WORLD_SEGMENTS;
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: CreateWorld
 ==============
 */
-#if ESCAPE_MODE
 static void CreateWorld(void) {
 	int i;
 
 	if (g_gametype.integer != GT_EFH) return;
 
 	G_Printf("CreateWorld...\n");
-
-	/*
-	if (!initialSegmentType) {
-		G_Error("^1CreateWorld: no initial segment found");
-		initialSegmentType = &segmentTypes[0];
-	}
-	*/
 
 	if (numTransitionStyles <= 0) {
 		G_Error("^1CreateWorld: no styles found");
@@ -2504,14 +2401,13 @@ static void CreateWorld(void) {
 		ExtendWorld();
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: GetSpaceExtent
 ==============
 */
-#if ESCAPE_MODE
 static void GetSpaceExtent(void) {
 	trace_t trace;
 	vec3_t start;
@@ -2547,7 +2443,7 @@ static void GetSpaceExtent(void) {
 	trap_Trace(&trace, start, NULL, NULL, end, -1, CONTENTS_SOLID);
 	efhSpaceMaxs[2] = trace.endpos[2];
 }
-#endif
+
 
 /*
 ==============
@@ -2561,11 +2457,11 @@ void G_SpawnEntitiesFromString( void ) {
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
 
-#if ESCAPE_MODE	// JUHOX: get efh space extent
+	// JUHOX: get efh space extent
 	if (g_gametype.integer == GT_EFH) {
 		GetSpaceExtent();
 	}
-#endif
+
 
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
@@ -2582,13 +2478,12 @@ void G_SpawnEntitiesFromString( void ) {
 
 	SetGameSeed();	// JUHOX
 
-#if ESCAPE_MODE	// JUHOX: spawn EFH world
+	// JUHOX: spawn EFH world
 	if (g_gametype.integer == GT_EFH) {
 		BuildSegments();
 		CreateWorld();
 		if (g_debugEFH.integer) G_EFH_NextDebugSegment(0);
 	}
-#endif
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
 }
@@ -2598,7 +2493,6 @@ void G_SpawnEntitiesFromString( void ) {
 JUHOX: G_InitWorldSystem
 ==============
 */
-#if ESCAPE_MODE
 void G_InitWorldSystem(void) {
 	int i;
 
@@ -2632,14 +2526,13 @@ void G_InitWorldSystem(void) {
 	debugModeChoosenSegmentType = 0;
 	trap_SetConfigstring(CS_EFH_GOAL_DISTANCE, "0");
 }
-#endif
+
 
 /*
 ==============
 JUHOX: GetTransitionStyleFromName
 ==============
 */
-#if ESCAPE_MODE
 static efhTransitionStyle_t* GetTransitionStyleFromName(const char* name) {
 	int i;
 	efhTransitionStyle_t* style;
@@ -2660,14 +2553,13 @@ static efhTransitionStyle_t* GetTransitionStyleFromName(const char* name) {
 	Q_strncpyz(style->name, name, STYLE_NAME_MAX_SIZE);
 	return style;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_hull
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_hull(gentity_t* ent) {
 	int idnum;
 	int count;
@@ -2808,14 +2700,13 @@ static void SP_efh_hull(gentity_t* ent) {
 
 	G_FreeEntity(ent);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_model
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_model(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2829,14 +2720,13 @@ static void SP_efh_model(gentity_t* ent) {
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
 	ent->entClass = GEC_efh_model;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_brush
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_brush(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2849,25 +2739,22 @@ static void SP_efh_brush(gentity_t* ent) {
 	trap_LinkEntity(ent);
 	ent->entClass = GEC_efh_brush;
 }
-#endif
 
 /*
 ==============
 JUHOX: SP_efh_null_brush
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_null_brush(gentity_t* ent) {
 	G_FreeEntity(ent);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_entrance
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_entrance(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2876,14 +2763,13 @@ static void SP_efh_entrance(gentity_t* ent) {
 
 	ent->entClass = GEC_efh_entrance;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_exit
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_exit(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2892,14 +2778,13 @@ static void SP_efh_exit(gentity_t* ent) {
 
 	ent->entClass = GEC_efh_exit;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_monster
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_monster(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2909,14 +2794,13 @@ static void SP_efh_monster(gentity_t* ent) {
 	G_SpawnInt("type", "0", &ent->s.otherEntityNum);
 	ent->entClass = GEC_efh_monster;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: SP_efh_waypoint
 ==============
 */
-#if ESCAPE_MODE
 static void SP_efh_waypoint(gentity_t* ent) {
 	if (g_gametype.integer != GT_EFH) {
 		G_FreeEntity(ent);
@@ -2925,14 +2809,13 @@ static void SP_efh_waypoint(gentity_t* ent) {
 
 	ent->entClass = GEC_efh_waypoint;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: IsWorldOriginInsideSegment
 ==============
 */
-#if ESCAPE_MODE
 static qboolean IsWorldOriginInsideSegment(
 	const efhVector_t* origin,
 	const efhSegmentType_t* segType,
@@ -2946,65 +2829,19 @@ static qboolean IsWorldOriginInsideSegment(
 	if (origin->z - segOrigin->z > segType->boundingMax[2] + 8) return qfalse;
 	return qtrue;
 }
-#endif
 
-/*
-==============
-JUHOX: SegmentDistanceSquared
-==============
-*/
-#if ESCAPE_MODE
-/*
-static float SegmentDistanceSquared(
-	const efhVector_t* origin,
-	const efhSegmentType_t* segType,
-	const efhVector_t* segOrigin
-) {
-	vec3_t delta;
 
-	delta[0] = origin->x - segOrigin->x;
-	if (delta[0] < 0.5 * (segType->boundingMin[0] + segType->boundingMax[0])) {
-		delta[0] += segType->boundingMin[0];
-	}
-	else {
-		delta[0] += segType->boundingMax[0];
-	}
-
-	delta[1] = origin->y - segOrigin->y;
-	if (delta[1] < 0.5 * (segType->boundingMin[1] + segType->boundingMax[1])) {
-		delta[1] += segType->boundingMin[1];
-	}
-	else {
-		delta[1] += segType->boundingMax[1];
-	}
-
-	delta[2] = origin->z - segOrigin->z;
-	if (delta[2] < 0.5 * (segType->boundingMin[2] + segType->boundingMax[2])) {
-		delta[2] += segType->boundingMin[2];
-	}
-	else {
-		delta[2] += segType->boundingMax[2];
-	}
-
-	return VectorLengthSquared(delta);
-}
-*/
-#endif
 
 /*
 ==============
 JUHOX: G_FindSegment
 ==============
 */
-#if ESCAPE_MODE
 int G_FindSegment(const vec3_t mapOrigin, efhVector_t* segOrigin) {
 	efhVector_t worldOrigin;
 	efhVector_t segOrgBack;
 	efhVector_t segOrgForw;
-	/*
-	float minDistanceSquared;
-	int nearestSegment;
-	*/
+
 	int index;
 
 	if (g_gametype.integer != GT_EFH) return -1;
@@ -3012,10 +2849,7 @@ int G_FindSegment(const vec3_t mapOrigin, efhVector_t* segOrigin) {
 	MapOriginToWorldOrigin(mapOrigin, &worldOrigin);
 	segOrgBack = currentSegmentOrigin;
 	segOrgForw = currentSegmentOrigin;
-	/*
-	minDistanceSquared = 1e12;
-	nearestSegment = currentSegment;
-	*/
+
 	index = 0;
 	do {
 		int segment;
@@ -3029,18 +2863,6 @@ int G_FindSegment(const vec3_t mapOrigin, efhVector_t* segOrigin) {
 				if (segOrigin) *segOrigin = segOrgForw;
 				return segment;
 			}
-			/*
-			else {
-				float distanceSquared;
-
-				distanceSquared = SegmentDistanceSquared(&worldOrigin, segType, &segOrgForw);
-				if (distanceSquared < minDistanceSquared) {
-					minDistanceSquared = distanceSquared;
-					nearestSegment = segment;
-					if (segOrigin) *segOrigin = segOrgForw;
-				}
-			}
-			*/
 
 			segOrgForw.x += segType->exitDelta.x;
 			segOrgForw.y += segType->exitDelta.y;
@@ -3059,18 +2881,6 @@ int G_FindSegment(const vec3_t mapOrigin, efhVector_t* segOrigin) {
 				if (segOrigin) *segOrigin = segOrgBack;
 				return segment;
 			}
-			/*
-			else {
-				float distanceSquared;
-
-				distanceSquared = SegmentDistanceSquared(&worldOrigin, segType, &segOrgForw);
-				if (distanceSquared < minDistanceSquared) {
-					minDistanceSquared = distanceSquared;
-					nearestSegment = segment;
-					if (segOrigin) *segOrigin = segOrgBack;
-				}
-			}
-			*/
 		}
 
 		index++;
@@ -3079,14 +2889,13 @@ int G_FindSegment(const vec3_t mapOrigin, efhVector_t* segOrigin) {
 	//return nearestSegment;
 	return -1;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: FindSegmentOrigin
 ==============
 */
-#if ESCAPE_MODE
 static void FindSegmentOrigin(int segment, efhVector_t* segOrg) {
 	efhVector_t origin;
 	int s;
@@ -3116,14 +2925,13 @@ static void FindSegmentOrigin(int segment, efhVector_t* segOrg) {
 
 	*segOrg = origin;
 }
-#endif
+
 
 /*
 ==============
 JUHOX: ActivateSegment
 ==============
 */
-#if ESCAPE_MODE
 static void ActivateSegment(int segment, const efhVector_t* segOrg, efhSegmentState_t state) {
 	if (segment < 0 || segment > maxSegment) {
 		G_Error("^1BUG! ActivateSegment: segment=%d, max=%d\n", segment, maxSegment);
@@ -3158,14 +2966,13 @@ static void ActivateSegment(int segment, const efhVector_t* segOrg, efhSegmentSt
 		SpawnSegment(segType, mapOrigin, segment, segOrg, cmd);
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_SpawnWorld
 ==============
 */
-#if ESCAPE_MODE
 void G_SpawnWorld(void) {
 	efhVector_t origin;
 
@@ -3178,7 +2985,7 @@ void G_SpawnWorld(void) {
 	origin.z = 0;
 	ActivateSegment(0, &origin, ESS_spawned);
 }
-#endif
+
 
 /*
 ==============
@@ -3188,7 +2995,6 @@ clients get the segment number of each player and mover,
 so they can decide about whether to draw them
 ==============
 */
-#if ESCAPE_MODE
 static void G_UpdateSegmentInfo(void) {
 	int i;
 
@@ -3202,22 +3008,16 @@ static void G_UpdateSegmentInfo(void) {
 		case ET_PLAYER:
 			ent->s.constantLight = ent->worldSegment - 1;
 			break;
-		/* already done in SpawnSegment()
-		case ET_MOVER:
-			ent->s.time = ent->worldSegment - 1;
-			break;
-		*/
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: DeleteUnusedEntities
 ==============
 */
-#if ESCAPE_MODE
 static void DeleteUnusedEntities(void) {
 	int i;
 
@@ -3305,14 +3105,12 @@ static void DeleteUnusedEntities(void) {
 		}
 	}
 }
-#endif
 
 /*
 ==============
 JUHOX: G_UpdateWorld
 ==============
 */
-#if ESCAPE_MODE
 void G_UpdateWorld(void) {
 	int i;
 	qboolean update;
@@ -3472,14 +3270,13 @@ void G_UpdateWorld(void) {
 
 	G_UpdateSegmentInfo();
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_MakeWorldAwareOfMonsterDeath
 ==============
 */
-#if ESCAPE_MODE
 void G_MakeWorldAwareOfMonsterDeath(gentity_t* monster) {
 	int cacheIndex;
 	efhCachedMonster_t* cache;
@@ -3492,14 +3289,13 @@ void G_MakeWorldAwareOfMonsterDeath(gentity_t* monster) {
 	cache = &cachedMonsters[cacheIndex];
 	FreeMonsterCache(cache);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_GetTotalWayLength
 ==============
 */
-#if ESCAPE_MODE
 long G_GetTotalWayLength(gentity_t* ent) {
 	playerState_t* ps;
 	vec3_t origin;
@@ -3526,14 +3322,13 @@ long G_GetTotalWayLength(gentity_t* ent) {
 
 	return totalWayLength[segment] + SegmentWayLength(origin, efhWorld[segment], &segOrg);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_GetLightingOrigin
 ==============
 */
-#if ESCAPE_MODE
 static void G_GetLightingOrigin(gentity_t* ent, vec3_t lightingOrigin) {
 	playerState_t* ps;
 	vec3_t origin;
@@ -3558,14 +3353,13 @@ static void G_GetLightingOrigin(gentity_t* ent, vec3_t lightingOrigin) {
 	VectorSubtract(origin, segMapOrg, delta);
 	VectorAdd(efhWorld[segment]->entranceOrigin, delta, lightingOrigin);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_UpdateLightingOrigins
 ==============
 */
-#if ESCAPE_MODE
 void G_UpdateLightingOrigins(void) {
 	int i;
 
@@ -3579,7 +3373,6 @@ void G_UpdateLightingOrigins(void) {
 		ent = &g_entities[i];
 		if (!ent->inuse) continue;
 		if (ent->freeAfterEvent) continue;
-		//if (!ent->r.linked && ent->neverFree) continue;
 		if (!ent->r.linked) continue;
 		if (ent->s.solid == SOLID_BMODEL) continue;
 		if (ent->s.eFlags & EF_NODRAW) continue;
@@ -3600,33 +3393,30 @@ void G_UpdateLightingOrigins(void) {
 			ps->persistant[PERS_LIGHT_X] = lightingOrigin[0];
 			ps->persistant[PERS_LIGHT_Y] = lightingOrigin[1];
 			ps->persistant[PERS_LIGHT_Z] = lightingOrigin[2];
-			//VectorCopy(lightingOrigin, ent->s.origin);
 		}
 		else {
 			VectorCopy(lightingOrigin, ent->s.angles2);
 		}
 	}
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_EFH_SpaceExtent
 ==============
 */
-#if ESCAPE_MODE
 void G_EFH_SpaceExtent(vec3_t mins, vec3_t maxs) {
 	VectorCopy(efhSpaceMins, mins);
 	VectorCopy(efhSpaceMaxs, maxs);
 }
-#endif
+
 
 /*
 ==============
 JUHOX: G_EFH_NextDebugSegment
 ==============
 */
-#if ESCAPE_MODE
 void G_EFH_NextDebugSegment(int dir) {
 	if (g_gametype.integer != GT_EFH) return;
 	if (!g_debugEFH.integer) return;
@@ -3647,4 +3437,4 @@ void G_EFH_NextDebugSegment(int dir) {
 		)
 	);
 }
-#endif
+

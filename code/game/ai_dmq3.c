@@ -226,17 +226,7 @@ EntityIsDead
 */
 qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
 	// JUHOX: let EntityIsDead() accept monsters
-#if !MONSTER_MODE
-	playerState_t ps;
 
-	if (entinfo->number >= 0 && entinfo->number < MAX_CLIENTS) {
-		//retrieve the current client state
-		BotAI_GetClientState( entinfo->number, &ps );
-		if (ps.pm_type != PM_NORMAL) return qtrue;
-		if (ps.stats[STAT_HEALTH] <= 0) return qtrue;	// JUHOX: safety check
-	}
-	return qfalse;
-#else
 	if (entinfo->number >= 0 && entinfo->number < level.num_entities) {
 		gentity_t* ent;
 		playerState_t* ps;
@@ -254,7 +244,7 @@ qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
 		return qfalse;
 	}
 	return qtrue;
-#endif
+
 }
 
 /*
@@ -1145,14 +1135,14 @@ static void UpdateSplashCalculations(bot_state_t* bs) {
 						g_gametype.integer >= GT_TEAM &&
 						bs->cur_ps.persistant[PERS_TEAM] == playerPS.persistant[PERS_TEAM]
 					)
-#if MONSTER_MODE
+
 					||
 					(
 						g_gametype.integer < GT_STU &&
 						g_monsterLauncher.integer &&
 						G_IsFriendlyMonster(&g_entities[bs->client], &g_entities[playerPS.clientNum])
 					)
-#endif
+
 				) {
 					// don't hit this player
 					if (distance < SPLASH_RADIUS_GRENADE) bs->splashCount_grenade = -1;
@@ -1173,7 +1163,7 @@ static void UpdateSplashCalculations(bot_state_t* bs) {
 	}
 }
 
-#if 1	// JUHOX: types used with weapon selection
+// JUHOX: types used with weapon selection
 typedef struct {
 	int enemyWeapon;
 	float distance;
@@ -1186,7 +1176,7 @@ typedef struct {
 	qboolean chasingEnemy;
 	int danger;
 } combatCharacteristics_t;
-#endif
+
 
 /*
 ==================
@@ -1688,7 +1678,6 @@ static float BotBFGValue(bot_state_t* bs, const combatCharacteristics_t* cc) {
 JUHOX: BotMonsterLauncherValue
 ==================
 */
-#if MONSTER_MODE
 static float BotMonsterLauncherValue(bot_state_t* bs, const combatCharacteristics_t* cc) {
 	float value;
 	const float bestDistance = 500.0;
@@ -1741,7 +1730,6 @@ static float BotMonsterLauncherValue(bot_state_t* bs, const combatCharacteristic
 
 	return value;
 }
-#endif
 
 /*
 ==================
@@ -1782,11 +1770,9 @@ static float BotWeaponValue(bot_state_t* bs, const combatCharacteristics_t* cc, 
 		case WP_BFG:
 			value = BotBFGValue(bs, cc);
 			break;
-#if MONSTER_MODE
 		case WP_MONSTER_LAUNCHER:
 			value = BotMonsterLauncherValue(bs, cc);
 			break;
-#endif
 		}
 		if (bs->cur_ps.weapon == weapon) value += 30.0;
 	}
@@ -1972,11 +1958,8 @@ qboolean LTGNearlyFulfilled(bot_state_t* bs) {
 	playerState_t ps;
 	int danger, strength;
 
-#if !MONSTER_MODE
-	if (bs->getImportantNBGItem) return qfalse;
-#else
 	if (g_gametype.integer != GT_STU && bs->getImportantNBGItem) return qfalse;
-#endif
+
 	if (
 		bs->enemy >= 0 &&
 		(
@@ -1987,9 +1970,9 @@ qboolean LTGNearlyFulfilled(bot_state_t* bs) {
 	switch (bs->ltgtype) {
 		case 0:
 		default:
-#if MONSTER_MODE
+
 			if (g_gametype.integer == GT_STU) return qtrue;
-#endif
+
 			if (!g_stamina.integer) return qfalse;
 			if (bs->cur_ps.stats[STAT_STRENGTH] < 2*LOW_STRENGTH_VALUE) return qtrue;
 			if (BotWantsToRetreat(bs)) return qfalse;
@@ -2022,9 +2005,9 @@ qboolean LTGNearlyFulfilled(bot_state_t* bs) {
 			) {
 				return qfalse;
 			}
-#if MONSTER_MODE
+
 			if (g_gametype.integer == GT_STU) return qtrue;
-#endif
+
 			if (DistanceSquared(ps.origin, bs->origin) > Square(600)) return qfalse;
 			return qtrue;
 		case LTG_ESCAPE:
@@ -2484,9 +2467,8 @@ qboolean BotEnemyTooStrong(bot_state_t* bs) {
 	int numTotalEnemies, numVisEnemies;
 
 	if (gametype < GT_TEAM) return qfalse;
-#if MONSTER_MODE	// JUHOX FIXME: enemy never too strong in STU?
+	// JUHOX FIXME: enemy never too strong in STU?
 	if (gametype == GT_STU) return qfalse;
-#endif
 
 	if (bs->enemy < 0 && bs->cur_ps.stats[STAT_HEALTH] > 0) {
 		if (bs->enemytoostrong) {
@@ -2543,9 +2525,7 @@ int BotWantsToEscape(bot_state_t *bs) {
 	}
 #endif
 	if (bs->enemy < 0) return qfalse;
-#if MONSTER_MODE
 	if (g_gametype.integer == GT_STU && G_NumMonsters() > 15) return qfalse;	// if too many monsters, it's safer to stay
-#endif
 	if (BotPlayerDanger(&bs->cur_ps) >= 70) return qtrue;
 	if (BotEnemyTooStrong(bs)) return qtrue;
 	return qfalse;
@@ -2559,14 +2539,14 @@ BotWantsToRetreat
 int BotWantsToRetreat(bot_state_t *bs) {
 	aas_entityinfo_t entinfo;
 
-#if 1	// JUHOX: return cached value if possible
+	// JUHOX: return cached value if possible
 	if (bs->wantsToRetreat_time == FloatTime()) return bs->wantsToRetreat;
 	bs->wantsToRetreat = qtrue;
 	bs->wantsToRetreat_time = FloatTime();
-#endif
-#if 1	// JUHOX: retreat when standing in lava or slime
+
+	// JUHOX: retreat when standing in lava or slime
 	if (bs->tfl & (TFL_LAVA|TFL_SLIME)) return qtrue;
-#endif
+
 	if (BotWantsToEscape(bs)) return qtrue;	// JUHOX
 	if (gametype == GT_CTF) {
 		//always retreat when carrying a CTF flag
@@ -2616,7 +2596,7 @@ int BotWantsToRetreat(bot_state_t *bs) {
 	if (bs->ltgtype == LTG_GETFLAG)
 		return qtrue;
 	//
-#if 1	// JUHOX: retreat if helping someone
+	// JUHOX: retreat if helping someone
 	if (bs->ltgtype == LTG_TEAMHELP) {
 		playerState_t ps;
 
@@ -2629,13 +2609,13 @@ int BotWantsToRetreat(bot_state_t *bs) {
 			}
 		}
 	}
-#endif
+
 	if (BotAggression(bs) < 50)
 		return qtrue;
-#if 1	// JUHOX: bot doesn't want to retreat
+	// JUHOX: bot doesn't want to retreat
 	NoRetreat:
 	bs->wantsToRetreat = qfalse;
-#endif
+
 	return qfalse;
 }
 
@@ -2648,9 +2628,8 @@ int BotWantsToFight(bot_state_t *bs, int enemy, qboolean indirectVis) {
 	playerState_t ps;
 
 	if (!BotAI_GetClientState(enemy, &ps)) return qfalse;
-#if MONSTER_MODE
+
 	if (g_entities[enemy].monster && !IsFightingMonster(&g_entities[enemy])) return qfalse;
-#endif
 
 	if (g_gametype.integer == GT_CTF) {
 		if (bs->ltgtype == LTG_RETURNFLAG) {
@@ -2701,75 +2680,15 @@ int BotWantsToFight(bot_state_t *bs, int enemy, qboolean indirectVis) {
 	) {
 		if (enemy == bs->blockingEnemy) return qtrue;
 		if (bs->ltgtype == LTG_ESCAPE) return qfalse;
-#if MONSTER_MODE
+
 		if (G_IsMonsterSuccessfulAttacking(&g_entities[enemy], &g_entities[bs->entitynum])) return qtrue;
-#endif
-		/*
-		if (bs->cur_ps.powerups[PW_REDFLAG] || bs->cur_ps.powerups[PW_BLUEFLAG]) return qfalse;
-#if BOTS_USE_TSS
-		if (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_isValid)) {
-			if (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_missionStatus) == TSSMS_aborted) return qfalse;
-			switch (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_mission)) {
-			case TSSMISSION_seek_enemy:
-				return qtrue;
-			case TSSMISSION_seek_items:
-				return qfalse;
-			case TSSMISSION_capture_enemy_flag:
-				if (
-					BotEnemyFlagStatus(bs) == FLAG_ATBASE &&
-					!NearHomeBase(ps.persistant[PERS_TEAM], bs->origin, 9)
-				) {
-					return qfalse;
-				}
-				return qtrue;
-			case TSSMISSION_defend_our_flag:
-				if (
-					BotOwnFlagStatus(bs) != FLAG_ATBASE &&
-					!ps.powerups[PW_REDFLAG] &&
-					!ps.powerups[PW_BLUEFLAG]
-				) {
-					return qfalse;
-				}
-				break;
-			case TSSMISSION_defend_our_base:
-			case TSSMISSION_occupy_enemy_base:
-				if (indirectVis) return qfalse;
-				break;
-			}
-			if (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_task) == TSSMT_fulfilMission) return qtrue;
-			if (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_groupFormation) == TSSGF_tight) return qfalse;
-		}
-#endif
-		*/
+
 		if (BotWantsToRetreat(bs)) return qfalse;
 		if (bs->cur_ps.stats[STAT_STRENGTH] < 2 * LOW_STRENGTH_VALUE) {
 			return qfalse;
 		}
 	}
-	/*
-	// line-of-fire crossing prevention
-	if (enemy >= 0) {
-		aas_entityinfo_t entinfo;
-		vec_t squaredDistanceToEnemy;
-		int i;
 
-		BotEntityInfo(enemy, &entinfo);
-		squaredDistanceToEnemy = DistanceSquared(bs->origin, entinfo.origin);
-		for (i = 0; i < bs->numvisteammates; i++) {
-			playerState_t ps;
-			vec_t teamMateSquaredDistanceToEnemy;
-
-			if (!BotAI_GetClientState(bs->visteammates[i], &ps)) continue;
-			if (ps.stats[STAT_HEALTH] <= 0) continue;
-			teamMateSquaredDistanceToEnemy = DistanceSquared(ps.origin, entinfo.origin);
-			if (teamMateSquaredDistanceToEnemy <= squaredDistanceToEnemy) {
-				if (DistanceSquared(bs->origin, ps.origin) < 150*150) {
-					return qfalse;
-				}
-			}
-		}
-	}
-	*/
 	return qtrue;
 }
 
@@ -2780,33 +2699,12 @@ BotWantsToChase
 */
 int BotWantsToChase(bot_state_t *bs) {
 	// JUHOX: new chase decision logic
-#if 0
-	aas_entityinfo_t entinfo;
-
-	if (gametype == GT_CTF) {
-		//never chase when carrying a CTF flag
-		if (BotCTFCarryingFlag(bs))
-			return qfalse;
-		//always chase if the enemy is carrying a flag
-		BotEntityInfo(bs->enemy, &entinfo);
-		if (EntityCarriesFlag(&entinfo))
-			return qtrue;
-	}
-	//if the bot is getting the flag
-	if (bs->ltgtype == LTG_GETFLAG)
-		return qfalse;
-	//
-	if (BotAggression(bs) > 50)
-		return qtrue;
-	return qfalse;
-#else
 	if (bs->lastenemyareanum <= 0) return qfalse;
 	if (BotWantsToRetreat(bs)) return qfalse;
 	if (!BotWantsToFight(bs, bs->enemy, qtrue)) return qfalse;
 	if (!trap_AAS_AreaReachability(bs->lastenemyareanum)) return qfalse;
 	if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, bs->lastenemyareanum, bs->tfl) <= 0) return qfalse;
 	return qtrue;
-#endif
 }
 
 /*
@@ -3619,7 +3517,7 @@ float BotEntityVisible(playerState_t* ps, float fov, int ent) {
 	VectorAdd(entinfo.origin, middle, middle);
 	//check if entity is within field of vision
 	// JUHOX: take invisibility and audibility into account
-#if 1
+
 	if (
 		ps->persistant[PERS_ATTACKER] == ent &&
 		g_entities[viewer].client &&
@@ -3628,9 +3526,9 @@ float BotEntityVisible(playerState_t* ps, float fov, int ent) {
 	) {
 		return 1;
 	}
-#if MONSTER_MODE
+
 	if (G_IsAttackingGuard(ent)) fov = 360;
-#endif
+
 	if (fov < 360) {
 		if (EntityIsInvisible(viewer, &entinfo) && DistanceSquared(middle, eye) > 100*100) {
 			bot_state_t* bs;
@@ -3642,11 +3540,7 @@ float BotEntityVisible(playerState_t* ps, float fov, int ent) {
 			fov *= 0.75 * alertness * alertness;
 			fov *= bs->settings.skill / 5.0;
 		}
-		/*
-		if (ps->weaponstate < WEAPON_FIRING) {
-			fov /= 2.0;
-		}
-		*/
+
 		if (ps->powerups[PW_CHARGE]) {
 			float disturbance;
 
@@ -3654,13 +3548,7 @@ float BotEntityVisible(playerState_t* ps, float fov, int ent) {
 			if (disturbance > 1.0) fov /= disturbance;
 		}
 	}
-	/*
-	if (fov < 360 && EntityIsAudible(&entinfo) && trap_InPVSIgnorePortals(ps->origin, entinfo.origin)) {
-		fov *= 3.0;
-		if (fov > 360) fov = 360;
-	}
-	*/
-#endif
+
 	VectorSubtract(middle, eye, dir);
 	vectoangles(dir, entangles);
 	if (!InFieldOfVision(viewangles, fov, entangles)) return 0;
@@ -3672,9 +3560,7 @@ float BotEntityVisible(playerState_t* ps, float fov, int ent) {
 	//
 	bestvis = 0;
 	for (i = 0; i < 3; i++) {
-		//if the point is not in potential visible sight
-		//if (!AAS_inPVS(eye, middle)) continue;
-		//
+
 		contents_mask = CONTENTS_SOLID|CONTENTS_PLAYERCLIP;
 		passent = viewer;
 		hitent = ent;
@@ -3801,28 +3687,6 @@ static qboolean BotEntityIndirectlyVisible(bot_state_t* bs, int ent) {
 		entityVisStatusNextCheck[teammate][ent] = level.time + 1000 + rand() % 2000;
 		if (vis) return qtrue;
 
-		/*
-		if (!g_entities[teammate].inuse) continue;
-		client = g_entities[teammate].client;
-		if (!client) continue;
-		if (client->ps.stats[STAT_HEALTH] <= 0) continue;
-		enemy = g_entities[ent].client;
-		if (
-			(
-				client->lasthurt_client != ent ||
-				client->lasthurt_time < level.time - 2000
-			) &&
-			(
-				!enemy ||
-				enemy->lasthurt_client != bs->client ||
-				enemy->lasthurt_time < level.time - 2000
-			)
-		) continue;
-		//if (ps.weaponstate < WEAPON_FIRING) continue;
-		if (BotEntityVisible(&client->ps, 90, ent) > 0) {
-			return qtrue;
-		}
-		*/
 	}
 	return qfalse;
 }
@@ -3846,19 +3710,13 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	alertness = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_ALERTNESS, 0, 1);
 	easyfragger = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_EASY_FRAGGER, 0, 1);
 	//check if the health decreased
-#if 0	// JUHOX: compute the health decrease condition by a more reliable method (consider automatic decrease if health > max. health!)
-	healthdecrease = bs->lasthealth > bs->inventory[INVENTORY_HEALTH];
-#else
 	healthdecrease = g_entities[bs->entitynum].client->lasthurt_time > level.time - 1000;
-#endif
 	//remember the current health value
 	bs->lasthealth = bs->inventory[INVENTORY_HEALTH];
 	//
 	if (curenemy >= 0) {
 		BotEntityInfo(curenemy, &curenemyinfo);
-#if 0	// JUHOX: only concentrate on flag carrier if not carrying a flag
-		if (EntityCarriesFlag(&curenemyinfo)) return qfalse;
-#else
+
 		if (
 			EntityCarriesFlag(&curenemyinfo) &&
 			!bs->cur_ps.powerups[PW_REDFLAG] &&
@@ -3866,13 +3724,13 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		) {
 			return qfalse;
 		}
-#endif
-#if 1	// JUHOX: healthy bots don't accept new enemies while already fighting
+
+        // JUHOX: healthy bots don't accept new enemies while already fighting
 		if (
 			bs->cur_ps.weaponstate != WEAPON_READY &&
 			BotPlayerDanger(&bs->cur_ps) <= 25
 		) return qfalse;
-#endif
+
 		VectorSubtract(curenemyinfo.origin, bs->origin, dir);
 		cursquaredist = VectorLengthSquared(dir);
 	}
@@ -3882,18 +3740,16 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	//
 	foundEnemy = qfalse;	// JUHOX
 	danger = BotPlayerDanger(&bs->cur_ps);	// JUHOX
-#if 0	// JUHOX: check clients in random order
-	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
-#else
+
 	m = level.maxclients;
-#if MONSTER_MODE
+
 	if (
 		g_gametype.integer == GT_STU ||
 		g_monsterLauncher.integer
 	) {
 		m = level.num_entities;
 	}
-#endif
+
 	for (i = 0; i < m; i++) {
 		clientBag[i] = i;
 	}
@@ -3905,17 +3761,15 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			i = clientBag[j];
 			clientBag[j] = clientBag[--m];
 		}
-#endif
 
-#if MONSTER_MODE
 		if (!G_GetEntityPlayerState(&g_entities[i])) continue;
-#endif
+
 		if (i == bs->client) continue;
 		//if it's the current enemy
 		if (i == curenemy) continue;
-#if 1	// JUHOX: erlier test for same team
+        // JUHOX: erlier test for same team
 		if (BotSameTeam(bs, i)) continue;
-#endif
+
 		//
 		BotEntityInfo(i, &entinfo);
 		//
@@ -3923,13 +3777,9 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		//if the enemy isn't dead and the enemy isn't the bot self
 		if (EntityIsDead(&entinfo) || entinfo.number == bs->entitynum) continue;
 		//if the enemy is invisible and not shooting
-#if 0	// JUHOX: This is now handled by BotEntityVisible(). Ignore invisible enemy only if already fighting.
-		if (EntityIsInvisible(VIEWER_OTHERTEAM, &entinfo) && !EntityIsShooting(&entinfo)) {	// JUHOX: added 'VIEWER_OTHERTEAM'
-			continue;
-		}
-#else
+
 		if (bs->enemy >= 0 && EntityIsInvisible(VIEWER_OTHERTEAM, &entinfo)) continue;
-#endif
+
 		//if not an easy fragger don't shoot at chatting players
 		if (easyfragger < 0.5 && EntityIsChatting(&entinfo)) continue;
 		//
@@ -3943,7 +3793,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		//if this entity is not carrying a flag
 		if (!EntityCarriesFlag(&entinfo))
 		{
-#if MONSTER_MODE	// JUHOX: in STU prefer guards
+        // JUHOX: in STU prefer guards
 			if (
 				g_gametype.integer >= GT_STU &&
 				G_IsAttackingGuard(curenemy) &&
@@ -3951,8 +3801,8 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			) {
 				continue;
 			}
-#endif
-#if 1	// JUHOX: if not too much endangered prefer targets near the goal
+
+            // JUHOX: if not too much endangered prefer targets near the goal
 			if (
 				curenemy >= 0 &&
 				danger < 40 &&
@@ -3962,11 +3812,8 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			) {
 				continue;
 			}
-#endif
+
 			//if this enemy is further away than the current one
-#if 0	// JUHOX: ignore distance if current enemy has shield but the new enemy not
-			if (curenemy >= 0 && squaredist > cursquaredist) continue;
-#else
 			if (
 				curenemy >= 0 && 1.5 * squaredist > cursquaredist &&
 				(squaredist > Square(300) || squaredist > cursquaredist) &&
@@ -3975,15 +3822,12 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			) {
 				continue;
 			}
-#endif
 		} //end if
 		//if the bot has no
 		if (squaredist > Square(900.0 + alertness * 4000.0)) continue;
 		//if on the same team
-#if 0	// JUHOX: earlier test for same team
-		if (BotSameTeam(bs, i)) continue;
-#endif
-#if 1	// JUHOX: if retreating ignore cloaked enemies (they are not shooting)
+
+	// JUHOX: if retreating ignore cloaked enemies (they are not shooting)
 		if (
 			(entinfo.powerups & (1 << PW_INVIS)) &&
 			!EntityCarriesFlag(&entinfo) &&
@@ -3991,23 +3835,15 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		) {
 			continue;
 		}
-#endif
+
 		if (!BotWantsToFight(bs, i, qfalse)) continue;	// JUHOX
-#if 0	// JUHOX: always use a fov of 90; BotEntityVisible() does already some special checks and this distance dependend fov is nonsense
-		//if the bot's health decreased or the enemy is shooting
-		if (curenemy < 0 && (healthdecrease || EntityIsShooting(&entinfo)))
-			f = 360;
-		else
-			f = 90 + 90 - (90 - (squaredist > Square(810) ? Square(810) : squaredist) / (810 * 9));
-#else
+
 		f = 90;
 		if (bs->blockingEnemy == i) f = 360;
-#endif
+
 		//check if the enemy is visible
 		vis = BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, f, i);	// JUHOX
-#if 0	// JUHOX: if the enemy is not directly visible, check if he is visible to a teammate
-		if (vis <= 0) continue;
-#else
+
 		if (vis <= 0) {
 			int enemyArea;
 
@@ -4021,32 +3857,9 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			if (!BotEntityIndirectlyVisible(bs, i)) continue;
 			if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, enemyArea, bs->tfl) <= 0) continue;
 		}
-#endif
-#if 0	// JUHOX: avoiding enemies is already checked by BotWantsToFight()
-		//if the enemy is quite far away, not shooting and the bot is not damaged
-		if (curenemy < 0 && squaredist > Square(100) && !healthdecrease && !EntityIsShooting(&entinfo))
-		{
-			//check if we can avoid this enemy
-			VectorSubtract(bs->origin, entinfo.origin, dir);
-			vectoangles(dir, angles);
-			//if the bot isn't in the fov of the enemy
-			if (!InFieldOfVision(entinfo.angles, 90, angles)) {
-				//update some stuff for this enemy
-				BotUpdateBattleInventory(bs, i);
-				//if the bot doesn't really want to fight
-				if (BotWantsToRetreat(bs)) continue;
-			}
-		}
-#endif
+
 		//found an enemy
-#if 0	// JUHOX: there might by better enemies, so defer enemy decision
-		bs->enemy = entinfo.number;
-		if (curenemy >= 0) bs->enemysight_time = FloatTime() - /*2*/0.5;	// JUHOX
-		else bs->enemysight_time = FloatTime();
-		bs->enemysuicide = qfalse;
-		bs->enemydeath_time = 0;
-		return qtrue;
-#else
+
 		foundEnemy = qtrue;
 		curenemy = entinfo.number;
 		cursquaredist = squaredist;
@@ -4057,11 +3870,9 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 			!bs->cur_ps.powerups[PW_BLUEFLAG]
 		) break;
 		curenemyinfo = entinfo;
-#endif
+
 	}
-#if 0	// JUHOX: handle deferred enemy decision
-	return qfalse;
-#else
+
 	if (foundEnemy) {
 		if (bs->enemy < 0) bs->enemysight_time = FloatTime();
 		bs->viewnotperfect_time = FloatTime();
@@ -4083,7 +3894,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		bs->lastenemyareanum = BotPointAreaNum(entinfo.origin);
 	}
 	return foundEnemy;
-#endif
+
 }
 
 /*
@@ -4358,11 +4169,9 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	//get the enemy entity information
 	BotEntityInfo(bs->enemy, &entinfo);
 	//if this is not a player (should be an obelisk)
-#if !MONSTER_MODE	// JUHOX: let BotAimAtEnemy() accept monsters
-	if (bs->enemy >= MAX_CLIENTS) {
-#else
+
 	if (bs->enemy >= MAX_CLIENTS && g_gametype.integer != GT_STU) {
-#endif
+
 		//if the obelisk is visible
 		VectorCopy(entinfo.origin, target);
 
@@ -4379,25 +4188,15 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	aim_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_SKILL, 0, 1);
 	aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY, 0, 1);
 	//
-#if 0	// JUHOX: aiming reaction time handled in BotViewReaction()
-	if (aim_skill > 0.95) {
-		//don't aim too early
-		reactiontime = 0.5 * trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_REACTIONTIME, 0, 1);
-		if (bs->enemysight_time > FloatTime() - reactiontime) return;
-		if (bs->teleport_time > FloatTime() - reactiontime) return;
-	}
-#endif
 
 	//get the weapon information
-#if 0	// JUHOX: weapon info for new weapons
-	trap_BotGetWeaponInfo(bs->ws, bs->weaponnum, &wi);
-#else
+
 	i = bs->weaponnum;
-#if MONSTER_MODE
+
 	if (i == WP_MONSTER_LAUNCHER) i = WP_GRENADE_LAUNCHER;
-#endif
+
 	trap_BotGetWeaponInfo(bs->ws, i, &wi);
-#endif
+
 	//get the weapon specific aim accuracy and or aim skill
 	if (wi.number == WP_MACHINEGUN) {
 		aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY_MACHINEGUN, 0, 1);
@@ -4843,7 +4642,7 @@ void BotCheckAttack(bot_state_t *bs) {
 
 	if (bs->weaponnum <= WP_NONE) return;	// JUHOX
 	reactiontime = 0.7 * bs->reactiontime;	// JUHOX
-#if 1	// JUHOX: prepare for reaction-time delay on changes of line-of-fire blocked / not blocked
+	// JUHOX: prepare for reaction-time delay on changes of line-of-fire blocked / not blocked
 	prevLineOfFireBlockedTime = bs->lineOfFireBlocked_time;
 	bs->lineOfFireBlocked_time = FloatTime();
 	if (
@@ -4851,11 +4650,11 @@ void BotCheckAttack(bot_state_t *bs) {
 	) {
 		trap_EA_Attack(bs->client);
 	}
-#endif
+
 
 	attackentity = bs->enemy;
 	if (attackentity < 0) return;	// JUHOX
-#if 1	// JUHOX: don't shoot with a back knocking weapon while flying
+	// JUHOX: don't shoot with a back knocking weapon while flying
 	if (
 		bs->cur_ps.groundEntityNum == ENTITYNUM_NONE &&
 		bs->cur_ps.weapon != WP_GAUNTLET &&
@@ -4864,7 +4663,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	) {
 		return;
 	}
-#endif
+
 	//
 	BotEntityInfo(attackentity, &entinfo);
 	// if not attacking a player
@@ -4873,46 +4672,17 @@ void BotCheckAttack(bot_state_t *bs) {
 
 	if (entinfo.powerups & (1 << PW_SHIELD)) return;	// JUHOX
 	if (EntityIsDead(&entinfo)) return;	// JUHOX
-	//
-	//reactiontime = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_REACTIONTIME, 0, 1);	// JUHOX: done earlier
-#if 0	// JUHOX: longer reaction time for the first shot
-	if (bs->enemysight_time > FloatTime() - reactiontime) return;
-#else
+
+
 	if (bs->enemysight_time > FloatTime() - reactiontime) {
 		bs->viewnotperfect_time = FloatTime();
 		return;
 	}
-#endif
+
 	if (bs->teleport_time > FloatTime() - reactiontime) return;
-#if 0	// JUHOX: don't stop firing while changing weapon
-	//if changing weapons
-	if (bs->weaponchange_time > FloatTime() - 0.1) return;
-#endif
-	//check fire throttle characteristic
-#if 0	// JUHOX: do not check fire throttle characteristic
-	if (bs->firethrottlewait_time > FloatTime()) return;
-	firethrottle = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_FIRETHROTTLE, 0, 1);
-	if (bs->firethrottleshoot_time < FloatTime()) {
-		if (random() > firethrottle) {
-			bs->firethrottlewait_time = FloatTime() + firethrottle;
-			bs->firethrottleshoot_time = 0;
-		}
-		else {
-			bs->firethrottleshoot_time = FloatTime() + 1 - firethrottle;
-			bs->firethrottlewait_time = 0;
-		}
-	}
-#endif
-	//
+
 	VectorSubtract(bs->aimtarget, bs->eye, dir);
-	//
-#if 0	// JUHOX: don't prevent early gauntlet attacks unless retreating
-	if (bs->weaponnum == WP_GAUNTLET) {
-		if (VectorLengthSquared(dir) > Square(60)) {
-			return;
-		}
-	}
-#else
+
 	if (
 		bs->weaponnum == WP_GAUNTLET &&
 		BotWantsToRetreat(bs) &&
@@ -4920,21 +4690,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	) {
 		return;
 	}
-#endif
-	//
-#if 0	// JUHOX: make sure that BotCheckAttack() doesn't aim better than BotAimAtEnemy()
-	if (VectorLengthSquared(dir) < Square(100))
-		fov = 120;
-	else
-		fov = 50;
-	//
-	vectoangles(dir, angles);
-	if (!InFieldOfVision(bs->viewangles, fov, angles))
-		return;
-	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
-	if (bsptrace.fraction < 1 && bsptrace.ent != attackentity)
-		return;
-#else
+
 	if (bs->weaponnum == WP_MACHINEGUN && bs->cur_ps.weaponstate >= WEAPON_FIRING) goto Shoot;
 	dist = VectorLength(dir);
 	if (dist < 100) fov = 120;
@@ -4993,23 +4749,19 @@ void BotCheckAttack(bot_state_t *bs) {
 		if (bsptrace.fraction < 1) return;
 	}
 	Shoot:
-#endif
 
 	//get the weapon info
-#if 0	// JUHOX: weapon info for new weapons
-	trap_BotGetWeaponInfo(bs->ws, bs->weaponnum, &wi);
-#else
 	{
 		int wp;
 
 		wp = bs->weaponnum;
-#if MONSTER_MODE
+
 		if (wp == WP_MONSTER_LAUNCHER) wp = WP_GRENADE_LAUNCHER;
-#endif
+
 		trap_BotGetWeaponInfo(bs->ws, wp, &wi);
 	}
-#endif
-#if 1	// JUHOX: correct some weapon info
+
+	// JUHOX: correct some weapon info
 	if (bs->weaponnum == WP_BFG) {
 		wi.proj.radius = 400;
 		wi.speed = 1000;
@@ -5022,7 +4774,7 @@ void BotCheckAttack(bot_state_t *bs) {
 		wi.proj.damagetype = 0;
 		wi.flags = 0;
 	}
-#endif
+
 	//get the start point shooting from
 	VectorCopy(bs->origin, start);
 	start[2] += bs->cur_ps.viewheight;
@@ -6475,11 +6227,6 @@ void BotCheckSnapshot(bot_state_t *bs) {
 	while( ( ent = BotAI_GetSnapshotEntity( bs->client, ent, &state ) ) != -1 ) {
 		//check the entity state for events
 		BotCheckEvents(bs, &state);
-		// JUHOX BUGFIX (workaround): there seems to be a bug in the 'trap_BotAddAvoidSpot()' code
-#if 0
-		//check for grenades the bot should avoid
-		BotCheckForGrenades(bs, &state);
-#endif
 
 	}
 	//check the player state for events
@@ -6498,19 +6245,12 @@ BotCheckAir
 */
 void BotCheckAir(bot_state_t *bs) {
 	// JUHOX: new air-out condition
-#if 0
-	if (bs->inventory[INVENTORY_ENVIRONMENTSUIT] <= 0) {
-		if (trap_AAS_PointContents(bs->eye) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
-			return;
-		}
-	}
-#else
 	if (bs->cur_ps.stats[STAT_STRENGTH] <= 0) {
 		if (trap_AAS_PointContents(bs->eye) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
 			return;
 		}
 	}
-#endif
+
 	bs->lastair_time = FloatTime();
 }
 
@@ -6521,24 +6261,6 @@ BotAlternateRoute
 */
 bot_goal_t *BotAlternateRoute(bot_state_t *bs, bot_goal_t *goal) {
 	// JUHOX: currently no alternate routes available
-#if 0
-	int t;
-
-	// if the bot has an alternative route goal
-	if (bs->altroutegoal.areanum) {
-		//
-		if (bs->reachedaltroutegoal_time)
-			return goal;
-		// travel time towards alternative route goal
-		t = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, bs->altroutegoal.areanum, bs->tfl);
-		if (t && t < 20) {
-			//BotAI_Print(PRT_MESSAGE, "reached alternate route goal\n");
-			bs->reachedaltroutegoal_time = FloatTime();
-		}
-		memcpy(goal, &bs->altroutegoal, sizeof(bot_goal_t));
-		return &bs->altroutegoal;
-	}
-#endif
 	return goal;
 }
 
@@ -6574,7 +6296,7 @@ int BotGetAlternateRouteGoal(bot_state_t *bs, int base) {
 	goal->iteminfo = 0;
 	goal->number = 0;
 	goal->flags = 0;
-	//
+
 	bs->reachedaltroutegoal_time = 0;
 	return qtrue;
 }
@@ -6816,16 +6538,8 @@ void BotSetupDeathmatchAI(void) {
 	//
 	// JUHOX BUGFIX: the original flag initializing code didn't work correctly sometimes when
 	// restarting the game.
-#if 0
-	if (gametype == GT_CTF) {
-		if (trap_BotGetLevelItemGoal(-1, "Red Flag", &ctf_redflag) < 0)
-			BotAI_Print(PRT_WARNING, "CTF without Red Flag\n");
-		if (trap_BotGetLevelItemGoal(-1, "Blue Flag", &ctf_blueflag) < 0)
-			BotAI_Print(PRT_WARNING, "CTF without Blue Flag\n");
-	}
-#else
+
 	if (gametype == GT_CTF) BotFindCTFBases();
-#endif
 
 	max_bspmodelindex = 0;
 	for (ent = trap_AAS_NextBSPEntity(0); ent; ent = trap_AAS_NextBSPEntity(ent)) {

@@ -9,17 +9,15 @@
 Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
 */
 
-
 /*QUAKED info_camp (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
 */
 void SP_info_camp( gentity_t *self ) {
-#if ESCAPE_MODE	// JUHOX: info_camp not used in EFH
+	// JUHOX: info_camp not used in EFH
 	if (g_gametype.integer == GT_EFH) {
 		G_FreeEntity(self);
 		return;
 	}
-#endif
 	G_SetOrigin( self, self->s.origin );
 }
 
@@ -38,9 +36,8 @@ target_position does the same thing
 */
 void SP_info_notnull( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	self->entClass = GEC_info_notnull;
-#endif
 }
 
 
@@ -67,85 +64,6 @@ TELEPORTERS
 
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	// JUHOX: let TeleportPlayer() accept monsters
-#if !MONSTER_MODE
-	gentity_t	*tent;
-	qboolean noAngles;	// JUHOX
-
-	noAngles = (angles[0] > 999999.0);	// JUHOX: to support the new version of Touch_DoorTriggerSpectator()
-	// use temp events at source and destination to prevent the effect
-	// from getting dropped by a second player event
-// JUHOX: don't play the teleport effect for dead spectators too
-#if 0
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-#else
-	if (player->client->ps.pm_type != PM_SPECTATOR) {
-#endif
-		tent = G_TempEntity( player->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
-		tent->s.clientNum = player->s.clientNum;
-
-		tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN );
-		tent->s.clientNum = player->s.clientNum;
-	}
-
-	// unlink to make sure it can't possibly interfere with G_KillBox
-	trap_UnlinkEntity (player);
-
-	VectorCopy ( origin, player->client->ps.origin );
-	player->client->ps.origin[2] += 1;
-
-	// JUHOX: don't change view angles nor velocity if no angles given
-#if 0
-	// spit the player out
-	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-	player->client->ps.pm_time = 160;		// hold time
-	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-
-	// toggle the teleport bit so the client knows to not lerp
-	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
-
-	// set angles
-	SetClientViewAngle( player, angles );
-#else
-	if (!noAngles) {
-		// spit the player out
-		AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-		VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-		player->client->ps.pm_time = 160;		// hold time
-		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-
-		// set angles
-		SetClientViewAngle( player, angles );
-	}
-	// toggle the teleport bit so the client knows to not lerp
-	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
-#endif
-
-	// kill anything at the destination
-	// JUHOX: don't kill teleport destination for dead spectators too
-#if 0
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-#else
-	if (player->client->ps.pm_type != PM_SPECTATOR) {
-#endif
-		G_KillBox (player);
-	}
-
-	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
-
-	// use the precise origin for linking
-	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
-
-	// JUHOX: don't link dead spectators too
-#if 0
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-#else
-	if (player->client->ps.pm_type != PM_SPECTATOR) {
-#endif
-		trap_LinkEntity (player);
-	}
-#else	// MONSTER_MODE
 	gentity_t	*tent;
 	qboolean noAngles;
 	playerState_t* ps;
@@ -199,27 +117,23 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	if (ps->pm_type != PM_SPECTATOR) {
 		trap_LinkEntity(player);
 	}
-#endif
 
 	// JUHOX: new spawn effect
-#if 1
 	{
 		playerState_t* ps;
 
 		ps = G_GetEntityPlayerState(player);
 		if (ps) {
-			ps->stats[STAT_EFFECT] = PE_spawn;
+			//ps->stats[STAT_EFFECT] = PE_spawn;
+			SET_STAT_EFFECT(ps, PE_spawn);
 			ps->powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 		}
 	}
-#endif
 
 	// JUHOX: cut rope when player is teleported
-#if GRAPPLE_ROPE
 	if (player->client && player->client->hook) {
 		Weapon_HookFree(player->client->hook);
 	}
-#endif
 }
 
 
@@ -229,9 +143,8 @@ Now that we don't have teleport destination pads, this is just
 an info_notnull
 */
 void SP_misc_teleporter_dest( gentity_t *ent ) {
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_misc_teleporter_dest;
-#endif
 }
 
 
@@ -241,18 +154,7 @@ void SP_misc_teleporter_dest( gentity_t *ent ) {
 "model"		arbitrary .md3 file to display
 */
 void SP_misc_model( gentity_t *ent ) {
-
-#if 0
-	ent->s.modelindex = G_ModelIndex( ent->model );
-	VectorSet (ent->mins, -16, -16, -16);
-	VectorSet (ent->maxs, 16, 16, 16);
-	trap_LinkEntity (ent);
-
-	G_SetOrigin( ent, ent->s.origin );
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );
-#else
 	G_FreeEntity( ent );
-#endif
 }
 
 //===========================================================
@@ -262,11 +164,8 @@ void locateCamera( gentity_t *ent ) {
 	gentity_t	*target;
 	gentity_t	*owner;
 
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	owner = G_PickTarget( ent->target );
-#else
 	owner = G_PickTarget(ent->target, ent->worldSegment - 1);
-#endif
+
 	if ( !owner ) {
 		G_Printf( "Couldn't find target for misc_partal_surface\n" );
 		G_FreeEntity( ent );
@@ -296,11 +195,8 @@ void locateCamera( gentity_t *ent ) {
 	VectorCopy( owner->s.origin, ent->s.origin2 );
 
 	// see if the portal_camera has a target
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	target = G_PickTarget( owner->target );
-#else
 	target = G_PickTarget(owner->target, owner->worldSegment - 1);
-#endif
+
 	if ( target ) {
 		VectorSubtract( target->s.origin, owner->s.origin, dir );
 		VectorNormalize( dir );
@@ -329,9 +225,8 @@ void SP_misc_portal_surface(gentity_t *ent) {
 		ent->think = locateCamera;
 		ent->nextthink = level.time + 100;
 	}
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_misc_portal_surface;
-#endif
 }
 
 /*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
@@ -348,9 +243,8 @@ void SP_misc_portal_camera(gentity_t *ent) {
 	G_SpawnFloat( "roll", "0", &roll );
 
 	ent->s.clientNum = roll/360.0 * 256;
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_misc_portal_camera;
-#endif
 }
 
 /*
@@ -403,11 +297,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 
 static void InitShooter_Finish( gentity_t *ent ) {
-#if !ESCAPE_MODE	// JUHOX: G_PickTarget() also needs to know the segment
-	ent->enemy = G_PickTarget( ent->target );
-#else
 	ent->enemy = G_PickTarget(ent->target, ent->worldSegment - 1);
-#endif
 	ent->think = 0;
 	ent->nextthink = 0;
 }
@@ -438,9 +328,8 @@ Fires at either the target or the current direction.
 */
 void SP_shooter_rocket( gentity_t *ent ) {
 	InitShooter( ent, WP_ROCKET_LAUNCHER );
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_shooter_rocket;
-#endif
 }
 
 /*QUAKED shooter_plasma (1 0 0) (-16 -16 -16) (16 16 16)
@@ -449,9 +338,8 @@ Fires at either the target or the current direction.
 */
 void SP_shooter_plasma( gentity_t *ent ) {
 	InitShooter( ent, WP_PLASMAGUN);
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_shooter_plasma;
-#endif
 }
 
 /*QUAKED shooter_grenade (1 0 0) (-16 -16 -16) (16 16 16)
@@ -460,7 +348,6 @@ Fires at either the target or the current direction.
 */
 void SP_shooter_grenade( gentity_t *ent ) {
 	InitShooter( ent, WP_GRENADE_LAUNCHER);
-#if ESCAPE_MODE	// JUHOX: set entity class
+	// JUHOX: set entity class
 	ent->entClass = GEC_shooter_grenade;
-#endif
 }

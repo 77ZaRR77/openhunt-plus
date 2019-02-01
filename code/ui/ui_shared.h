@@ -21,16 +21,16 @@
 #define WINDOW_MOUSEOVER			0x00000001	// mouse is over it, non exclusive
 #define WINDOW_HASFOCUS				0x00000002	// has cursor focus, exclusive
 #define WINDOW_VISIBLE				0x00000004	// is visible
-#define WINDOW_GREY						0x00000008	// is visible but grey ( non-active )
-#define WINDOW_DECORATION			0x00000010	// for decoration only, no mouse, keyboard, etc.. 
+#define WINDOW_GREY					0x00000008	// is visible but grey ( non-active )
+#define WINDOW_DECORATION			0x00000010	// for decoration only, no mouse, keyboard, etc..
 #define WINDOW_FADINGOUT			0x00000020	// fading out, non-active
 #define WINDOW_FADINGIN				0x00000040	// fading in
-#define WINDOW_MOUSEOVERTEXT	0x00000080	// mouse is over it, non exclusive
-#define WINDOW_INTRANSITION		0x00000100	// window is in transition
-#define WINDOW_FORECOLORSET		0x00000200	// forecolor was explicitly set ( used to color alpha images or not )
+#define WINDOW_MOUSEOVERTEXT	    0x00000080	// mouse is over it, non exclusive
+#define WINDOW_INTRANSITION		    0x00000100	// window is in transition
+#define WINDOW_FORECOLORSET		    0x00000200	// forecolor was explicitly set ( used to color alpha images or not )
 #define WINDOW_HORIZONTAL			0x00000400	// for list boxes and sliders, vertical is default this is set of horizontal
-#define WINDOW_LB_LEFTARROW		0x00000800	// mouse is over left/up arrow
-#define WINDOW_LB_RIGHTARROW	0x00001000	// mouse is over right/down arrow
+#define WINDOW_LB_LEFTARROW		    0x00000800	// mouse is over left/up arrow
+#define WINDOW_LB_RIGHTARROW	    0x00001000	// mouse is over right/down arrow
 #define WINDOW_LB_THUMB				0x00002000	// mouse is over thumb
 #define WINDOW_LB_PGUP				0x00004000	// mouse is over page up
 #define WINDOW_LB_PGDN				0x00008000	// mouse is over page down
@@ -38,10 +38,10 @@
 #define WINDOW_OOB_CLICK			0x00020000	// close on out of bounds click
 #define WINDOW_WRAPPED				0x00040000	// manually wrap text
 #define WINDOW_AUTOWRAPPED			0x00080000	// auto wrap text
-#define WINDOW_FORCED					0x00100000	// forced open
-#define WINDOW_POPUP					0x00200000	// popup
-#define WINDOW_BACKCOLORSET		0x00400000	// backcolor was explicitly set 
-#define WINDOW_TIMEDVISIBLE		0x00800000	// visibility timing ( NOT implemented )
+#define WINDOW_FORCED				0x00100000	// forced open
+#define WINDOW_POPUP				0x00200000	// popup
+#define WINDOW_BACKCOLORSET		    0x00400000	// backcolor was explicitly set
+#define WINDOW_TIMEDVISIBLE		    0x00800000	// visibility timing ( NOT implemented )
 
 
 // CGAME cursor type bits
@@ -68,21 +68,21 @@
 #define ART_FX_WHITE		"menu/art/fx_white"
 #define ART_FX_YELLOW		"menu/art/fx_yel"
 
-#define ASSET_GRADIENTBAR "ui/assets/gradientbar2.tga"
+#define ASSET_GRADIENTBAR           "ui/assets/gradientbar2.tga"
 #define ASSET_SCROLLBAR             "ui/assets/scrollbar.tga"
 #define ASSET_SCROLLBAR_ARROWDOWN   "ui/assets/scrollbar_arrow_dwn_a.tga"
 #define ASSET_SCROLLBAR_ARROWUP     "ui/assets/scrollbar_arrow_up_a.tga"
 #define ASSET_SCROLLBAR_ARROWLEFT   "ui/assets/scrollbar_arrow_left.tga"
 #define ASSET_SCROLLBAR_ARROWRIGHT  "ui/assets/scrollbar_arrow_right.tga"
 #define ASSET_SCROLL_THUMB          "ui/assets/scrollbar_thumb.tga"
-#define ASSET_SLIDER_BAR						"ui/assets/slider2.tga"
-#define ASSET_SLIDER_THUMB					"ui/assets/sliderbutt_1.tga"
-#define SCROLLBAR_SIZE 16.0
-#define SLIDER_WIDTH 96.0
-#define SLIDER_HEIGHT 16.0
-#define SLIDER_THUMB_WIDTH 12.0
-#define SLIDER_THUMB_HEIGHT 20.0
-#define	NUM_CROSSHAIRS			10
+#define ASSET_SLIDER_BAR			"ui/assets/slider2.tga"
+#define ASSET_SLIDER_THUMB			"ui/assets/sliderbutt_1.tga"
+#define SCROLLBAR_SIZE              16.0
+#define SLIDER_WIDTH                96.0
+#define SLIDER_HEIGHT               16.0
+#define SLIDER_THUMB_WIDTH          12.0
+#define SLIDER_THUMB_HEIGHT         20.0
+#define	NUM_CROSSHAIRS			    10
 
 typedef struct {
   const char *command;
@@ -105,13 +105,13 @@ typedef struct {
   Rectangle rectClient;           // screen coord rectangle
   const char *name;               //
   const char *group;              // if it belongs to a group
-  const char *cinematicName;		  // cinematic name
-  int cinematic;								  // cinematic handle
+  const char *cinematicName;	  // cinematic name
+  int cinematic;				  // cinematic handle
   int style;                      //
   int border;                     //
-  int ownerDraw;									// ownerDraw style
-	int ownerDrawFlags;							// show flags for ownerdraw items
-  float borderSize;               // 
+  int ownerDraw;				  // ownerDraw style
+  int ownerDrawFlags;			  // show flags for ownerdraw items
+  float borderSize;               //
   int flags;                      // visible, focus, mouseover, cursor
   Rectangle rectEffects;          // for various effects
   Rectangle rectEffects2;         // for various effects
@@ -121,7 +121,7 @@ typedef struct {
   vec4_t backColor;               // border color
   vec4_t borderColor;             // border color
   vec4_t outlineColor;            // border color
-  qhandle_t background;           // background asset  
+  qhandle_t background;           // background asset
 } windowDef_t;
 
 typedef windowDef_t Window;
@@ -135,13 +135,13 @@ typedef struct {
 // FIXME: combine flags into bitfields to save space
 // FIXME: consolidate all of the common stuff in one structure for menus and items
 // THINKABOUTME: is there any compelling reason not to have items contain items
-// and do away with a menu per say.. major issue is not being able to dynamically allocate 
-// and destroy stuff.. Another point to consider is adding an alloc free call for vm's and have 
+// and do away with a menu per say.. major issue is not being able to dynamically allocate
+// and destroy stuff.. Another point to consider is adding an alloc free call for vm's and have
 // the engine just allocate the pool for it based on a cvar
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this
 // FIXME: need to put a type ptr that points to specific type info per type
-// 
+//
 #define MAX_LB_COLUMNS 16
 
 typedef struct columnInfo_s {
@@ -168,10 +168,10 @@ typedef struct editFieldDef_s {
   float minVal;                  //	edit field limits
   float maxVal;                  //
   float defVal;                  //
-	float range;									 // 
+  float range;					 //
   int maxChars;                  // for edit fields
   int maxPaintChars;             // for edit fields
-	int paintOffset;							 // 
+  int paintOffset;				 //
 } editFieldDef_t;
 
 #define MAX_MULTI_CVARS 32
@@ -194,12 +194,12 @@ typedef struct modelDef_s {
 
 #define CVAR_ENABLE		0x00000001
 #define CVAR_DISABLE	0x00000002
-#define CVAR_SHOW			0x00000004
-#define CVAR_HIDE			0x00000008
+#define CVAR_SHOW		0x00000004
+#define CVAR_HIDE		0x00000008
 
 typedef struct itemDef_s {
   Window window;                 // common positional, border, style, layout info
-  Rectangle textRect;            // rectangle the text ( if any ) consumes     
+  Rectangle textRect;            // rectangle the text ( if any ) consumes
   int type;                      // text, button, radiobutton, checkbox, textfield, listbox, combo
   int alignment;                 // left center right
   int textalignment;             // ( optional ) alignment for text within rect based on text width
@@ -213,40 +213,39 @@ typedef struct itemDef_s {
   const char *mouseEnterText;    // mouse enter script
   const char *mouseExitText;     // mouse exit script
   const char *mouseEnter;        // mouse enter script
-  const char *mouseExit;         // mouse exit script 
+  const char *mouseExit;         // mouse exit script
   const char *action;            // select script
   const char *onFocus;           // select script
   const char *leaveFocus;        // select script
-  const char *cvar;              // associated cvar 
+  const char *cvar;              // associated cvar
   const char *cvarTest;          // associated cvar for enable actions
-	const char *enableCvar;			   // enable, disable, show, or hide based on value, this can contain a list
-	int cvarFlags;								 //	what type of action to take on cvarenables
+  const char *enableCvar;		 // enable, disable, show, or hide based on value, this can contain a list
+  int cvarFlags;				 //	what type of action to take on cvarenables
   sfxHandle_t focusSound;
-	int numColors;								 // number of color ranges
-	colorRangeDef_t colorRanges[MAX_COLOR_RANGES];
-	float special;								 // used for feeder id's etc.. diff per type
+  int numColors;				 // number of color ranges
+  colorRangeDef_t colorRanges[MAX_COLOR_RANGES];
+  float special;				 // used for feeder id's etc.. diff per type
   int cursorPos;                 // cursor position in characters
-	void *typeData;								 // type specific data ptr's	
+  void *typeData;				 // type specific data ptr's
 } itemDef_t;
 
 typedef struct {
   Window window;
-  const char  *font;								// font
-  qboolean fullScreen;							// covers entire screen 
-  int itemCount;										// number of items;
-  int fontIndex;										// 
-  int cursorItem;										// which item as the cursor
-	int fadeCycle;										//
-	float fadeClamp;									//
-	float fadeAmount;									//
-  const char *onOpen;								// run when the menu is first opened
-  const char *onClose;							// run when the menu is closed
-  const char *onESC;								// run when the menu is closed
-	const char *soundName;						// background loop sound for menu
-
-  vec4_t focusColor;								// focus color for items
-  vec4_t disableColor;							// focus color for items
-  itemDef_t *items[MAX_MENUITEMS];	// items this menu contains   
+  const char  *font;				// font
+  qboolean fullScreen;				// covers entire screen
+  int itemCount;					// number of items;
+  int fontIndex;					//
+  int cursorItem;					// which item as the cursor
+  int fadeCycle;					//
+  float fadeClamp;					//
+  float fadeAmount;					//
+  const char *onOpen;				// run when the menu is first opened
+  const char *onClose;				// run when the menu is closed
+  const char *onESC;				// run when the menu is closed
+  const char *soundName;			// background loop sound for menu
+  vec4_t focusColor;				// focus color for items
+  vec4_t disableColor;				// focus color for items
+  itemDef_t *items[MAX_MENUITEMS];	// items this menu contains
 } menuDef_t;
 
 typedef struct {
@@ -283,10 +282,9 @@ typedef struct {
   qboolean fontRegistered;
 
   // player settings
-	qhandle_t fxBasePic;
+  qhandle_t fxBasePic;
   qhandle_t fxPic[7];
-	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
-
+  qhandle_t	crosshairShader[NUM_CROSSHAIRS];
 } cachedAssets_t;
 
 typedef struct {
@@ -313,8 +311,8 @@ typedef struct {
   void (*renderScene) ( const refdef_t *fd );
   void (*registerFont) (const char *pFontname, int pointSize, fontInfo_t *font);
   void (*ownerDrawItem) (float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader, int textStyle);
-	float (*getValue) (int ownerDraw);
-	qboolean (*ownerDrawVisible) (int flags);
+  float (*getValue) (int ownerDraw);
+  qboolean (*ownerDrawVisible) (int flags);
   void (*runScript)(char **p);
   void (*getTeamColor)(vec4_t *color);
   void (*getCVarString)(const char *cvar, char *buffer, int bufsize);
@@ -329,39 +327,36 @@ typedef struct {
   const char *(*feederItemText)(float feederID, int index, int column, qhandle_t *handle);
   qhandle_t (*feederItemImage)(float feederID, int index);
   void (*feederSelection)(float feederID, int index);
-	void (*keynumToStringBuf)( int keynum, char *buf, int buflen );
-	void (*getBindingBuf)( int keynum, char *buf, int buflen );
-	void (*setBinding)( int keynum, const char *binding );
-	void (*executeText)(int exec_when, const char *text );	
-	void (*Error)(int level, const char *error, ...);
-	void (*Print)(const char *msg, ...);
-	void (*Pause)(qboolean b);
-	int (*ownerDrawWidth)(int ownerDraw, float scale);
-	sfxHandle_t (*registerSound)(const char *name, qboolean compressed);
-	void (*startBackgroundTrack)( const char *intro, const char *loop);
-	void (*stopBackgroundTrack)();
-	int (*playCinematic)(const char *name, float x, float y, float w, float h);
-	void (*stopCinematic)(int handle);
-	void (*drawCinematic)(int handle, float x, float y, float w, float h);
-	void (*runCinematicFrame)(int handle);
+  void (*keynumToStringBuf)( int keynum, char *buf, int buflen );
+  void (*getBindingBuf)( int keynum, char *buf, int buflen );
+  void (*setBinding)( int keynum, const char *binding );
+  void (*executeText)(int exec_when, const char *text );
+  void (*Error)(int level, const char *error, ...);
+  void (*Print)(const char *msg, ...);
+  void (*Pause)(qboolean b);
+  int (*ownerDrawWidth)(int ownerDraw, float scale);
+  sfxHandle_t (*registerSound)(const char *name, qboolean compressed);
+  void (*startBackgroundTrack)( const char *intro, const char *loop);
+  void (*stopBackgroundTrack)();
+  int (*playCinematic)(const char *name, float x, float y, float w, float h);
+  void (*stopCinematic)(int handle);
+  void (*drawCinematic)(int handle, float x, float y, float w, float h);
+  void (*runCinematicFrame)(int handle);
 
   float			yscale;
   float			xscale;
   float			bias;
-  int				realTime;
-  int				frameTime;
-	int				cursorx;
-	int				cursory;
-	qboolean	debug;
-
+  int			realTime;
+  int			frameTime;
+  int			cursorx;
+  int			cursory;
+  qboolean	    debug;
   cachedAssets_t Assets;
-
-	glconfig_t glconfig;
-	qhandle_t	whiteShader;
-  qhandle_t gradientImage;
-  qhandle_t cursor;
-	float FPS;
-
+  glconfig_t    glconfig;
+  qhandle_t	    whiteShader;
+  qhandle_t     gradientImage;
+  qhandle_t     cursor;
+  float         FPS;
 } displayContextDef_t;
 
 const char *String_Alloc(const char *p);

@@ -499,7 +499,6 @@ int BotFindTeamMateInFront(bot_state_t* bs, int leader, const int* teamMates, in
 
 	if (numTeamMates <= 0) return leader;
 
-#if MONSTER_MODE
 	if (
 		g_gametype.integer == GT_STU &&
 		g_artefacts.integer >= 999 &&
@@ -507,7 +506,6 @@ int BotFindTeamMateInFront(bot_state_t* bs, int leader, const int* teamMates, in
 	) {
 		return leader;
 	}
-#endif
 
 	leaderArea = BotPointAreaNum(ps.origin);
 	if (leaderArea <= 0 || !trap_AAS_AreaReachability(leaderArea)) {
@@ -960,12 +958,12 @@ int BotTeamMateToFollow(bot_state_t* bs) {
 	}
 	else
 #endif
-#if MONSTER_MODE
+
 	if (g_gametype.integer >= GT_STU) {
 		leader = -1;
 	}
 	else
-#endif
+
 	{
 		if (BotPlayerDanger(&bs->cur_ps) >= 25) return -1;
 		leader = BotRescueTeamMate(bs, helpers, MAX_SUBTEAM_SIZE, &numHelpers);
@@ -1014,12 +1012,7 @@ int BotTeamMateToFollow(bot_state_t* bs) {
 		for (teamMate = -1; (teamMate = BotGetNextTeamMate(bs, teamMate, &ps)) >= 0;) {
 			if (teamMate == leader) continue;
 			if (ps.stats[STAT_HEALTH] <= 0) continue;
-			if (
-				BotPlayerDanger(&ps) >= 25
-#if MONSTER_MODE
-				&& g_gametype.integer < GT_STU
-#endif
-			) continue;
+			if ( BotPlayerDanger(&ps) >= 25 	&& g_gametype.integer < GT_STU ) continue;
 
 			helpers[numHelpers++] = teamMate;
 			if (numHelpers >= MAX_SUBTEAM_SIZE) break;
@@ -1156,12 +1149,7 @@ void BotDetermineLeader(bot_state_t* bs) {
 		else
 #endif
 		if (cl->sess.teamLeader) {
-			if (
-				danger < 50
-#if MONSTER_MODE
-				|| g_gametype.integer == GT_STU
-#endif
-			) {
+			if ( danger < 50 || g_gametype.integer == GT_STU ) {
 				danger = -1000000;
 			}
 		}
@@ -1170,26 +1158,10 @@ void BotDetermineLeader(bot_state_t* bs) {
 		if (danger == lowestDanger && score <= highestScore) continue;
 		if (
 			BotClientIsGuard(bs, i)
-#if MONSTER_MODE
-			&& g_gametype.integer != GT_STU
-#endif
-		) continue;
-/* JUHOX DEBUG
-		if (cl->ps.groundEntityNum != ENTITYNUM_NONE && bs->client != i) {
-			int leaderAreaNum;
 
-			leaderAreaNum = BotPointAreaNum(cl->ps.origin);
-			if (leaderAreaNum <= 0) continue;
-			if (!trap_AAS_AreaReachability(leaderAreaNum)) continue;
-			if (
-				trap_AAS_AreaTravelTimeToGoalArea(
-					bs->areanum, bs->origin, leaderAreaNum, bs->tfl
-				) <= 0
-			) {
-				continue;
-			}
-		}
-*/
+			&& g_gametype.integer != GT_STU
+
+		) continue;
 
 		bestLeader = i;
 		lowestDanger = danger;

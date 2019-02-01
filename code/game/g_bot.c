@@ -4,18 +4,14 @@
 
 #include "g_local.h"
 
-
 static int		g_numBots;
 static char		*g_botInfos[MAX_BOTS];
-
 
 int				g_numArenas;
 static char		*g_arenaInfos[MAX_ARENAS];
 
-
 #define BOT_BEGIN_DELAY_BASE		2000
 #define BOT_BEGIN_DELAY_INCREMENT	1500
-
 #define BOT_SPAWN_QUEUE_DEPTH	16
 
 typedef struct {
@@ -28,7 +24,7 @@ static botSpawnQueue_t	botSpawnQueue[BOT_SPAWN_QUEUE_DEPTH];
 
 vmCvar_t bot_minplayers;
 
-#if MONSTER_MODE	// JUHOX: monster types
+// JUHOX: monster types
 typedef enum {
 	HP_entry,
 	HP_morphing,
@@ -99,9 +95,8 @@ typedef struct {
 	vec3_t origin;
 	int numMonsters;
 } monsterTrap_t;
-#endif
 
-#if MONSTER_MODE	// JUHOX: monster variables
+// JUHOX: monster variables
 static int numMonsters;
 static int nextMonsterSpawnTime;
 #define MAX_MONSTER_SEEDS 200
@@ -117,7 +112,6 @@ static gmonster_t* freeMonster;
 #define MONSTER_SPAWNPOOL_SIZE 4096
 static vec3_t monsterSpawnPool[MONSTER_SPAWNPOOL_SIZE];
 static int numMonsterSpawnPoolEntries;
-#endif
 
 extern gentity_t	*podium1;
 extern gentity_t	*podium2;
@@ -129,7 +123,6 @@ float trap_Cvar_VariableValue( const char *var_name ) {
 	trap_Cvar_VariableStringBuffer(var_name, buf, sizeof(buf));
 	return atof(buf);
 }
-
 
 
 /*
@@ -487,16 +480,16 @@ void G_CheckMinimumPlayers( void ) {
 
 		humanplayers = G_CountHumanPlayers( TEAM_RED );
 		botplayers = G_CountBotPlayers(	TEAM_RED );
-		//
+
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_RED );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
 			G_RemoveRandomBot( TEAM_RED );
 		}
-		//
+
 		humanplayers = G_CountHumanPlayers( TEAM_BLUE );
 		botplayers = G_CountBotPlayers( TEAM_BLUE );
-		//
+
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_BLUE );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
@@ -509,7 +502,7 @@ void G_CheckMinimumPlayers( void ) {
 		}
 		humanplayers = G_CountHumanPlayers( -1 );
 		botplayers = G_CountBotPlayers( -1 );
-		//
+
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_FREE );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
@@ -526,7 +519,7 @@ void G_CheckMinimumPlayers( void ) {
 		}
 		humanplayers = G_CountHumanPlayers( TEAM_FREE );
 		botplayers = G_CountBotPlayers( TEAM_FREE );
-		//
+
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_FREE );
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
@@ -661,11 +654,9 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	char			*headmodel;
 	char			userinfo[MAX_INFO_STRING];
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
-	if (g_gametype.integer == GT_EFH) {
-		return;
-	}
-#endif
+	// JUHOX: no bots in EFH
+	if (g_gametype.integer == GT_EFH) return;
+
 
 	// get the botinfo from bots.txt
 	botinfo = G_GetBotInfoByName( name );
@@ -686,7 +677,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 		botname = altname;
 	}
 	// JUHOX: if there is already a client with that name use another one
-#if 1
+
 	if (IsClientNameInUse(botname)) {
 		int ext;
 		static char buf[MAX_NETNAME];
@@ -702,7 +693,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 		}
 		botname = buf;
 	}
-#endif
+
 	Info_SetValueForKey( userinfo, "name", botname );
 	Info_SetValueForKey( userinfo, "rate", "25000" );
 	Info_SetValueForKey( userinfo, "snaps", "20" );
@@ -754,11 +745,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	s = Info_ValueForKey( botinfo, key );
 	if ( !*s ) {
 		// JUHOX: use color1 if color2 not set
-#if 0
-		s = "5";
-#else
 		s = Info_ValueForKey(userinfo, "color1");
-#endif
 	}
 	Info_SetValueForKey( userinfo, key, s );
 
@@ -790,11 +777,11 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 			team = "red";
 		}
 	}
-#if MONSTER_MODE	// JUHOX: in STU all players are in the red team
+	// JUHOX: in STU all players are in the red team
 	if (g_gametype.integer >= GT_STU) {
 		team = "red";
 	}
-#endif
+
 	Info_SetValueForKey( userinfo, "characterfile", Info_ValueForKey( botinfo, "aifile" ) );
 	Info_SetValueForKey( userinfo, "skill", va( "%5.2f", skill ) );
 	Info_SetValueForKey( userinfo, "team", team );
@@ -807,9 +794,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	trap_SetUserinfo( clientNum, userinfo );
 
 	// have it connect to the game as a normal client
-	if ( ClientConnect( clientNum, qtrue, qtrue ) ) {
-		return;
-	}
+	if ( ClientConnect( clientNum, qtrue, qtrue ) ) return;
 
 	if( delay == 0 ) {
 		ClientBegin( clientNum );
@@ -833,9 +818,8 @@ void Svcmd_AddBot_f( void ) {
 	char			string[MAX_TOKEN_CHARS];
 	char			team[MAX_TOKEN_CHARS];
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+	// JUHOX: no bots in EFH
 	if (g_gametype.integer == GT_EFH) return;
-#endif
 
 	// are bots enabled?
 	if ( !trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
@@ -1018,13 +1002,9 @@ static void G_LoadBots( void ) {
 	int			i;
 	int			dirlen;
 
-#if ESCAPE_MODE	// JUHOX: no bots in EFH
+    // JUHOX: no bots in EFH
 	if (g_gametype.integer == GT_EFH) return;
-#endif
-
-	if ( !trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
-		return;
-	}
+	if ( !trap_Cvar_VariableIntegerValue( "bot_enable" ) ) return;
 
 	g_numBots = 0;
 
@@ -1150,7 +1130,6 @@ void G_InitBots( qboolean restart ) {
 JUHOX: FreeMonsterInfo
 ===============
 */
-#if MONSTER_MODE
 static void FreeMonsterInfo(gmonster_t* monster) {
 	if (!monster) return;
 
@@ -1161,14 +1140,12 @@ static void FreeMonsterInfo(gmonster_t* monster) {
 	monster->next = freeMonster;
 	freeMonster = monster;
 }
-#endif
 
 /*
 ===============
 JUHOX: GetMonsterInfo
 ===============
 */
-#if MONSTER_MODE
 static gmonster_t* GetMonsterInfo(void) {
 	gmonster_t* monster;
 
@@ -1180,25 +1157,22 @@ static gmonster_t* GetMonsterInfo(void) {
 	memset(monster, 0, sizeof(*monster));
 	return monster;
 }
-#endif
 
 /*
 ===============
 JUHOX: G_NumMonsters
 ===============
 */
-#if MONSTER_MODE
 int G_NumMonsters(void) {
 	return numMonsters;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_FreeMonster
 ===============
 */
-#if MONSTER_MODE
 static void G_FreeMonster(gentity_t* monster) {
 	if (monster->monster) {
 		FreeMonsterInfo(monster->monster);
@@ -1206,41 +1180,38 @@ static void G_FreeMonster(gentity_t* monster) {
 	}
 	G_FreeEntity(monster);
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_KillMonster
 ===============
 */
-#if MONSTER_MODE
 void G_KillMonster(gentity_t* monster) {
 	if (monster->monster && monster->health > 0) {
 		numMonsters--;
 	}
 	G_FreeMonster(monster);
 }
-#endif
+
 
 /*
 ===============
 JUHOX: AddMonsterSpawnPoolEntry
 ===============
 */
-#if MONSTER_MODE
 static void AddMonsterSpawnPoolEntry(const vec3_t pos) {
 	if (numMonsterSpawnPoolEntries >= MONSTER_SPAWNPOOL_SIZE) return;
 
 	VectorCopy(pos, monsterSpawnPool[numMonsterSpawnPoolEntries++]);
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CheckMonsterSpawnPoolEntry
 ===============
 */
-#if MONSTER_MODE
 static void CheckMonsterSpawnPoolEntry(const vec3_t pos) {
 	int i;
 
@@ -1251,14 +1222,12 @@ static void CheckMonsterSpawnPoolEntry(const vec3_t pos) {
 	}
 	AddMonsterSpawnPoolEntry(pos);
 }
-#endif
 
 /*
 ===============
 JUHOX: InitMonsterSpawnPool
 ===============
 */
-#if MONSTER_MODE
 static void InitMonsterSpawnPool(void) {
 	int i;
 
@@ -1268,14 +1237,12 @@ static void InitMonsterSpawnPool(void) {
 		AddMonsterSpawnPoolEntry(level.emergencySpawnPoints[i]);
 	}
 }
-#endif
 
 /*
 ===============
 JUHOX: G_InitMonsters
 ===============
 */
-#if MONSTER_MODE
 void G_InitMonsters(void) {
 	int i;
 
@@ -1292,7 +1259,6 @@ void G_InitMonsters(void) {
 	firstMonsterSeed = 0;
 	lastMonsterSeed = 0;
 }
-#endif
 
 /*
 ===============
@@ -1301,7 +1267,6 @@ JUHOX: G_MonsterCorrectEntityState
 needed after any call to 'BG_PlayerStateToEntityState()' or 'BG_PlayerStateToEntityStateExtraPolate()'
 ===============
 */
-#if MONSTER_MODE
 static void G_MonsterCorrectEntityState(gentity_t* monster) {
 	if (!monster->monster) return;
 
@@ -1317,21 +1282,15 @@ static void G_MonsterCorrectEntityState(gentity_t* monster) {
 		monster->s.otherEntityNum2 = qfalse;
 	}
 }
-#endif
 
 /*
 ===============
 JUHOX: G_UpdateMonsterCS
 ===============
 */
-#if MONSTER_MODE
 void G_UpdateMonsterCS(void) {
-	trap_SetConfigstring(
-		CS_NUMMONSTERS,
-		va("%03d,%d", numMonsters, level.maxMonstersPerPlayer)
-	);
+	trap_SetConfigstring( CS_NUMMONSTERS, va("%03d,%d", numMonsters, level.maxMonstersPerPlayer));
 }
-#endif
 
 /*
 ===============
@@ -1340,7 +1299,6 @@ JUHOX: MonsterBodyDie
 derived from body_die() [g_combat.c]
 ===============
 */
-#if MONSTER_MODE
 static void MonsterBodyDie(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod) {
 	if (self->health > GIB_HEALTH) {
 		return;
@@ -1356,7 +1314,7 @@ static void MonsterBodyDie(gentity_t* self, gentity_t* inflictor, gentity_t* att
 	self->think = G_FreeMonster;
 	self->nextthink = level.time + 2000;
 }
-#endif
+
 
 /*
 ===============
@@ -1365,16 +1323,13 @@ JUHOX: MonsterDie
 derived from player_die() [combat.c]
 ===============
 */
-#if MONSTER_MODE
+
 static void MonsterDie(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod) {
 	int contents;
 	int killer;
 
 	if (!self->monster) return;
-
-#if ESCAPE_MODE
 	G_MakeWorldAwareOfMonsterDeath(self);
-#endif
 
 	numMonsters--;
 
@@ -1494,23 +1449,16 @@ static void MonsterDie(gentity_t* self, gentity_t* inflictor, gentity_t* attacke
 		BG_PlayerStateToEntityState(&self->monster->ps, &self->s, qtrue);
 		G_MonsterCorrectEntityState(self);
 
-		/*
-		self->monster->timeOfSinking = level.time + 6700;
-		self->monster->sinkOriginSet = qfalse;
-		*/
 		// JUHOX: don't copy the monster to the body que in EFH
-#if !ESCAPE_MODE
-		self->monster->timeOfBodyCopying = level.time + 3000;
-#else
+
 		if (g_gametype.integer != GT_EFH) {
 			self->monster->timeOfBodyCopying = level.time + 3000;
 		}
-#endif
 	}
 
 	trap_LinkEntity(self);
 }
-#endif
+
 
 /*
 ================
@@ -1519,7 +1467,6 @@ JUHOX: MonsterEvents
 derived from ClientEvents() [g_active.c]
 ================
 */
-#if MONSTER_MODE
 static void MonsterEvents(gentity_t* monster, int oldEventSequence) {
 	int i;
 	gmonster_t* mi;
@@ -1582,7 +1529,7 @@ static void MonsterEvents(gentity_t* monster, int oldEventSequence) {
 	}
 
 }
-#endif
+
 
 /*
 ============
@@ -1591,7 +1538,6 @@ JUHOX: MonsterTouchTriggers
 derived from G_TouchTriggers() [from g_active.c]
 ============
 */
-#if MONSTER_MODE
 static void MonsterTouchTriggers(gentity_t* monster) {
 	int i, num;
 	int touch[MAX_GENTITIES];
@@ -1654,14 +1600,12 @@ static void MonsterTouchTriggers(gentity_t* monster) {
 		monster->monster->ps.jumppad_ent = 0;
 	}
 }
-#endif
 
 /*
 ====================
 JUHOX: CauseMonsterChargeDamage
 ====================
 */
-#if MONSTER_MODE
 static void CauseMonsterChargeDamage(gentity_t* monster) {
 	gmonster_t* mi;
 
@@ -1711,18 +1655,16 @@ static void CauseMonsterChargeDamage(gentity_t* monster) {
 	}
 	else {
 		mi->lastChargeAmount = 0.0;
-		//mi->chargeDamageResidual = 0.0;
 		mi->lastChargeTime = 0;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: SetUserCmdViewAngles
 ===============
 */
-#if MONSTER_MODE
 static void SetUserCmdViewAngles(usercmd_t* cmd, const playerState_t* ps, const vec3_t angles) {
 	int i;
 
@@ -1730,14 +1672,13 @@ static void SetUserCmdViewAngles(usercmd_t* cmd, const playerState_t* ps, const 
 		cmd->angles[i] = ANGLE2SHORT(angles[i]) - ps->delta_angles[i];
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: SetMonsterViewCmd
 ===============
 */
-#if MONSTER_MODE
 #define PREDATOR_VIEW_SPEED				240.0	// degrees per second
 #define PREDATOR_HIBERNATION_VIEW_SPEED	120.0
 #define PREDATOR_ATTACK_VIEW_SPEED		450.0
@@ -1783,7 +1724,7 @@ static void SetMonsterViewCmd(gmonster_t* mi, int msec) {
 
 	SetUserCmdViewAngles(&mi->cmd, &mi->ps, diff);
 }
-#endif
+
 
 /*
 ===============
@@ -1812,15 +1753,15 @@ qboolean EntityAudible(const gentity_t* ent) {
 	if (ent->client) {
 		if (ent->s.eFlags & EF_FIRING) return qtrue;
 
-#if GRAPPLE_ROPE
-		switch (ent->client->ps.stats[STAT_GRAPPLE_STATE]) {
+		//switch (ent->client->ps.stats[STAT_GRAPPLE_STATE]) {
+		switch GET_STAT_GRAPPLESTATE(&ent->client->ps) {
 		case GST_windoff:
 		case GST_rewind:
 		case GST_pulling:
 		case GST_blocked:
 			return qtrue;
 		}
-#endif
+
 		switch (ent->s.weapon) {
 		case WP_LIGHTNING:
 		case WP_RAILGUN:
@@ -1836,27 +1777,24 @@ qboolean EntityAudible(const gentity_t* ent) {
 	case EV_STEP_8:
 	case EV_STEP_12:
 	case EV_STEP_16:
-//	case EV_POWERUP_REGEN:
 		return qfalse;
 	}
 	return qtrue;
 }
 
-#if MONSTER_MODE
 typedef struct {
 	vec3_t origin;
 	gentity_t* source;
 } noiseSource_t;
 static noiseSource_t sourcesOfNoise[MAX_GENTITIES];
 static int numSourcesOfNoise;
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterScanForNoises
 ===============
 */
-#if MONSTER_MODE
 void G_MonsterScanForNoises(void) {
 	int i;
 
@@ -1897,14 +1835,13 @@ void G_MonsterScanForNoises(void) {
 		numSourcesOfNoise++;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: MonsterSearchView
 ===============
 */
-#if MONSTER_MODE
 static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 	gmonster_t* mi;
 	int i;
@@ -1930,7 +1867,6 @@ static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 		if (level.intermissiontime) mi->nextDynViewSearch += 100000000;
 
 		maxdistanceSqr = 1000.0 * 1000.0;
-		//if (mi->ps.powerups[PW_CHARGE]) maxdistanceSqr = 600.0 * 600.0;
 		choosen = -1;
 		totalWeight = 0;
 
@@ -1943,17 +1879,6 @@ static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 			VectorSubtract(sourcesOfNoise[i].origin, mi->ps.origin, dir);
 			distanceSqr = VectorLengthSquared(dir);
 			if (distanceSqr > maxdistanceSqr) continue;
-			/*
-			// NOTE: don't look at events the monster is already seeing
-			vectoangles(dir, angles);
-			if (
-				fabs(AngleSubtract(angles[YAW], mi->ps.viewangles[YAW])) < 60 &&
-				fabs(AngleSubtract(angles[PITCH], mi->ps.viewangles[PITCH])) < 45
-			) {
-				continue;
-			}
-			*/
-			//if (!trap_InPVSIgnorePortals(mi->ps.origin, ent->s.pos.trBase)) goto NextEntity;
 
 			weight = 1.0 / (distanceSqr + 100);
 			totalWeight += weight;
@@ -1962,13 +1887,7 @@ static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 				vectoangles(dir, mi->ideal_view);
 				mi->sourceOfNoise = sourcesOfNoise[i].source;
 			}
-			/*
-			numgoals++;
-			if (LocallySeededRandom(&seed5) % numgoals == 0) {
-				vectoangles(dir, angles);
-				VectorCopy(angles, mi->ideal_view);
-			}
-			*/
+
 		}
 		if (choosen >= 0) {
 			float a1, a2;
@@ -1990,7 +1909,6 @@ static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 				break;
 			}
 			mi->nextEnemySearch = level.time + 100 + (int)(1000 * a1 / viewSpeed);
-			//if (mi->type == MT_guard) mi->nextEnemySearch += 500 + rand() % 500;
 			mi->nextDynViewSearch = level.time + 750 + LocallySeededRandom(&seed1) % 500;
 			mi->nextViewSearch = level.time + 2000 + LocallySeededRandom(&seed1) % 2000;
 			mi->walk = qfalse;
@@ -2096,14 +2014,13 @@ static void MonsterSearchView(gentity_t* monster, localseed_t* masterseed) {
 
 	VectorCopy(angles, mi->ideal_view);
 }
-#endif
+
 
 /*
 ===============
 JUHOX: EntityVisibleToMonster
 ===============
 */
-#if MONSTER_MODE
 static qboolean EntityVisibleToMonster(const gentity_t* ent, const gentity_t* monster) {
 	vec3_t start;
 	vec3_t dest;
@@ -2148,14 +2065,13 @@ static qboolean EntityVisibleToMonster(const gentity_t* ent, const gentity_t* mo
 
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: EntityInViewOfMonster
 ===============
 */
-#if MONSTER_MODE
 static qboolean EntityInViewOfMonster(const gentity_t* ent, const gmonster_t* mi) {
 	vec3_t dir;
 	vec3_t angles;
@@ -2166,14 +2082,13 @@ static qboolean EntityInViewOfMonster(const gentity_t* ent, const gmonster_t* mi
 	if (fabs(AngleSubtract(angles[PITCH], mi->ps.viewangles[PITCH])) > 45) return qfalse;
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: EntityEasilyVisibleToMonsters
 ===============
 */
-#if MONSTER_MODE
 static qboolean EntityEasilyVisibleToMonsters(const gentity_t* ent) {
 	if (!ent->client) return qtrue;
 	if (!ent->client->ps.powerups[PW_INVIS]) return qtrue;
@@ -2182,14 +2097,13 @@ static qboolean EntityEasilyVisibleToMonsters(const gentity_t* ent) {
 	if (ent->client->ps.powerups[PW_BLUEFLAG]) return qtrue;
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CheckMonsterEnemy
 ===============
 */
-#if MONSTER_MODE
 static void CheckMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 	gentity_t* enemy;
 	localseed_t seed;
@@ -2250,14 +2164,13 @@ static void CheckMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 
 	monster->monster->enemy = enemy;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: SetMonsterEnemy
 ===============
 */
-#if MONSTER_MODE
 static void SetMonsterEnemy(gmonster_t* monster, gentity_t* enemy, localseed_t* seed) {
 	monster->enemy = enemy;
 	monster->nextEnemyVisCheck = level.time + 1000 + (LocallySeededRandom(seed) % 1000);
@@ -2270,14 +2183,13 @@ static void SetMonsterEnemy(gmonster_t* monster, gentity_t* enemy, localseed_t* 
 	monster->nextDodgeTime = level.time + 500;
 	monster->dodgeDir = 0;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: SearchMonsterEnemy
 ===============
 */
-#if MONSTER_MODE
 static void SearchMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 	gmonster_t* mi;
 	int i;
@@ -2331,7 +2243,6 @@ static void SearchMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 	}
 
 	if (mi->nextEnemySearch > level.time) return;
-	//mi->nextEnemySearch = level.time + 1000 + (LocallySeededRandom(&seed) % 1000);
 	mi->nextEnemySearch = level.time + 250 + (LocallySeededRandom(&seed) % 250);
 
 	n = level.maxclients;
@@ -2439,7 +2350,7 @@ static void SearchMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 		}
 	}
 }
-#endif
+
 
 /*
 ===============
@@ -2449,7 +2360,6 @@ used in hibernation mode only
 returns qtrue if hibernation should be quit
 ===============
 */
-#if MONSTER_MODE
 #define MONSTER_HIBERNATION_SCAN_RADIUS 300.0f
 static qboolean ScanForMonsterEnemy(gentity_t* monster, localseed_t* masterseed) {
 	gmonster_t* mi;
@@ -2533,14 +2443,12 @@ static qboolean ScanForMonsterEnemy(gentity_t* monster, localseed_t* masterseed)
 
 	return qfalse;
 }
-#endif
 
 /*
 ===============
 JUHOX: TryDucking
 ===============
 */
-#if MONSTER_MODE
 static qboolean TryDucking(gentity_t* monster) {
 	gmonster_t* mi;
 	vec3_t viewAngles;
@@ -2572,9 +2480,7 @@ static qboolean TryDucking(gentity_t* monster) {
 	testMins[2] *= 0.8f;
 	testMaxs[0] *= 0.8f;
 	testMaxs[1] *= 0.8f;
-	//testMaxs[2] *= 0.8f;
 	trap_Trace(&trace, mi->ps.origin, testMins, testMaxs, end, monster->s.number, CONTENTS_SOLID | CONTENTS_PLAYERCLIP);
-	//if (trace.fraction >= 1.0f) return qfalse;
 	nonDuckedFraction = trace.fraction;
 
 	// does it help if the monster ducks?
@@ -2591,17 +2497,15 @@ static qboolean TryDucking(gentity_t* monster) {
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: MonsterAI
 ===============
 */
-#if MONSTER_MODE
 static void MonsterAI(gentity_t* monster) {
 	gmonster_t* mi;
-	//int msec;
 	localseed_t seed;
 
 	mi = monster->monster;
@@ -2620,12 +2524,10 @@ static void MonsterAI(gentity_t* monster) {
 	mi->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
 
 	if (monster->health <= 0) return;
-	//if (monster->s.time) return;
 
 	DeriveLocalSeed(&monster->monster->seed, &seed);
 
 	mi->nextAIFrame = level.time + 100 + (LocallySeededRandom(&seed) % 100);
-	//msec = level.time - mi->lastAIFrame;
 	mi->lastAIFrame = level.time;
 
 	CheckMonsterEnemy(monster, &seed);
@@ -2687,14 +2589,6 @@ static void MonsterAI(gentity_t* monster) {
 		}
 		SearchMonsterEnemy(monster, &seed);
 		if (mi->enemy) {
-			/*
-			if (monster->health > 0.5 * mi->ps.stats[STAT_MAX_HEALTH]) {
-				mi->action = MA_attacking;
-			}
-			else {
-				mi->action = MA_escaping;
-			}
-			*/
 			mi->action = MA_attacking;
 		}
 
@@ -2812,7 +2706,7 @@ static void MonsterAI(gentity_t* monster) {
 						(
 							(
 								horizDistSqr < Square(200.0f) &&
-								dir[2] > /*STEPSIZE*/18.0f
+								dir[2] > 18.0f
 							) ||
 							local_random(&seed1) < (VectorLengthSquared(mi->ps.velocity) < Square(100.0f)? 0.2f : 0.02f)
 						) &&
@@ -2984,7 +2878,7 @@ static void MonsterAI(gentity_t* monster) {
 						(
 							(
 								horizDistSqr < Square(200.0f) &&
-								dir[2] > /*STEPSIZE*/18.0f
+								dir[2] > 18.0f
 							) ||
 							local_random(&seed1) < (VectorLengthSquared(mi->ps.velocity) < 100.0f? 0.2f : 0.01f)
 						) &&
@@ -3003,16 +2897,6 @@ static void MonsterAI(gentity_t* monster) {
 						trap_Trace(&trace, start, NULL, NULL, end, -1, MASK_PLAYERSOLID & ~CONTENTS_BODY);
 						if (trace.fraction >= 1.0f) {
 							mi->cmd.upmove = 127;
-							/*
-							if (horizDistSqr > Square(400)) {
-								VectorCopy(start, end);
-								end[2] += 200;
-								trap_Trace(&trace, start, NULL, NULL, end, -1, MASK_PLAYERSOLID & ~CONTENTS_BODY);
-								if (trace.fraction >= 1) {
-									mi->superJump = qtrue;
-								}
-							}
-							*/
 						}
 					}
 				}
@@ -3047,53 +2931,9 @@ static void MonsterAI(gentity_t* monster) {
 			break;
 		}
 		SearchMonsterEnemy(monster, &seed);
-		/*
-		if (monster->health < 0.25f * mi->ps.stats[STAT_MAX_HEALTH]) {
-			mi->action = MA_escaping;
-		}
-		*/
+
 		break;
-	/*
-	case MA_escaping:
-		if (
-			mi->lastHurtEntity &&
-			mi->lastHurtEntity != mi->enemy &&
-			mi->lastHurtTime > level.time - 1000 &&
-			mi->lastHurtEntity->health > 0 &&
-			mi->lastEnemyHitTime < level.time - 500
-		) {
-			SetMonsterEnemy(mi, mi->lastHurtEntity);
-		}
-		mi->cmd.forwardmove = -127;
-		{
-			vec3_t start, end;
-			vec3_t dir;
-			vec_t angleDiff;
 
-			VectorCopy(mi->ps.origin, start);
-			start[2] += mi->ps.viewheight;
-			VectorCopy(mi->enemy->client->ps.origin, end);
-			end[2] += mi->enemy->client->ps.viewheight;
-			VectorSubtract(end, start, dir);
-			vectoangles(dir, mi->ideal_view);
-
-			angleDiff = AngleSubtract(mi->ideal_view[YAW] + 180.0f, mi->enemy->client->ps.viewangles[YAW]);
-			if (angleDiff > 0) {
-				mi->cmd.rightmove = 127;
-			}
-			else {
-				mi->cmd.rightmove = -127;
-			}
-
-			if (VectorLengthSquared(dir) < Square(100.0f)) {
-				mi->cmd.buttons |= BUTTON_ATTACK;
-			}
-		}
-		if (monster->health > 0.75f * mi->ps.stats[STAT_MAX_HEALTH]) {
-			mi->action = MA_attacking;
-		}
-		break;
-	*/
 	case MA_panic:
 		mi->hibernationTime = 0;
 
@@ -3111,7 +2951,7 @@ static void MonsterAI(gentity_t* monster) {
 			if (mi->ps.viewangles[PITCH] < -85.0f) {
 				mi->hibernationPhase = HP_morphing;
 				mi->hibernationBrood = 0;
-				mi->ps.stats[STAT_EFFECT] = PE_hibernation;
+				SET_STAT_EFFECT(&mi->ps, PE_hibernation);
 				mi->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 				VectorCopy(mi->hibernationSpot, monster->s.origin2);
 				monster->s.modelindex |= (
@@ -3142,7 +2982,8 @@ static void MonsterAI(gentity_t* monster) {
 			VectorCopy(mi->hibernationSpot, mi->ps.grapplePoint);
 			mi->ps.pm_flags |= PMF_GRAPPLE_PULL;
 			mi->ps.stats[STAT_GRAPPLE_SPEED] = 200;
-			mi->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			//mi->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			SET_STAT_GRAPPLESTATE (&mi->ps, GST_silent);
 
 			if ((rand() & 127) == 0) {
 				mi->ps.velocity[0] += 40.0f * crandom();
@@ -3162,7 +3003,8 @@ static void MonsterAI(gentity_t* monster) {
 			VectorCopy(mi->hibernationSpot, mi->ps.grapplePoint);
 			mi->ps.pm_flags |= PMF_GRAPPLE_PULL;
 			mi->ps.stats[STAT_GRAPPLE_SPEED] = (int) (2.0f * Distance(mi->ps.origin, mi->hibernationSpot));
-			mi->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			//mi->ps.stats[STAT_GRAPPLE_STATE] = GST_silent;
+			SET_STAT_GRAPPLESTATE (&mi->ps, GST_silent);
 
 			if ((rand() & 127) == 0) {
 				mi->ps.velocity[0] += 40.0f * crandom();
@@ -3182,12 +3024,7 @@ static void MonsterAI(gentity_t* monster) {
 				mi->ps.velocity[1] += intensity * crandom();
 			}
 
-			if (
-				level.time >= mi->hibernationTime &&
-				!level.intermissiontime /*&&
-				numMonsters < g_maxMonsters.integer &&
-				numMonsters < MAX_MONSTERS*/
-			) {
+			if ( level.time >= mi->hibernationTime && !level.intermissiontime  ) {
 				mi->hibernationTime = level.time + 15000 + LocallySeededRandom(&seed) % 30000;
 				mi->hibernationBrood++;
 				if (mi->hibernationBrood >= 3) {
@@ -3224,7 +3061,8 @@ static void MonsterAI(gentity_t* monster) {
 					VectorCopy(spawnorigin, mi->ps.origin);
 					mi->ps.eFlags ^= EF_TELEPORT_BIT;	// prevent lerping
 					monster->s.modelindex &= ~(PFMI_HIBERNATION_MODE | PFMI_HIBERNATION_MORPHED);
-					mi->ps.stats[STAT_EFFECT] = PE_spawn;
+					//mi->ps.stats[STAT_EFFECT] = PE_spawn;
+					SET_STAT_EFFECT(&mi->ps, PE_spawn);
 					mi->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 					mi->action = MA_waiting;
 					if (mi->enemy) mi->action = MA_attacking;
@@ -3253,34 +3091,33 @@ static void MonsterAI(gentity_t* monster) {
 		) {
 			mi->action = MA_waiting;
 
-			mi->ps.stats[STAT_EFFECT] = PE_titan_awaking;
+			//mi->ps.stats[STAT_EFFECT] = PE_titan_awaking;
+			SET_STAT_EFFECT(&mi->ps, PE_titan_awaking);
 			mi->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 		}
 		break;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: IsFightingMonster
 ===============
 */
-#if MONSTER_MODE
 qboolean IsFightingMonster(gentity_t* ent) {
 	if (!ent->monster) return qfalse;
 	if (ent->monster->action != MA_attacking) return qfalse;
 	if (ent->monster->enemyFoundTime > level.time - 350) return qfalse;
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CheckTouchedMonsters
 ===============
 */
-#if MONSTER_MODE
 void CheckTouchedMonsters(pmove_t* pm) {
 	int i;
 
@@ -3308,7 +3145,7 @@ void CheckTouchedMonsters(pmove_t* pm) {
 		}
 	}
 }
-#endif
+
 
 /*
 ===============
@@ -3317,7 +3154,6 @@ JUHOX: ThinkMonster
 derived from ClientThink_real() [g_active.c]
 ===============
 */
-#if MONSTER_MODE
 static void ThinkMonster(gentity_t* monster) {
 	gmonster_t* mi;
 	usercmd_t* ucmd;
@@ -3524,7 +3360,7 @@ static void ThinkMonster(gentity_t* monster) {
 	Exit:
 	monster->nextthink = level.time + 1;
 }
-#endif
+
 
 /*
 ===============
@@ -3533,7 +3369,6 @@ JUHOX: PainMonster
 derived from P_DamageFeedback() [g_active.c]
 ===============
 */
-#if MONSTER_MODE
 static void PainMonster(gentity_t* monster, gentity_t* attacker, int damage) {
 	if (!monster->monster) return;
 
@@ -3546,14 +3381,13 @@ static void PainMonster(gentity_t* monster, gentity_t* attacker, int damage) {
 		monster->monster->lastHurtTime = level.time;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_GetMonsterBounds
 ===============
 */
-#if MONSTER_MODE
 void G_GetMonsterBounds(monsterType_t type, vec3_t mins, vec3_t maxs) {
 	static const vec3_t predatorMins = {-15.0f, -15.0f, -24.0f};
 	static const vec3_t predatorMaxs = {15.0f, 15.0f, 32.0f};
@@ -3578,14 +3412,12 @@ void G_GetMonsterBounds(monsterType_t type, vec3_t mins, vec3_t maxs) {
 		break;
 	}
 }
-#endif
 
 /*
 ===============
 JUHOX: FitBoxIn
 ===============
 */
-#if MONSTER_MODE
 static qboolean FitBoxIn(
 	const vec3_t origin,
 	const vec3_t boxmins, const vec3_t boxmaxs,
@@ -3607,7 +3439,6 @@ static qboolean FitBoxIn(
 	VectorCopy(origin, result);
 
 	// fit X co-ordinate in
-
 	VectorCopy(result, end);
 	end[0] -= boxsize[0];
 	trap_Trace(&trace, result, NULL, NULL, end, -1, mask);
@@ -3630,7 +3461,6 @@ static qboolean FitBoxIn(
 	if (result[0] + boxmaxs[0] > boundmaxs[0]) result[0] = boundmaxs[0] - boxmaxs[0];
 
 	// fit Y co-ordinate in
-
 	VectorSet(mins, boxmins[0], -0.1f, -0.1f);
 	VectorSet(maxs, boxmaxs[0], +0.1f, +0.1f);
 
@@ -3656,7 +3486,6 @@ static qboolean FitBoxIn(
 	if (result[1] + boxmaxs[1] > boundmaxs[1]) result[1] = boundmaxs[1] - boxmaxs[1];
 
 	// fit Z co-ordinate in
-
 	VectorSet(mins, boxmins[0], boxmins[1], -0.1f);
 	VectorSet(maxs, boxmaxs[0], boxmaxs[1], +0.1f);
 
@@ -3684,14 +3513,13 @@ static qboolean FitBoxIn(
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_GetMonsterSpawnPoint
 ===============
 */
-#if MONSTER_MODE
 qboolean G_GetMonsterSpawnPoint(
 	const vec3_t mmins, const vec3_t mmaxs,
 	localseed_t* masterseed, vec3_t result,
@@ -3769,14 +3597,13 @@ qboolean G_GetMonsterSpawnPoint(
 	}
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: RandomWaitingMonster
 ===============
 */
-#if MONSTER_MODE
 static gentity_t* RandomWaitingMonster(localseed_t* masterseed, int owner) {
 	int i;
 	gentity_t* monster;
@@ -3803,14 +3630,13 @@ static gentity_t* RandomWaitingMonster(localseed_t* masterseed, int owner) {
 	}
 	return monster;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterHealthScale
 ===============
 */
-#if MONSTER_MODE
 float G_MonsterHealthScale(void) {
 	float healthScale;
 
@@ -3824,14 +3650,13 @@ float G_MonsterHealthScale(void) {
 
 	return healthScale;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterBaseHealth
 ===============
 */
-#if MONSTER_MODE
 int G_MonsterBaseHealth(monsterType_t type, float healthScale) {
 	switch (type) {
 	case MT_predator:
@@ -3844,14 +3669,13 @@ int G_MonsterBaseHealth(monsterType_t type, float healthScale) {
 		return 0;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterType
 ===============
 */
-#if MONSTER_MODE
 monsterType_t G_MonsterType(localseed_t* seed) {
 	int total;
 	int r;
@@ -3865,18 +3689,16 @@ monsterType_t G_MonsterType(localseed_t* seed) {
 	r -= g_monsterGuards.integer;
 
 	if (r < g_monsterTitans.integer) return MT_titan;
-	//r -= g_monsterTitans.integer;
 
 	return MT_predator;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_SpawnMonster
 ===============
 */
-#if MONSTER_MODE
 gentity_t* G_SpawnMonster(
 	monsterType_t type,
 	const vec3_t spawn_origin, const vec3_t spawn_angles,
@@ -3951,11 +3773,10 @@ gentity_t* G_SpawnMonster(
 	monster->s.otherEntityNum = ENTITYNUM_NONE;
 	monster->s.otherEntityNum2 = ENTITYNUM_NONE;
 
-#if ESCAPE_MODE
+
 	if (g_gametype.integer != GT_EFH)
-#endif
 	{
-		mi->ps.stats[STAT_EFFECT] = PE_spawn;
+		SET_STAT_EFFECT(&mi->ps, PE_spawn);
 		mi->ps.powerups[PW_EFFECT_TIME] = level.time + SPAWNHULL_TIME;
 	}
 
@@ -4069,25 +3890,22 @@ gentity_t* G_SpawnMonster(
 
 	if (!telemorph) {
 		numMonsters++;
-#if !ESCAPE_MODE	// JUHOX: in EFH we want monsters to spawn silently
-		G_TempEntity(spawnorigin, EV_PLAYER_TELEPORT_IN);
-#else
+
 		if (g_gametype.integer != GT_EFH) {
 			G_TempEntity(spawnorigin, EV_PLAYER_TELEPORT_IN);
 		}
-#endif
+
 	}
 
 	return monster;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterSpawning
 ===============
 */
-#if MONSTER_MODE
 void G_MonsterSpawning(void) {
 	vec3_t mins, maxs;
 	vec3_t spawnorigin;
@@ -4103,14 +3921,7 @@ void G_MonsterSpawning(void) {
 	localseed_t monsterseed;
 
 	if (level.meeting) return;
-
-#if ESCAPE_MODE
 	if (g_gametype.integer == GT_EFH) return;
-#endif
-
-#if SCREENSHOT_TOOLS
-	if (level.stopTime) return;
-#endif
 
 	if (level.endPhase > 0) return;
 
@@ -4244,7 +4055,7 @@ void G_MonsterSpawning(void) {
 		type, spawnorigin, NULL, removeTime, spawnteam, owner, &monsterseed, monster, 0, MA_waiting, -1
 	);
 }
-#endif
+
 
 /*
 ===============
@@ -4253,9 +4064,7 @@ JUHOX: G_GetEntityPlayerState
 */
 playerState_t* G_GetEntityPlayerState(const gentity_t* ent) {
 	if (ent->client) return &ent->client->ps;
-#if MONSTER_MODE
 	if (ent->monster) return &ent->monster->ps;
-#endif
 	return NULL;
 }
 
@@ -4264,7 +4073,6 @@ playerState_t* G_GetEntityPlayerState(const gentity_t* ent) {
 JUHOX: G_IsMonsterNearEntity
 ===============
 */
-#if MONSTER_MODE
 qboolean G_IsMonsterNearEntity(gentity_t* viewer, gentity_t* ent) {
 	int i;
 
@@ -4284,14 +4092,13 @@ qboolean G_IsMonsterNearEntity(gentity_t* viewer, gentity_t* ent) {
 	}
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_IsMonsterSuccessfulAttacking
 ===============
 */
-#if MONSTER_MODE
 qboolean G_IsMonsterSuccessfulAttacking(gentity_t* monster, gentity_t* exception) {
 	gmonster_t* mi;
 
@@ -4305,14 +4112,13 @@ qboolean G_IsMonsterSuccessfulAttacking(gentity_t* monster, gentity_t* exception
 
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_ChargeMonsters
 ===============
 */
-#if MONSTER_MODE
 void G_ChargeMonsters(int msec, int chargePerSec) {
 	int i;
 
@@ -4331,17 +4137,15 @@ void G_ChargeMonsters(int msec, int chargePerSec) {
 			charge += mi->ps.powerups[PW_CHARGE] - level.time;
 		}
 		mi->ps.powerups[PW_CHARGE] = level.time + charge;
-		//mi->entity->s.time2 = mi->ps.powerups[PW_CHARGE];
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_IsAttackingGuard
 ===============
 */
-#if MONSTER_MODE
 qboolean G_IsAttackingGuard(int entnum) {
 	const gentity_t* ent;
 
@@ -4353,14 +4157,13 @@ qboolean G_IsAttackingGuard(int entnum) {
 	if (ent->monster->action != MA_attacking) return qfalse;
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterOwner
 ===============
 */
-#if MONSTER_MODE
 gentity_t* G_MonsterOwner(gentity_t* monster) {
 	int ownernum;
 
@@ -4369,14 +4172,13 @@ gentity_t* G_MonsterOwner(gentity_t* monster) {
 	if (ownernum < 0 || ownernum >= level.maxclients) return NULL;
 	return &g_entities[ownernum];
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_IsFriendlyMonster
 ===============
 */
-#if MONSTER_MODE
 qboolean G_IsFriendlyMonster(gentity_t* ent1, gentity_t* ent2) {
 	playerState_t* ps;
 
@@ -4413,7 +4215,7 @@ qboolean G_IsFriendlyMonster(gentity_t* ent1, gentity_t* ent2) {
 
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
@@ -4427,7 +4229,6 @@ int G_Constitution(const gentity_t* ent) {
 		return (3 * ent->client->ps.stats[STAT_MAX_HEALTH]) / 2;	// assume 50% armor
 	}
 
-#if MONSTER_MODE
 	if (ent->monster) {
 		switch (ent->monster->type) {
 		case MT_predator:
@@ -4440,7 +4241,6 @@ int G_Constitution(const gentity_t* ent) {
 			return 0;
 		}
 	}
-#endif
 
 	return 0;
 }
@@ -4450,7 +4250,6 @@ int G_Constitution(const gentity_t* ent) {
 JUHOX: G_ReleaseTrap
 ===============
 */
-#if MONSTER_MODE
 void G_ReleaseTrap(int numMonsters, const vec3_t origin) {
 	int nextMonsterTrap;
 
@@ -4467,14 +4266,13 @@ void G_ReleaseTrap(int numMonsters, const vec3_t origin) {
 		nextMonsterSpawnTime = level.time;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_AddMonsterSeed
 ===============
 */
-#if MONSTER_MODE
 qboolean G_AddMonsterSeed(const vec3_t origin, gentity_t* seed) {
 	int nextMonsterSeed;
 
@@ -4490,14 +4288,13 @@ qboolean G_AddMonsterSeed(const vec3_t origin, gentity_t* seed) {
 	}
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_UpdateMonsterCounters
 ===============
 */
-#if MONSTER_MODE
 void G_UpdateMonsterCounters(void) {
 	int i;
 
@@ -4543,58 +4340,50 @@ void G_UpdateMonsterCounters(void) {
 		client->monstersAvailable--;
 	}
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_CanBeDamaged
 ===============
 */
-#if MONSTER_MODE
+
 qboolean G_CanBeDamaged(gentity_t* ent) {
 	if (!ent->monster) return qtrue;
 	if (ent->monster->action == MA_sleeping) return qfalse;
-	/*
-	if (ent->monster->action == MA_hibernation) {
-		if (ent->monster->hibernationPhase >= HP_raising) return qfalse;
-	}
-	*/
 	return qtrue;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_IsMovable
 ===============
 */
-#if MONSTER_MODE
 qboolean G_IsMovable(gentity_t* ent) {
 	if (!ent->monster) return qtrue;
 	if (ent->monster->type != MT_titan) return qtrue;
 	if (ent->monster->action != MA_sleeping) return qtrue;
 	return qfalse;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_GetMonsterGeneric1
 ===============
 */
-#if MONSTER_MODE
 int G_GetMonsterGeneric1(gentity_t* monster) {
 	if (!monster->monster) return -1;
 	return monster->monster->generic1;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_CheckMonsterDamage
 ===============
 */
-#if MONSTER_MODE
 void G_CheckMonsterDamage(gentity_t* monster, gentity_t* target, int mod) {
 	gmonster_t* mi;
 
@@ -4619,54 +4408,18 @@ void G_CheckMonsterDamage(gentity_t* monster, gentity_t* target, int mod) {
 
 	mi->lastEnemyHitTime = level.time;
 }
-#endif
+
 
 /*
 ===============
 JUHOX: G_MonsterAction
 ===============
 */
-#if MONSTER_MODE
 monsterAction_t G_MonsterAction(gentity_t* monster) {
 	if (!monster->monster) return MA_waiting;
-
 	return monster->monster->action;
 }
-#endif
 
-/*
-===============
-JUHOX: G_FreezeMonster
-===============
-*/
-#if SCREENSHOT_TOOLS && MONSTER_MODE
-void G_FreezeMonster(gentity_t* monster, int msec) {
-	gmonster_t* mi;
-
-	mi = monster->monster;
-	if (!mi) return;
-
-	G_FreezePlayerState(&mi->ps, msec);
-
-	if (mi->removeTime) mi->removeTime += msec;
-	mi->lastAIFrame += msec;
-	mi->nextAIFrame += msec;
-	mi->enemyFoundTime += msec;
-	mi->lastEnemyHitTime += msec;
-	mi->nextDodgeTime += msec;
-	mi->nextEnemyVisCheck += msec;
-	mi->nextViewSearch += msec;
-	mi->nextDynViewSearch += msec;
-	mi->nextEnemySearch += msec;
-	mi->lastHurtTime += msec;
-	mi->timeOfBodyCopying += msec;
-	mi->startAvoidPlayerTime += msec;
-	mi->stopAvoidPlayerTime += msec;
-	if (mi->hibernationTime) mi->hibernationTime += msec;
-	if (mi->hibernationWaitTime) mi->hibernationWaitTime += msec;
-	if (mi->lastChargeTime) mi->lastChargeTime += msec;
-}
-#endif
 
 /*
 =================
@@ -4682,11 +4435,10 @@ qboolean IsPlayerFighting(int entityNum) {
 	if (entityNum < MAX_CLIENTS) {
 		if (level.clients[entityNum].weaponUsageTime > level.time - 3000) return qtrue;
 	}
-#if MONSTER_MODE
+
 	else if (g_entities[entityNum].monster) {
 		if (g_entities[entityNum].monster->action == MA_attacking) return qtrue;
 	}
-#endif
 
 	return qfalse;
 }

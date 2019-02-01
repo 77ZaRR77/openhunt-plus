@@ -147,7 +147,6 @@ vmCvar_t	ui_server15;
 vmCvar_t	ui_server16;
 
 
-
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t		cvarTable[] = {
 	{ &ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE },
@@ -193,7 +192,7 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "ui_ctf_cloakingDevice", "1", CVAR_ARCHIVE },	// JUHOX
 	{ NULL, "ui_ctf_weaponLimit", "0", CVAR_ARCHIVE },	// JUHOX
 
-#if MONSTER_MODE	// JUHOX: ui cvars used for monsters
+	// JUHOX: ui cvars used for monsters
 	{ NULL, "ui_ffa_monsterLauncher", "1", CVAR_ARCHIVE },
 	{ NULL, "ui_ffa_maxMonsters", "60", CVAR_ARCHIVE },
 	{ NULL, "ui_ffa_maxMonstersPP", "10", CVAR_ARCHIVE },
@@ -213,13 +212,12 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "ui_ctf_maxMonsters", "60", CVAR_ARCHIVE },
 	{ NULL, "ui_ctf_maxMonstersPP", "10", CVAR_ARCHIVE },
 	{ NULL, "ui_ctf_monsterHealthScale", "10", CVAR_ARCHIVE },
-#endif
 
 	{ NULL, "g_template", "", CVAR_ROM },	// JUHOX
 	{ NULL, "g_noItems", "0", CVAR_ARCHIVE | CVAR_LATCH },	// JUHOX
 	{ NULL, "g_noHealthRegen", "0", CVAR_ARCHIVE },	// JUHOX
 
-#if MONSTER_MODE	// JUHOX: ui cvars used for STU
+	// JUHOX: ui cvars used for STU
 	{ NULL, "ui_stu_fraglimit", "5", CVAR_ARCHIVE },
 	{ NULL, "ui_stu_timelimit", "0", CVAR_ARCHIVE },
 	{ NULL, "ui_stu_artefacts", "8", CVAR_ARCHIVE },
@@ -247,9 +245,8 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "monsterModel3", "uriel/default", CVAR_ARCHIVE },
 	{ NULL, "g_skipEndSequence", "0", CVAR_ARCHIVE },
 	{ NULL, "g_scoreMode", "0", CVAR_ARCHIVE },
-#endif
 
-#if ESCAPE_MODE	// JUHOX: ui cvars used for EFH
+	// JUHOX: ui cvars used for EFH
 	{ NULL, "ui_efh_fraglimit", "1", CVAR_ARCHIVE },
 	{ NULL, "ui_efh_timelimit", "10", CVAR_ARCHIVE },
 	{ NULL, "ui_efh_distancelimit", "1000", CVAR_ARCHIVE },
@@ -266,9 +263,7 @@ static cvarTable_t		cvarTable[] = {
 	{ NULL, "ui_efh_unlimitedAmmo", "0", CVAR_ARCHIVE },	// JUHOX
 	{ NULL, "ui_efh_cloakingDevice", "1", CVAR_ARCHIVE },	// JUHOX
 	{ NULL, "ui_efh_weaponLimit", "0", CVAR_ARCHIVE },	// JUHOX
-
 	{ NULL, "g_debugEFH", "0", CVAR_SYSTEMINFO | CVAR_INIT },
-#endif
 
 #if MEETING	// JUHOX: ui cvars used for meeting
 	{ NULL, "ui_ffa_meeting", "0", CVAR_ARCHIVE },
@@ -356,14 +351,9 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_server14, "server14", "", CVAR_ARCHIVE },
 	{ &ui_server15, "server15", "", CVAR_ARCHIVE },
 	{ &ui_server16, "server16", "", CVAR_ARCHIVE },
-
 	{ NULL, "ui_init", "0", CVAR_ROM },		// JUHOX
 	{ NULL, "ui_precache", "1", CVAR_ARCHIVE },	// JUHOX
-
-#if PLAYLIST
 	{ NULL, "cg_music", "0", CVAR_ARCHIVE },	// JUHOX
-#endif
-
 	{ NULL, "developer", "0", CVAR_INIT}	// JUHOX
 	// SLK @ZARR - this seems your developer issue - might cause problem if called while running. should work from command line tho
 

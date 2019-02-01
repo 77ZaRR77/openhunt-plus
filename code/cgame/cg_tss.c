@@ -627,9 +627,8 @@ static void TSS_UpdateTacticalMeasures(void) {
 	var[TSSTM_BAMT] = (int) (100 * (cg.tssYAMQ - cg.tssOAMQ - var[TSSTM_BAQ]) / (var[TSSTM_YTS] + var[TSSTM_OTS]) + 0.5);
 	var[TSSTM_BALT] = (int) (100 * (cg.tssYALQ - cg.tssOALQ - var[TSSTM_BAQ]) / (var[TSSTM_YTS] + var[TSSTM_OTS]) + 0.5);
 	i = cg.tssGametype == GT_CTF? cgs.capturelimit : cgs.fraglimit;
-#if MONSTER_MODE
 	if (cgs.gametype == GT_STU) i = cgs.artefacts;
-#endif
+
 	if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE) {
 		var[TSSTM_SCB] = cgs.scores2 - cgs.scores1;
 		var[TSSTM_YFS] = TSS_RemapFlagStatus(cgs.blueflag);
@@ -1845,9 +1844,8 @@ void CG_TSS_DrawInterface(void) {
 	if (
 		!(trap_Key_GetCatcher() & TSS_KEYCATCHER) ||
 		cg.predictedPlayerState.pm_type == PM_INTERMISSION ||
-#if MONSTER_MODE	// JUHOX: no TSS with STU
+        // JUHOX: no TSS with STU
 		cgs.gametype >= GT_STU ||
-#endif
 		cgs.gametype < GT_TEAM
 	) {
 		CG_TSS_CloseInterface();

@@ -11,7 +11,7 @@
 #include "../game/q_shared.h"
 #include "tr_types.h"
 #include "../game/bg_public.h"
-#if ESCAPE_MODE
+
 vec3_t currentReference;
 void trap_S_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx);
 void trap_S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
@@ -52,13 +52,12 @@ void trap_S_AddRealLoopingSound_fixed(int entityNum, const vec3_t origin, const 
 		trap_S_AddRealLoopingSound(entityNum, origin, velocity, sfx);
 	}
 }
-#endif
+
 
 #include "cg_local.h"
 
 
 // JUHOX: variables & definitions for EFH
-#if ESCAPE_MODE
 #define MAX_SORTED_MOVERS MAX_ENTITIES_IN_SNAPSHOT
 
 typedef struct {
@@ -69,7 +68,6 @@ typedef struct {
 static qboolean sortMovers;
 static int numSortedMovers;
 static sortedMover_t sortedMovers[MAX_SORTED_MOVERS];
-#endif
 
 
 /*
@@ -115,7 +113,6 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
 
-//AxisClear( entity->axis );
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
@@ -150,18 +147,7 @@ Also called by event processing code
 */
 void CG_SetEntitySoundPosition( centity_t *cent ) {
 	// JUHOX: sound fix for EFH
-#if !ESCAPE_MODE
-	if ( cent->currentState.solid == SOLID_BMODEL ) {
-		vec3_t	origin;
-		float	*v;
 
-		v = cgs.inlineModelMidpoints[ cent->currentState.modelindex ];
-		VectorAdd( cent->lerpOrigin, v, origin );
-		trap_S_UpdateEntityPosition( cent->currentState.number, origin );
-	} else {
-		trap_S_UpdateEntityPosition( cent->currentState.number, cent->lerpOrigin );
-	}
-#else
 	vec3_t worldOrigin;
 
 	VectorAdd(cent->lerpOrigin, currentReference, worldOrigin);
@@ -169,7 +155,7 @@ void CG_SetEntitySoundPosition( centity_t *cent ) {
 		VectorAdd(worldOrigin, cgs.inlineModelMidpoints[cent->currentState.modelindex], worldOrigin);
 	}
 	trap_S_UpdateEntityPosition(cent->currentState.number, worldOrigin);
-#endif
+
 }
 
 /*
@@ -197,14 +183,7 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 
 	// constant light glow
-#if !ESCAPE_MODE	// JUHOX: no constantLight for ET_PLAYER in EFH
-	if ( cent->currentState.constantLight ) {
-#else
-	if (
-		cent->currentState.constantLight &&
-		cent->currentState.eType != ET_PLAYER
-	) {
-#endif
+	if ( cent->currentState.constantLight && cent->currentState.eType != ET_PLAYER ) {
 		int		cl;
 		int		i, r, g, b;
 
@@ -215,7 +194,6 @@ static void CG_EntityEffects( centity_t *cent ) {
 		i = ( ( cl >> 24 ) & 255 ) * 4;
 		trap_R_AddLightToScene( cent->lerpOrigin, i, r, g, b );
 	}
-
 }
 
 
@@ -238,7 +216,6 @@ static void CG_General( centity_t *cent ) {
 	memset (&ent, 0, sizeof(ent));
 
 	// set frame
-
 	ent.frame = s1->frame;
 	ent.oldframe = ent.frame;
 	ent.backlerp = 0;
@@ -309,16 +286,9 @@ static void CG_Item( centity_t *cent ) {
 	}
 
 	item = &bg_itemlist[ es->modelindex ];
+
 	// JUHOX: always draw the POD marker skull
-#if 0
-	if ( cg_simpleItems.integer && item->giType != IT_TEAM ) {
-#else
-	if (
-		cg_simpleItems.integer &&
-		item->giType != IT_TEAM &&
-		item->giType != IT_POD_MARKER
-	) {
-#endif
+	if ( cg_simpleItems.integer && item->giType != IT_TEAM && item->giType != IT_POD_MARKER ) {
 		memset( &ent, 0, sizeof( ent ) );
 		ent.reType = RT_SPRITE;
 		VectorCopy( cent->lerpOrigin, ent.origin );
@@ -334,17 +304,12 @@ static void CG_Item( centity_t *cent ) {
 
 	// items bob up and down continuously
 	// JUHOX: no bobbing for armor fragments or POD markers
-#if 0
-	scale = 0.005 + cent->currentState.number * 0.00001;
-	cent->lerpOrigin[2] += 4 + cos( ( cg.time + 1000 ) *  scale ) * 4;
-#else
 	if (item->giType == IT_POD_MARKER) {
 		// no bobbing
 	}
 	else if (item->giType == IT_ARMOR && item->giTag) {
 		cent->lerpOrigin[2] -= /*16*/9;
 	}
-#if ESCAPE_MODE
 	else if (
 		cgs.gametype == GT_EFH &&
 		item->giType == IT_TEAM &&
@@ -352,26 +317,16 @@ static void CG_Item( centity_t *cent ) {
 	) {
 		// no bobbing
 	}
-#endif
+
 	else {
 		scale = 0.005 + cent->currentState.number * 0.00001;
 		cent->lerpOrigin[2] += 4 + cos( ( cg.time + 1000 ) *  scale ) * 4;
 	}
-#endif
 
 	memset (&ent, 0, sizeof(ent));
 
 	// autorotate at one of two speeds
 	// JUHOX: no autorotation for armor fragments or POD markers
-#if 0
-	if ( item->giType == IT_HEALTH ) {
-		VectorCopy( cg.autoAnglesFast, cent->lerpAngles );
-		AxisCopy( cg.autoAxisFast, ent.axis );
-	} else {
-		VectorCopy( cg.autoAngles, cent->lerpAngles );
-		AxisCopy( cg.autoAxis, ent.axis );
-	}
-#else
 	if ( item->giType == IT_HEALTH ) {
 		VectorCopy( cg.autoAnglesFast, cent->lerpAngles );
 		AxisCopy( cg.autoAxisFast, ent.axis );
@@ -402,7 +357,6 @@ static void CG_Item( centity_t *cent ) {
 		}
 		ent.shaderTime = cg.time / 1000.0;	// no hull
 	}
-#if ESCAPE_MODE
 	else if (
 		cgs.gametype == GT_EFH &&
 		item->giType == IT_TEAM &&
@@ -411,12 +365,10 @@ static void CG_Item( centity_t *cent ) {
 		// no rotation
 		AnglesToAxis(cent->currentState.angles, ent.axis);
 	}
-#endif
 	else {
 		VectorCopy( cg.autoAngles, cent->lerpAngles );
 		AxisCopy( cg.autoAxis, ent.axis );
 	}
-#endif
 
 	wi = NULL;
 	// the weapons have their origin where they attatch to player
@@ -440,7 +392,6 @@ static void CG_Item( centity_t *cent ) {
 		cent->lerpOrigin[2] += 8;	// an extra height boost
 	}
 	// JUHOX: offset armor fragments for correct rotating
-#if 1
 	if (item->giType == IT_ARMOR && item->giTag) {
 		float* midpoint;
 
@@ -463,8 +414,6 @@ static void CG_Item( centity_t *cent ) {
 			midpoint[1] * ent.axis[1][2] +
 			midpoint[2] * ent.axis[2][2];
 	}
-#endif
-
 
 	ent.hModel = cg_items[es->modelindex].models[0];
 
@@ -476,7 +425,6 @@ static void CG_Item( centity_t *cent ) {
 	// if just respawned, slowly scale up
 	msec = cg.time - cent->miscTime;
 	// JUHOX: armor fragments don't scale up and large armor fragment is bigger
-#if 1
 	if (item->giType == IT_ARMOR && item->giTag) {
 		frac = 1.0;
 		if (item->quantity == 25) {
@@ -495,9 +443,7 @@ static void CG_Item( centity_t *cent ) {
 		ent.nonNormalizedAxes = qtrue;
 		ent.customSkin = cgs.media.podSkullSkin;
 	}
-	else
-#endif
-	if ( msec >= 0 && msec < ITEM_SCALEUP_TIME ) {
+	else if ( msec >= 0 && msec < ITEM_SCALEUP_TIME ) {
 		frac = (float)msec / ITEM_SCALEUP_TIME;
 		VectorScale( ent.axis[0], frac, ent.axis[0] );
 		VectorScale( ent.axis[1], frac, ent.axis[1] );
@@ -524,12 +470,10 @@ static void CG_Item( centity_t *cent ) {
 	}
 
 	// JUHOX: set corrected light origin for EFH
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
 		ent.renderfx |= RF_LIGHTING_ORIGIN;
 		VectorCopy(es->angles2, ent.lightingOrigin);
 	}
-#endif
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
@@ -565,7 +509,6 @@ static void CG_Item( centity_t *cent ) {
 	}
 
 	// JUHOX: add countdown for POD markers (derived from score plum)
-#if 1
 	if (item->giType == IT_POD_MARKER) {
 		int time;
 		char str[16];
@@ -617,7 +560,6 @@ static void CG_Item( centity_t *cent ) {
 			}
 		}
 	}
-#endif
 }
 
 //============================================================================
@@ -637,13 +579,10 @@ static void CG_LensFlare(
 
 	memset(&ent, 0, sizeof(ent));
 	if (shader != cgs.media.bfgLFStarShader) {
-		radius *= cg.refdef.fov_x / /*cg_fov.value*/90;	// lens flares do not change size through zooming
+		radius *= cg.refdef.fov_x / 90;	// lens flares do not change size through zooming
 		alpha /= radius;
 	}
-	if (
-		shader == cgs.media.bfgLFDiscShader ||
-		shader == cgs.media.bfgLFRingShader
-	) {
+	if ( shader == cgs.media.bfgLFDiscShader ||	shader == cgs.media.bfgLFRingShader	) {
 		alpha *= 0.25;
 	}
 	if (alpha > 255) alpha = 255;
@@ -669,7 +608,6 @@ static void CG_Missile( centity_t *cent ) {
 	refEntity_t			ent;
 	entityState_t		*s1;
 	const weaponInfo_t		*weapon;
-//	int	col;
 
 	s1 = &cent->currentState;
 	if ( s1->weapon > WP_NUM_WEAPONS ) {
@@ -681,21 +619,15 @@ static void CG_Missile( centity_t *cent ) {
 	switch (s1->weapon) {
 	case WP_ROCKET_LAUNCHER:
 		CG_CheckStrongLight(cent->lerpOrigin, -200, colorWhite);
-#if EARTHQUAKE_SYSTEM
 		CG_AddEarthquake(cent->lerpOrigin, 300, -1, -1, -1, 100);
-#endif
 		break;
 	case WP_PLASMAGUN:
 		CG_CheckStrongLight(cent->lerpOrigin, -100, colorWhite);
-#if EARTHQUAKE_SYSTEM
 		CG_AddEarthquake(cent->lerpOrigin, 200, -1, -1, -1, 50);
-#endif
 		break;
 	case WP_BFG:
 		CG_CheckStrongLight(cent->lerpOrigin, -350, colorWhite);
-#if EARTHQUAKE_SYSTEM
 		CG_AddEarthquake(cent->lerpOrigin, 300, -1, -1, -1, 100);
-#endif
 		break;
 	}
 
@@ -708,12 +640,12 @@ static void CG_Missile( centity_t *cent ) {
 		weapon->missileTrailFunc( cent, weapon );
 	}
 
-#if ESCAPE_MODE	// JUHOX FIXME: no dlights in EFH
+    // JUHOX FIXME: no dlights in EFH
 	if (cgs.gametype == GT_EFH) {
 		// do nothing
 	}
 	else
-#endif
+
 	// add dynamic light
 	if ( weapon->missileDlight ) {
 		trap_R_AddLightToScene(cent->lerpOrigin, weapon->missileDlight,
@@ -733,10 +665,6 @@ static void CG_Missile( centity_t *cent ) {
 	memset (&ent, 0, sizeof(ent));
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
-
-#if SCREENSHOT_TOOLS
-	if (cg.stopTime) ent.shaderTime = (cg.time - cg.stopTime) / 1000.0;	// JUHOX
-#endif
 
 	if ( cent->currentState.weapon == WP_PLASMAGUN ) {
 		ent.reType = RT_SPRITE;
@@ -833,7 +761,7 @@ static void CG_Missile( centity_t *cent ) {
 	}
 
 
-#if MONSTER_MODE	// JUHOX: fireball
+	// JUHOX: fireball
 	if (
 		cent->currentState.weapon == WP_ROCKET_LAUNCHER &&
 		cent->currentState.otherEntityNum >= MAX_CLIENTS
@@ -855,9 +783,8 @@ static void CG_Missile( centity_t *cent ) {
 
 		return;
 	}
-#endif
 
-#if 1	// JUHOX: rocket lens flares
+	// JUHOX: rocket lens flares
 	if (
 		cent->currentState.weapon == WP_ROCKET_LAUNCHER &&
 		cg_lensFlare.integer &&
@@ -892,12 +819,10 @@ static void CG_Missile( centity_t *cent ) {
 					alpha = 255.0 * 220.0 / dist;
 
 					CG_LensFlare(center, dir, 1, cgs.media.bfgLFStarShader, 20000.0 / (dist * sqrt(dist) * sqrt(sqrt(sqrt(dist)))), 255, 200, 180, alpha, 0);
-					//CG_LensFlare(center, dir, 1, cgs.media.bfgLFGlareShader, 40000.0 / (dist * sqrt(dist) * sqrt(sqrt(sqrt(dist)))), 255, 200, 180, alpha, 0);
 				}
 			}
 		}
 	}
-#endif
 
 	// flicker between two skins
 	ent.skinNum = cg.clientFrame & 1;
@@ -905,7 +830,7 @@ static void CG_Missile( centity_t *cent ) {
 	ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
 
 	// convert direction of travel into axis
-#if GRAPPLE_ROPE	// JUHOX: compute hook axis
+	// JUHOX: compute hook axis
 	if (cent->currentState.weapon == WP_GRAPPLING_HOOK) {
 		BG_EvaluateTrajectoryDelta(&cent->currentState.pos, cg.time, ent.axis[0]);
 		if (VectorNormalize(ent.axis[0]) == 0) {
@@ -913,8 +838,8 @@ static void CG_Missile( centity_t *cent ) {
 		}
 	}
 	else
-#endif
-#if MONSTER_MODE	// JUHOX: add metal shader for monster seed
+
+	// JUHOX: add metal shader for monster seed
 	if (cent->currentState.weapon == WP_MONSTER_LAUNCHER) {
 		const float radius = 4;
 
@@ -928,23 +853,16 @@ static void CG_Missile( centity_t *cent ) {
 		ent.axis[2][2] = 0.1 * radius;
 		ent.nonNormalizedAxes = qtrue;
 		trap_R_AddRefEntityToScene(&ent);
-		//CG_AddRefEntityWithPowerups(&ent, s1, TEAM_FREE);
 		return;
 	}
 	else
-#endif
+
 	if ( VectorNormalize2( s1->pos.trDelta, ent.axis[0] ) == 0 ) {
 		ent.axis[0][2] = 1;
 	}
 
 	// spin as it moves
 	if ( s1->pos.trType != TR_STATIONARY ) {
-#if SCREENSHOT_TOOLS	// JUHOX: don't spin missile while game is stopped
-		if (cg.stopTime) {
-			RotateAroundDirection(ent.axis, cg.stopTime / 4);
-		}
-		else
-#endif
 		RotateAroundDirection( ent.axis, cg.time / 4 );
 	} else {
 		RotateAroundDirection( ent.axis, s1->time );
@@ -963,11 +881,8 @@ This is called when the grapple is sitting up against the wall
 */
 static void CG_Grapple( centity_t *cent ) {
 	// JUHOX: don't draw hook when attached to the wall
-#if !GRAPPLE_ROPE
-	refEntity_t			ent;
-#endif
 	entityState_t		*s1;
-	const weaponInfo_t		*weapon;
+	const weaponInfo_t	*weapon;
 
 	s1 = &cent->currentState;
 	if ( s1->weapon > WP_NUM_WEAPONS ) {
@@ -978,35 +893,8 @@ static void CG_Grapple( centity_t *cent ) {
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);
 
-#if 0 // FIXME add grapple pull sound here..?
-	// add missile sound
-	if ( weapon->missileSound ) {
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, weapon->missileSound );
-	}
-#endif
-
 	// Will draw cable if needed
 	CG_GrappleTrail ( cent, weapon );
-
-	// JUHOX: don't draw hook when attached to the wall
-#if !GRAPPLE_ROPE
-	// create the render entity
-	memset (&ent, 0, sizeof(ent));
-	VectorCopy( cent->lerpOrigin, ent.origin);
-	VectorCopy( cent->lerpOrigin, ent.oldorigin);
-
-	// flicker between two skins
-	ent.skinNum = cg.clientFrame & 1;
-	ent.hModel = weapon->missileModel;
-	ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
-
-	// convert direction of travel into axis
-	if ( VectorNormalize2( s1->pos.trDelta, ent.axis[0] ) == 0 ) {
-		ent.axis[0][2] = 1;
-	}
-
-	trap_R_AddRefEntityToScene( &ent );
-#endif
 }
 
 /*
@@ -1014,7 +902,6 @@ static void CG_Grapple( centity_t *cent ) {
 JUHOX: ScatterRopeSegment
 ===============
 */
-#if GRAPPLE_ROPE
 #define ROPE_MAX_SCATTER_TIME 1000
 #define ROPE_MAX_SCATTER_ROTATION 1000.0
 static void ScatterRopeSegment(vec3_t v, vec3_t w, int time) {
@@ -1056,14 +943,13 @@ static void ScatterRopeSegment(vec3_t v, vec3_t w, int time) {
 	VectorAdd(b, mid, c);
 	VectorMA(c, dist, vel, w);
 }
-#endif
+
 
 /*
 ===============
 JUHOX: CG_GrappleRope
 ===============
 */
-#if GRAPPLE_ROPE
 static void CG_GrappleRope(centity_t* cent) {
 	entityState_t* s;
 	int i;
@@ -1142,7 +1028,7 @@ static void CG_GrappleRope(centity_t* cent) {
 			memset(&rope, 0, sizeof(rope));
 			VectorCopy(lastPos, rope.oldorigin);
 			VectorCopy(pos, rope.origin);
-			rope.reType = RT_LIGHTNING;	//RT_RAIL_CORE;
+			rope.reType = RT_LIGHTNING;
 			rope.customShader = cgs.media.grappleShader;
 			rope.shaderRGBA[0] = 0xff;
 			rope.shaderRGBA[1] = 0xff;
@@ -1162,7 +1048,7 @@ static void CG_GrappleRope(centity_t* cent) {
 		hasLastPos = qtrue;
 	}
 }
-#endif
+
 
 /*
 ===============
@@ -1175,19 +1061,13 @@ CG_Mover
 
 	s1 = &cent->currentState;
 
-#if ESCAPE_MODE	// JUHOX: only draw movers in the current vis area
-	if (
-		cgs.gametype == GT_EFH &&
-		(
-			s1->time < cg.snap->ps.persistant[PERS_MIN_SEGMENT] ||
-			s1->time > cg.snap->ps.persistant[PERS_MAX_SEGMENT]
-		)
-	) {
+	// JUHOX: only draw movers in the current vis area
+	if ( cgs.gametype == GT_EFH && ( s1->time < cg.snap->ps.persistant[PERS_MIN_SEGMENT] ||	s1->time > cg.snap->ps.persistant[PERS_MAX_SEGMENT]	)) {
 		return;
 	}
-#endif
 
-#if ESCAPE_MODE	// JUHOX: sort movers in EFH
+
+	// JUHOX: sort movers in EFH
 	if (sortMovers && s1->solid == SOLID_BMODEL) {
 		vec3_t origin;
 		vec3_t dir;
@@ -1228,7 +1108,6 @@ CG_Mover
 		numSortedMovers++;
 		return;
 	}
-#endif
 
 	// create the render entity
 	memset (&ent, 0, sizeof(ent));
@@ -1246,12 +1125,10 @@ CG_Mover
 		ent.hModel = cgs.inlineDrawModel[s1->modelindex];
 	} else {
 		// JUHOX: set corrected light origin for EFH
-#if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH) {
 			ent.renderfx |= RF_LIGHTING_ORIGIN;
 			VectorCopy(s1->angles2, ent.lightingOrigin);
 		}
-#endif
 
 		ent.hModel = cgs.gameModels[s1->modelindex];
 	}
@@ -1273,7 +1150,6 @@ CG_Mover
 JUHOX: CG_DrawSortedMovers
 ===============
 */
-#if ESCAPE_MODE
 static void CG_DrawSortedMovers(void) {
 	int i;
 
@@ -1282,7 +1158,6 @@ static void CG_DrawSortedMovers(void) {
 		CG_Mover(sortedMovers[i].cent);
 	}
 }
-#endif
 
 /*
 ===============
@@ -1403,9 +1278,8 @@ static void CG_InterpolateEntityPosition( centity_t *cent ) {
 	// to not extrapolate player positions if more recent data is available
 	BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current );
 	BG_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next );
-#if ESCAPE_MODE
+
 	VectorAdd(next, cg.referenceDelta, next);	// JUHOX
-#endif
 
 	cent->lerpOrigin[0] = current[0] + f * ( next[0] - current[0] );
 	cent->lerpOrigin[1] = current[1] + f * ( next[1] - current[1] );
@@ -1426,7 +1300,7 @@ CG_CalcEntityLerpPositions
 
 ===============
 */
-/*static*/ void CG_CalcEntityLerpPositions( centity_t *cent ) {	// JUHOX: also called from cg_weapons.c
+void CG_CalcEntityLerpPositions( centity_t *cent ) {	// JUHOX: also called from cg_weapons.c
 
 	// if this player does not want to see extrapolated players
 	if ( !cg_smoothClients.integer ) {
@@ -1444,15 +1318,10 @@ CG_CalcEntityLerpPositions
 
 	// first see if we can interpolate between two snaps for
 	// linear extrapolated clients
-	if ( cent->interpolate && cent->currentState.pos.trType == TR_LINEAR_STOP &&
-											cent->currentState.number < MAX_CLIENTS) {
+	if ( cent->interpolate && cent->currentState.pos.trType == TR_LINEAR_STOP && cent->currentState.number < MAX_CLIENTS) {
 		CG_InterpolateEntityPosition( cent );
 		return;
 	}
-
-#if SCREENSHOT_TOOLS
-	cg.time -= cg.serverOffset;	// JUHOX
-#endif
 
 	// just use the current frame and evaluate as best we can
 	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
@@ -1464,9 +1333,6 @@ CG_CalcEntityLerpPositions
 		CG_AdjustPositionForMover( cent->lerpOrigin, cent->currentState.groundEntityNum,
 		cg.snap->serverTime, cg.time, cent->lerpOrigin );
 	}
-#if SCREENSHOT_TOOLS
-	cg.time += cg.serverOffset;	// JUHOX
-#endif
 }
 
 /*
@@ -1510,12 +1376,10 @@ static void CG_AddCEntity( centity_t *cent ) {
 		return;
 	}
 
-#if GRAPPLE_ROPE
 	if (cent->currentState.eType == ET_GRAPPLE_ROPE) {	// JUHOX
 		CG_GrappleRope(cent);
 		return;
 	}
-#endif
 
 	// calculate the current origin
 	CG_CalcEntityLerpPositions( cent );
@@ -1708,10 +1572,8 @@ void CG_AddPacketEntities( void ) {
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
 
 	// JUHOX: sorted movers for EFH
-#if ESCAPE_MODE
 	numSortedMovers = 0;
 	sortMovers = (cgs.gametype == GT_EFH);
-#endif
 
 	cg.navAidGoalEntity = NULL;	// JUHOX
 	// add each entity sent over by the server
@@ -1722,11 +1584,9 @@ void CG_AddPacketEntities( void ) {
 	}
 
 	// JUHOX: sorted movers for EFH
-#if ESCAPE_MODE
 	if (sortMovers) {
 		CG_DrawSortedMovers();
 	}
-#endif
 
 	CG_DisplayNavAid();	// JUHOX
 }
@@ -1781,10 +1641,8 @@ void CG_AddPacketEntitiesForGlassLook(void) {
 									// no entities should be marked as interpolating
 	}
 
-#if ESCAPE_MODE
 	numSortedMovers = 0;
 	sortMovers = (cgs.gametype == GT_EFH);
-#endif
 
 	// add each mover entity sent over by the server
 	// do not use sound nor lighting(?) effects
@@ -1826,15 +1684,11 @@ void CG_AddPacketEntitiesForGlassLook(void) {
 			CG_PrepareEntityForGlassLook(cent);
 			CG_Portal(cent);
 			break;
-#if GRAPPLE_ROPE
 		case ET_GRAPPLE_ROPE:
 			CG_GrappleRope(cent);
 			break;
-#endif
 		}
 	}
 
-#if ESCAPE_MODE
 	if (sortMovers) CG_DrawSortedMovers();
-#endif
 }

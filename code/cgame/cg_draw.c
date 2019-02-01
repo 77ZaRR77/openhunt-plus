@@ -335,7 +335,7 @@ static void CG_SetValueColor(int value, int stdValue, qboolean flash) {
 		{ 1, 1, 1, 1 } };			// health > 100
 
 	if (value > stdValue) {
-		trap_R_SetColor(colors[3]);		// white
+		trap_R_SetColor(colors[3]);	// white
 	} else if (value > 0.25*stdValue || !flash) {
 		trap_R_SetColor(colors[0]);	// green
 	} else if (value > 0) {
@@ -455,7 +455,6 @@ static void CG_DrawStatusBar( void ) {
 		origin[2] = 0;
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
 
-#if MONSTER_MODE
 		if (cent->currentState.weapon == WP_MONSTER_LAUNCHER) {
 			CG_Draw3DModel(
 				CHAR_WIDTH*3 + TEXT_ICON_SPACE, 440, ICON_SIZE, ICON_SIZE,
@@ -464,7 +463,6 @@ static void CG_DrawStatusBar( void ) {
 			);
 		}
 		else
-#endif
 		{
 			CG_Draw3DModel(	CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles, 0 );
 		}
@@ -496,10 +494,9 @@ static void CG_DrawStatusBar( void ) {
 	if ( cent->currentState.weapon ) {
 		value = ps->ammo[cent->currentState.weapon];
 		if ( value > -1 ) {
-			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
-				&& cg.predictedPlayerState.weaponTime > 100 ) {
+			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING && cg.predictedPlayerState.weaponTime > 100 ) {
 				// draw as dark grey when reloading
-				color = 2;	// dark grey
+				color = 2;	    // dark grey
 			} else {
 				if ( value >= 0 ) {
 					color = 0;	// green
@@ -669,7 +666,6 @@ static float CG_DrawFPS( float y ) {
 JUHOX: CG_DrawNumMonsters
 ==================
 */
-#if MONSTER_MODE
 static float CG_DrawNumMonsters(float y) {
 	char* s;
 	int w;
@@ -679,14 +675,12 @@ static float CG_DrawNumMonsters(float y) {
 	CG_DrawBigString(635 - w, y + 2, s, 1);
 	return y + BIGCHAR_HEIGHT + 4;
 }
-#endif
 
 /*
 ==================
 JUHOX: CG_DrawSegment
 ==================
 */
-#if ESCAPE_MODE
 static float CG_DrawSegment(float y) {
 	const char* s;
 	int w;
@@ -696,7 +690,7 @@ static float CG_DrawSegment(float y) {
 	CG_DrawSmallString(635 - w, y + 2, s, 1);
 	return y + SMALLCHAR_HEIGHT + 4;
 }
-#endif
+
 
 /*
 ==================
@@ -803,11 +797,10 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 		}
 	}
 
-#if ESCAPE_MODE	// JUHOX: make room for way length
+	// JUHOX: make room for way length
 	if (cgs.gametype == GT_EFH) {
 		lwidth = 7;
 	}
-#endif
 
 	if (lwidth > TEAM_OVERLAY_MAXLOCATION_WIDTH)
 		lwidth = TEAM_OVERLAY_MAXLOCATION_WIDTH;
@@ -837,7 +830,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 		hcolor[1] = 0.0f;
 		hcolor[2] = 0.0f;
 		hcolor[3] = 0.33f;
-	} else { // if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
+	} else {
 		hcolor[0] = 0.0f;
 		hcolor[1] = 0.0f;
 		hcolor[2] = 1.0f;
@@ -886,16 +879,12 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				CG_DrawStringExt(xx, y, buf, color, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0);
 			}
 
-#if ESCAPE_MODE
 			if (cgs.gametype == GT_EFH) {
 				p = va("%dm", ci->wayLength);
 				len = strlen(p);
 				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth + (lwidth - len) * TINYCHAR_WIDTH;
 				CG_DrawStringExt(xx, y, p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, lwidth);
-			}
-			else
-#endif
-			if (lwidth && ci->health > 0 && ci->location >= 0) {
+			} else if (lwidth && ci->health > 0 && ci->location >= 0) {
 
 				p = CG_ConfigString(CS_LOCATIONS + ci->location);
 				if (!p || !*p)
@@ -907,7 +896,6 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth;
 				CG_DrawStringExt( xx, y, p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, TEAM_OVERLAY_MAXLOCATION_WIDTH);
 			}
-
 
 			if (ci->location >= 0) {
 				xx = x + TINYCHAR_WIDTH * 3 +
@@ -953,13 +941,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 			for (j = /*0*/1; j </*=*/ PW_NUM_POWERUPS; j++) {	// JUHOX
 	// JUHOX: don't draw the misused powerups
-				if (
-					j == PW_INVIS ||
-					j == PW_BATTLESUIT ||
-					j == PW_QUAD ||
-					j == PW_HASTE ||
-					j == PW_BFG_RELOADING
-				) {
+				if ( j == PW_INVIS || j == PW_BATTLESUIT ||	j == PW_QUAD ||	j == PW_HASTE || j == PW_BFG_RELOADING ) {
 					continue;
 				}
 
@@ -1009,7 +991,7 @@ static void CG_DrawUpperRight( void ) {
 	if ( cg_drawSnapshot.integer ) {
 		y = CG_DrawSnapshot( y );
 	}
-#if MONSTER_MODE	// JUHOX: draw current number of monsters
+	// JUHOX: draw current number of monsters
 	if (
 		cg_drawNumMonsters.integer &&
 		(
@@ -1019,12 +1001,12 @@ static void CG_DrawUpperRight( void ) {
 	) {
 		y = CG_DrawNumMonsters(y);
 	}
-#endif
-#if ESCAPE_MODE	// JUHOX: draw current segment
+
+	// JUHOX: draw current segment
 	if (cgs.gametype == GT_EFH && cg_drawSegment.integer) {
 		y = CG_DrawSegment(y);
 	}
-#endif
+
 	if ( cg_drawFPS.integer ) {
 		y = CG_DrawFPS( y );
 	}
@@ -1075,20 +1057,17 @@ static float CG_DrawScores( float y ) {
 
 	// draw from the right side to left
 	// JUHOX: draw STU scores
-#if MONSTER_MODE
 	if (cgs.gametype >= GT_STU) {
 		const int iconsize = BIGCHAR_HEIGHT;
 
 		x = 640;
-
-#if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH && cgs.debugEFH) {
 			s = CG_ConfigString(CS_EFH_DEBUG);
 			w = CG_DrawStrlen(s) * BIGCHAR_WIDTH;
 			x -= w;
 			CG_DrawBigString(x, y, s, 1);
 		}
-#endif
+
 
 		if (cgs.artefacts > 0) {
 			if (cgs.artefacts < 999) {
@@ -1131,7 +1110,6 @@ static float CG_DrawScores( float y ) {
 
 			msec = 60000 * cgs.timelimit - (cg.time - cgs.levelStartTime);
 
-#if ESCAPE_MODE
 			{
 				int limit;
 
@@ -1140,7 +1118,6 @@ static float CG_DrawScores( float y ) {
 					msec += (60000 * (limit - cgs.distanceLimit) * cgs.timelimit) / cgs.distanceLimit;
 				}
 			}
-#endif
 
 			if (msec < 0) msec = 0;
 			mins = msec / 60000;
@@ -1152,9 +1129,7 @@ static float CG_DrawScores( float y ) {
 			CG_DrawBigString(x, y, s, 1);
 
 			x -= iconsize;
-#if !ESCAPE_MODE
-			CG_DrawPic(x, y, iconsize, iconsize, cgs.media.clockShader);
-#else
+
 			if (cgs.gametype == GT_EFH) {
 				if (msec > 10000) {
 					CG_DrawPic(x, y, iconsize, iconsize, cgs.media.clockShader);
@@ -1172,10 +1147,8 @@ static float CG_DrawScores( float y ) {
 			else {
 				CG_DrawPic(x, y, iconsize, iconsize, cgs.media.clockShader);
 			}
-#endif
 		}
 
-#if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH) {
 			long dist;
 			long limit;
@@ -1248,7 +1221,6 @@ static float CG_DrawScores( float y ) {
 			x -= w;
 			CG_DrawBigStringColor(x, y, s, color);
 		}
-#endif
 
 		y -= BIGCHAR_HEIGHT;
 		y1 = y;
@@ -1304,7 +1276,7 @@ static float CG_DrawScores( float y ) {
 		}
 	}
 	else
-#endif
+
 	if ( cgs.gametype >= GT_TEAM ) {
 		x = 640;
 
@@ -1358,11 +1330,7 @@ static float CG_DrawScores( float y ) {
 			}
 		}
 
-#if !MONSTER_MODE	// JUHOX: STU is not CTF
-		if ( cgs.gametype >= GT_CTF ) {
-#else
 		if (cgs.gametype == GT_CTF) {
-#endif
 			v = cgs.capturelimit;
 		} else {
 			v = cgs.fraglimit;
@@ -1477,7 +1445,7 @@ static float CG_DrawPowerups( float y ) {
 		// JUHOX: don't draw timer for misused powerups
 		if (i == PW_HASTE) continue;
 		if (i == PW_BATTLESUIT) continue;
-		//if (i == PW_QUAD) continue;
+
 		if (i == PW_INVIS) continue;
 		if (i == PW_BFG_RELOADING) continue;
 
@@ -1648,23 +1616,10 @@ static int CG_DrawMissionInfo(int y) {
 	task = BG_TSS_GetPlayerInfo(&cg.snap->ps, TSSPI_task);
 	taskGoalNum = BG_TSS_GetPlayerInfo(&cg.snap->ps, TSSPI_taskGoal);
 
-	if (
-		!wasValid ||
-		group != lastGroup ||
-		gms != lastGMS ||
-		mission != lastMission ||
-		(
-			(
-				task != lastMissionTask ||
-				taskGoalNum != lastTaskGoal
-			) &&
-			(
-				mission != TSSMISSION_seek_enemy ||
-				task != TSSMT_fulfilMission
-			)
-		)
-	) {
-		trap_S_StartLocalSound(cgs.media.tssBeepSound, CHAN_ANNOUNCER);
+	if ( !wasValid || group != lastGroup ||	gms != lastGMS || mission != lastMission ||
+		( (	task != lastMissionTask || taskGoalNum != lastTaskGoal ) &&
+        ( mission != TSSMISSION_seek_enemy || task != TSSMT_fulfilMission ) ) ) {
+            trap_S_StartLocalSound(cgs.media.tssBeepSound, CHAN_ANNOUNCER);
 	}
 
 	if (group != lastGroup || gms != lastGMS || !wasValid) {
@@ -1850,11 +1805,7 @@ static int CG_DrawMissionInfo(int y) {
 			Com_sprintf(buf, sizeof(buf), "Protect %s" S_COLOR_WHITE " at all costs", goalName);
 			break;
 		case TSSMT_rushToBase:
-			if (
-				cg.snap->ps.powerups[PW_REDFLAG] ||
-				cg.snap->ps.powerups[PW_BLUEFLAG] ||
-				taskGoalNum < 0
-			) {
+			if ( cg.snap->ps.powerups[PW_REDFLAG] || cg.snap->ps.powerups[PW_BLUEFLAG] || taskGoalNum < 0 ) {
 				strcpy(buf, "Rush to base");
 			}
 			else {
@@ -1937,11 +1888,7 @@ static int CG_DrawMissionInfo(int y) {
 	}
 
 	DrawCondition:
-	if (
-		cgs.clientinfo[cg.clientNum].teamLeader &&
-		cg.tssUtilizedStrategy &&
-		cg.tssOnline
-	) {
+	if ( cgs.clientinfo[cg.clientNum].teamLeader &&	cg.tssUtilizedStrategy && cg.tssOnline ) {
 		int condition;
 		const char* name;
 
@@ -1972,7 +1919,6 @@ static int CG_DrawMagnitudes(int y) {
 
 	if (cg.showScores) return y;
 	if (!cgs.clientinfo[cg.clientNum].teamLeader) return y;
-	//if (!cg.tssOnline) return y;
 
 	n = 0;
 	for (i = TSSTM_num_magnitudes-1; i >= 0; i--) {
@@ -2015,11 +1961,6 @@ static void CG_DrawLowerLeft( void ) {
 	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 3 ) {
 		y = CG_DrawTeamOverlay( y, qfalse, qfalse );
 	}
-
-	// JUHOX: don't draw pickup item
-#if 0
-	y = CG_DrawPickupItem( y );
-#endif
 }
 
 
@@ -2151,21 +2092,6 @@ static void CG_DrawReward( void ) {
 
 	trap_R_SetColor( color );
 
-	/*
-	count = cg.rewardCount[0]/10;				// number of big rewards to draw
-
-	if (count) {
-		y = 4;
-		x = 320 - count * ICON_SIZE;
-		for ( i = 0 ; i < count ; i++ ) {
-			CG_DrawPic( x, y, (ICON_SIZE*2)-4, (ICON_SIZE*2)-4, cg.rewardShader[0] );
-			x += (ICON_SIZE*2);
-		}
-	}
-
-	count = cg.rewardCount[0] - count*10;		// number of small rewards to draw
-	*/
-
 	if ( cg.rewardCount[0] >= 10 ) {
 		y = 56;
 		x = 320 - ICON_SIZE/2;
@@ -2261,7 +2187,7 @@ static void CG_DrawDisconnect( void ) {
 	float		x, y;
 	int			cmdNum;
 	usercmd_t	cmd;
-	const char		*s;
+	const char	*s;
 	int			w;  // bk010215 - FIXME char message[1024];
 
 	// draw the phone jack if we are completely past our buffers
@@ -2400,7 +2326,6 @@ static void CG_DrawLagometer( void ) {
 }
 
 
-
 /*
 ===============================================================================
 
@@ -2431,9 +2356,10 @@ void CG_CenterPrint( const char *str, int y, int charWidth ) {
 	cg.centerPrintLines = 1;
 	s = cg.centerPrint;
 	while( *s ) {
-		if (*s == '\n')
-			cg.centerPrintLines++;
-		s++;
+
+		if (*s == '\n')	cg.centerPrintLines++;
+
+        s++;
 	}
 }
 
@@ -2479,8 +2405,7 @@ static void CG_DrawCenterString( void ) {
 
 		x = ( SCREEN_WIDTH - w ) / 2;
 
-		CG_DrawStringExt( x, y, linebuffer, color, qfalse, qtrue,
-			cg.centerPrintCharWidth, (int)(cg.centerPrintCharWidth * 1.5), 0 );
+		CG_DrawStringExt( x, y, linebuffer, color, qfalse, qtrue, cg.centerPrintCharWidth, (int)(cg.centerPrintCharWidth * 1.5), 0 );
 
 		y += cg.centerPrintCharWidth * 1.5;
 
@@ -2597,13 +2522,9 @@ static void CG_ScanForCrosshairEntity( void ) {
 	// if the player is invisible, don't show it
 	if ( cg_entities[ trace.entityNum ].currentState.powerups & ( 1 << PW_INVIS ) ) {
 		// JUHOX: if the player is on same team show the name
-#if 0
-		return;
-#else
 		if (cgs.gametype < GT_TEAM) return;
 		if (!cgs.clientinfo[trace.entityNum].infoValid) return;
 		if (cgs.clientinfo[trace.entityNum].team != cg.snap->ps.persistant[PERS_TEAM]) return;
-#endif
 	}
 
 	// update the fade timer
@@ -2936,7 +2857,7 @@ static void CG_DrawSpectator(void) {
 CG_DrawVote
 =================
 */
-/*static*/ void CG_DrawVote(void) {	// JUHOX: also called from cg_view.c
+void CG_DrawVote(void) {	// JUHOX: also called from cg_view.c
 	char	*s;
 	int		sec;
 
@@ -2956,7 +2877,7 @@ CG_DrawVote
 	}
 
 	s = va("VOTE(%i):%s yes:%i no:%i", sec, cgs.voteString, cgs.voteYes, cgs.voteNo );
-#if	1	// JUHOX: vote string background
+	// JUHOX: vote string background
 	{
 		static const vec4_t backColor = {
 			0, 0, 0, 0.5
@@ -2964,7 +2885,7 @@ CG_DrawVote
 
 		CG_FillRect(0, 58, CG_DrawStrlen(s) * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, backColor);
 	}
-#endif
+
 	CG_DrawSmallString( 0, 58, s, 1.0F );
 }
 
@@ -2973,26 +2894,17 @@ CG_DrawVote
 CG_DrawTeamVote
 =================
 */
-/*static*/ void CG_DrawTeamVote(void) {	// JUHOX: also called from cg_view.c
+void CG_DrawTeamVote(void) {	// JUHOX: also called from cg_view.c
 	char	*s;
 	int		sec, cs_offset;
 
 	// JUHOX BUGFIX
-#if 0
-	if ( cgs.clientinfo->team == TEAM_RED )
-		cs_offset = 0;
-	else if ( cgs.clientinfo->team == TEAM_BLUE )
-		cs_offset = 1;
-	else
-		return;
-#else
 	if ( cgs.clientinfo[cg.clientNum].team == TEAM_RED )
 		cs_offset = 0;
 	else if ( cgs.clientinfo[cg.clientNum].team == TEAM_BLUE )
 		cs_offset = 1;
 	else
 		return;
-#endif
 
 	if ( !cgs.teamVoteTime[cs_offset] ) {
 		return;
@@ -3025,9 +2937,7 @@ CG_DrawTeamVote
 
 	// JUHOX: teamvote string background
 	{
-		static const vec4_t backColor = {
-			0, 0, 0, 0.5
-		};
+		static const vec4_t backColor = { 0, 0, 0, 0.5 };
 
 		CG_FillRect(0, 90, CG_DrawStrlen(s) * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, backColor);
 	}
@@ -3406,6 +3316,7 @@ CG_Draw2D
 =================
 */
 static void CG_Draw2D( void ) {
+
 	// if we are taking a levelshot for the menu, don't draw anything
 	if ( cg.levelShot ) {
 		return;
@@ -3579,9 +3490,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	if (
 		cg_autoGLC.integer &&
 		cgs.gametype >= GT_TEAM &&
-#if MONSTER_MODE	// JUHOX: no TSS with STU
 		cgs.gametype < GT_STU &&
-#endif
 		BG_TSS_GetPlayerInfo(&cg.snap->ps, TSSPI_isValid) &&
 		BG_TSS_GetPlayerInfo(&cg.snap->ps, TSSPI_groupMemberStatus) >= TSSGMS_temporaryLeader &&
 		cg.time >= cg.tssAutoGLCUpdateTime
@@ -3613,9 +3522,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	// JUHOX: tss server update
 	if (
 		cgs.gametype >= GT_TEAM &&
-#if MONSTER_MODE	// JUHOX: no TSS with STU
 		cgs.gametype < GT_STU &&
-#endif
 		cgs.clientinfo[cg.clientNum].teamLeader &&
 		cg.tssUtilizedStrategy &&
 		cg.time >= cg.tssServerUpdateTime &&

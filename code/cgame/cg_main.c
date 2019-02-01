@@ -112,13 +112,9 @@ vmCvar_t	cg_autoswitchAmmoLimit;	// JUHOX
 vmCvar_t	cg_weaponOrder[NUM_WEAPONORDERS];		// JUHOX
 vmCvar_t	cg_weaponOrderName[NUM_WEAPONORDERS];	// JUHOX
 vmCvar_t	cg_ignore;
-#if MONSTER_MODE	// JUHOX:  STU cvars
 vmCvar_t	cg_drawNumMonsters;
 vmCvar_t	cg_fireballTrail;
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvars
 vmCvar_t	cg_drawSegment;
-#endif
 vmCvar_t	cg_tssiMouse;	// JUHOX
 vmCvar_t	cg_tssiKey;		// JUHOX
 vmCvar_t	cg_tmplcmd;		// JUHOX
@@ -152,7 +148,6 @@ vmCvar_t	cg_hudFiles;
 vmCvar_t 	cg_scorePlum;
 vmCvar_t 	cg_smoothClients;
 vmCvar_t	pmove_fixed;
-//vmCvar_t	cg_pmove_fixed;
 vmCvar_t	pmove_msec;
 vmCvar_t	cg_pmove_msec;
 vmCvar_t	cg_cameraMode;
@@ -174,12 +169,10 @@ vmCvar_t	cg_lensFlare;		// JUHOX
 vmCvar_t	cg_mapFlare;		// JUHOX
 vmCvar_t	cg_sunFlare;		// JUHOX
 vmCvar_t	cg_missileFlare;	// JUHOX
-vmCvar_t	cg_BFGsuperExpl;		// JUHOX
+vmCvar_t	cg_BFGsuperExpl;	// JUHOX
 vmCvar_t	cg_nearbox;			// JUHOX
 vmCvar_t	cg_autoGLC;			// JUHOX
-#if PLAYLIST
-vmCvar_t	cg_music;	// JUHOX: 0 = no music, 1 = default music, 2 = playlist
-#endif
+vmCvar_t	cg_music;	        // JUHOX: 0 = no music, 1 = default music, 2 = playlist
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -190,19 +183,14 @@ typedef struct {
 
 static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_ignore, "cg_ignore", "0", 0 },	// used for debugging
-#if MONSTER_MODE	// JUHOX: STU cvars
 	{ &cg_drawNumMonsters, "cg_drawNumMonsters", "0", CVAR_ARCHIVE},
 	{ &cg_fireballTrail, "cg_fireballTrail", "1", CVAR_ARCHIVE},
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvars
 	{ &cg_drawSegment, "cg_drawSegment", "0", CVAR_ARCHIVE},
-#endif
 	{ &cg_tssiMouse, "tssi_mouse", "", CVAR_ROM },	// JUHOX
 	{ &cg_tssiKey, "tssi_key", "", CVAR_ROM },	// JUHOX
 	{ &cg_tmplcmd, "tmplcmd", "", CVAR_ROM },	// JUHOX
 	{ &cg_noTrace, "cg_noTrace", "0", CVAR_ARCHIVE },	// JUHOX
 	{ &cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE },
-
 	{ &cg_autoswitchAmmoLimit, "cg_autoswitchAmmoLimit", "50", CVAR_ARCHIVE },
 	{ &cg_weaponOrder[0], "cg_weaponOrder0", "ICFJDHGLEB", CVAR_ARCHIVE },
 	{ &cg_weaponOrder[1], "cg_weaponOrder1", "DCGHLBIFEJ", CVAR_ARCHIVE },
@@ -216,7 +204,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_weaponOrderName[3], "cg_weaponOrder3Name", "annihilation", CVAR_ARCHIVE },
 	{ &cg_weaponOrderName[4], "cg_weaponOrder4Name", "revenge", CVAR_ARCHIVE },
 	{ &cg_weaponOrderName[5], "cg_weaponOrder5Name", "defence", CVAR_ARCHIVE },
-
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22.5", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "120", CVAR_ARCHIVE },
@@ -309,10 +296,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_smoothClients, "cg_smoothClients", "0", CVAR_USERINFO | CVAR_ARCHIVE},
 	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
-
-#if PLAYLIST
 	{ &cg_music, "cg_music", "0", CVAR_ARCHIVE},	// JUHOX
-#endif
 
 	{ &pmove_fixed, "pmove_fixed", "0", 0},
 	{ &pmove_msec, "pmove_msec", "8", 0},
@@ -702,7 +686,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.overkillSound = trap_S_RegisterSound("sound/overkill.wav", qfalse);	// JUHOX
 	cgs.media.exterminatedSound = trap_S_RegisterSound("sound/exterminated.wav", qfalse);	// JUHOX
 	// JUHOX: register the respawn warn sound (also used for EFH)
-#if RESPAWN_DELAY || ESCAPE_MODE
+#if RESPAWN_DELAY
 	cgs.media.respawnWarnSound = trap_S_RegisterSound("sound/respawn_warn.wav", qfalse);
 #endif
 	cgs.media.tssBeepSound = trap_S_RegisterSound("sound/tssbeep.wav", qfalse);	// JUHOX
@@ -714,13 +698,11 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.bounceArmorSoundB3 = trap_S_RegisterSound("sound/bounce_armorB3.wav", qfalse);	// JUHOX
 
 	// JUHOX: register monster sounds
-#if MONSTER_MODE
 	cgs.media.earthquakeSound = trap_S_RegisterSound("sound/earthquake.wav", qfalse);
 	if (cgs.gametype == GT_STU) {
 		cgs.media.lastArtefactSound = trap_S_RegisterSound("sound/last_artefact.wav", qfalse);
 		cgs.media.detectorBeepSound = trap_S_RegisterSound("sound/detector_beep.wav", qfalse);
 	}
-#endif
 
 	// JUHOX: register pant sounds
 	cgs.media.malePantSound = trap_S_RegisterSound("sound/player/pantm.wav", qfalse);
@@ -1496,7 +1478,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.botSkillShaders[4] = trap_R_RegisterShader( "menu/art/skill5.tga" );
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader( "viewBloodBlend" );
-
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 
 	cgs.media.scoreboardName = trap_R_RegisterShaderNoMip( "menu/tab/name.tga" );
@@ -1561,7 +1542,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.navaidTargetShader = trap_R_RegisterShader("navAidTarget");	// JUHOX
 
 	cgs.media.fightInProgressShader = trap_R_RegisterShader("icons/fight");	// JUHOX
-#if MONSTER_MODE
 	if (cgs.gametype >= GT_STU) {
 		cgs.media.artefactsShader = trap_R_RegisterShader("icons/artefact");	// JUHOX
 		cgs.media.lifesShader = trap_R_RegisterShader("icons/lifes");	// JUHOX
@@ -1569,14 +1549,9 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.clockShader = trap_R_RegisterShader("icons/clock");	// JUHOX
 		cgs.media.monsterSeedMetalShader = trap_R_RegisterShader("models/weapons2/monsterl/seed");	// JUHOX
 	}
-#endif
 
-#if MONSTER_MODE
 	cgs.media.hotAirShader = trap_R_RegisterShader("hotAir");	// JUHOX
-#endif
-
 	cgs.media.huntNameShader = trap_R_RegisterShader("gfx/hunt_name.tga");	// JUHOX
-
 	cgs.media.deathBlurryShader = trap_R_RegisterShader("deathBlurry");	// JUHOX
 	// JUHOX: load skull skin for CTF place-of-death marker
 	if (cgs.gametype == GT_CTF) {
@@ -1614,11 +1589,9 @@ static void CG_RegisterGraphics( void ) {
 	}
 
 	// JUHOX: load friend shader for monster launcher
-#if MONSTER_MODE
 	if (cgs.gametype < GT_TEAM && cgs.monsterLauncher && !cgs.media.friendShader) {
 		cgs.media.friendShader = trap_R_RegisterShader("sprites/foe");
 	}
-#endif
 
 	cgs.media.armorModel = trap_R_RegisterModel( "models/powerups/armor/armor_yel.md3" );
 	cgs.media.armorIcon  = trap_R_RegisterShaderNoMip( "icons/iconr_yellow" );
@@ -1637,16 +1610,13 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.gibSkull = trap_R_RegisterModel( "models/gibs/skull.md3" );
 	cgs.media.gibBrain = trap_R_RegisterModel( "models/gibs/brain.md3" );
 	// JUHOX: load monster gibs shader
-#if MONSTER_MODE
+
 	if (cgs.gametype >= GT_STU || cgs.monsterLauncher) {
 		cgs.media.monsterGibsShader = trap_R_RegisterShader("models/gibs/monstergibs.tga");
 	}
-#endif
 
 	cgs.media.smoke2 = trap_R_RegisterModel( "models/weapons2/shells/s_shell.md3" );
-
 	cgs.media.balloonShader = trap_R_RegisterShader( "sprites/balloon3" );
-
 	cgs.media.bloodExplosionShader = trap_R_RegisterShader( "bloodExplosion" );
 
 	cgs.media.bulletFlashModel = trap_R_RegisterModel("models/weaphits/bullet.md3");
@@ -1765,7 +1735,6 @@ static void CG_RegisterClients( void ) {
 	CG_NewClientInfo(cg.clientNum);
 
 	// JUHOX: load monster
-#if MONSTER_MODE
 	if (cgs.gametype >= GT_STU) {
 		CG_InitMonsterClientInfo(CLIENTNUM_MONSTER_PREDATOR);
 		CG_InitMonsterClientInfo(CLIENTNUM_MONSTER_GUARD);
@@ -1780,7 +1749,6 @@ static void CG_RegisterClients( void ) {
 			CG_InitMonsterClientInfo(CLIENTNUM_MONSTER_PREDATOR_BLUE);
 		}
 	}
-#endif
 
 	for (i=0 ; i<MAX_CLIENTS ; i++) {
 		const char		*clientInfo;
@@ -1826,7 +1794,6 @@ void CG_StartMusic( void ) {
 	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
 
 	// JUHOX: check type of music
-#if PLAYLIST
 	switch (cg_music.integer) {
 	case 0:	// no music
 	default:
@@ -1839,7 +1806,6 @@ void CG_StartMusic( void ) {
 		CG_ContinuePlayList();
 		return;
 	}
-#endif
 
 	// start the background music
 	s = (char *)CG_ConfigString( CS_MUSIC );
@@ -1961,14 +1927,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
-	// JUHOX: don't play in-game music
-#if !PLAYLIST	// JUHOX: init playlist
-	trap_S_StopBackgroundTrack();
-#else
 	CG_InitPlayList();
 	CG_ParsePlayList();
-#endif
-
 
 	CG_LoadingString( "" );
 
@@ -1979,11 +1939,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	CG_TSS_LoadInterface();	// JUHOX
 
 	trap_Cvar_Set("ui_init", "0");	// JUHOX
-#if MONSTER_MODE	// JUHOX: prevent "sudden death" announcement in STU
+	// JUHOX: prevent "sudden death" announcement in STU
 	if (cgs.gametype >= GT_STU) {
 		cg.timelimitWarnings = 4;
 	}
-#endif
 
 	// JUHOX: get record
 	{

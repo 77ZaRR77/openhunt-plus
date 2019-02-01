@@ -481,12 +481,12 @@ Let everyone know about a team change
 */
 void BroadcastTeamChange( gclient_t *client, int oldTeam )
 {
-#if MONSTER_MODE	// JUHOX: in STU there's only one team
+	// JUHOX: in STU there's only one team
 	if (g_gametype.integer >= GT_STU) {
 		trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE " joined the battle.\n\"", client->pers.netname));
 	}
 	else
-#endif
+
 	if ( client->sess.sessionTeam == TEAM_RED ) {
 		trap_SendServerCommand( -1, va("cp \"%s" S_COLOR_WHITE " joined the red team.\n\"",
 			client->pers.netname) );
@@ -537,11 +537,11 @@ void SetTeam( gentity_t *ent, char *s ) {
 	} else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-#if MONSTER_MODE	// JUHOX: don't allow other teams than red in STU
+	// JUHOX: don't allow other teams than red in STU
 	} else if (g_gametype.integer >= GT_STU) {
 		specState = SPECTATOR_NOT;
 		team = TEAM_RED;
-#endif
+
 	} else if ( g_gametype.integer >= GT_TEAM ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
@@ -1078,11 +1078,9 @@ static const char *gameNames[] = {
 	"Capture the Flag",
 	"One Flag CTF",
 	"Overload",
-	"Harvester"
+	"Harvester",
 	// JUHOX: add STU game name for the callvote command
-#if MONSTER_MODE
-	, "Save the Universe"
-#endif
+	"Save the Universe"
 };
 
 /*
@@ -1858,7 +1856,6 @@ static void Cmd_TemplateList_Error_f(gentity_t* ent) {
 JUHOX: Cmd_EFHDebugSeg_f
 =================
 */
-#if ESCAPE_MODE
 static void Cmd_EFHDebugSeg_f(gentity_t* ent) {
 	char arg1[16];
 
@@ -1867,27 +1864,7 @@ static void Cmd_EFHDebugSeg_f(gentity_t* ent) {
 	trap_Argv(1, arg1, sizeof(arg1));
 	G_EFH_NextDebugSegment(atoi(arg1));
 }
-#endif
 
-/*
-=================
-JUHOX: Cmd_Stop_f
-=================
-*/
-#if SCREENSHOT_TOOLS
-void Cmd_Stop_f(gentity_t* ent) {
-	if (ent->s.number != 0) return;
-	if (ent->client->sess.sessionTeam != TEAM_SPECTATOR) return;
-
-	if (level.stopTime) {
-		level.stopTime = 0;
-	}
-	else {
-		level.stopTime = level.time;
-	}
-	trap_SetConfigstring(CS_STOPTIME, va("%d", level.stopTime));
-}
-#endif
 
 /*
 =================
@@ -2052,17 +2029,13 @@ void ClientCommand( int clientNum ) {
 	// JUHOX: add tsssafetymode command
 	else if (Q_stricmp(cmd, "tsssafetymode") == 0)
 		Cmd_TSSSafetyMode_f(ent);
-#if ESCAPE_MODE	// JUHOX: add efhdebugseg command
+	// JUHOX: add efhdebugseg command
 	else if (Q_stricmp(cmd, "efhdebugseg") == 0)
 		Cmd_EFHDebugSeg_f(ent);
-#endif
+
 #if JUHOX_BOT_DEBUG	// JUHOX: bot debug command
 	else if (Q_stricmp(cmd, "botdebug") == 0)
 		Cmd_BotDebug_f(ent);
-#endif
-#if SCREENSHOT_TOOLS	// JUHOX: add stop command
-	else if (Q_stricmp(cmd, "stop") == 0)
-		Cmd_Stop_f(ent);
 #endif
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );

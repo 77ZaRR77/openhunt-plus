@@ -5,7 +5,6 @@
 
 #include "cg_local.h"
 
-
 /*
 ==================
 CG_BubbleTrail
@@ -87,7 +86,6 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	static int	seed = 0x92;
 	localEntity_t	*le;
 	refEntity_t		*re;
-//	int fadeInTime = startTime + duration / 2;
 
 	le = CG_AllocLocalEntity();
 	le->leFlags = leFlags;
@@ -207,7 +205,6 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 		le->pos.trBase[2] -= 20;
 	}
 
-	//CG_Printf( "Plum origin %i %i %i -- %i\n", (int)org[0], (int)org[1], (int)org[2], (int)Distance(org, lastPos));
 	VectorCopy(org, lastPos);
 
 
@@ -271,14 +268,13 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 
 	ex->refEntity.hModel = hModel;
 	ex->refEntity.customShader = shader;
+
 	// JUHOX: make standard bfg explosion bigger
-#if 1
 	if (shader == cgs.media.bfgExplosionShader) {
 		ex->leType = LE_EXPLOSION;
 		ex->refEntity.radius = 30.0 + 120.0*random();
 		ex->refEntity.reType = RT_SPRITE;
 	}
-#endif
 
 	// set origin
 	VectorCopy( newOrigin, ex->refEntity.origin );
@@ -300,32 +296,13 @@ This is the spurt of blood when a character gets hit
 void CG_Bleed( vec3_t origin, int entityNum ) {
 	localEntity_t	*ex;
 
-	if ( !cg_blood.integer ) {
-		return;
-	}
+	if ( !cg_blood.integer ) return;
 
 	// JUHOX: don't bleed in hibernation mode
-#if MONSTER_MODE
-	if (cg_entities[entityNum].currentState.modelindex & PFMI_HIBERNATION_MORPHED) {
-		return;
-	}
-#endif
+	if (cg_entities[entityNum].currentState.modelindex & PFMI_HIBERNATION_MORPHED) return;
 
 	// JUHOX: monster blood explosion
-#if !MONSTER_MODE
-	ex = CG_AllocLocalEntity();
-	ex->leType = LE_EXPLOSION;
 
-	ex->startTime = cg.time;
-	ex->endTime = ex->startTime + 500;
-
-	VectorCopy ( origin, ex->refEntity.origin);
-	ex->refEntity.reType = RT_SPRITE;
-	ex->refEntity.rotation = rand() % 360;
-	ex->refEntity.radius = 24;
-
-	ex->refEntity.customShader = cgs.media.bloodExplosionShader;
-#else
 	if (cg_entities[entityNum].currentState.clientNum < MAX_CLIENTS) {
 		ex = CG_AllocLocalEntity();
 		ex->leType = LE_EXPLOSION;
@@ -346,7 +323,6 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 			cgs.media.monsterBloodExplosionShader
 		);
 	}
-#endif
 
 	// don't show player's own blood in view
 	if ( entityNum == cg.snap->ps.clientNum ) {
@@ -362,9 +338,8 @@ CG_LaunchGib
 ==================
 */
 // JUHOX: new parameter for CG_LaunchGib
-#if MONSTER_MODE
 static qboolean launchMonsterGib;
-#endif
+
 void CG_LaunchGib( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 	localEntity_t	*le;
 	refEntity_t		*re;
@@ -390,12 +365,10 @@ void CG_LaunchGib( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 	le->leBounceSoundType = LEBS_BLOOD;
 	le->leMarkType = LEMT_BLOOD;
 	// JUHOX: use monster gib shader
-#if MONSTER_MODE
 	if (launchMonsterGib) {
 		le->leMarkType = LEMT_MONSTER_BLOOD;
 		re->customShader = cgs.media.monsterGibsShader;
 	}
-#endif
 }
 
 /*
@@ -408,42 +381,27 @@ Generated a bunch of gibs launching out from the bodies location
 #define	GIB_VELOCITY	250
 #define	GIB_JUMP		250
 // JUHOX: new parameter for CG_GibPlayer
-#if !MONSTER_MODE
-void CG_GibPlayer( vec3_t playerOrigin ) {
-#else
 void CG_GibPlayer(vec3_t playerOrigin, centity_t* cent) {
-#endif
 	vec3_t	origin, velocity;
-#if MONSTER_MODE
 	float gibJump;	// JUHOX
-#endif
 
 	if ( !cg_blood.integer ) {
 		return;
 	}
 
 	// JUHOX: set monster gib parameter for CG_LaunchGib()
-#if MONSTER_MODE
 	launchMonsterGib = (cent->currentState.clientNum >= MAX_CLIENTS);
-#endif
-#if MONSTER_MODE
+
 	gibJump = GIB_JUMP;
-	if (
-		cent->currentState.clientNum >= MAX_CLIENTS &&
-		(cent->currentState.modelindex & PFMI_HIBERNATION_MODE)
-	) {
+	if ( cent->currentState.clientNum >= MAX_CLIENTS &&	(cent->currentState.modelindex & PFMI_HIBERNATION_MODE)	) {
 		gibJump = 0;
 	}
-#endif
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
+
 	if ( rand() & 1 ) {
 		CG_LaunchGib( origin, velocity, cgs.media.gibSkull );
 	} else {
@@ -451,98 +409,60 @@ void CG_GibPlayer(vec3_t playerOrigin, centity_t* cent) {
 	}
 
 	// allow gibs to be turned off for speed
-	if ( !cg_gibs.integer ) {
-		return;
-	}
+	if ( !cg_gibs.integer ) return;
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibAbdomen );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibArm );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibChest );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibFist );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibFoot );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibForearm );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibIntestine );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibLeg );
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*GIB_VELOCITY;
 	velocity[1] = crandom()*GIB_VELOCITY;
-#if !MONSTER_MODE
-	velocity[2] = GIB_JUMP + crandom()*GIB_VELOCITY;
-#else
 	velocity[2] = gibJump + crandom()*GIB_VELOCITY;	// JUHOX
-#endif
 	CG_LaunchGib( origin, velocity, cgs.media.gibLeg );
 }
 
@@ -599,82 +519,3 @@ void CG_BFGsuperExpl(vec3_t origin) {
 	CG_LaunchBFGExpl(origin, 10 + rand()%20);
 	CG_LaunchBFGExpl(origin, 10 + rand()%20);
 }
-
-// JUHOX: CG_BigExplode() currently not used
-#if 0
-/*
-==================
-CG_LaunchExplode
-==================
-*/
-void CG_LaunchExplode( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
-	localEntity_t	*le;
-	refEntity_t		*re;
-
-	le = CG_AllocLocalEntity();
-	re = &le->refEntity;
-
-	le->leType = LE_FRAGMENT;
-	le->startTime = cg.time;
-	le->endTime = le->startTime + 10000 + random() * 6000;
-
-	VectorCopy( origin, re->origin );
-	AxisCopy( axisDefault, re->axis );
-	re->hModel = hModel;
-
-	le->pos.trType = TR_GRAVITY;
-	VectorCopy( origin, le->pos.trBase );
-	VectorCopy( velocity, le->pos.trDelta );
-	le->pos.trTime = cg.time;
-
-	le->bounceFactor = 0.1f;
-
-	le->leBounceSoundType = LEBS_BRASS;
-	le->leMarkType = LEMT_NONE;
-}
-
-#define	EXP_VELOCITY	100
-#define	EXP_JUMP		150
-/*
-===================
-CG_BigExplode
-===================
-*/
-void CG_BigExplode( vec3_t playerOrigin ) {
-	vec3_t	origin, velocity;
-
-	if ( !cg_blood.integer ) {
-		return;
-	}
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY;
-	velocity[1] = crandom()*EXP_VELOCITY;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY;
-	velocity[1] = crandom()*EXP_VELOCITY;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*1.5;
-	velocity[1] = crandom()*EXP_VELOCITY*1.5;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*2.0;
-	velocity[1] = crandom()*EXP_VELOCITY*2.0;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-
-	VectorCopy( playerOrigin, origin );
-	velocity[0] = crandom()*EXP_VELOCITY*2.5;
-	velocity[1] = crandom()*EXP_VELOCITY*2.5;
-	velocity[2] = EXP_JUMP + crandom()*EXP_VELOCITY;
-	CG_LaunchExplode( origin, velocity, cgs.media.smoke2 );
-}
-#endif	// JUHOX

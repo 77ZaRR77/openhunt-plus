@@ -269,7 +269,6 @@ void CG_RailTrail( clientInfo_t *ci, vec3_t start, vec3_t end ) {
 JUHOX: CG_FireballTrail
 ==========================
 */
-#if MONSTER_MODE
 static void CG_FireballTrail(centity_t *cent, const weaponInfo_t *wi) {
 	localEntity_t	*le;
 	refEntity_t		*re;
@@ -290,14 +289,13 @@ static void CG_FireballTrail(centity_t *cent, const weaponInfo_t *wi) {
 	BG_EvaluateTrajectory(&es->pos, cg.time, origin);
 	contents = CG_PointContents(origin, -1);
 
-#if 1	// JUHOX: no bubbles with lava/slime hack
+	// JUHOX: no bubbles with lava/slime hack
 	if (
 		(contents & (CONTENTS_SLIME | CONTENTS_LAVA)) &&
 		(contents & CONTENTS_WATER)
 	) {
 		contents &= ~(CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA);
 	}
-#endif
 
 	BG_EvaluateTrajectory(&es->pos, cent->trailTime, lastPos);
 	lastContents = CG_PointContents(lastPos, -1);
@@ -343,8 +341,6 @@ static void CG_FireballTrail(centity_t *cent, const weaponInfo_t *wi) {
 		}
 	}
 
-
-
 	step = 15;
 
 	for (t = step * ((startTime + step) / step); t <= cent->trailTime; t += step) {
@@ -387,18 +383,18 @@ static void CG_FireballTrail(centity_t *cent, const weaponInfo_t *wi) {
 		AxisCopy(axisDefault, re->axis);
 		re->reType = RT_SPRITE;
 		re->radius = 16;
-		//re->customShader = cgs.media.bfgLFGlareShader;
+
 		re->customShader = trap_R_RegisterShader("flame1");
 		re->rotation = 360 * random();
 
 		le->color[0] = 0.78 + 0.22 * random();
-		le->color[1] = 0.6 * random(); //0.39 + 0.31 * random();
+		le->color[1] = 0.6 * random();
 		le->color[2] = 0;
 		le->color[3] = 0.75;
 	}
 
 }
-#endif
+
 
 /*
 ==========================
@@ -417,16 +413,11 @@ static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 
 	if (cg_noProjectileTrail.integer) return;
 
-#if SCREENSHOT_TOOLS
-	if (cg.stopTime) return;	// JUHOX
-#endif
-
-#if	MONSTER_MODE	// JUHOX: fireball trail
+	// JUHOX: fireball trail
 	if (ent->currentState.otherEntityNum == CLIENTNUM_MONSTER_GUARD) {
 		CG_FireballTrail(ent, wi);
 		return;
 	}
-#endif
 
 	up[0] = 0;
 	up[1] = 0;
@@ -487,10 +478,6 @@ static void CG_PlasmaTrail( centity_t *cent, const weaponInfo_t *wi ) {
 
 	if ( cg_noProjectileTrail.integer || cg_oldPlasma.integer ) return;
 
-#if SCREENSHOT_TOOLS
-	if (cg.stopTime) return;	// JUHOX
-#endif
-
 	step = 20;
 
 	es = &cent->currentState;
@@ -545,9 +532,7 @@ void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	refEntity_t		beam;
 
 	// JUHOX: don't draw normal grapple trail with the new hook
-#if GRAPPLE_ROPE
 	if (cgs.hookMode != HM_classic) return;
-#endif
 
 	es = &ent->currentState;
 
@@ -566,13 +551,8 @@ void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi ) {
 		return; // Don't draw if close
 
 	// JUHOX: draw grapple rope
-#if !GRAPPLE_ROPE
-	beam.reType = RT_LIGHTNING;
-	beam.customShader = cgs.media.lightningShader;
-#else
 	beam.reType = RT_LIGHTNING;
 	beam.customShader = cgs.media.grappleShader;
-#endif
 
 	AxisClear( beam.axis );
 	beam.shaderRGBA[0] = 0xff;
@@ -746,7 +726,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
 		break;
 
-#if MONSTER_MODE	// JUHOX: register monster launcher
+        // JUHOX: register monster launcher
 	case WP_MONSTER_LAUNCHER:
 		weaponInfo->missileModel = trap_R_RegisterModel("models/powerups/health/small_sphere.md3");
 		MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
@@ -767,7 +747,6 @@ void CG_RegisterWeapon( int weaponNum ) {
 		cgs.media.monsterLauncherShader = trap_R_RegisterShader("models/weapons2/monsterl/monsterl.tga");
 		cgs.media.monsterSeedMetalShader = trap_R_RegisterShader("models/weapons2/monsterl/seed");
 		break;
-#endif
 
 	case WP_PLASMAGUN:
 		weaponInfo->missileTrailFunc = CG_PlasmaTrail;
@@ -1237,12 +1216,10 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 	powerups = state->powerups;
 
 	// JUHOX: set corrected lighting origin for EFH
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH) {
 		gun->renderfx |= RF_LIGHTING_ORIGIN;
 		VectorCopy(state->origin, gun->lightingOrigin);
 	}
-#endif
 
 	// JUHOX: draw spawn hull
 	{
@@ -1286,7 +1263,6 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 	}
 
 	// JUHOX: draw monster glow
-#if MONSTER_MODE
 	if (
 		cg.viewMode == VIEW_scanner &&
 		cg.scannerActivationTime &&
@@ -1325,22 +1301,14 @@ static void CG_AddWeaponWithPowerups(refEntity_t* gun, entityState_t* state, pla
 			gun->customShader = 0;
 		}
 	}
-#endif
+
 
 	// add powerup effects
 	if ( powerups & ( 1 << PW_INVIS ) ) {
 
 		qboolean drawInvisShader;
 		drawInvisShader = qtrue;
-		if (
-			cgs.gametype >= GT_TEAM &&
-			(
-#if MONSTER_MODE
-				cgs.gametype >= GT_STU ||
-#endif
-				cg.snap->ps.persistant[PERS_TEAM] == team
-			)
-		) {
+		if ( cgs.gametype >= GT_TEAM &&	( cgs.gametype >= GT_STU || cg.snap->ps.persistant[PERS_TEAM] == team )	) {
 			if (team == TEAM_RED)
 				gun->customShader = cgs.media.redInvis;
 			else
@@ -1444,9 +1412,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	weaponNum = cent->currentState.weapon;
 	// JUHOX: speed-up for monsters
-#if MONSTER_MODE
 	if (weaponNum == WP_NONE) return;
-#endif
 
 	CG_RegisterWeapon( weaponNum );
 	weapon = &cg_weapons[weaponNum];
@@ -1508,11 +1474,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		return;
 	}
 	// JUHOX: set custom shader for monster launcher
-#if MONSTER_MODE
 	if (weaponNum == WP_MONSTER_LAUNCHER) {
 		gun.customShader = cgs.media.monsterLauncherShader;
 	}
-#endif
 
 	if ( !ps ) {
 		// add weapon ready sound
@@ -1636,13 +1600,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 
 		// JUHOX FIXME: no dlights in EFH
-#if ESCAPE_MODE
 		if (cgs.gametype == GT_EFH) {
 			// do nothing
-		}
-		else
-#endif
-		if ( weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2] ) {
+		} else if ( weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2] ) {
 			trap_R_AddLightToScene( flash.origin, 300 + (rand()&31), weapon->flashDlightColor[0], weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
 		}
 	}
@@ -1813,10 +1773,7 @@ CG_WeaponSelectable
 ===============
 */
 static qboolean CG_WeaponSelectable( int i ) {
-	// JUHOX: let spectator select all weapons for screenshot tools
-#if SCREENSHOT_TOOLS
-	if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) return qtrue;
-#endif
+
 	if ( !cg.snap->ps.ammo[i] ) {
 		return qfalse;
 	}
@@ -1848,11 +1805,11 @@ qboolean CG_MayAutoSelect(int weapon) {
 	limit = cg_autoswitchAmmoLimit.integer;
 	if (limit < 1 || limit > 100) limit = 50;
 	maxAmmo = weaponAmmoCharacteristics[weapon].maxAmmo;
-#if MONSTER_MODE
+
 	if (weapon == WP_MONSTER_LAUNCHER) {
 		maxAmmo = atoi(CG_ConfigString(CS_NUMMONSTERS)+4);
 	}
-#endif
+
 	if (100 * cg.snap->ps.ammo[weapon] < limit * maxAmmo) return qfalse;
 
 	return qtrue;
@@ -1975,12 +1932,10 @@ void CG_NextWeaponOrder_f(void) {
 	}
 
 	// JUHOX: select segment in EFH debug mode
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH && cgs.debugEFH) {
 		trap_SendClientCommand("efhdebugseg 1");
 		return;
 	}
-#endif
 
 	if (cg.snap->ps.pm_type == PM_SPECTATOR) return;
 	if (cg.snap->ps.pm_flags & PMF_FOLLOW) return;
@@ -2014,12 +1969,10 @@ void CG_PrevWeaponOrder_f(void) {
 	}
 
 	// JUHOX: select segment in EFH debug mode
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH && cgs.debugEFH) {
 		trap_SendClientCommand("efhdebugseg -1");
 		return;
 	}
-#endif
 
 	if (cg.snap->ps.pm_type == PM_SPECTATOR) return;
 	if (cg.snap->ps.pm_flags & PMF_FOLLOW) return;
@@ -2057,12 +2010,10 @@ void CG_NextWeapon_f( void ) {
 	}
 
 	// JUHOX: select segment in EFH debug mode
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH && cgs.debugEFH) {
 		trap_SendClientCommand("efhdebugseg 1");
 		return;
 	}
-#endif
 
 	cg.weaponManuallySet = qtrue;	// JUHOX
 	memset(tmpSkipWeapon, 0, sizeof(tmpSkipWeapon));	// JUHOX: not really needed i think
@@ -2081,19 +2032,12 @@ void CG_NextWeapon_f( void ) {
 
 		// JUHOX: never cycle to the grappling hook
 		// SLK: yes we CAN
-#if 0
-		if (cg.weaponSelect == WP_GRAPPLING_HOOK) continue;
-#endif
 		if ( CG_WeaponSelectable( cg.weaponSelect ) ) break;
 
 	}
 	if ( i == 16 ) {
 		cg.weaponSelect = original;
 	}
-	// JUHOX: let spectator controlling timescale choose no weapon above #9
-#if SCREENSHOT_TOOLS
-	if (cg.snap->ps.pm_type == PM_SPECTATOR && cg.weaponSelect >= 10) cg.weaponSelect = original;
-#endif
 }
 
 /*
@@ -2123,20 +2067,16 @@ void CG_PrevWeapon_f( void ) {
 	}
 
 	// JUHOX: select segment in EFH debug mode
-#if ESCAPE_MODE
 	if (cgs.gametype == GT_EFH && cgs.debugEFH) {
 		trap_SendClientCommand("efhdebugseg -1");
 		return;
 	}
-#endif
 
 	cg.weaponManuallySet = qtrue;	// JUHOX
 	memset(tmpSkipWeapon, 0, sizeof(tmpSkipWeapon));	// JUHOX: not really needed i think
 
 	// JUHOX: this is a workaround to the late server side weapon selection
-#if 1
 	if (cg.weaponSelect == WP_NONE) cg.weaponSelect = cg.snap->ps.weapon;
-#endif
 
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
@@ -2146,16 +2086,10 @@ void CG_PrevWeapon_f( void ) {
 		if ( cg.weaponSelect == -1 ) {
 			cg.weaponSelect = 15;
 		}
-		// JUHOX: we now may cycle to gauntlet
-#if 0
-		if ( cg.weaponSelect == WP_GAUNTLET ) {
-			continue;		// never cycle to gauntlet
-		}
-#endif
+
 		// JUHOX: never cycle to the grappling hook
-#if 1
 		if (cg.weaponSelect == WP_GRAPPLING_HOOK) continue;
-#endif
+
 		if ( CG_WeaponSelectable( cg.weaponSelect ) ) {
 			break;
 		}
@@ -2163,10 +2097,6 @@ void CG_PrevWeapon_f( void ) {
 	if ( i == 16 ) {
 		cg.weaponSelect = original;
 	}
-	// JUHOX: let spectator controlling timescale choose no weapon below #1
-#if SCREENSHOT_TOOLS
-	if (cg.snap->ps.pm_type == PM_SPECTATOR && cg.weaponSelect <= 0) cg.weaponSelect = original;
-#endif
 }
 
 /*
@@ -2302,7 +2232,6 @@ static void CG_FindBestViewOrg(const lensFlareEntity_t* lfent, vec3_t viewOrg) {
 		vec3_t end;
 		trace_t trace;
 		vec3_t candidate;
-		//float evaluation;
 
 		dir[0] = crandom();
 		dir[1] = crandom();
@@ -2655,20 +2584,10 @@ The current weapon has just run out of ammo
 ===================
 */
 void CG_OutOfAmmoChange( void ) {
-	//int		i;	// JUHOX: no longer needed
 
 	cg.weaponSelectTime = cg.time;
-
-#if 0	// JUHOX: new out-of-ammo-weapon-selection scheme
-	for ( i = 15 ; i > 0 ; i-- ) {
-		if ( CG_WeaponSelectable( i ) ) {
-			cg.weaponSelect = i;
-			break;
-		}
-	}
-#else
 	CG_ManuallySwitchToBestWeapon(-1);
-#endif
+
 }
 
 
@@ -2695,7 +2614,6 @@ void CG_FireWeapon( centity_t *cent ) {
 
 	ent = &cent->currentState;
 	// JUHOX: use gauntlet hit sound for predator weapon
-#if MONSTER_MODE
 	if (ent->eType == ET_PLAYER) {
 		switch (ent->clientNum) {
 		case CLIENTNUM_MONSTER_PREDATOR:
@@ -2709,7 +2627,7 @@ void CG_FireWeapon( centity_t *cent ) {
 			return;
 		}
 	}
-#endif
+
 	if ( ent->weapon == WP_NONE ) {
 		return;
 	}
@@ -2729,14 +2647,6 @@ void CG_FireWeapon( centity_t *cent ) {
 			return;
 		}
 	}
-
-	// JUHOX: no quad sound
-#if 0
-	// play quad sound if needed
-	if ( cent->currentState.powerups & ( 1 << PW_QUAD ) ) {
-		trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.media.quadSound );
-	}
-#endif
 
 	// play a sound
 	for ( c = 0 ; c < 4 ; c++ ) {
@@ -2797,7 +2707,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	duration = 600;
 
 	switch ( weapon ) {
-#if GRAPPLE_ROPE	// JUHOX: add sound for grapple
+	// JUHOX: add sound for grapple
 	case WP_GRAPPLING_HOOK:
 		if (rand() & 1) {
 			sfx = cgs.media.hgrenb1aSound;
@@ -2805,7 +2715,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 			sfx = cgs.media.hgrenb2aSound;
 		}
 		break;
-#endif
 	default:
 
 	case WP_LIGHTNING:
@@ -2832,9 +2741,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		light = 300;
 		isSprite = qtrue;
 		CG_CheckStrongLight(origin, 600, colorWhite);	// JUHOX
-#if EARTHQUAKE_SYSTEM	// JUHOX: grenade
 		CG_AddEarthquake(origin, 600, 0.5, 0, 0.5, 200);
-#endif
 		break;
 	case WP_ROCKET_LAUNCHER:
 		mod = cgs.media.dishFlashModel;
@@ -2856,9 +2763,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 			CG_ParticleExplosion( "explode1", sprOrg, sprVel, 1400, 20, 30 );
 		}
 		CG_CheckStrongLight(origin, 600, colorWhite);	// JUHOX
-#if EARTHQUAKE_SYSTEM	// JUHOX: rocket
 		CG_AddEarthquake(origin, 400, 0.4, 0, 0.4, 300);
-#endif
 		break;
 	case WP_RAILGUN:
 		mod = cgs.media.ringFlashModel;
@@ -2867,9 +2772,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		mark = cgs.media.energyMarkShader;
 		radius = 24;
 		CG_CheckStrongLight(origin, 150, colorWhite);	// JUHOX
-#if EARTHQUAKE_SYSTEM	// JUHOX: railgun
 		CG_AddEarthquake(origin, 400, 0.2, 0, 0.2, 400);
-#endif
 		break;
 	case WP_PLASMAGUN:
 		mod = cgs.media.ringFlashModel;
@@ -2895,9 +2798,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		}
 
 		CG_CheckStrongLight(origin, 800, colorWhite);	// JUHOX
-#if EARTHQUAKE_SYSTEM	// JUHOX: bfg
 		CG_AddEarthquake(origin, 1000, 0.5, 0, 0.5, 400);
-#endif
 		break;
 	case WP_SHOTGUN:
 		mod = cgs.media.bulletFlashModel;
@@ -2933,21 +2834,18 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	// create the explosion
 	//
 	// JUHOX: handle new bfg super explosion
-#if 1
 	if (weapon == WP_BFG && cg_BFGsuperExpl.integer) {
 		CG_BFGsuperExpl(origin);
 	}
-#endif
+
 	if ( mod ) {
-		le = CG_MakeExplosion( origin, dir,
-							   mod,	shader,
-							   duration, isSprite );
-	// JUHOX FIXME: no dlights in EFH
-#if ESCAPE_MODE
-	if (cgs.gametype == GT_EFH) {
-		light = 0;
-	}
-#endif
+		le = CG_MakeExplosion( origin, dir, mod, shader, duration, isSprite );
+
+        // JUHOX FIXME: no dlights in EFH
+        if (cgs.gametype == GT_EFH) {
+            light = 0;
+        }
+
 		le->light = light;
 		VectorCopy( lightColor, le->lightColor );
 		if ( weapon == WP_RAILGUN ) {

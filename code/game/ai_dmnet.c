@@ -401,9 +401,7 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 	if (
 		!collectArmor && !collectLimitedHealth &&
 		!collectUnlimitedHealth && !collectHoldableItem &&
-#if MONSTER_MODE
 		gametype < GT_STU &&
-#endif
 		(
 			gametype != GT_CTF ||
 			(
@@ -488,7 +486,6 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 			preciousItem = qtrue;
 			break;
 		case IT_TEAM:
-#if MONSTER_MODE
 			if (gametype == GT_STU) {
 				if (item->giTag != PW_QUAD) goto NextEntity;
 				if (
@@ -504,7 +501,7 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 				// NOTE: the artefact is not marked precious because the bot can't know its position
 				break;
 			}
-#endif
+
 			if (gametype < GT_CTF) goto NextEntity;
 			preciousItem = qtrue;
 			teamItem = qtrue;
@@ -630,9 +627,7 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 			if (potentialGoal.areanum <= 0) goto NextEntity;
 			if (!trap_AAS_AreaReachability(potentialGoal.areanum)) goto NextEntity;	// don't know exactly what this function does
 
-#if MONSTER_MODE
 			if (artefact) goto GetImportantNBG;
-#endif
 
 			VectorCopy(goal->origin, floor);
 			floor[2] -= 50;
@@ -673,7 +668,6 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 			if (compDist < distance) goto NextEntity;
 		}
 
-#if MONSTER_MODE
 		if (
 			g_gametype.integer >= GT_STU &&
 			!IsPlayerInvolvedInFighting(bs->client) &&
@@ -682,7 +676,6 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 			BotRememberNBGNotAvailable(bs, ent->s.number);
 			goto NextEntity;
 		}
-#endif
 
 		bestTravelTime = totalTravelTime;
 		bestDistance = distance;
@@ -744,11 +737,8 @@ static int BotChooseNearbyItem(bot_state_t* bs, bot_goal_t* goal, float range) {
 			bs->nbgGivesUnlimitedHealth = qfalse;
 			bs->nbgGivesHoldableItem = qfalse;
 			bs->nbgGivesStrength = qfalse;
-#if !MONSTER_MODE
-			bs->nbgGivesFlag = qtrue;
-#else
 			bs->nbgGivesFlag = (foundItem->giTag != PW_QUAD);
-#endif
+
 			break;
 		case IT_POD_MARKER:
 			bs->nbgGivesArmor = qfalse;
@@ -778,35 +768,11 @@ int BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
 	if (range <= 0) return BotChooseNearbyItem(bs, ltg, range);	// JUHOX
 	//check if the bot should go for air
 	if (BotGoForAir(bs, tfl, ltg, range)) return qtrue;
-#if 0	// JUHOX: don't adjust the range, just trust me!
-	//if the bot is carrying the enemy flag
-	if (BotCTFCarryingFlag(bs)) {
-		//if the bot is just a few secs away from the base
-		if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin,
-				bs->teamgoal.areanum, TFL_DEFAULT) < 300) {
-			//make the range really small
-			range = 50;
-		}
-	}
-#endif
-	//
-#if 0	// JUHOX: new NBG item choosing strategy
-	ret = trap_BotChooseNBGItem(bs->gs, bs->origin, bs->inventory, tfl, ltg, range);
-#else
-	if (bs->teleport_time > FloatTime() - 3 && !BotWantsToRetreat(bs)) return qfalse;
 
+	// JUHOX: new NBG item choosing strategy
+	if (bs->teleport_time > FloatTime() - 3 && !BotWantsToRetreat(bs)) return qfalse;
 	ret = BotChooseNearbyItem(bs, ltg, range);
-#endif
-	/*
-	if (ret)
-	{
-		char buf[128];
-		//get the goal at the top of the stack
-		trap_BotGetTopGoal(bs->gs, &goal);
-		trap_BotGoalName(goal.number, buf, sizeof(buf));
-		BotAI_Print(PRT_MESSAGE, "%1.1f: new nearby goal %s\n", FloatTime(), buf);
-	}
-	*/
+
 	return ret;
 }
 
@@ -896,7 +862,6 @@ static int BotCheckNBG(bot_state_t* bs, bot_goal_t* goal) {
 		return qfalse;
 	}
 
-#if MONSTER_MODE
 	if (
 		g_gametype.integer == GT_STU &&
 		g_cloakingDevice.integer &&
@@ -907,7 +872,6 @@ static int BotCheckNBG(bot_state_t* bs, bot_goal_t* goal) {
 		BotRememberNBGNotAvailable(bs, bs->nbgEntity->s.number);
 		return qfalse;
 	}
-#endif
 
 	return qtrue;
 }
@@ -1108,15 +1072,15 @@ BotReachedGoal
 */
 int BotReachedGoal(bot_state_t *bs, bot_goal_t *goal) {
 	if (goal->flags & GFL_ITEM) {
-#if 1	// JUHOX: if the item is a dropped item it may no longer exist
+        // JUHOX: if the item is a dropped item it may no longer exist
 		if (goal->flags & GFL_DROPPED) {
 			if (!g_entities[goal->entitynum].inuse) return qtrue;
 			if (Distance(goal->origin, g_entities[goal->entitynum].r.currentOrigin) > 50) return qtrue;
 		}
-#endif
-#if 1	// JUHOX: POD markers are never reached as long as they exist
+
+        // JUHOX: POD markers are never reached as long as they exist
 		if (g_entities[goal->entitynum].item->giType == IT_POD_MARKER) return qfalse;
-#endif
+
 		//if touching the goal
 		if (trap_BotTouchingGoal(bs->origin, goal)) {
 			if (!(goal->flags & GFL_DROPPED)) {
@@ -1126,17 +1090,6 @@ int BotReachedGoal(bot_state_t *bs, bot_goal_t *goal) {
 		}
 		//if the goal isn't there
 		if (trap_BotItemGoalInVisButNotVisible(bs->entitynum, bs->eye, bs->viewangles, goal)) {
-			/*
-			float avoidtime;
-			int t;
-
-			avoidtime = trap_BotAvoidGoalTime(bs->gs, goal->number);
-			if (avoidtime > 0) {
-				t = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, goal->areanum, bs->tfl);
-				if ((float) t * 0.009 < avoidtime)
-					return qtrue;
-			}
-			*/
 			return qtrue;
 		}
 		//if in the goal area and below or above the goal and not swimming
@@ -1217,7 +1170,6 @@ void BotCheckIfBlockingTeammates(bot_state_t* bs) {
 			CrossProduct(up, dir, sideward);
 
 			// the following is taken from the improved BotAIBlocked() function
-
 			if (bs->flags & BFL_AVOIDRIGHT) VectorNegate(sideward, sideward);
 
 			if (!trap_BotMoveInDirection(bs->ms, sideward, speed, MOVE_WALK)) {
@@ -1274,60 +1226,8 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 	if (bs->ltg_time < FloatTime()) {
 		//pop the current goal from the stack
 		trap_BotPopGoal(bs->gs);
-#if 0	// JUHOX: nothing useful to do? just wait.
-		//BotAI_Print(PRT_MESSAGE, "%s: choosing new ltg\n", ClientName(bs->client, netname, sizeof(netname)));
-		//choose a new goal
-		//BotAI_Print(PRT_MESSAGE, "%6.1f client %d: BotChooseLTGItem\n", FloatTime(), bs->client);
-		if (trap_BotChooseLTGItem(bs->gs, bs->origin, bs->inventory, tfl)) {
-			/*
-			char buf[128];
-			//get the goal at the top of the stack
-			trap_BotGetTopGoal(bs->gs, goal);
-			trap_BotGoalName(goal->number, buf, sizeof(buf));
-			BotAI_Print(PRT_MESSAGE, "%1.1f: new long term goal %s\n", FloatTime(), buf);
-			*/
-			bs->ltg_time = FloatTime() + 20;
-		}
-		else {//the bot gets sorta stuck with all the avoid timings, shouldn't happen though
-			//
-#ifdef DEBUG
-			char netname[128];
-
-			BotAI_Print(PRT_MESSAGE, "%s: no valid ltg (probably stuck)\n", ClientName(bs->client, netname, sizeof(netname)));
-#endif
-			//trap_BotDumpAvoidGoals(bs->gs);
-			//reset the avoid goals and the avoid reach
-			trap_BotResetAvoidGoals(bs->gs);
-			trap_BotResetAvoidReach(bs->ms);
-		}
-		//get the goal at the top of the stack
-		return trap_BotGetTopGoal(bs->gs, goal);
-#else
-		/*
-		if (BotPlayerDanger(&bs->cur_ps) > 50) {
-			if ((bs->tfl & (TFL_LAVA|TFL_SLIME)) && BotNearbyGoal(bs, bs->tfl, goal, -1)) {
-				bs->ltg_time = FloatTime() + 10;
-				return qtrue;
-			}
-			if (BotNearbyGoal(bs, bs->tfl, goal, 10000)) {
-				bs->ltg_time = FloatTime() + 10;
-				return qtrue;
-			}
-			if (BotNearbyGoal(bs, bs->tfl, goal, -1)) {
-				bs->ltg_time = FloatTime() + 10;
-				return qtrue;
-			}
-			if (trap_BotChooseLTGItem(bs->gs, bs->origin, bs->inventory, tfl)) {
-				if (trap_BotGetTopGoal(bs->gs, goal)) {
-					bs->ltg_time = FloatTime() + 10;
-					return qtrue;
-				}
-			}
-		}
-		*/
 		BotCheckIfBlockingTeammates(bs);
 		return qfalse;
-#endif
 	}
 	return qtrue;
 }
@@ -1355,52 +1255,14 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
 			BotAI_BotInitialChat(bs, "help_start", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
 			// JUHOX: 'decisionmaker' not used. talk to 'teammate'
-#if 0
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
-			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
-#else
 			trap_BotEnterChat(bs->cs, bs->teammate, CHAT_TELL);
-#endif
 			bs->teammessage_time = 0;
 		}
 		//if trying to help the team mate for more than a minute
 		if (bs->teamgoal_time < FloatTime())
 			bs->ltgtype = 0;
-#if 0	// JUHOX: continue to help even after seeing the teammate
-		//if the team mate IS visible for quite some time
-		if (bs->teammatevisible_time < FloatTime() - 10) bs->ltgtype = 0;
-#endif
-#if 0	// JUHOX: new code for searching team mate
-		//get entity information of the companion
-		BotEntityInfo(bs->teammate, &entinfo);
-		//if the team mate is visible
-		if (BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 360, bs->teammate)) {	// JUHOX
-			//if close just stand still there
-			VectorSubtract(entinfo.origin, bs->origin, dir);
-			if (VectorLengthSquared(dir) < Square(/*100*/entinfo.flags&EF_FIRING? 300 : 150)) {	// JUHOX
-				trap_BotResetAvoidReach(bs->ms);
-				BotCheckIfBlockingTeammates(bs);	// JUHOX
-				return qfalse;
-			}
-		}
-		else {
-			//last time the bot was NOT visible
-			bs->teammatevisible_time = FloatTime();
-		}
-		//if the entity information is valid (entity in PVS)
-		if (entinfo.valid) {
-			areanum = BotPointAreaNum(entinfo.origin);
-			if (areanum && trap_AAS_AreaReachability(areanum)) {
-				//update team goal
-				bs->teamgoal.entitynum = bs->teammate;
-				bs->teamgoal.areanum = areanum;
-				VectorCopy(entinfo.origin, bs->teamgoal.origin);
-				VectorSet(bs->teamgoal.mins, -8, -8, -8);
-				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
-			}
-		}
-#else
+
+        // JUHOX: new code for searching team mate
 		{
 			playerState_t ps;
 			float maxDistSqr;
@@ -1435,7 +1297,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
 			}
 		}
-#endif
+
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
 		return qtrue;
 	}
@@ -1528,12 +1390,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 					bs->ideal_viewangles[2] *= 0.5;
 				}
 				//else look strategically around for enemies
-#if 0	// JUHOX: new roaming view goal strategy
-				else if (random() < bs->thinktime * 0.8) {
-					BotRoamGoal(bs, target);
-#else
+
 				else if (BotRoamGoal(bs, target, qfalse)) {
-#endif
 					VectorSubtract(target, bs->origin, dir);
 					vectoangles(dir, bs->ideal_viewangles);
 					bs->ideal_viewangles[2] *= 0.5;
@@ -1579,7 +1437,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		}
 		return qtrue;
 	}
-	//
+
 	if (bs->ltgtype == LTG_DEFENDKEYAREA) {
 		if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin,
 				bs->teamgoal.areanum, TFL_DEFAULT) > bs->defendaway_range) {
@@ -1624,24 +1482,13 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 	if (bs->ltgtype == LTG_KILL && !retreat) {
 		//check for bot typing status message
 		if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
-#if 0	// JUHOX: no 'start killing' status message
-			EasyClientName(bs->teamgoal.entitynum, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "kill_start", buf, NULL);
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-#endif
 			bs->teammessage_time = 0;
 		}
-		//
+
 		if (bs->lastkilledplayer == bs->teamgoal.entitynum) {
-#if 0	// JUHOX: no 'kill done' status message
-			EasyClientName(bs->teamgoal.entitynum, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "kill_done", buf, NULL);
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-			bs->lastkilledplayer = -1;
-#endif
 			bs->ltgtype = 0;
 		}
-		//
+
 		if (bs->teamgoal_time < FloatTime()) {
 			bs->ltgtype = 0;
 		}
@@ -1651,18 +1498,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 	//get an item
 	if (bs->ltgtype == LTG_GETITEM /*&& !retreat*/) {	// JUHOX
 		//check for bot typing status message
-#if 0	// JUHOX: no 'get item' status message
-		if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
-			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_start", buf, NULL);
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-			BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
-			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
-			bs->teammessage_time = 0;
-		}
-#else
 		bs->teammessage_time = 0;
-#endif
+
 		//set the bot goal
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
 		//stop after some time
@@ -1671,19 +1508,9 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		}
 		//
 		if (trap_BotItemGoalInVisButNotVisible(bs->entitynum, bs->eye, bs->viewangles, goal)) {
-#if 0	// JUHOX: no 'item not there' status message
-			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_notthere", buf, NULL);
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-#endif
 			bs->ltgtype = 0;
 		}
 		else if (BotReachedGoal(bs, goal)) {
-#if 0	// JUHOX: no 'got item' status message
-			trap_BotGoalName(bs->teamgoal.number, buf, sizeof(buf));
-			BotAI_BotInitialChat(bs, "getitem_gotit", buf, NULL);
-			trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-#endif
 			bs->ltgtype = 0;
 		}
 		return qtrue;
@@ -1694,36 +1521,16 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		float distanceSqr;	// JUHOX
 
 		//check for bot typing status message
-#if 0	// JUHOX: no 'camping' status message
-		if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
-			if (bs->ltgtype == LTG_CAMPORDER) {
-				BotAI_BotInitialChat(bs, "camp_start", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
-				trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-				BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_YES);
-				trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
-			}
-			bs->teammessage_time = 0;
-		}
-#else
 		bs->teammessage_time = 0;
-#endif
 		//set the bot goal
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
 		//
 		if (bs->teamgoal_time < FloatTime()) {
-#if 0	// JUHOX: no 'stop camping' status message
-			if (bs->ltgtype == LTG_CAMPORDER) {
-				BotAI_BotInitialChat(bs, "camp_stop", NULL);
-				trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-			}
-#endif
 			bs->ltgtype = 0;
 		}
 		//if really near the camp spot
 		VectorSubtract(goal->origin, bs->origin, dir);
-#if 0	// JUHOX: try to avoid reaching the camp goal with LTG_CAMP (other bots may want to grab the item)
-		if (VectorLengthSquared(dir) < Square(60))
-#else
+
 		distanceSqr = VectorLengthSquared(dir);
 		if (
 			bs->arrive_time ||
@@ -1746,31 +1553,16 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				)
 			)
 		)
-#endif
+
 		{
 			//if not arrived yet
 			if (!bs->arrive_time) {
-#if 0	// JUHOX: no 'arrived at camp goal' status message
-				if (bs->ltgtype == LTG_CAMPORDER) {
-					BotAI_BotInitialChat(bs, "camp_arrive", EasyClientName(bs->teammate, netname, sizeof(netname)), NULL);
-					trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-					BotVoiceChatOnly(bs, bs->decisionmaker, VOICECHAT_INPOSITION);
-				}
-#endif
 				bs->teamgoal_time = FloatTime() + bs->camp_time;	// JUHOX: stay here some time. note that camp_time had formerly another meaning
 				bs->arrive_time = FloatTime();
 			}
 			//look strategically around for enemies
-#if 0	// JUHOX: new roaming view strategy
-			if (random() < bs->thinktime * 0.8) {
-				BotRoamGoal(bs, target);
-				VectorSubtract(target, bs->origin, dir);
-				vectoangles(dir, bs->ideal_viewangles);
-				bs->ideal_viewangles[2] *= 0.5;
-			}
-#else
 			BotCheckIfBlockingTeammates(bs);
-#endif
+
 			//check if the bot wants to crouch
 			//don't crouch if crouched less than 5 seconds ago
 			if (bs->attackcrouch_time < FloatTime() - 5) {
@@ -1787,29 +1579,19 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 			if (trap_AAS_Swimming(bs->origin)) bs->attackcrouch_time = FloatTime() - 1;
 			//make sure the bot is not gonna drown
 			if (trap_PointContents(bs->eye,bs->entitynum) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
-#if 0	// JUHOX: no "stop camping" status message
-				if (bs->ltgtype == LTG_CAMPORDER) {
-					BotAI_BotInitialChat(bs, "camp_stop", NULL);
-					trap_BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
-					//
-					if (bs->lastgoal_ltgtype == LTG_CAMPORDER) {
-						bs->lastgoal_ltgtype = 0;
-					}
-				}
-#endif
 				bs->ltgtype = 0;
 			}
-			//
+
 			if (bs->camp_range > 0) {
 				//FIXME: move around a bit
 			}
-			//
+
 			trap_BotResetAvoidReach(bs->ms);
 			return qfalse;
 		}
 		return qtrue;
 	}
-#if 1	// JUHOX: handle new ltg LTG_ESCAPE
+	// JUHOX: handle new ltg LTG_ESCAPE
 	if (bs->ltgtype == LTG_ESCAPE) {	// NOTE: we are not checking 'retreat' flag
 		//set the bot goal
 		memcpy(goal, &bs->teamgoal, sizeof(bot_goal_t));
@@ -1822,15 +1604,15 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		}
 		return qtrue;
 	}
-#endif
-#if 1	// JUHOX: handle new ltg LTG_WAIT
+
+	// JUHOX: handle new ltg LTG_WAIT
 	if (bs->ltgtype == LTG_WAIT) {	// NOTE: we are not checking 'retreat' flag
 		memset(goal, 0, sizeof(*goal));	// not really needed
 		BotCheckIfBlockingTeammates(bs);
 		if (bs->teamgoal_time < FloatTime()) bs->ltgtype = 0;
 		return qfalse;
 	}
-#endif
+
 	//patrolling along several waypoints
 	if (bs->ltgtype == LTG_PATROL && !retreat) {
 		//check for bot typing status message
@@ -1846,7 +1628,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 			trap_EA_Action(bs->client, ACTION_AFFIRMATIVE);
 			bs->teammessage_time = 0;
 		}
-		//
+
 		if (!bs->curpatrolpoint) {
 			bs->ltgtype = 0;
 			return qfalse;
@@ -1890,17 +1672,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		//if going for enemy flag
 		if (bs->ltgtype == LTG_GETFLAG) {
 			//check for bot typing status message
-#if 0	// JUHOX: no "get flag" status message
-			if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
-				BotAI_BotInitialChat(bs, "captureflag_start", NULL);
-				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
-				BotVoiceChatOnly(bs, -1, VOICECHAT_ONGETFLAG);
-				bs->teammessage_time = 0;
-			}
-#else
 			bs->teammessage_time = 0;
-#endif
-			//
+
 			switch(BotTeam(bs)) {
 				case TEAM_RED: memcpy(goal, &ctf_blueflag, sizeof(bot_goal_t)); break;
 				case TEAM_BLUE: memcpy(goal, &ctf_redflag, sizeof(bot_goal_t)); break;
@@ -1929,7 +1702,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				case TEAM_BLUE: memcpy(goal, &ctf_blueflag, sizeof(bot_goal_t)); break;
 				default: bs->ltgtype = 0; return qfalse;
 			}
-#if 1	// JUHOX: allow the flag carrier to escape in certain cases near the base
+            // JUHOX: allow the flag carrier to escape in certain cases near the base
 			if (BotOwnFlagStatus(bs) == FLAG_ATBASE) {
 				bs->rushbaseaway_time = 0;
 				bs->ltg_time = 0;
@@ -1952,14 +1725,10 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				) bs->rushbaseaway_time = 0;
 				return BotGetItemLongTermGoal(bs, tfl, goal);
 			}
-#endif
-#if 0	// JUHOX: this ltg is also used for group leaders leading the flag carrier
-			//if not carrying the flag anymore
-			if (!BotCTFCarryingFlag(bs)) bs->ltgtype = 0;
-#endif
+
 			//quit rushing after 2 minutes
 			if (bs->teamgoal_time < FloatTime()) bs->ltgtype = 0;
-#if 1	// JUHOX: don't enforce to touch the goal if it's not there
+            // JUHOX: don't enforce to touch the goal if it's not there
 			if (
 				BotOwnFlagStatus(bs) != FLAG_ATBASE &&
 				DistanceSquared(bs->origin, goal->origin) < 80*80
@@ -1969,20 +1738,17 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				BotCheckIfBlockingTeammates(bs);
 				return qfalse;
 			}
-#endif
+
 			//if touching the base flag the bot should loose the enemy flag
 			if (trap_BotTouchingGoal(bs->origin, goal)) {
 				//if the bot is still carrying the enemy flag then the
 				//base flag is gone, now just walk near the base a bit
 				if (BotCTFCarryingFlag(bs)) {
 					trap_BotResetAvoidReach(bs->ms);
-#if 0	// JUHOX: just wait for the own flag returning
-					bs->rushbaseaway_time = FloatTime() + 5 + 10 * random();
-					//FIXME: add chat to tell the others to get back the flag
-#else
+
 					BotCheckIfBlockingTeammates(bs);
 					return qfalse;
-#endif
+
 				}
 				else {
 					bs->ltgtype = 0;
@@ -1994,17 +1760,9 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		//returning flag
 		if (bs->ltgtype == LTG_RETURNFLAG) {
 			//check for bot typing status message
-#if 0	// JUHOX: no "returning flag" status message
-			if (bs->teammessage_time && bs->teammessage_time < FloatTime()) {
-				BotAI_BotInitialChat(bs, "returnflag_start", NULL);
-				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
-				BotVoiceChatOnly(bs, -1, VOICECHAT_ONRETURNFLAG);
-				bs->teammessage_time = 0;
-			}
-#else
+
 			bs->teammessage_time = 0;
-#endif
-			//
+
 #if BOTS_USE_TSS	// JUHOX: if tss is active, we should know the location
 			if (BG_TSS_GetPlayerInfo(&bs->cur_ps, TSSPI_isValid)) {
 				if (bs->teamgoal_time < FloatTime()) {
@@ -2079,7 +1837,7 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) {
 			}
 		}
 		//if the team mate is visible
-		if (BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 360, bs->lead_teammate)) {	// JUHOX
+		if (BotEntityVisible(&bs->cur_ps, 360, bs->lead_teammate)) {	// JUHOX
 			bs->leadvisible_time = FloatTime();
 		}
 		//if the team mate is not visible for 1 seconds
@@ -2122,15 +1880,11 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) {
 		}
 	}
 	// JUHOX: update the teamgoal
-#if 0
-	return BotGetLongTermGoal(bs, tfl, retreat, goal);
-#else
 	if (BotGetLongTermGoal(bs, tfl, retreat, goal)) {
 		if (bs->ltgtype != 0) memcpy(&bs->teamgoal, goal, sizeof(bot_goal_t));
 		return qtrue;
 	}
 	return qfalse;
-#endif
 }
 
 /*
@@ -2233,7 +1987,7 @@ int AINode_Stand(bot_state_t *bs) {
 		AIEnter_Seek_LTG(bs, "stand: time out");
 		return qfalse;
 	}
-	//
+
 	return qtrue;
 }
 
@@ -2250,20 +2004,9 @@ void AIEnter_Respawn(bot_state_t *bs, char *s) {
 	trap_BotResetAvoidGoals(bs->gs);
 	trap_BotResetAvoidReach(bs->ms);
 	//if the bot wants to chat
-#if 0	// JUHOX: no unnecessary chats please
-	if (BotChat_Death(bs)) {
-		bs->respawn_time = FloatTime() + BotChatTime(bs);
-		bs->respawnchat_time = FloatTime();
-	}
-	else {
-		bs->respawn_time = FloatTime() + 1 + random();
-		bs->respawnchat_time = 0;
-	}
-#else
 	bs->respawn_time = 0;
 	bs->respawnchat_time = 0;
 	bs->lastKilled_time = FloatTime();
-#endif
 	//set respawn state
 	bs->respawn_wait = qfalse;
 	bs->ainode = AINode_Respawn;
@@ -2626,12 +2369,7 @@ int AINode_Seek_ActivateEntity(bot_state_t *bs) {
 	// if waiting for something
 	else if (moveresult.flags & MOVERESULT_WAITING) {
 		// JUHOX: new roaming view strategy
-#if 0
-		if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-#else
 		if (BotRoamGoal(bs, target, qfalse)) {
-#endif
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
 			bs->ideal_viewangles[2] *= 0.5;
@@ -2733,7 +2471,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 		bs->nbg_time = 0;
 		bs->check_time = 0;	// JUHOX: immediately check for another NBG
 	}
-#if 1	// JUHOX: check if the NBG is still useful
+	// JUHOX: check if the NBG is still useful
 	else if (bs->check_time < FloatTime()) {
 		bs->check_time = FloatTime() + 1 + 0.5 * random();
 
@@ -2742,8 +2480,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 			bs->check_time = 0;
 		}
 	}
-#endif
-	//
+
 	if (bs->nbg_time < FloatTime()) {
 		bs->getImportantNBGItem = qfalse;	// JUHOX
 		//pop the current goal from the stack
@@ -2760,14 +2497,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 		return qfalse;
 	//initialize the movement state
 	BotSetupForMovement(bs);
-#if 0	// -JUHOX: if really near the goal, don't trust trap_BotMoveToGoal()
-	VectorSubtract(goal.origin, bs->origin, dir);
-	if (VectorNormalize(dir) < 60 && dir[2] < 30) {
-		if (trap_BotMoveInDirection(bs->ms, dir, bs->forceWalk? 200 : 400, MOVE_WALK)) {
-			return qtrue;
-		}
-	}
-#endif
+
 	//move towards the goal
 	trap_BotMoveToGoal(&moveresult, bs->ms, &goal, bs->tfl);
 	//if the movement failed
@@ -2786,12 +2516,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 	}
 	//if waiting for something
 	else if (moveresult.flags & MOVERESULT_WAITING) {
-#if 0	// JUHOX: new roaming view strategy
-		if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-#else
 		if (BotRoamGoal(bs, target, qfalse)) {
-#endif
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
 			bs->ideal_viewangles[2] *= 0.5;
@@ -2837,19 +2562,8 @@ AIEnter_Seek_LTG
 void AIEnter_Seek_LTG(bot_state_t *bs, char *s) {
 	//bot_goal_t goal;	// JUHOX: no longer needed
 	char buf[144];
-
-#if 0	// JUHOX: the goal stack is not relevant here
-	if (trap_BotGetTopGoal(bs->gs, &goal)) {
-		trap_BotGoalName(goal.number, buf, 144);
-		BotRecordNodeSwitch(bs, "seek LTG", buf, s);
-	}
-	else {
-		BotRecordNodeSwitch(bs, "seek LTG", "no goal", s);
-	}
-#else
 	Com_sprintf(buf, sizeof(buf), "#%d", bs->ltgtype);
 	BotRecordNodeSwitch(bs, "seek LTG", buf, s);
-#endif
 	bs->ainode = AINode_Seek_LTG;
 }
 
@@ -2864,8 +2578,6 @@ int AINode_Seek_LTG(bot_state_t *bs)
 	vec3_t target, dir;
 	bot_moveresult_t moveresult;
 	int range;
-	//char buf[128];
-	//bot_goal_t tmpgoal;
 
 	if (BotIsObserver(bs)) {
 		AIEnter_Observer(bs, "seek ltg: observer");
@@ -2881,18 +2593,18 @@ int AINode_Seek_LTG(bot_state_t *bs)
 		AIEnter_Respawn(bs, "seek ltg: bot dead");
 		return qfalse;
 	}
-	//
+
 	if (BotChat_Random(bs)) {
 		bs->stand_time = FloatTime() + BotChatTime(bs);
 		AIEnter_Stand(bs, "seek ltg: random chat");
 		return qfalse;
 	}
-	//
+
 	bs->tfl = TFL_DEFAULT;
 	if (bot_grapple.integer) bs->tfl |= TFL_GRAPPLEHOOK;
 	//if in lava or slime the bot should be able to get out
 	if (BotInLavaOrSlime(bs)) bs->tfl |= TFL_LAVA|TFL_SLIME;
-	//
+
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
@@ -2900,7 +2612,7 @@ int AINode_Seek_LTG(bot_state_t *bs)
 	BotMapScripts(bs);
 	//no enemy
 	bs->enemy = -1;
-	//
+
 	if (bs->killedenemy_time > FloatTime() - 2) {
 		if (random() < bs->thinktime * 1) {
 			trap_EA_Gesture(bs->client);
@@ -2922,35 +2634,14 @@ int AINode_Seek_LTG(bot_state_t *bs)
 			return qfalse;
 		}
 	}
-	//
-#if 0	// JUHOX: team goals not decided here
-	BotTeamGoals(bs, qfalse);
-#endif
-#if 0	// JUHOX: get the LTG after checking for NBG's
-	//get the current long term goal
-	if (!BotLongTermGoal(bs, bs->tfl, qfalse, &goal)) {
-		return qtrue;
-	}
-#endif
+
 	//check for nearby goals periodicly
 	if (bs->check_time < FloatTime()) {
 		bs->check_time = FloatTime() + 0.5;
 		//check if the bot wants to camp
 		//BotWantsToCamp(bs);	// JUHOX: no camping
 		//
-#if 0	// JUHOX: new nearby goal ranges
-		if (bs->ltgtype == LTG_DEFENDKEYAREA) range = 400;
-		else range = 150;
-		//
-#ifdef CTF
-		if (gametype == GT_CTF) {
-			//if carrying a flag the bot shouldn't be distracted too much
-			if (BotCTFCarryingFlag(bs))
-				range = 50;
-		}
-#endif //CTF
 
-#else
 		switch (bs->ltgtype) {
 		case LTG_DEFENDKEYAREA:
 			range = 400;
@@ -2973,7 +2664,7 @@ int AINode_Seek_LTG(bot_state_t *bs)
 			break;
 		case 0:
 			range = 1000;
-#if MONSTER_MODE
+
 			if (g_gametype.integer >= GT_STU) {
 				if (BotPlayerDanger(&bs->cur_ps) >= 25) {
 					range = 600;
@@ -2982,7 +2673,7 @@ int AINode_Seek_LTG(bot_state_t *bs)
 					range = 300;
 				}
 			}
-#endif
+
 			break;
 		default:
 			if (BotCTFCarryingFlag(bs)) range = 150;
@@ -2998,7 +2689,6 @@ int AINode_Seek_LTG(bot_state_t *bs)
 #endif
 				{
 					range = 1000;
-#if MONSTER_MODE
 					if (g_gametype.integer >= GT_STU) {
 						if (BotPlayerDanger(&bs->cur_ps) >= 25) {
 							range = 500;
@@ -3008,13 +2698,12 @@ int AINode_Seek_LTG(bot_state_t *bs)
 						}
 						if (!g_cloakingDevice.integer) range *= 1.5;
 					}
-#endif
+
 				}
 			}
 			else range = 150;
 		}
-#endif
-		//
+
 		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
 			trap_BotResetLastAvoidReach(bs->ms);
 			//get the goal at the top of the stack
@@ -3027,12 +2716,12 @@ int AINode_Seek_LTG(bot_state_t *bs)
 			return qfalse;
 		}
 	}
-#if 1	// JUHOX: get the LTG after checking for NBG's
+	// JUHOX: get the LTG after checking for NBG's
 	//get the current long term goal
 	if (!BotLongTermGoal(bs, bs->tfl, qfalse, &goal)) {
 		return qtrue;
 	}
-#endif
+
 	//predict obstacles
 	if (BotAIPredictObstacles(bs, &goal))
 		return qfalse;
@@ -3060,19 +2749,15 @@ int AINode_Seek_LTG(bot_state_t *bs)
 	}
 	//if waiting for something
 	else if (moveresult.flags & MOVERESULT_WAITING) {
-#if 0	// JUHOX: new roaming view strategy
-		if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-#else
 		if (BotRoamGoal(bs, target, qfalse)) {
-#endif
+
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
 			bs->ideal_viewangles[2] *= 0.5;
 		}
 	}
 	else if (!(bs->flags & BFL_IDEALVIEWSET)) {
-#if 1	// JUHOX: look around if nearly reached the ltg
+        // JUHOX: look around if nearly reached the ltg
 		if (LTGNearlyFulfilled(bs)) {
 			if (BotRoamGoal(bs, target, qfalse)) {
 				bs->roamgoalcnt--;
@@ -3088,7 +2773,7 @@ int AINode_Seek_LTG(bot_state_t *bs)
 		else {
 			if (BotRoamGoal(bs, target, qtrue)) goto SetViewAngles;
 		}
-#endif
+
 		if (trap_BotMovementViewTarget(bs->ms, &goal, bs->tfl, 300, target)) {
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
@@ -3098,24 +2783,18 @@ int AINode_Seek_LTG(bot_state_t *bs)
 			vectoangles(moveresult.movedir, bs->ideal_viewangles);
 		}
 		// JUHOX: new roaming view strategy
-#if 0
-		else if (random() < bs->thinktime * 0.8) {
-			BotRoamGoal(bs, target);
-#else
 		else if (BotRoamGoal(bs, target, qfalse)) {
-#endif
+
 			SetViewAngles:	// JUHOX
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
 			bs->ideal_viewangles[2] *= 0.5;
 		}
-		//bs->ideal_viewangles[2] *= 0.5;	// JUHOX: already done
 	}
 	ViewAnglesSet:	// JUHOX
 	BotCheckForWeaponJump(bs, &moveresult);	// JUHOX
 	//if the weapon is used for the bot movement
 	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
-	//
 	return qtrue;
 }
 
@@ -3206,16 +2885,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 			bs->check_time = 0;	// JUHOX: the enemy might have lost something (armor, flags, ...)
 		}
 	}
-#if 0	// JUHOX: Invisibility handled by BotEntityVisible() (see below)
-	//if the enemy is invisible and not shooting the bot looses track easily
-	if (EntityIsInvisible(bs->client, &entinfo) && !EntityIsShooting(&entinfo)) {	// JUHOX: added 'bs->client'
-		if (random() < 0.2) {
-			AIEnter_Seek_LTG(bs, "battle fight: invisible");
-			return qfalse;
-		}
-	}
-#endif
-	//
+
 	VectorCopy(entinfo.origin, target);
 	// if not a player enemy
 	if (bs->enemy >= MAX_CLIENTS) { // SLK: useless
@@ -3246,7 +2916,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 		}
 	}
 	//if the enemy is not visible
-	if (!BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 360, bs->enemy)) {	// JUHOX
+	if (!BotEntityVisible(&bs->cur_ps, 360, bs->enemy)) {	// JUHOX
 		bs->flags ^= BFL_STRAFERIGHT;	// JUHOX: the enemy may be vanished because of an unlucky attack move
 		if (BotWantsToChase(bs)) {
 			AIEnter_Battle_Chase(bs, "battle fight: enemy out of sight");
@@ -3270,8 +2940,8 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 	if (BotCanAndWantsToRocketJump(bs)) {
 		bs->tfl |= TFL_ROCKETJUMP;
 	}
+
 	// JUHOX: check for nearby goals periodicly
-#if 1
 	if (bs->check_time < FloatTime()) {
 		bot_goal_t goal;
 
@@ -3284,7 +2954,7 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
-#endif
+
 	//choose the best weapon to fight with
 	BotChooseWeapon(bs);
 	//do attack movements
@@ -3293,7 +2963,6 @@ int AINode_Battle_Fight(bot_state_t *bs) {
 	if (moveresult.failure) {
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 	//
@@ -3356,14 +3025,14 @@ int AINode_Battle_Chase(bot_state_t *bs)
 		AIEnter_Seek_LTG(bs, "battle chase: no enemy");
 		return qfalse;
 	}
-#if 1	// JUHOX: don't chase a dead enemy
+	// JUHOX: don't chase a dead enemy
 	if (g_entities[bs->enemy].health <= 0) {
 		AIEnter_Seek_LTG(bs, "battle chase: enemy dead");
 		return qfalse;
 	}
-#endif
+
 	//if the enemy is visible
-	if (BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 90, bs->enemy)) {	// JUHOX: fov was 360
+	if (BotEntityVisible(&bs->cur_ps, 90, bs->enemy)) {	// JUHOX: fov was 360
 		AIEnter_Battle_Fight(bs, "battle chase");
 		return qfalse;
 	}
@@ -3396,9 +3065,7 @@ int AINode_Battle_Chase(bot_state_t *bs)
 	VectorSet(goal.maxs, 8, 8, 8);
 	//if the last seen enemy spot is reached the enemy could not be found
 	// JUHOX: if the enemy is not found try to predict his goal
-#if 0
-	if (trap_BotTouchingGoal(bs->origin, &goal)) bs->chase_time = 0;
-#else
+
 	if (trap_BotTouchingGoal(bs->origin, &goal)) {
 		if (bs->chasearea) {
 			playerState_t ps;
@@ -3416,7 +3083,7 @@ int AINode_Battle_Chase(bot_state_t *bs)
 			bs->chase_time = 0;
 		}
 	}
-#endif
+
 	if (!BotWantsToChase(bs)) bs->chase_time = 0;	// JUHOX
 	//if there's no chase time left
 	if (!bs->chase_time || bs->chase_time < FloatTime() - /*10*/30) {	// JUHOX
@@ -3436,7 +3103,7 @@ int AINode_Battle_Chase(bot_state_t *bs)
 			return qfalse;
 		}
 	}
-	//
+
 	BotUpdateBattleInventory(bs, bs->enemy);
 	//initialize the movement state
 	BotSetupForMovement(bs);
@@ -3450,9 +3117,9 @@ int AINode_Battle_Chase(bot_state_t *bs)
 		bs->ltg_time = 0;
 		bs->ltgtype = 0;	// JUHOX
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
-	//
+
 	if (moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET|MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 		bs->specialMove = qtrue;	// JUHOX
@@ -3461,29 +3128,21 @@ int AINode_Battle_Chase(bot_state_t *bs)
 		if (bs->chase_time > FloatTime() - 2) {
 			bs->lastEnemyAreaPredicted = !bs->chasearea;	// JUHOX
 			BotAimAtEnemy(bs);
+
 			// JUHOX: if the enemy sight is lost just a few seconds before don't stop the machine gun
-#if 1
-			if (
-				bs->weaponnum == WP_MACHINEGUN &&
-				bs->cur_ps.weaponstate >= WEAPON_FIRING
-			) {
+			if ( bs->weaponnum == WP_MACHINEGUN && bs->cur_ps.weaponstate >= WEAPON_FIRING ) {
 				BotCheckAttack(bs);
 			}
-#endif
 		}
 		else {
 			// JUHOX: react upon audible stimuli
-#if 1
 			if (BotRoamGoal(bs, target, qtrue)) {
 				VectorSubtract(target, bs->origin, dir);
 				vectoangles(dir, bs->ideal_viewangles);
-			} else
-#endif
-			if (trap_BotMovementViewTarget(bs->ms, &goal, bs->tfl, 300, target)) {
+			} else if (trap_BotMovementViewTarget(bs->ms, &goal, bs->tfl, 300, target)) {
 				VectorSubtract(target, bs->origin, dir);
 				vectoangles(dir, bs->ideal_viewangles);
-			}
-			else {
+			} else {
 				vectoangles(moveresult.movedir, bs->ideal_viewangles);
 			}
 		}
@@ -3495,13 +3154,6 @@ int AINode_Battle_Chase(bot_state_t *bs)
 	//if the bot is in the area the enemy was last seen in
 	if (bs->areanum == bs->lastenemyareanum) bs->chase_time = 0;
 	//if the bot wants to retreat (the bot could have been damage during the chase)
-	// JUHOX: retreating already handled by 'BotWantsToChase()' above
-#if 0
-	if (BotWantsToRetreat(bs)) {
-		AIEnter_Battle_Retreat(bs, "battle chase: wants to retreat");
-		return qtrue;
-	}
-#endif
 	return qtrue;
 }
 
@@ -3548,7 +3200,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		AIEnter_Seek_LTG(bs, "battle retreat: no enemy");
 		return qfalse;
 	}
-	//
+
 	BotEntityInfo(bs->enemy, &entinfo);
 	if (EntityIsDead(&entinfo)) {
 		AIEnter_Seek_LTG(bs, "battle retreat: enemy dead");
@@ -3578,7 +3230,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		return qfalse;
 	}
 	//update the last time the enemy was visible
-	if (BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 360, bs->enemy)) {	// JUHOX
+	if (BotEntityVisible(&bs->cur_ps, 360, bs->enemy)) {	// JUHOX
 		bs->enemyvisible_time = FloatTime();
 		VectorCopy(entinfo.origin, target);
 		// if not a player enemy
@@ -3594,47 +3246,24 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		}
 	}
 	// JUHOX: if the enemy is no longer visible and there's something important to do
-#if 1
 	if (bs->enemyvisible_time < FloatTime() - 1 && bs->ltgtype != 0 && bs->ltgtype != LTG_WAIT) {
 		AIEnter_Seek_LTG(bs, "battle retreat: ignore enemy");
 		return qfalse;
 	}
-#endif
+
 	//if the enemy is NOT visible for 4 seconds
 	if (bs->enemyvisible_time < FloatTime() - 4) {
 		AIEnter_Seek_LTG(bs, "battle retreat: lost enemy");
 		return qfalse;
 	}
-	// JUHOX: already searched for another enemy
-#if 0
-	//else if the enemy is NOT visible
-	else if (bs->enemyvisible_time < FloatTime()) {
-		//if there is another enemy
-		if (BotFindEnemy(bs, -1)) {
-			bs->ltgtype = 0;	// JUHOX: remove LTG_ESCAPE
-			AIEnter_Battle_Fight(bs, "battle retreat: another enemy");
-			return qfalse;
-		}
-	}
-#endif
-	//
-	// JUHOX: team goals not decided here
-#if 0
-	BotTeamGoals(bs, qtrue);
-#endif
+
 	//use holdable items
 	BotBattleUseItems(bs);
 	BotSetEscapeGoal(bs);	// JUHOX
 	//get the current long term goal while retreating
 	// JUHOX: if no LTG available, just do an attack move, but no suicidal fighting
-#if 0
-	if (!BotLongTermGoal(bs, bs->tfl, qtrue, &goal)) {
-		AIEnter_Battle_SuicidalFight(bs, "battle retreat: no way out");
-		return qfalse;
-	}
-#else
 	goalAvailable = BotLongTermGoal(bs, bs->tfl, qtrue, &goal);
-#endif
+
 	//check for nearby goals periodicly
 	if (bs->check_time < FloatTime()) {
 		bs->check_time = FloatTime() + /*1*/0.5;	// JUHOX
@@ -3643,10 +3272,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		if (gametype == GT_CTF) {
 			//if carrying a flag the bot shouldn't be distracted too much
 			// JUHOX: if the own flag isn't at base use a greater range
-#if 0
-			if (BotCTFCarryingFlag(bs))
-				range = 50;
-#else
+
 			if (BotCTFCarryingFlag(bs)) {
 				if (
 					BotOwnFlagStatus(bs) == FLAG_ATBASE ||
@@ -3658,7 +3284,6 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 					range = 200;
 				}
 			}
-#endif
 		}
 #endif //CTF
 
@@ -3675,9 +3300,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 	BotSetupForMovement(bs);
 	//move towards the goal
 	// JUHOX: do an attack move if no goal available
-#if 0
-	trap_BotMoveToGoal(&moveresult, bs->ms, &goal, bs->tfl);
-#else
+
 	if (
 		goalAvailable &&
 		(
@@ -3695,7 +3318,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 	else {
 		moveresult = BotAttackMove(bs, bs->tfl);
 	}
-#endif
+
 	//if the movement failed
 	if (moveresult.failure) {
 		//reset the avoid reach, otherwise bot is stuck in current area
@@ -3704,7 +3327,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		bs->ltg_time = 0;
 		bs->ltgtype = 0;	// JUHOX
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
 	//choose the best weapon to fight with
 	BotChooseWeapon(bs);
@@ -3747,9 +3370,6 @@ AIEnter_Battle_NBG
 */
 void AIEnter_Battle_NBG(bot_state_t *bs, char *s) {
 	// JUHOX: record more info for 'battle NBG'
-#if 0
-	BotRecordNodeSwitch(bs, "battle NBG", "", s);
-#else
 	bot_goal_t goal;
 	char buf[144];
 
@@ -3760,7 +3380,7 @@ void AIEnter_Battle_NBG(bot_state_t *bs, char *s) {
 	else {
 		BotRecordNodeSwitch(bs, "battle NBG", "no goal", s);
 	}
-#endif
+
 	bs->ainode = AINode_Battle_NBG;
 }
 
@@ -3796,13 +3416,13 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		AIEnter_Seek_NBG(bs, "battle nbg: no enemy");
 		return qfalse;
 	}
-	//
+
 	BotEntityInfo(bs->enemy, &entinfo);
 	if (EntityIsDead(&entinfo)) {
 		AIEnter_Seek_NBG(bs, "battle nbg: enemy dead");
 		return qfalse;
 	}
-	//
+
 	bs->tfl = TFL_DEFAULT;
 	if (bot_grapple.integer) bs->tfl |= TFL_GRAPPLEHOOK;
 	//if in lava or slime the bot should be able to get out
@@ -3814,7 +3434,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	//map specific code
 	BotMapScripts(bs);
 	//update the last time the enemy was visible
-	if (BotEntityVisible(&bs->cur_ps/*bs->entitynum, bs->eye, bs->viewangles*/, 90, bs->enemy)) {	// JUHOX: fov was 360
+	if (BotEntityVisible(&bs->cur_ps, 90, bs->enemy)) {	// JUHOX: fov was 360
 		bs->enemyvisible_time = FloatTime();
 		VectorCopy(entinfo.origin, target);
 		// if not a player enemy
@@ -3836,7 +3456,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	else if (BotReachedGoal(bs, &goal)) {
 		bs->nbg_time = 0;
 	}
-	//
+
 	if (bs->nbg_time < FloatTime()) {
 		//pop the current goal from the stack
 		trap_BotPopGoal(bs->gs);
@@ -3856,10 +3476,9 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	if (moveresult.failure) {
 		//reset the avoid reach, otherwise bot is stuck in current area
 		trap_BotResetAvoidReach(bs->ms);
-		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->nbg_time = 0;
 	}
-	//
+
 	BotAIBlocked(bs, &moveresult, qfalse);
 	//update the attack inventory values
 	BotUpdateBattleInventory(bs, bs->enemy);
@@ -3875,7 +3494,6 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		attack_skill = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_ATTACK_SKILL, 0, 1);
 		//if the bot is skilled anough and the enemy is visible
 		if (attack_skill > 0.3) {
-			//&& BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, bs->enemy)
 			BotAimAtEnemy(bs);
 		}
 		else {
@@ -3897,4 +3515,3 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	//
 	return qtrue;
 }
-

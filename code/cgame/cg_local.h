@@ -222,12 +222,10 @@ typedef enum {
 	LE_FADE_RGB,
 	LE_SCALE_FADE,
 	LE_SCOREPLUM,
-	LE_BFGEXPL,	// JUHOX
-	LE_TRAIL_PARTICLE	// JUHOX
-#if MONSTER_MODE
-	,LE_MOVE_SCALE_RGBFADE		// JUHOX
-	,LE_FIREBALL_TRAIL_PARTICLE	// JUHOX
-#endif
+	LE_BFGEXPL,
+	LE_TRAIL_PARTICLE,
+	LE_MOVE_SCALE_RGBFADE,
+	LE_FIREBALL_TRAIL_PARTICLE
 } leType_t;
 
 typedef enum {
@@ -240,11 +238,8 @@ typedef enum {
 typedef enum {
 	LEMT_NONE,
 	LEMT_BURN,
-	LEMT_BLOOD
-	// JUHOX: monster blood mark definition
-#if MONSTER_MODE
-	,LEMT_MONSTER_BLOOD
-#endif
+	LEMT_BLOOD,
+	LEMT_MONSTER_BLOOD
 } leMarkType_t;			// fragment local entities can leave marks on walls
 
 typedef enum {
@@ -268,11 +263,9 @@ typedef struct localEntity_s {
 	trajectory_t	angles;
 
 	// JUHOX: variables for EFH
-#if ESCAPE_MODE
 	centity_t*		lightingBase;
 	vec3_t			baseMins;
 	vec3_t			baseMaxs;
-#endif
 
 	float			bounceFactor;		// 0.0 = no bounce, 1.0 = perfect
 
@@ -327,9 +320,8 @@ typedef struct {
 	tss_groupMemberStatus_t memberStatus;	// JUHOX
 	int				pfmi;	// JUHOX: player flags stored in the modelindex
 	qboolean		usesGlassCloaking;	// JUHOX
-#if ESCAPE_MODE
+
 	long			wayLength;	// JUHOX
-#endif
 
 	int				botSkill;		// 0 = not bot, 1-5 = bot
 
@@ -560,7 +552,6 @@ typedef struct {
 //======================================================================
 
 // JUHOX: definitions used by the TSS client part
-#if 1
 #define TSSGROUPCOLOR_BLACK 0x000000
 #define TSSGROUPCOLOR_WHITE 0xffffff
 #define TSSGROUPCOLOR_YELLOW 0xffb821
@@ -724,14 +715,13 @@ typedef enum {
 	TSSFS_too_large
 } tssfs_status_t;
 typedef void (*tssfs_callback_t)(const char* path, void* buffer, int len, tssfs_status_t status);
-#endif
+
 
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
 
 #define MAX_PREDICTED_EVENTS	16
 
-#if EARTHQUAKE_SYSTEM	// JUHOX: definitions
 typedef struct {
 	vec3_t origin;
 	float radius;	// negative for global earthquakes
@@ -742,7 +732,7 @@ typedef struct {
 	int fadeOutTime;
 } earthquake_t;
 #define MAX_EARTHQUAKES 64
-#endif
+
 
 typedef struct {
 	int			clientFrame;		// incremented each frame
@@ -763,7 +753,7 @@ typedef struct {
 	snapshot_t	*nextSnap;			// cg.nextSnap->serverTime > cg.time, or NULL
 	snapshot_t	activeSnapshots[2];
 
-#if ESCAPE_MODE	// JUHOX: variables for EFH
+    // JUHOX: variables for EFH
 	int			currentReferenceX;
 	int			currentReferenceY;
 	int			currentReferenceZ;
@@ -772,7 +762,7 @@ typedef struct {
 	int			nextReferenceZ;
 	vec3_t		referenceDelta;		// JUHOX: from nextSnap to snap origins
 	int			countDown;
-#endif
+
 
 	// JUHOX: variables
 	viewMode_t	viewMode;
@@ -844,7 +834,7 @@ typedef struct {
     // JUHOX: lens flare editor variables
 	lfEditor_t lfEditor;
 
-#if MONSTER_MODE	// JUHOX: earthquake variables (STU)
+	// JUHOX: earthquake variables (STU)
 	int earthquakeStartedTime;
 	int earthquakeEndTime;
 	float earthquakeAmplitude;
@@ -852,23 +842,21 @@ typedef struct {
 	int earthquakeFadeOutTime;
 	int earthquakeSoundCounter;
 	int lastEarhquakeSoundStartedTime;
-#endif
 
-#if EARTHQUAKE_SYSTEM	// JUHOX: earthquake variables
+    // JUHOX: earthquake variables
 	earthquake_t earthquakes[MAX_EARTHQUAKES];
 	float additionalTremble;
-#endif
 
-#if MONSTER_MODE	// JUHOX: STU end sequence script variables
+
+	// JUHOX: STU end sequence script variables
 	int endPhaseTime;
 	int endPhaseLastDischargeSoundTime;
-#endif
 
-#if MONSTER_MODE	// JUHOX: STU artefact detector variables
+	// JUHOX: STU artefact detector variables
 	int lastDetectorCheckTime;
 	float detector;
 	int detectorBeepTime;
-#endif
+
 
 	// zoom key
 	qboolean	zoomed;
@@ -1091,11 +1079,6 @@ typedef struct {
 	char			testModelName[MAX_QPATH];
 	qboolean		testGun;
 
-#if SCREENSHOT_TOOLS
-	int stopTime;	// JUHOX
-	int timeOffset;	// JUHOX
-	int serverOffset;	// JUHOX
-#endif
 } cg_t;
 
 
@@ -1159,9 +1142,7 @@ typedef struct {
 	qhandle_t	gibLeg;
 	qhandle_t	gibSkull;
 	qhandle_t	gibBrain;
-#if MONSTER_MODE
 	qhandle_t	monsterGibsShader;	// JUHOX
-#endif
 
 	qhandle_t	smoke2;
 
@@ -1195,12 +1176,10 @@ typedef struct {
 
 	// JUHOX: HUD shaders
 	qhandle_t	fightInProgressShader;
-#if MONSTER_MODE
 	qhandle_t	artefactsShader;
 	qhandle_t	lifesShader;
 	qhandle_t	clockShader;
 	qhandle_t	detectorShader;
-#endif
 
 	qhandle_t	huntNameShader;	    // JUHOX
 	qhandle_t	deathBlurryShader;	// JUHOX
@@ -1234,9 +1213,7 @@ typedef struct {
 	qhandle_t	bfgLFLineShader;	// JUHOX
 	qhandle_t	bfgLFStarShader;	// JUHOX
 	qhandle_t	bfgSuperExplShader;	// JUHOX
-#if MONSTER_MODE
 	qhandle_t	hotAirShader;		// JUHOX
-#endif
 
 	qhandle_t	numberShaders[11];
 	qhandle_t	shadowMarkShader;
@@ -1285,10 +1262,9 @@ typedef struct {
 	qhandle_t	grenadeExplosionShader;
 	qhandle_t	bfgExplosionShader;
 	qhandle_t	bloodExplosionShader;
-#if MONSTER_MODE
 	qhandle_t	monsterSeedMetalShader;	// JUHOX
 	qhandle_t	monsterLauncherShader;	// JUHOX
-#endif
+
 
 	// special effects models
 	qhandle_t	teleportEffectModel;
@@ -1346,7 +1322,7 @@ typedef struct {
 	sfxHandle_t overkillSound;			// JUHOX
 	sfxHandle_t exterminatedSound;		// JUHOX
 	// JUHOX: the respawn warn sound handle (also used for EFH)
-#if RESPAWN_DELAY || ESCAPE_MODE
+#if RESPAWN_DELAY
 	sfxHandle_t respawnWarnSound;
 #endif
 	sfxHandle_t tssBeepSound;			// JUHOX
@@ -1360,7 +1336,7 @@ typedef struct {
 	sfxHandle_t bounceArmorSoundB1;		// JUHOX
 	sfxHandle_t bounceArmorSoundB2;		// JUHOX
 	sfxHandle_t bounceArmorSoundB3;		// JUHOX
-#if GRAPPLE_ROPE
+
 	sfxHandle_t grappleShotSound;		// JUHOX
 	sfxHandle_t grappleThrowSound;		// JUHOX
 	sfxHandle_t ropeExplosionSound;		// JUHOX
@@ -1368,16 +1344,14 @@ typedef struct {
 	sfxHandle_t	grappleRewindSound;		// JUHOX
 	sfxHandle_t grapplePullingSound;	// JUHOX
 	sfxHandle_t grappleBlockingSound;	// JUHOX
-#endif
+
 	// JUHOX: monster sounds
-#if MONSTER_MODE
 	sfxHandle_t	earthquakeSound;
 	sfxHandle_t	lastArtefactSound;
 	sfxHandle_t guardStartSound;
 	sfxHandle_t detectorBeepSound;
 	sfxHandle_t seedBounceSound[3][8];
 	sfxHandle_t titanFootstepSound;		// JUHOX
-#endif
 
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;
@@ -1460,7 +1434,6 @@ typedef struct {
 	sfxHandle_t	n_healthSound;
 	sfxHandle_t	hgrenb1aSound;
 	sfxHandle_t	hgrenb2aSound;
-
 } cgMedia_t;
 
 
@@ -1508,18 +1481,18 @@ typedef struct {
 	qboolean		tssSafetyMode;
 	int				weaponLimit;
 
-#if MONSTER_MODE	// JUHOX: serverinfo cvars used in STU
+	// JUHOX: serverinfo cvars used in STU
 	qboolean		artefacts;
 	qboolean		monsterLauncher;
 	int				maxMonsters;
-#endif
-#if ESCAPE_MODE	// JUHOX: serverinfo cvars used in EFH
+
+	// JUHOX: serverinfo cvars used in EFH
 	long			distanceLimit;
 	qboolean		debugEFH;
-#endif
-#if GRAPPLE_ROPE	// JUHOX: serverinfo cvars used for the hook
+
+	// JUHOX: serverinfo cvars used for the hook
 	hookMode_t		hookMode;
-#endif
+
 
     // JUHOX: nearbox info
 	char			nearboxShaderName[128];
@@ -1557,11 +1530,8 @@ typedef struct {
 	vec3_t			smallArmorFragmentMidpoint;	// JUHOX: needed to correctly rotate armor fragment
 	vec3_t			largeArmorFragmentMidpoint;	// JUHOX: needed to correctly rotate armor fragment
 
-#if !MONSTER_MODE	// JUHOX: make room for extra client numbers
-	clientInfo_t	clientinfo[MAX_CLIENTS];
-#else
 	clientInfo_t	clientinfo[MAX_CLIENTS+EXTRA_CLIENTNUMS];
-#endif
+
 
 	// teamchat width is *3 because of embedded color codes
 	char			teamChatMsgs[TEAMCHAT_HEIGHT][TEAMCHAT_WIDTH*3+1];
@@ -1664,13 +1634,9 @@ extern	vmCvar_t		cg_autoswitchAmmoLimit;	// JUHOX
 extern	vmCvar_t		cg_weaponOrder[];	    // JUHOX
 extern	vmCvar_t		cg_weaponOrderName[];	// JUHOX
 extern	vmCvar_t		cg_ignore;
-#if MONSTER_MODE	// JUHOX: STU cvars
 extern	vmCvar_t		cg_drawNumMonsters;
 extern	vmCvar_t		cg_fireballTrail;
-#endif
-#if ESCAPE_MODE	// JUHOX: EFH cvars
 extern	vmCvar_t		cg_drawSegment;
-#endif
 extern	vmCvar_t		cg_tssiMouse;	// JUHOX
 extern	vmCvar_t		cg_tssiKey;		// JUHOX
 extern	vmCvar_t		cg_noTrace;		// JUHOX
@@ -1701,7 +1667,6 @@ extern  vmCvar_t		cg_scorePlum;
 extern	vmCvar_t		cg_smoothClients;
 extern	vmCvar_t		pmove_fixed;
 extern	vmCvar_t		pmove_msec;
-
 extern	vmCvar_t		cg_cameraOrbit;
 extern	vmCvar_t		cg_cameraOrbitDelay;
 extern	vmCvar_t		cg_timescaleFadeEnd;
@@ -1724,9 +1689,7 @@ extern	vmCvar_t		cg_missileFlare;	// JUHOX
 extern	vmCvar_t		cg_BFGsuperExpl;	// JUHOX
 extern	vmCvar_t		cg_nearbox;			// JUHOX
 extern	vmCvar_t		cg_autoGLC;			// JUHOX
-#if PLAYLIST
 extern	vmCvar_t		cg_music;			// JUHOX
-#endif
 
 //
 // cg_main.c
@@ -1775,14 +1738,12 @@ void CG_AddBufferedSound( sfxHandle_t sfx);
 
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
 
-#if EARTHQUAKE_SYSTEM	// JUHOX: prototypes
 void CG_AddEarthquake(
 	const vec3_t origin, float radius,
 	float duration, float fadeIn, float fadeOut,	// in seconds
 	float amplitude
 );
 void CG_AdjustEarthquakes(const vec3_t delta);
-#endif
 
 void CG_AddLFEditorCursor(void);
 
@@ -1868,10 +1829,7 @@ void CG_ResetPlayerEntity( centity_t *cent );
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team );
 void CG_NewClientInfo( int clientNum );
 sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
-// JUHOX: cg_player.c monster prototypes
-#if MONSTER_MODE
 void CG_InitMonsterClientInfo(int clientNum);
-#endif
 // JUHOX: prototype for CG_GetSpawnEffectParameters()
 qboolean CG_GetSpawnEffectParameters( entityState_t* state,	float* intensity, qboolean* skipOthers, int* powerups, refEntity_t* refEnt );
 
@@ -1949,10 +1907,7 @@ void CG_InitMarkPolys( void );
 void CG_AddMarks( void );
 void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float r, float g, float b, float a, qboolean alphaFade, float radius, qboolean temporary );
 void CG_AddNearbox(void);	// JUHOX
-// JUHOX: CG_AddLightningMarks() prototype
-#if MONSTER_MODE
 void CG_AddLightningMarks(int numMarks);
-#endif
 void CG_CheckStrongLight(const vec3_t origin, float intensity, const vec3_t color);	// JUHOX
 void CG_DrawLightBlobs(void);	// JUHOX
 
@@ -1962,10 +1917,8 @@ void CG_DrawLightBlobs(void);	// JUHOX
 void	CG_InitLocalEntities( void );
 localEntity_t	*CG_AllocLocalEntity( void );
 void	CG_AddLocalEntities( void );
-// JUHOX: prototypes for EFH
-#if ESCAPE_MODE
 void CG_AdjustLocalEntities(const vec3_t delta);
-#endif
+
 
 //
 // cg_effects.c
@@ -1974,13 +1927,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel, float radius, flo
 void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing );
 void CG_SpawnEffect( vec3_t org );
 void CG_ScorePlum( int client, vec3_t org, int score );
-
-// JUHOX: new parameter for CG_GibPlayer()
-#if !MONSTER_MODE
-void CG_GibPlayer( vec3_t playerOrigin );
-#else
 void CG_GibPlayer(vec3_t playerOrigin, centity_t* cent);
-#endif
 void CG_BFGsuperExpl(vec3_t origin);	// JUHOX
 void CG_BigExplode( vec3_t playerOrigin );
 void CG_Bleed( vec3_t origin, int entityNum );
@@ -2060,10 +2007,7 @@ void CG_TSS_InitInterface(void);
 void CG_TSS_LoadInterface(void);
 void CG_TSS_SaveInterface(void);
 void CG_TSS_Update(void);
-void CG_TSS_SPrintTacticalMeasure(
-	char* buf, int size,
-	tss_tacticalMagnitude_t magnitude, tss_tacticalMeasures_t* measures
-);
+void CG_TSS_SPrintTacticalMeasure( char* buf, int size, tss_tacticalMagnitude_t magnitude, tss_tacticalMeasures_t* measures );
 void CG_TSS_DrawInterface(void);
 void CG_TSS_OpenInterface(void);
 void CG_TSS_CloseInterface(void);
@@ -2072,15 +2016,14 @@ void CG_TSS_MouseEvent(int dx, int dy);
 void CG_TSS_CheckKeyEvents(void);
 void CG_TSS_CheckMouseEvents(void);
 
-
-#if PLAYLIST	// JUHOX: prototypes for cg_playlist.c
+// JUHOX: prototypes for cg_playlist.c
 void CG_InitPlayList(void);
 void CG_ParsePlayList(void);
 void CG_StopPlayList(void);
 void CG_ContinuePlayList(void);
 void CG_ResetPlayList(void);
 void CG_RunPlayListFrame(void);
-#endif
+
 
 //===============================================
 
@@ -2175,7 +2118,7 @@ void		trap_S_StartBackgroundTrack( const char *intro, const char *loop );	// emp
 void	trap_S_StopBackgroundTrack( void );
 
 
-#if ESCAPE_MODE	// JUHOX: sound fix for EFH
+// JUHOX: sound fix for EFH
 //
 // NOTE: the calls to trap_S_Respatialize() and trap_S_UpdateEntityPosition()
 //       have been fixed manually
@@ -2190,10 +2133,9 @@ void trap_S_AddLoopingSound_fixed(int entityNum, const vec3_t origin, const vec3
 
 void trap_S_AddRealLoopingSound_fixed(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx);
 #define trap_S_AddRealLoopingSound trap_S_AddRealLoopingSound_fixed
-#endif
 
 
-void		trap_R_LoadWorldMap( const char *mapname );
+void trap_R_LoadWorldMap( const char *mapname );
 
 // all media should be registered during level startup to prevent
 // hitches during gameplay
@@ -2302,7 +2244,4 @@ void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 extern  qboolean initparticles;
 int     CG_NewParticleArea ( int num );
-
-#if ESCAPE_MODE
 void CG_AdjustParticles(const vec3_t delta);	// JUHOX
-#endif

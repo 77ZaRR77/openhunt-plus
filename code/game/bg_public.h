@@ -9,20 +9,12 @@
 #define __BG_PUBLIC_H	// JUHOX
 
 #define	GAME_VERSION		"openhunt-1"	// JUHOX: was "baseq3-1"
-
-#define SCREENSHOT_TOOLS	0	// JUHOX
-#define PLAYER_SCREENSHOTS	0	// JUHOX
-#define MONSTER_MODE		1	// JUHOX
-#define ESCAPE_MODE			1	// JUHOX: also requires MONSTER_MODE
-#define GRAPPLE_ROPE		1	// JUHOX
 #define TSSINCVAR			1	// JUHOX
-#define PLAYLIST			1	// JUHOX
 #define MEETING				1	// JUHOX
-#define EARTHQUAKE_SYSTEM	1	// JUHOX
 
 #define NOT !	// JUHOX
 
-#if 1	// JUHOX: global definitions for random number generation
+// JUHOX: global definitions for random number generation
 typedef struct {
 	unsigned long seed0;
 	unsigned long seed1;
@@ -35,9 +27,9 @@ unsigned long LocallySeededRandom(localseed_t* seed);
 void DeriveLocalSeed(localseed_t* source, localseed_t* destination);
 float local_random(localseed_t* seed);
 float local_crandom(localseed_t* seed);
-#endif
 
-#if GRAPPLE_ROPE	// JUHOX: global definitions
+
+// JUHOX: global definitions
 #define GRAPPLE_PULL_SPEED_CLASSIC	800.0f
 #define GRAPPLE_PULL_SPEED_TOOL		400.0f
 #define GRAPPLE_PULL_SPEED_ANCHOR	400.0f
@@ -53,7 +45,7 @@ typedef enum {
 
 	HM_num_modes
 } hookMode_t;
-#endif
+
 
 // JUHOX: global definitions
 typedef enum {
@@ -66,7 +58,7 @@ typedef enum {
 #define VIEWMODE_SWITCHING_TIME 200	// msec
 
 
-#if MONSTER_MODE	// JUHOX: STU defines
+// JUHOX: STU defines
 #define EXTRA_CLIENTNUMS 5
 typedef enum {
 	MT_predator = 0,
@@ -84,7 +76,6 @@ typedef enum {
 #define MAX_MONSTERS 200
 #define MONSTER_GUARD_SCALE 2.0f
 #define MONSTER_TITAN_SCALE 3.5f
-#endif
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40
@@ -118,20 +109,16 @@ typedef enum {
 #define	DEFAULT_VIEWHEIGHT	26
 #define CROUCH_VIEWHEIGHT	12
 #define	DEAD_VIEWHEIGHT		-16
-
-#if PLAYLIST
 #define MAX_PLAYLIST_ENTRIES 100
-#endif
 
-#if 1	// JUHOX: player flags stored in the modelindex
-#define PFMI_FIGHTING 0x01
-#if MONSTER_MODE
-	#define PFMI_HIBERNATION_MODE			0x02
-	#define PFMI_HIBERNATION_DRAW_SEED		0x04
-	#define PFMI_HIBERNATION_DRAW_THREAD	0x08
-	#define PFMI_HIBERNATION_MORPHED		0x10
-#endif
-#endif
+// JUHOX: player flags stored in the modelindex
+#define PFMI_FIGHTING                   0x01
+#define PFMI_HIBERNATION_MODE			0x02
+#define PFMI_HIBERNATION_DRAW_SEED		0x04
+#define PFMI_HIBERNATION_DRAW_THREAD	0x08
+#define PFMI_HIBERNATION_MORPHED		0x10
+
+
 
 //
 // config strings are a general means of communicating variable length strings
@@ -176,22 +163,17 @@ typedef enum {
 #define CS_CLIENTS_READY		(CS_MAX+4)	// JUHOX
 #define CS_RECORD				(CS_MAX+5)	// JUHOX
 #define CS_CHOOSENWEAPONS		(CS_MAX+6)	// JUHOX
-#if MONSTER_MODE	// JUHOX: configstrings used by STU
+// JUHOX: configstrings used by STU
 #define CS_STU_SCORE			(CS_MAX+7)
 #define CS_TIME_PLAYED			(CS_MAX+8)
 #define CS_NUMMONSTERS			(CS_MAX+9)
-#endif
-#if ESCAPE_MODE	// JUHOX: configstrings used by EFH
+// JUHOX: configstrings used by EFH
 #define CS_EFH_GOAL_DISTANCE	(CS_MAX+10)
 #define CS_EFH_SPEED			(CS_MAX+11)
 #define CS_EFH_DEBUG			(CS_MAX+12)
 #define CS_EFH_SEGMENT			(CS_MAX+13)	// for map debugging
 #define CS_EFH_COVERED_DISTANCE	(CS_MAX+14)
-#endif
 
-#if SCREENSHOT_TOOLS
-#define CS_STOPTIME				(MAX_CONFIGSTRINGS-1)	// JUHOX
-#endif
 
 #if (CS_MAX) > MAX_CONFIGSTRINGS
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
@@ -209,13 +191,8 @@ typedef enum {
 	GT_1FCTF,
 	GT_OBELISK,
 	GT_HARVESTER,
-	// JUHOX: monster gametypes
-#if MONSTER_MODE
 	GT_STU,		// "save the universe"
-#if ESCAPE_MODE
 	GT_EFH,		// "escape from hell"
-#endif
-#endif
 	GT_MAX_GAME_TYPE
 } gametype_t;
 
@@ -354,7 +331,6 @@ unsigned long BG_VectorChecksum(const vec3_t v);
 
 
 // JUHOX: grapple states; these are stored in player's entityState.modelindex
-#if GRAPPLE_ROPE
 typedef enum {
 	GST_unused,	// silent
 	GST_silent,	// silent
@@ -364,15 +340,12 @@ typedef enum {
 	GST_pulling,
 	GST_blocked
 } grappleState_t;
-#endif
+
 
 // JUHOX: global definitions for EFH
-#if ESCAPE_MODE && MONSTER_MODE
 #define REFERENCE_SHIFT 7
-#endif
 
 // JUHOX: definitions for the TSS
-#if 1
 #define MAX_GROUPS 10
 #define TSS_NAME_SIZE 32
 #define TSS_STOCK_FILE "stock"
@@ -504,7 +477,6 @@ typedef struct {
 #define TSS_FILE_SERVICE_PACKETS 64
 #define TSS_FILE_SERVICE_PACKET_SIZE 250
 
-
 #define TSS_PREDICATES_PER_CLAUSE 10
 #define TSS_CLAUSES_PER_OCCASION 6
 #define TSS_NON_DEFAULT_DIRECTIVES_PER_STRATEGY 26
@@ -587,7 +559,6 @@ void BG_TSS_DecodeLeadership(const char** buf, int* leaders1, int* leaders2, int
 void BG_TSS_SetPlayerInfo(playerState_t* ps, tss_playerInfo_t pi, int data);
 int BG_TSS_GetPlayerInfo(const playerState_t* ps, tss_playerInfo_t pi);
 int BG_TSS_GetPlayerEntityInfo(const entityState_t* es, tss_playerInfo_t pi);
-#endif
 
 /*
 ===================================================================================
@@ -617,11 +588,9 @@ typedef enum {
 	WEAPON_READY,
 	WEAPON_RAISING,
 	WEAPON_DROPPING,
-	WEAPON_FIRING
-#if 1	// JUHOX: new weapon states for the machinegun
-	, WEAPON_WIND_UP,
+	WEAPON_FIRING,
+	WEAPON_WIND_UP,
 	WEAPON_WIND_OFF
-#endif
 } weaponstate_t;
 
 // pmove->pm_flags
@@ -657,17 +626,15 @@ typedef struct {
 
 	vec3_t		target;				// JUHOX: origin of STAT_TARGET
 
-#if GRAPPLE_ROPE	// JUHOX: definition for hook mode
+	// JUHOX: definition for hook mode
 	hookMode_t	hookMode;
-#endif
 
 	int			gametype;			// JUHOX
 
-#if MONSTER_MODE	// JUHOX: definition for monster vars
+	// JUHOX: definition for monster vars
 	vec_t		scale;
 	qboolean	superJump;
 	qboolean	hibernation;
-#endif
 
 	// results (out)
 	int			numtouch;
@@ -700,32 +667,36 @@ void Pmove (pmove_t *pmove);
 // player_state->stats[] indexes
 // NOTE: may not have more than 16
 typedef enum {
-	STAT_HEALTH,
-	STAT_HOLDABLE_ITEM,
-	STAT_WEAPONS,					// 16 bit fields
-	STAT_ARMOR,
-	STAT_WEAPON_KICK,				// JUHOX: pitch speed
-	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
-	STAT_TARGET,					// JUHOX: client number
-	STAT_STRENGTH,					// JUHOX
-	STAT_PANT_PHASE,				// JUHOX
-	STAT_EFFECT						// JUHOX
-#if MONSTER_MODE
-	,STAT_DETECTOR					// JUHOX
-#endif
-#if GRAPPLE_ROPE
-	,STAT_GRAPPLE_STATE				// JUHOX
-	,STAT_GRAPPLE_SPEED				// JUHOX
-#endif
-#if ESCAPE_MODE && MONSTER_MODE	// JUHOX: reference origin for EFH
-	,STAT_REFERENCE_X
-	,STAT_REFERENCE_Y
-	,STAT_REFERENCE_Z
-#endif
-    /*,STAT_JUMPTIME */                 // SLK
+    STAT_HEALTH,
+    STAT_HOLDABLE_ITEM,
+    STAT_WEAPONS,                   // 16 bit fields
+    STAT_ARMOR,
+    STAT_WEAPON_KICK,               // JUHOX: pitch speed
+    STAT_MAX_HEALTH,                // health / armor limit, changable by handicap
+    STAT_TARGET,                    // JUHOX: client number
+    STAT_STRENGTH,
+    STAT_PANT_PHASE,
+    STAT_BUNDLED,                   // SLK: bundled STAT_EFFECT & STAT_GRAPPLE_STATE to free one slot for STAT_JUMPTIME
+    //STAT_EFFECT,                  // JUHOX
+    STAT_DETECTOR,                  // JUHOX
+    //STAT_GRAPPLE_STATE,           // JUHOX
+    STAT_GRAPPLE_SPEED,             // JUHOX
+                                    // JUHOX: reference origin for EFH
+    STAT_REFERENCE_X,
+    STAT_REFERENCE_Y,
+    STAT_REFERENCE_Z,
+    STAT_JUMPTIME                   // SLK: used for CPM Physics
 } statIndex_t;
+
+// SLK defined macros to determine STATS_EFFECT and STAT_GRAPPLE_STATE which are now bundled into STAT_BUNDLED
+#define GET_STAT_EFFECT(ps) ((ps)->stats[STAT_BUNDLED] & 0xff)
+#define SET_STAT_EFFECT(ps, n) ((ps)->stats[STAT_BUNDLED]=((ps)->stats[STAT_BUNDLED] & 0xff00) + (n & 0xff))
+#define GET_STAT_GRAPPLESTATE(ps) (((ps)->stats[STAT_BUNDLED] >>8) & 0xff)
+//#define SET_STAT_GRAPPLESTATE (ps, n) (ps)->stats[STAT_BUNDLED] = (((ps)->stats[STAT_BUNDLED] & 0xff) + ((n & 0xff) << 8))
+#define SET_STAT_GRAPPLESTATE(ps, n) ((ps)->stats[STAT_BUNDLED]=((ps)->stats[STAT_BUNDLED]&0xff)+((n & 0xff) <<8))
+
 #define STAT_RESPAWN_INFO STAT_ARMOR	// JUHOX: remaining seconds & respawnLocationType_t, valid only if dead
-#define WEAPON_KICK_FACTOR 50	// JUHOX: for STAT_WEAPON_KICK
+#define WEAPON_KICK_FACTOR 50	        // JUHOX: for STAT_WEAPON_KICK
 
 // JUHOX: STAT_RESPAWN_INFO values
 typedef enum {
@@ -779,13 +750,11 @@ typedef enum {
 	PERS_CAPTURES					// captures
 } persEnum_t;
 
-#if ESCAPE_MODE
 #define PERS_LIGHT_X PERS_IMPRESSIVE_COUNT	// JUHOX
 #define PERS_LIGHT_Y PERS_EXCELLENT_COUNT	// JUHOX
 #define PERS_LIGHT_Z PERS_DEFEND_COUNT		// JUHOX
 #define PERS_MIN_SEGMENT PERS_ASSIST_COUNT	// JUHOX
 #define PERS_MAX_SEGMENT PERS_GAUNTLET_FRAG_COUNT	// JUHOX
-#endif
 
 // entityState_t->eFlags
 #define	EF_DEAD				0x00000001		// don't draw a foe marker over players with EF_DEAD
@@ -864,10 +833,7 @@ typedef enum {
 	WP_PLASMAGUN,
 	WP_BFG,
 	WP_GRAPPLING_HOOK,
-#if MONSTER_MODE
 	WP_MONSTER_LAUNCHER,	// JUHOX
-#endif
-
 	WP_NUM_WEAPONS
 } weapon_t;
 
@@ -989,9 +955,7 @@ typedef enum {
 	EV_PLAYER_TELEPORT_OUT,
 
 	EV_GRENADE_BOUNCE,		// eventParm will be the soundindex
-#if MONSTER_MODE
 	EV_COCOON_BOUNCE,	// JUHOX
-#endif
 
 	EV_GENERAL_SOUND,
 	EV_GLOBAL_SOUND,		// no attenuation
@@ -1030,7 +994,6 @@ typedef enum {
 	EV_JUICED,				// invulnerability juiced effect
 	EV_LIGHTNINGBOLT,		// lightning bolt bounced of invulnerability sphere
 
-
 	EV_DEBUG_LINE,
 	EV_STOPLOOPINGSOUND,
 	EV_TAUNT,
@@ -1053,9 +1016,7 @@ typedef enum {
 	,EV_NAVAID4
 	,EV_EARTHQUAKE
 	,EV_THROW_HOOK
-#if GRAPPLE_ROPE
 	,EV_ROPE_EXPLOSION
-#endif
 
 } entity_event_t;
 
@@ -1181,12 +1142,10 @@ typedef enum {
 	MOD_UNKNOWN,
 	MOD_SHOTGUN,
 	MOD_GAUNTLET,
-#if MONSTER_MODE
 	MOD_CLAW,		        // JUHOX
 	MOD_GUARD,		        // JUHOX
 	MOD_TITAN,	            // JUHOX
 	MOD_MONSTER_LAUNCHER,	// JUHOX
-#endif
 	MOD_CHARGE,		        // JUHOX
 	MOD_MACHINEGUN,
 	MOD_GRENADE,
@@ -1293,9 +1252,7 @@ typedef enum {
 	ET_TELEPORT_TRIGGER,
 	ET_INVISIBLE,
 	ET_GRAPPLE,				// grapple hooked on wall
-#if GRAPPLE_ROPE
 	ET_GRAPPLE_ROPE,		// JUHOX
-#endif
 	ET_TEAM,
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum
@@ -1327,7 +1284,6 @@ float BG_PlayerTargetOffset(const entityState_t* state, float pos);	// JUHOX
 
 #define MAX_BOTS			1024
 #define MAX_BOTS_TEXT		8192
-
 
 // Kamikaze
 

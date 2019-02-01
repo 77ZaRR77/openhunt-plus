@@ -9,8 +9,6 @@ static	float	s_quadFactor;
 static	vec3_t	forward, right, up;
 static	vec3_t	muzzle;
 
-#define NUM_NAILSHOTS 15
-
 /*
 ================
 G_BounceProjectile
@@ -37,7 +35,6 @@ GAUNTLET
 */
 
 void Weapon_Gauntlet( gentity_t *ent ) {
-
 }
 
 /*
@@ -53,19 +50,11 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	int			damage;
 
 	// set aiming directions
-#if !MONSTER_MODE	// JUHOX: accept monsters
-	AngleVectors (ent->client->ps.viewangles, forward, right, up);
-#else
 	AngleVectors(G_GetEntityPlayerState(ent)->viewangles, forward, right, up);
-#endif
 
 	CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
-#if 0	// JUHOX: slightly farther range, so you can attack somebody below you
-	VectorMA (muzzle, 32, forward, end);
-#else
 	VectorMA(muzzle, 32 + fabs(forward[2]) * 20, forward, end);
-#endif
 
 	trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
 	if ( tr.surfaceFlags & SURF_NOIMPACT ) {
@@ -77,63 +66,32 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	// send blood impact
 	// JUHOX: the new gauntlet is so fast, not every hit should give a blood impact
 	// JUHOX BUGFIX: let bleed corpses too (& monsters)
-#if 0
-	if ( traceEnt->takedamage && traceEnt->client ) {
-		tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
-		tent->s.otherEntityNum = traceEnt->s.number;
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
-	}
-#else
+
 	if (
 		traceEnt->takedamage &&
 		traceEnt->s.eType == ET_PLAYER &&
-		(
-#if MONSTER_MODE
-			ent->monster ||
-#endif
-			random() < 0.05
-		)
-	) {
-		tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
-		tent->s.otherEntityNum = traceEnt->s.number;
-		tent->s.eventParm = DirToByte( tr.plane.normal );
-		tent->s.weapon = ent->s.weapon;
+		( ent->monster || random() < 0.05 )	) {
+            tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
+            tent->s.otherEntityNum = traceEnt->s.number;
+            tent->s.eventParm = DirToByte( tr.plane.normal );
+            tent->s.weapon = ent->s.weapon;
 	}
-#endif
 
 	if ( !traceEnt->takedamage) {
 		return qfalse;
 	}
 
-#if MONSTER_MODE	// JUHOX: don't let monsters hit other monsters
+	// JUHOX: don't let monsters hit other monsters
 	if (
 		ent->monster &&
 		traceEnt->monster &&
 		G_IsFriendlyMonster(ent, traceEnt)
 	) return qfalse;
-#endif
 
-#if 0	// JUHOX: ignore quad
-	if (ent->client->ps.powerups[PW_QUAD] ) {
-		G_AddEvent( ent, EV_POWERUP_QUAD, 0 );
-		s_quadFactor = g_quadfactor.value;
-	} else {
-		s_quadFactor = 1;
-	}
-#else
 	s_quadFactor = 1;
-#endif
 
-#if 0	// JUHOX: new gauntlet damage
-	damage = 50 * s_quadFactor;
-#else
 	damage = 10;	// note that the gauntlet is much faster now
-#endif
-#if !MONSTER_MODE	// JUHOX: monsters do a special gauntlet damage
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-		damage, 0, MOD_GAUNTLET );
-#else
+
 	if (ent->monster) {
 		gentity_t* owner;
 
@@ -148,7 +106,6 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	else {
 		G_Damage(traceEnt, ent, ent, forward, tr.endpos, damage, 0, MOD_GAUNTLET);
 	}
-#endif
 
 	return qtrue;
 }
@@ -158,7 +115,6 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 JUHOX: CheckTitanAttack
 ===============
 */
-#if MONSTER_MODE
 qboolean CheckTitanAttack(gentity_t *ent) {
 	trace_t		tr;
 	vec3_t		end;
@@ -207,7 +163,6 @@ qboolean CheckTitanAttack(gentity_t *ent) {
 
 	return qtrue;
 }
-#endif
 
 
 /*
@@ -228,12 +183,8 @@ rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
-#if 0	// JUHOX: add a "const" to SnapVectorTowards()
-void SnapVectorTowards( vec3_t v, vec3_t to ) {
-#else
 void SnapVectorTowards(vec3_t v, const vec3_t to) {
-#endif
-	int		i;
+	int	i;
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		if ( to[i] <= v[i] ) {
@@ -251,28 +202,15 @@ void SnapVectorTowards(vec3_t v, const vec3_t to) {
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	trace_t		tr;
 	vec3_t		end;
-	//float		r;	// JUHOX: no longer needed
-	//float		u;	// JUHOX: no longer needed
 	gentity_t	*tent;
 	gentity_t	*traceEnt;
 	int			i, passent;
 
-#if 1	// JUHOX: more machine gun damage
+	// JUHOX: more machine gun damage
 	damage = 20;
-#endif
 	damage *= s_quadFactor;
 
-#if 0	// JUHOX: no machinegun spread
-	if (!(ent->client->ps.pm_flags & PMF_DUCKED)) spread *= 3.0;	// JUHOX
-	r = random() * M_PI * 2.0f;
-	u = sin(r) * crandom() * spread * 16;
-	r = cos(r) * crandom() * spread * 16;
-	VectorMA (muzzle, 8192*16, forward, end);
-	VectorMA (end, r, right, end);
-	VectorMA (end, u, up, end);
-#else
 	VectorMA(muzzle, 8192*16, forward, end);
-#endif
 
 	passent = ent->s.number;
 	for (i = 0; i < 10; i++) {
@@ -288,17 +226,11 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 		SnapVectorTowards( tr.endpos, muzzle );
 
 		// send bullet impact
-#if 0	// JUHOX BUGFIX: let corpses bleed too (& monsters)
-		if ( traceEnt->takedamage && traceEnt->client ) {
-#else
 		if (traceEnt->takedamage && traceEnt->s.eType == ET_PLAYER) {
-#endif
 			tent = G_TempEntity( tr.endpos, EV_BULLET_HIT_FLESH );
-#if !MONSTER_MODE	// JUHOX: eventParm sometimes doesn't work correctly, so we use otherEntityNum2
-			tent->s.eventParm = traceEnt->s.number;
-#else
+
 			tent->s.otherEntityNum2 = traceEnt->s.number;
-#endif
+
 			if( LogAccuracyHit( traceEnt, ent ) ) {
 				ent->client->accuracy_hits++;
 			}
@@ -333,8 +265,6 @@ void BFG_Fire ( gentity_t *ent ) {
 	m->splashDamage *= s_quadFactor;
 
 	ent->client->ps.powerups[PW_BFG_RELOADING] = level.time + 4000;	// JUHOX
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
 
@@ -444,8 +374,6 @@ void weapon_grenadelauncher_fire (gentity_t *ent) {
 	m = fire_grenade (ent, muzzle, forward);
 	m->damage *= s_quadFactor;
 	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
 /*
@@ -455,29 +383,16 @@ JUHOX: MONSTER LAUNCHER
 
 ======================================================================
 */
-
-#if MONSTER_MODE
 void weapon_monsterlauncher_fire(gentity_t* ent) {
 	gentity_t* m;
 
 	// extra vertical velocity
 	forward[2] += 0.2f;
-	/*
-	{
-		float spread;
-
-		spread = 0.2;
-		if (ent->client->ps.pm_flags & PMF_DUCKED) spread *= 0.25;
-		forward[0] += crandom() * spread;
-		forward[1] += crandom() * spread;
-		forward[2] += crandom() * spread;
-	}
-	*/
 	VectorNormalize(forward);
 
 	m = fire_monster_seed(ent, muzzle, forward);
 }
-#endif
+
 
 /*
 ======================================================================
@@ -493,8 +408,6 @@ void Weapon_RocketLauncher_Fire (gentity_t *ent) {
 	m = fire_rocket (ent, muzzle, forward);
 	m->damage *= s_quadFactor;
 	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
 
@@ -543,11 +456,7 @@ void weapon_railgun_fire (gentity_t *ent) {
 	int			passent;
 	gentity_t	*unlinkedEntities[MAX_RAIL_HITS];
 
-#if 0	// JUHOX: more railgun damage
-	damage = 100 * s_quadFactor;
-#else
 	damage = 200;
-#endif
 
 	VectorMA (muzzle, 8192, forward, end);
 
@@ -582,7 +491,6 @@ void weapon_railgun_fire (gentity_t *ent) {
 	}
 
 	// the final trace endpos will be the terminal point of the rail trail
-
 	// snap the endpos to integers to save net bandwidth, but nudged towards the line
 	SnapVectorTowards( trace.endpos, muzzle );
 
@@ -605,9 +513,8 @@ void weapon_railgun_fire (gentity_t *ent) {
 	}
 	tent->s.clientNum = ent->s.clientNum;
 
-#if MONSTER_MODE	// JUHOX: no rewards in STU
+	// JUHOX: no rewards in STU
 	if (g_gametype.integer >= GT_STU) return;
-#endif
 
 	// give the shooter a reward sound if they have made two railgun hits in a row
 	if ( hits == 0 ) {
@@ -640,19 +547,12 @@ GRAPPLING HOOK
 
 void Weapon_GrapplingHook_Fire (gentity_t *ent)
 {
-#if GRAPPLE_ROPE
 	if (g_grapple.integer <= HM_disabled || g_grapple.integer >= HM_num_modes) return;	// JUHOX
-#endif
 
-#if 0	// JUHOX: fire grappling hook
-	if (/*!ent->client->fireHeld &&*/ !ent->client->hook)	// JUHOX
-		fire_grapple (ent, muzzle, forward);
-#else
 	if (!ent->client->hook) {
 		ent->client->offHandHook = qfalse;
 		fire_grapple(ent, muzzle, forward);
 	}
-#endif
 
 	ent->client->fireHeld = qtrue;
 }
@@ -664,12 +564,9 @@ JUHOX: Weapon_GrapplingHook_Throw
 ================
 */
 void Weapon_GrapplingHook_Throw(gentity_t* ent) {
-#if GRAPPLE_ROPE
+
 	if (g_grapple.integer <= HM_disabled || g_grapple.integer >= HM_num_modes) return;
-#endif
-#if ESCAPE_MODE
 	if (g_gametype.integer == GT_EFH) return;
-#endif
 
 	if (!ent->client->hook) {
 		AngleVectors(ent->client->ps.viewangles, forward, right, up);
@@ -685,11 +582,6 @@ void Weapon_GrapplingHook_Throw(gentity_t* ent) {
 
 void Weapon_HookFree (gentity_t *ent)
 {
-#if !GRAPPLE_ROPE
-	ent->parent->client->hook = NULL;
-	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
-	G_FreeEntity( ent );
-#else
 	if (!ent) return;
 	if (ent->parent && ent->parent->client && ent->parent->client->hook == ent) {
 		gclient_t* client;
@@ -714,18 +606,18 @@ void Weapon_HookFree (gentity_t *ent)
 			client->ropeEntities[i] = NULL;
 		}
 		client->numRopeElements = 0;
-		client->ps.stats[STAT_GRAPPLE_STATE] = GST_unused;
+		//client->ps.stats[STAT_GRAPPLE_STATE] = GST_unused;
+		SET_STAT_GRAPPLESTATE (&client->ps, GST_unused);
 
 		client->hook = NULL;
 		client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
 	}
 	G_FreeEntity(ent);
-#endif
 }
 
 void Weapon_HookThink (gentity_t *ent)
 {
-#if 1	// JUHOX: update position of the hook attaching to a mover
+	// JUHOX: update position of the hook attaching to a mover
 	if (ent->enemy && ent->enemy->s.number >= MAX_CLIENTS) {
 		vec3_t pos;
 
@@ -733,16 +625,16 @@ void Weapon_HookThink (gentity_t *ent)
 		G_SetOrigin(ent, pos);
 	}
 	else
-#endif
+
 	if (ent->enemy) {
 		vec3_t v, oldorigin;
 
-#if 1	// JUHOX BUGFIX: remove hook when player attached to dies
+        // JUHOX BUGFIX: remove hook when player attached to dies
 		if (ent->enemy->health <= 0) {
 			Weapon_HookFree(ent);
 			return;
 		}
-#endif
+
 		VectorCopy(ent->r.currentOrigin, oldorigin);
 		v[0] = ent->enemy->r.currentOrigin[0] + (ent->enemy->r.mins[0] + ent->enemy->r.maxs[0]) * 0.5;
 		v[1] = ent->enemy->r.currentOrigin[1] + (ent->enemy->r.mins[1] + ent->enemy->r.maxs[1]) * 0.5;
@@ -753,9 +645,8 @@ void Weapon_HookThink (gentity_t *ent)
 	}
 
 	VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
-#if 1	// JUHOX BUGFIX: make hook think function called again next time
+	// JUHOX BUGFIX: make hook think function called again next time
 	ent->nextthink = level.time + FRAMETIME;
-#endif
 }
 
 /*
@@ -782,10 +673,7 @@ static qboolean LightningVisibility(gentity_t* ent, gentity_t* target) {
 	VectorCopy(ent->s.pos.trBase, origin);
 	origin[2] += 0.5 * DEFAULT_VIEWHEIGHT;
 	VectorCopy(origin, startPoint);
-	/*
-	VectorCopy(target->s.pos.trBase, endPoint);
-	endPoint[2] += 0.5 * DEFAULT_VIEWHEIGHT;
-	*/
+
 	VectorAdd(target->r.absmin, target->r.absmax, endPoint);
 	VectorScale(endPoint, 0.5, endPoint);
 	dist = Distance(origin, endPoint);
@@ -849,9 +737,8 @@ static gentity_t* GetLightningTarget(gentity_t* ent) {
 		if (!ps) continue;
 		if (ps->pm_type != PM_NORMAL) continue;
 		if (ps->stats[STAT_HEALTH] <= 0) continue;
-#if MONSTER_MODE
 		if (!G_CanBeDamaged(other)) continue;
-#endif
+
 		if (other->client) {
 			if (other->client->pers.connected != CON_CONNECTED) continue;
 			if (other == ent) continue;
@@ -900,7 +787,7 @@ JUHOX: Weapon_LightningFire (new version)
 */
 void Weapon_LightningFire(gentity_t* ent) {
 	gentity_t* target;
-	//gentity_t* tent;
+
 	int t;
 	playerState_t* ps;
 
@@ -912,7 +799,6 @@ void Weapon_LightningFire(gentity_t* ent) {
 	}
 
 	// minimum damage for feedback
-	//G_Damage(target, ent, ent, forward, target->client->ps.origin, 1, 0, MOD_LIGHTNING);
 	if (target->client) {
 		target->client->lasthurt_client = ent->s.number;
 		target->client->lasthurt_mod = MOD_LIGHTNING;
@@ -920,11 +806,10 @@ void Weapon_LightningFire(gentity_t* ent) {
 	}
 
 	// charge the target
-	//t = g_gametype.integer < GT_TEAM? 500 : 1000;
 	t = 500;
-#if MONSTER_MODE
+
 	if (g_gametype.integer >= GT_STU) t = 2000;
-#endif
+
 	if (g_baseHealth.integer > 1) {	// consider handicap
 		t = t * ent->client->ps.stats[STAT_MAX_HEALTH] / g_baseHealth.integer;
 	}
@@ -940,55 +825,6 @@ void Weapon_LightningFire(gentity_t* ent) {
 		target->chargeInflictor = ent->s.number;	// for rewarding
 	}
 }
-
-#if 0	// JUHOX: new version of Weapon_LightningFire() above
-void Weapon_LightningFire( gentity_t *ent ) {
-	trace_t		tr;
-	vec3_t		end;
-	gentity_t	*traceEnt, *tent;
-	int			damage, i, passent;
-
-	damage = 8 * s_quadFactor;
-
-	passent = ent->s.number;
-	for (i = 0; i < 10; i++) {
-		VectorMA( muzzle, LIGHTNING_RANGE, forward, end );
-
-		trap_Trace( &tr, muzzle, NULL, NULL, end, passent, MASK_SHOT );
-
-		if ( tr.entityNum == ENTITYNUM_NONE ) {
-			return;
-		}
-
-		traceEnt = &g_entities[ tr.entityNum ];
-
-		if ( traceEnt->takedamage) {
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-					damage, 0, MOD_LIGHTNING);
-
-		}
-
-#if 0	// JUHOX BUGFIX: let corpses bleed too (& monsters)
-		if ( traceEnt->takedamage && traceEnt->client ) {
-#else
-		if (traceEnt->takedamage && traceEnt->s.eType == ET_PLAYER) {
-#endif
-			tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
-			tent->s.otherEntityNum = traceEnt->s.number;
-			tent->s.eventParm = DirToByte( tr.plane.normal );
-			tent->s.weapon = ent->s.weapon;
-			if( LogAccuracyHit( traceEnt, ent ) ) {
-				ent->client->accuracy_hits++;
-			}
-		} else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
-			tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
-			tent->s.eventParm = DirToByte( tr.plane.normal );
-		}
-
-		break;
-	}
-}
-#endif
 
 
 //======================================================================
@@ -1037,14 +873,9 @@ set muzzle location relative to pivoting eye
 */
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint ) {
 	VectorCopy( ent->s.pos.trBase, muzzlePoint );
-#if !MONSTER_MODE	// JUHOX: accept monsters
-	muzzlePoint[2] += ent->client->ps.viewheight;
-#else
+
 	muzzlePoint[2] += G_GetEntityPlayerState(ent)->viewheight;
-#endif
-#if 0	// JUHOX: don't move muzzle point for hit-scan weapons
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-#else
+
 	if (
 		ent->s.weapon != WP_MACHINEGUN &&
 		ent->s.weapon != WP_SHOTGUN &&
@@ -1053,7 +884,7 @@ void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, 
 	) {
 		VectorMA(muzzlePoint, 14, forward, muzzlePoint);
 	}
-#endif
+
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }
@@ -1067,14 +898,9 @@ set muzzle location relative to pivoting eye
 */
 void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint ) {
 	VectorCopy( ent->s.pos.trBase, muzzlePoint );
-#if !MONSTER_MODE	// JUHOX: accept monsters
-	muzzlePoint[2] += ent->client->ps.viewheight;
-#else
+
 	muzzlePoint[2] += G_GetEntityPlayerState(ent)->viewheight;
-#endif
-#if 0	// JUHOX: don't move muzzle point for hit-scan weapons
-	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
-#else
+
 	if (
 		ent->s.weapon != WP_MACHINEGUN &&
 		ent->s.weapon != WP_SHOTGUN &&
@@ -1083,7 +909,7 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 	) {
 		VectorMA(muzzlePoint, 14, forward, muzzlePoint);
 	}
-#endif
+
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }
@@ -1096,15 +922,7 @@ FireWeapon
 ===============
 */
 void FireWeapon( gentity_t *ent ) {
-#if 0	// JUHOX: ignore quad
-	if (ent->client->ps.powerups[PW_QUAD] ) {
-		s_quadFactor = g_quadfactor.value;
-	} else {
-		s_quadFactor = 1;
-	}
-#else
 	s_quadFactor = 1;
-#endif
 
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
 	if( ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_GAUNTLET ) {
@@ -1152,13 +970,10 @@ void FireWeapon( gentity_t *ent ) {
 	case WP_GRAPPLING_HOOK:
 		Weapon_GrapplingHook_Fire( ent );
 		break;
-#if MONSTER_MODE	// JUHOX: fire monster launcher
 	case WP_MONSTER_LAUNCHER:
 		weapon_monsterlauncher_fire(ent);
 		break;
-#endif
 	default:
-// FIXME		G_Error( "Bad ent->s.weapon" );
 		break;
 	}
 }

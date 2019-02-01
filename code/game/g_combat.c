@@ -45,14 +45,10 @@ void AddScore( gentity_t *ent, vec3_t origin, int score ) {
 	ScorePlum(ent, origin, score);
 	//
 	ent->client->ps.persistant[PERS_SCORE] += score;
-#if !MONSTER_MODE	// JUHOX: use team score for STU too
-	if ( g_gametype.integer == GT_TEAM )
-		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
-#else
 	if (g_gametype.integer == GT_TEAM || g_gametype.integer >= GT_STU) {
 		level.teamScores[ent->client->ps.persistant[PERS_TEAM]] += score;
 	}
-#endif
+
 	CalculateRanks();
 }
 
@@ -451,12 +447,10 @@ char	*modNames[] = {
 	"MOD_UNKNOWN",
 	"MOD_SHOTGUN",
 	"MOD_GAUNTLET",
-#if MONSTER_MODE
 	"MOD_CLAW",				// JUHOX
 	"MOD_GUARD",			// JUHOX
 	"MOD_TITAN",			// JUHOX
 	"MOD_MONSTER_LAUNCHER",	// JUHOX
-#endif
 	"MOD_CHARGE",			// JUHOX
 	"MOD_MACHINEGUN",
 	"MOD_GRENADE",
@@ -639,7 +633,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST;	// send to everyone
 
-#if 1	// JUHOX: create POD marker if needed
+	// JUHOX: create POD marker if needed
 	if (self->client->mayRespawnAtDeathOrigin) {
 		gitem_t* item;
 
@@ -682,7 +676,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 		if (!self->client->podMarker) self->client->mayRespawnAtDeathOrigin = qfalse;
 	}
-#endif
 
 	self->enemy = attacker;
 
@@ -690,7 +683,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->client->respawnDelay = 1000 * g_respawnDelay.integer;	// JUHOX
 	if (g_gametype.integer == GT_TOURNAMENT) self->client->respawnDelay = 0;	// JUHOX
 
-#if 1	// JUHOX: check overkill
+// JUHOX: check overkill
 	score = 1;
 	if (CheckForOverkill(self, attacker)) {
 		score = 5;
@@ -700,14 +693,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			score = 0;
 			if (attacker == self || !attacker || !attacker->client) score = 1;	// will be subtracted below
 		}
-#if MONSTER_MODE
+
 		level.overkilled = qtrue;
-#endif
+
 		G_LogPrintf("Overkill!\n");
 	}
-#endif
 
-#if MONSTER_MODE	// JUHOX: in STU all player deaths count for the blue team (monsters)
+
+// JUHOX: in STU all player deaths count for the blue team (monsters)
 	if (g_gametype.integer >= GT_STU) {
 		if (!level.warmupTime) {
 			level.teamScores[TEAM_BLUE] += score;
@@ -715,7 +708,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 	}
 	else
-#endif
+
 	if (attacker && attacker->client) {
 		attacker->client->lastkilled_client = self->s.number;
 
@@ -894,35 +887,6 @@ CheckArmor
 int CheckArmor (gentity_t *ent, int damage, int dflags)
 {
 	// JUHOX: check armor also for monsters
-#if !MONSTER_MODE
-	gclient_t	*client;
-	int			save;
-	int			count;
-
-	if (!damage)
-		return 0;
-
-	client = ent->client;
-
-	if (!client)
-		return 0;
-
-	if (dflags & DAMAGE_NO_ARMOR)
-		return 0;
-
-	// armor
-	count = client->ps.stats[STAT_ARMOR];
-	save = ceil( damage * ARMOR_PROTECTION );
-	if (save >= count)
-		save = count;
-
-	if (!save)
-		return 0;
-
-	client->ps.stats[STAT_ARMOR] -= save;
-
-	return save;
-#else
 	int save, count;
 	playerState_t* ps;
 
@@ -938,7 +902,6 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 
 	ps->stats[STAT_ARMOR] -= save;
 	return save;
-#endif
 }
 
 /*
@@ -1087,39 +1050,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// figure momentum add, even if the damage won't be taken
 	// JUHOX: knock back monsters too
-#if !MONSTER_MODE
-	if ( knockback && targ->client ) {
-		vec3_t	kvel;
-		float	mass;
-
-		mass = 200;
-		// JUHOX: give gauntlet a stronger knockback
-#if 1
-		if (mod == MOD_GAUNTLET) {
-			mass = 100;	// lower mass results in stronger knockback
-		}
-#endif
-
-		VectorScale (dir, g_knockback.value * (float)knockback / mass, kvel);
-		VectorAdd (targ->client->ps.velocity, kvel, targ->client->ps.velocity);
-
-		// set the timer so that the other client can't cancel
-		// out the movement immediately
-		if ( !targ->client->ps.pm_time ) {
-			int		t;
-
-			t = knockback * 2;
-			if ( t < 50 ) {
-				t = 50;
-			}
-			if ( t > 200 ) {
-				t = 200;
-			}
-			targ->client->ps.pm_time = t;
-			targ->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-		}
-	}
-#else
 	if (
 		knockback &&
 		G_GetEntityPlayerState(targ) &&
@@ -1167,7 +1097,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			ps->pm_flags |= PMF_TIME_KNOCKBACK;
 		}
 	}
-#endif
 
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
@@ -1176,11 +1105,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// if the attacker was on the same team
 
 		// JUHOX: ignore friendly fire setting on monsters (always do damage)
-#if !MONSTER_MODE
-		if ( targ != attacker && OnSameTeam (targ, attacker)  ) {
-#else
 		if (targ != attacker && OnSameTeam(targ, attacker) && !targ->monster) {
-#endif
 			if ( !g_friendlyFire.integer ) {
 				return;
 			}
@@ -1192,18 +1117,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	// JUHOX: ignore battlesuit protection
-#if 0
-	// battlesuit protects from all radius damage (but takes knockback)
-	// and protects 50% against all damage
-	if ( client && client->ps.powerups[PW_BATTLESUIT] ) {
-		G_AddEvent( targ, EV_POWERUP_BATTLESUIT, 0 );
-		if ( ( dflags & DAMAGE_RADIUS ) || ( mod == MOD_FALLING ) ) {
-			return;
-		}
-		damage *= 0.5;
-	}
-#endif
 
 	// add to the attacker's hit counter (if the target isn't a general entity like a prox mine)
 	if ( attacker->client && targ != attacker && targ->health > 0
@@ -1221,15 +1134,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
 	// JUHOX: do not reduce damage if hurting self with the BFG
-#if 0
-	if ( targ == attacker) {
-		damage *= 0.5;
-	}
-#else
 	if (targ == attacker && mod != MOD_BFG && mod != MOD_BFG_SPLASH) {
 		damage *= 0.5;
 	}
-#endif
 
 	if ( damage < 1 ) {
 		damage = 1;
@@ -1247,9 +1154,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			targ->health, take, asave );
 	}
 
-#if MONSTER_MODE
 	G_CheckMonsterDamage(attacker, targ, mod);	// JUHOX
-#endif
 
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
@@ -1278,23 +1183,15 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// JUHOX: don't let the fast charge damage overwrite any other attack
-#if 0
-	if (targ->client) {
-#else
-	if (
-		targ->client &&
-#if !MONSTER_MODE
-		attacker->client &&
-#else
-		(attacker->client || attacker->monster) &&
-#endif
+
+	if ( targ->client &&	(attacker->client || attacker->monster) &&
 		(
 			mod != MOD_CHARGE ||
 			targ->client->lasthurt_time < level.time - 1000 ||
 			targ->health <= take
 		)
 	) {
-#endif
+
 		// set the last client who damaged the target
 		targ->client->lasthurt_client = attacker->s.number;
 		targ->client->lasthurt_mod = mod;
@@ -1303,23 +1200,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// do the damage
 	if (take) {
-#if MONSTER_MODE
+
 		if (!G_CanBeDamaged(targ) && !(dflags & DAMAGE_NO_PROTECTION)) take = 0;	// JUHOX
-#endif
+
 		targ->health = targ->health - take;
 		// JUHOX: update monster playerState_t too
-#if !MONSTER_MODE
-		if ( targ->client ) {
-			targ->client->ps.stats[STAT_HEALTH] = targ->health;
-		}
-#else
 		{
 			playerState_t* ps;
 
 			ps = G_GetEntityPlayerState(targ);
 			if (ps) ps->stats[STAT_HEALTH] = targ->health;
 		}
-#endif
 
 		if ( targ->health <= 0 ) {
 			if ( client )
@@ -1336,11 +1227,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-#if 1	// JUHOX: if the target is invisible mark it by a battlesuit flash
+	// JUHOX: if the target is invisible mark it by a battlesuit flash
 	if (client && client->ps.powerups[PW_INVIS] && mod != MOD_WATER) {
 		client->ps.powerups[PW_BATTLESUIT] = level.time + 500;
 	}
-#endif
 }
 
 
