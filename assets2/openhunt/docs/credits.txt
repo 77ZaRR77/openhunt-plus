@@ -5,6 +5,8 @@ Improved version of OpenHunt by
 
 zturtleman (ZTM) -  preconfiguration for compile,programming advice
 
+breadsticks - support
+
 SLK - bugfixes, code cleaning, cosmetica
 
 ZaRR - bugfixes, weapon fixes, balance, cosmetica, efh mapping investigation
