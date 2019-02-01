@@ -1,18 +1,30 @@
-Original Mod by Jurgen Juhox Hoffmann
+Original Hunt Mod by Jurgen Juhox Hoffmann
+=====================================
 
+Improved version of OpenHunt Plus by
+++++++++++++++++++++++++++++++++++++
+zturtleman (ZTM) 
+	preconfiguration for compile, programming advice
 
-Improved version of OpenHunt by
+SLK 
+	setting up handy development environment
+	clean and repack medias
+	several bugfixes (cg_fov, allow cycle to grapple, ...)
+	remove pb
+	remove cdkey menue
+	intense code cleanup
+	implement cpm physics
 
-zturtleman (ZTM) -  preconfiguration for compile,programming advice
+ZaRR 
+	bugfixes
+	weapon fixes
+	balance
+	efh mapping investigation
 
-breadsticks - support
-
-SLK - bugfixes, code cleaning, cosmetica
-
-ZaRR - bugfixes, weapon fixes, balance, cosmetica, efh mapping investigation
+breadsticks 
+	additional support
 
 Also big thanks for testers and small openhunt discord community
-
 
 created by Jurgen Juhox Hoffmann
 coding by Jurgen Hoffmann Craniul
