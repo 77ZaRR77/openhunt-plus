@@ -531,7 +531,7 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt = G_Spawn();
 	if (!bolt) return NULL;	// JUHOX BUGFIX
 	bolt->classname = "grenade";
-	bolt->nextthink = level.time + 5000;	// JUHOX: was 2500
+	bolt->nextthink = level.time + 2500;	//ZaRR: as original q3
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -539,8 +539,8 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.eFlags = EF_BOUNCE_HALF;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 50;			// JUHOX: was 100
-	bolt->splashDamage = 50;	// JUHOX: was 100
+	bolt->damage = 125;			// ZaRR: original q3 100
+	bolt->splashDamage = 125;	// ZaRR: original q3 100
 	bolt->splashRadius = /*150*/SPLASH_RADIUS_GRENADE;	// JUHOX
 	bolt->methodOfDeath = MOD_GRENADE;
 	bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;

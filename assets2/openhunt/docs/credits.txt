@@ -1,8 +1,18 @@
 Original Mod by Jurgen Juhox Hoffmann
 
+
 Improved version of OpenHunt by
-SLK 
-ZaRR
+
+zturtleman (ZTM) -  preconfiguration for compile,programming advice
+
+breadsticks - support
+
+SLK - bugfixes, code cleaning, cosmetica
+
+ZaRR - bugfixes, weapon fixes, balance, cosmetica, efh mapping investigation
+
+Also big thanks for testers and small openhunt discord community
+
 
 created by Jurgen Juhox Hoffmann
 coding by Jurgen Hoffmann Craniul
