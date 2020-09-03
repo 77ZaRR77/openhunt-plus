@@ -1,6 +1,5 @@
 OpenHunt mod for Quake 3 Arena
 
-Please, better check updated version on branch: https://github.com/LepusC/openhunt
 ==============================
 Originally made by Jurgen "Juhox" Hoffmann.
 This repo has working stable preinstalled OpenHunt 
