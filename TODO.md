@@ -1,18 +1,3 @@
-#### BUGS n FIX
-
-* change name of mod to OpenHunt Plus
-
-
-
-
-DONE:
-
-fix advanced options menu
-rename hunts pk3s to openhunt and sort them into one (LepusC) 
-fix angle of railgun shot so it will simply push player back straight
-remove TEAM ARENA and CINEMATICS options on main menu
-fix the bug with grapplinghook, while crouching it will brake //lol removed
-
 #### FEATURES
 
 * More agressive/fast reaction monsters, especially guard type
