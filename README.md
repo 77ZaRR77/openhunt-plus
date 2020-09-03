@@ -1,4 +1,4 @@
-OpenHunt mod for Quake 3 Arena
+OpenHunt Plus - mod for Quake 3 Arena
 
 ==============================
 
