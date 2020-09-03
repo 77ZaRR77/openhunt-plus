@@ -1,6 +1,7 @@
 OpenHunt mod for Quake 3 Arena
 
 ==============================
+
 Originally made by Jurgen "Juhox" Hoffmann.
 This repo has working stable preinstalled OpenHunt 
 based on Eugene C. improved baseq3a gamecode and fast q3tools.
